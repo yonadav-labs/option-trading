@@ -10,13 +10,15 @@
 <form autocomplete="off" method="GET" action="/">
     <div class="autocomplete">
         <label class=" requiredField">Ticker<span class="asteriskField">*</span></label>
-        <input id="ticker" type="text" name="ticker" class="form-control" placeholder="TSLA, APPL, GOOG..." required>
+        <input id="ticker" type="text" name="ticker" class="form-control" value="{{ticker}}"
+               placeholder="TSLA, APPL, GOOG..." required>
     </div>
 </form>
 
 <script>
 var tickers = ["goog", "googl", "appl", "tsla"];
 autocomplete(document.getElementById("ticker"), tickers);
+
 </script>
 
 {% endblock %}

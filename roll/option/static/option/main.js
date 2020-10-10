@@ -35,6 +35,13 @@ function autocomplete(inp, arr) {
                     /*close the list of autocompleted values,
                     (or any other open lists of autocompleted values:*/
                     closeAllLists();
+
+                    // Addons.
+                    var uri = window.location.toString();
+                    if (uri.indexOf("?") > 0) {
+                        uri = uri.substring(0, uri.indexOf("?"));
+                    }
+                    window.location.href = uri + "?ticker=" + escape($("#ticker").val());
                 });
                 a.appendChild(b);
             }

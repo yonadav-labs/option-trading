@@ -3,5 +3,5 @@ from .forms import OptionForm, TickerFrom
 
 
 def index(request):
-    form = TickerFrom()
+    ticker = request.GET.get('ticker')
     return render(request, 'option/index.html', locals())
