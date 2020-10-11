@@ -16,7 +16,25 @@ def index(request):
 
 
 def best_call(request, ticker_symbol):
+    def is_number(s):
+        try:
+            float(s)
+            return True
+        except ValueError:
+            return False
+
+    def calculate_gain(target_price, strike, mid_price):
+        return (target_price - strike - mid_price) / mid_price * 100
+
     ticker = yf.Ticker(ticker_symbol.upper())
+    # TODO: add error handling.
+    if not is_number(request.GET.get('target_price')) or not is_number(request.GET.get('month_to_percent_gain')):
+        return JsonResponse({'result': []})
+
+    target_price = float(request.GET.get('target_price'))
+    month_to_percent_gain = float(request.GET.get('month_to_percent_gain'))
+    if not ticker.options or target_price <= 0.0 or month_to_percent_gain < 0.0 or month_to_percent_gain > 1.0:
+        return JsonResponse({'result': []})
 
     all_calls = []
     for expr_date in request.GET.getlist('expiration_dates'):
@@ -24,10 +42,29 @@ def best_call(request, ticker_symbol):
         calls = option_chain.calls
         calls["expireDate"] = datetime.strptime(expr_date, '%Y-%m-%d')
         all_calls.append(calls)
+
+    if len(all_calls) == 0:
+        return JsonResponse({'result': []})
+
     all_calls = pd.concat(all_calls, ignore_index=True)
     all_calls = all_calls.dropna()
     all_calls = all_calls[all_calls['ask'] > 0.0]
 
+    all_calls['midPrice'] = (all_calls['ask'] + all_calls['bid']) / 2
+    all_calls['daysTillExpiration'] = (all_calls['expireDate'] - pd.to_datetime("today")) // np.timedelta64(1, 'D')
+    all_calls['breakEven'] = all_calls['strike'] + all_calls['midPrice']
+    all_calls['gain'] = all_calls.apply(lambda x: calculate_gain(target_price, x['strike'], x['midPrice']), axis=1)
+
+    all_calls['finalScore'] = all_calls['gain'] + all_calls['daysTillExpiration'] / 30.0 * month_to_percent_gain
+    all_calls['finalScore'] = all_calls['finalScore'] / all_calls['finalScore'].max() * 100
+
+    all_calls = all_calls.round(3)
+    all_calls['gainText'] = (all_calls['gain']).astype(str) + '%'
+
+    all_calls = all_calls[(all_calls['gain'] > 0)][
+        ['expireDate', 'contractSymbol', 'daysTillExpiration', 'ask', 'midPrice', 'strike', 'breakEven', 'gainText',
+         'finalScore']].sort_values(by=['finalScore'], ascending=False)
+
     return JsonResponse(
         {'data': request.GET, 'list_data': request.GET.getlist('expiration_dates'),
-         'result': all_calls.values.tolist()})
+         'result': all_calls.to_dict(orient='records')})
