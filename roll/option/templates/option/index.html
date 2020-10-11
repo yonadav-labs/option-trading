@@ -10,15 +10,66 @@
 <form autocomplete="off" method="GET" action="/">
     <div class="autocomplete">
         <label class=" requiredField">Ticker<span class="asteriskField">*</span></label>
-        <input id="ticker" type="text" name="ticker" class="form-control" value="{{ticker}}"
+        <input id="ticker" type="text" name="ticker" class="form-control" value="{{ticker_symbol}}"
                placeholder="TSLA, APPL, GOOG..." required>
     </div>
 </form>
 
-<script>
-var tickers = ["goog", "googl", "appl", "tsla"];
-autocomplete(document.getElementById("ticker"), tickers);
+{% if ticker %}
+<br>
+<div class="tradingview-widget-container">
+    <div id="tradingview_21544" style="height:500px;"></div>
+    <div class="tradingview-widget-copyright">
+        <a href="https://www.tradingview.com/symbols/{{ticker.info.symbol}}/" rel="noopener" target="_blank">
+            <span class="blue-text">{{ticker.info.symbol}} Chart</span>
+        </a> by TradingView
+    </div>
+    <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+    <script type="text/javascript">
+        new TradingView.widget({
+          "autosize": true,
+          "symbol": "{{ticker.info.symbol}}",
+          "timezone": "Etc/UTC",
+          "theme": "light",
+          "style": "1",
+          "locale": "en",
+          "toolbar_bg": "#f1f3f6",
+          "enable_publishing": false,
+          "range": "12M",
+          "allow_symbol_change": true,
+          "container_id": "tradingview_21544"
+        });
+    </script>
+</div>
+<!-- TradingView Widget END -->
+<h4>Call option optimizer</h4>
+<hr>
 
+<form id="call-settings" onsubmit = "event.preventDefault(); getBestCall('{{ticker_symbol}}');">
+    {{ form|crispy }}
+    <button type="submit" class="btn btn-primary" id="fetch-best-call">Give me best contracts!</button>
+</form>
+{% endif %}
+
+<br>
+<table id="option-table">
+    <thead>
+        <tr>
+            <th data-field="0">Contract</th>
+            <th data-field="1">Item Name</th>
+            <th data-field="2">Item Price</th>
+        </tr>
+    </thead>
+</table>
+
+<script>
+$(function() {
+    var tickers = ["goog", "googl", "appl", "tsla"];
+    autocomplete(document.getElementById("ticker"), tickers);
+
+    var table = $('#option-table');
+    table.bootstrapTable();
+});
 </script>
 
 {% endblock %}

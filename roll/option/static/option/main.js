@@ -106,3 +106,16 @@ function autocomplete(inp, arr) {
         closeAllLists(e.target);
     });
 }
+
+
+function getBestCall(ticker_symbol) {
+    $.ajax({
+        type: 'GET',
+        url: '/best_call/' + ticker_symbol + '/?' + $('#call-settings').serialize(),
+    }).done(function(data) {
+        console.log(data);
+        $('#option-table').bootstrapTable({data: data['result']});
+        $('#option-table').bootstrapTable('load', data['result']);
+    }).fail(function(data) { console.log(data); })
+    .always(function() { console.log("complete"); });
+}
