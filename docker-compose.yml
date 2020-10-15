@@ -1,7 +1,7 @@
 version: '3.7'
 
 services:
-  web:
+  options_web:
     build: ./roll
     command: python manage.py runserver 0.0.0.0:8080
     volumes:
@@ -10,3 +10,17 @@ services:
       - 8080:8080
     env_file:
       - .env.dev
+    depends_on:
+      - options_db
+  options_db:
+    image: postgres:12.0-alpine
+    volumes:
+      - options_postgres_data:/var/lib/postgresql/data/
+    ports:
+      - 5433:5432
+    environment:
+      - POSTGRES_USER=hello_django
+      - POSTGRES_PASSWORD=hello_django
+      - POSTGRES_DB=hello_django_dev
+volumes:
+  options_postgres_data:

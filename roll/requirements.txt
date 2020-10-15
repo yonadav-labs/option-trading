@@ -16,3 +16,4 @@ six==1.15.0
 sqlparse==0.4.1
 urllib3==1.25.10
 yfinance==0.1.54
+psycopg2-binary==2.8.6
