@@ -1,0 +1,36 @@
+version: '3.7'
+
+services:
+  web:
+    build:
+        context: ./roll
+        dockerfile: Dockerfile.prod
+    command: gunicorn roll.wsgi:application --bind 0.0.0.0:8080
+    volumes:
+      - static_volume:/home/app/web/staticfiles
+    expose:
+      - 8080
+    env_file:
+      - ./.env.prod
+    depends_on:
+      - db
+  db:
+    image: postgres:12.0-alpine
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    environment:
+      - POSTGRES_USER=hello_django
+      - POSTGRES_PASSWORD=hello_django
+      - POSTGRES_DB=hello_django_prod
+  nginx:
+    build: ./nginx
+    volumes:
+      - static_volume:/home/app/web/staticfiles
+    ports:
+      - 80:80
+    depends_on:
+      - web
+
+volumes:
+  postgres_data:
+  static_volume:
