@@ -5,6 +5,7 @@ services:
     build:
         context: ./roll
         dockerfile: Dockerfile.prod
+    image: 813539762970.dkr.ecr.us-east-2.amazonaws.com/options-ec2:web
     command: gunicorn roll.wsgi:application --bind 0.0.0.0:8080
     volumes:
       - static_volume:/home/app/web/staticfiles
@@ -24,6 +25,7 @@ services:
       - POSTGRES_DB=hello_django_prod
   nginx:
     build: ./nginx
+    image: 813539762970.dkr.ecr.us-east-2.amazonaws.com/options-ec2:nginx
     volumes:
       - static_volume:/home/app/web/staticfiles
     ports:
