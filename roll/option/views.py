@@ -7,6 +7,10 @@ import pandas as pd
 import numpy as np
 
 
+def about(request):
+    return render(request, 'option/disclaimer.html')
+
+
 def index(request):
     ticker_symbol = request.GET.get('ticker', '')
     if ticker_symbol:
