@@ -9,4 +9,4 @@
 * `aws ecr get-login-password --region us-east-2 --profile roll | docker login --username AWS --password-stdin 813539762970.dkr.ecr.us-east-2.amazonaws.com`
 * `aws ecr get-login-password --region us-east-2 | docker login --username AWS --password-stdin 813539762970.dkr.ecr.us-east-2.amazonaws.com`
 * `scp -i ~/.ssh/roll_tech.pem -r $(pwd)/{roll,nginx,.env.prod,docker-compose.prod.yml} ubuntu@3.135.138.142:/home/ubuntu/app`
-* 
+* `sudo systemctl enable docker`

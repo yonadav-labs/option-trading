@@ -6,6 +6,7 @@ services:
         context: ./roll
         dockerfile: Dockerfile.prod
     image: 813539762970.dkr.ecr.us-east-2.amazonaws.com/options-ec2:web
+    restart: always
     command: gunicorn roll.wsgi:application --bind 0.0.0.0:8080
     volumes:
       - static_volume:/home/app/web/staticfiles
@@ -16,6 +17,7 @@ services:
   nginx:
     build: ./nginx
     image: 813539762970.dkr.ecr.us-east-2.amazonaws.com/options-ec2:nginx
+    restart: always
     volumes:
       - static_volume:/home/app/web/staticfiles
     ports:
