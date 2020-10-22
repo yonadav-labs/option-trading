@@ -6,7 +6,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('option', '0002_ticker'),
+        ('tiger', '0002_ticker'),
     ]
 
     operations = [

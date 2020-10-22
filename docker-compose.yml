@@ -2,10 +2,10 @@ version: '3.7'
 
 services:
   web:
-    build: ./roll
+    build: ./django_apps
     command: python manage.py runserver 0.0.0.0:8080
     volumes:
-      - ./roll/:/usr/src/app/
+      - ./django_apps/:/usr/src/app/
     ports:
       - 8080:8080
     env_file:

@@ -8,7 +8,7 @@ import numpy as np
 
 
 def about(request):
-    return render(request, 'option/disclaimer.html')
+    return render(request, 'tiger/disclaimer.html')
 
 
 def index(request):
@@ -16,7 +16,7 @@ def index(request):
     if ticker_symbol:
         ticker = yf.Ticker(ticker_symbol.upper())
         form = OptionForm([(option, option) for option in ticker.options])
-    return render(request, 'option/index.html', locals())
+    return render(request, 'tiger/index.html', locals())
 
 
 def best_call(request, ticker_symbol):

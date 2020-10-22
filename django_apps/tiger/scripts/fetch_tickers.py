@@ -15,8 +15,8 @@ def fetch_symbols():
 
 if __name__ == '__main__':
     sys.path.append("/usr/src/app/")
-    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'roll.settings')
+    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'django_apps.settings')
     django.setup()
-    from option.models import Ticker
+    from tiger.models import Ticker
 
     fetch_symbols()

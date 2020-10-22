@@ -8,7 +8,7 @@ class BaseModel(models.Model):
 
     class Meta:
         abstract = True  # specify this model as an Abstract Model
-        app_label = 'option'
+        app_label = 'tiger'
 
 
 class Ticker(BaseModel):
@@ -26,4 +26,4 @@ class Ticker(BaseModel):
 
 class User(AbstractUser):
     class Meta:
-        app_label = 'option'
+        app_label = 'tiger'

@@ -3,11 +3,11 @@ version: '3.7'
 services:
   web:
     build:
-        context: ./roll
+        context: ./django_apps
         dockerfile: Dockerfile.prod
     image: 813539762970.dkr.ecr.us-east-2.amazonaws.com/options-ec2:web
     restart: always
-    command: gunicorn roll.wsgi:application --bind 0.0.0.0:8080
+    command: gunicorn django_apps.wsgi:application --bind 0.0.0.0:8080
     volumes:
       - static_volume:/home/app/web/staticfiles
     expose:

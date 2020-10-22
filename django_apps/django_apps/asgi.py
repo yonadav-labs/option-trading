@@ -1,5 +1,5 @@
 """
-ASGI config for roll project.
+ASGI config for django_apps project.
 
 It exposes the ASGI callable as a module-level variable named ``application``.
 
@@ -11,6 +11,6 @@ import os
 
 from django.core.asgi import get_asgi_application
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'roll.settings')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'django_apps.settings')
 
 application = get_asgi_application()
