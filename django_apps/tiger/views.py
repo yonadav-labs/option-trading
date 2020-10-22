@@ -1,10 +1,17 @@
-from django.shortcuts import render
-from django.http import JsonResponse
-from .forms import OptionForm
-from datetime import datetime
 import yfinance as yf
 import pandas as pd
 import numpy as np
+
+from django.shortcuts import render
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from tiger.forms import OptionForm
+from datetime import datetime
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+
+from tiger.serializers import TickerSerializer
+from tiger.models import Ticker
 
 
 def about(request):
@@ -17,6 +24,17 @@ def index(request):
         ticker = yf.Ticker(ticker_symbol.upper())
         form = OptionForm([(option, option) for option in ticker.options])
     return render(request, 'tiger/index.html', locals())
+
+
+@api_view(['GET'])
+def ticker_list(request, format=None):
+    """
+    List all tickers that have option.
+    """
+    if request.method == 'GET':
+        tickers = Ticker.objects.all()
+        serializer = TickerSerializer(tickers, many=True)
+        return Response(serializer.data)
 
 
 def best_call(request, ticker_symbol):

@@ -1,5 +1,5 @@
 from django.apps import AppConfig
 
 
-class OptionConfig(AppConfig):
+class TigerConfig(AppConfig):
     name = 'tiger'
