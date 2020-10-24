@@ -2,7 +2,7 @@ import yfinance as yf
 import pandas as pd
 import numpy as np
 
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from tiger.forms import OptionForm
@@ -35,6 +35,14 @@ def ticker_list(request, format=None):
         tickers = Ticker.objects.all()
         serializer = TickerSerializer(tickers, many=True)
         return Response(serializer.data)
+
+
+@api_view(['GET'])
+def ticker(request, ticker_symbol, format=None):
+    if request.method == 'GET':
+        get_object_or_404(Ticker, symbol=ticker_symbol.upper(), status="unspecified")
+        yh_ticker = yf.Ticker(ticker_symbol.upper())
+        return Response({'expiration_dates': [option for option in yh_ticker.options]})
 
 
 def best_call(request, ticker_symbol):
