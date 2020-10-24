@@ -32,7 +32,7 @@ def ticker_list(request, format=None):
     List all tickers that have option.
     """
     if request.method == 'GET':
-        tickers = Ticker.objects.all()
+        tickers = Ticker.objects.filter(status="unspecified")
         serializer = TickerSerializer(tickers, many=True)
         return Response(serializer.data)
 
