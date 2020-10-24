@@ -10,14 +10,17 @@ def check_ticker_option():
         print(ticker.id, ticker.symbol)
         time.sleep(2)
         y_ticker = yf.Ticker(ticker.symbol.upper())
-        try:
-            if not y_ticker.options:
+        for i in range(1, 4):
+            try:
+                if not y_ticker.options:
+                    ticker.status = 'disabled'
+                    ticker.save()
+            except IndexError as e:
                 ticker.status = 'disabled'
                 ticker.save()
-        except Exception as e:
-            print(e)
-            ticker.status = 'disabled'
-            ticker.save()
+            except Exception as e:
+                print(e)
+                time.sleep(2 * i * i)
 
 
 if __name__ == '__main__':
