@@ -13,7 +13,7 @@ class BaseModel(models.Model):
 
 class Ticker(BaseModel):
     symbol = models.CharField(max_length=20, null=True, blank=True)
-    full_name = models.CharField(max_length=200, null=True, blank=True)
+    full_name = models.CharField(max_length=200, null=False, blank=True)
     STATUS_CHOICES = (
         ("unspecified", "Unspecified"),
         ("disabled", "Disabled"),
