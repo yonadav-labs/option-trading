@@ -19,3 +19,19 @@ class OptionContract:
         self.open_interest = yh_contract_dict.get('openInterest')
         self.percent_change = yh_contract_dict.get('percentChange')
         self.volume = yh_contract_dict.get('volume')  # Could be None.
+
+        # Derived attributes:
+        self.estimated_price = self.__get_estimated_price()
+        self.break_even_price = self.__get_break_even_price()
+
+    # TODO: make @property work with Serializer.
+    def __get_estimated_price(self):
+        if self.ask == 0:
+            return self.bid
+        elif self.bid == 0:
+            return self.ask
+        else:
+            return (self.ask + self.bid) / 2.0
+
+    def __get_break_even_price(self):
+        return self.estimated_price + self.strike

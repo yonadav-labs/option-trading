@@ -24,6 +24,15 @@ class Ticker(BaseModel):
         return str(self.symbol)
 
 
+class ExternalRequestCache(BaseModel):
+    request_url = models.URLField(db_index=True)
+    response_blob = models.TextField(default='', blank=True)
+
+    @property
+    def short_response_blob(self):
+        return self.response_blob[:100]
+
+
 class User(AbstractUser):
     class Meta:
         app_label = 'tiger'

@@ -1,17 +1,20 @@
 import yfinance as yf
 import pandas as pd
 import numpy as np
+import json
 
 from django.shortcuts import render, get_object_or_404
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from tiger.forms import OptionForm
-from datetime import datetime
+from datetime import datetime, timedelta
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
 from tiger.serializers import TickerSerializer
-from tiger.models import Ticker
+from tiger.models import Ticker, ExternalRequestCache
+from tiger.yahoo import get_option_url, fetch_yahoo_options_str, get_expiration_datetimes
+from tiger.utils import get_now
 
 
 def about(request):
@@ -41,8 +44,25 @@ def ticker_list(request, format=None):
 def ticker(request, ticker_symbol, format=None):
     if request.method == 'GET':
         get_object_or_404(Ticker, symbol=ticker_symbol.upper(), status="unspecified")
-        yh_ticker = yf.Ticker(ticker_symbol.upper())
-        return Response({'expiration_dates': [option for option in yh_ticker.options]})
+        request_url = get_option_url(ticker_symbol.upper())
+        # See if there was a request cached in the past 15 minutes.
+        # TODO: refactor out to a shared lib.
+        cached_requests = ExternalRequestCache.objects.filter(request_url=request_url).filter(
+            created_time__gt=get_now() - timedelta(minutes=15)).order_by('-created_time')
+
+        if not cached_requests:
+            response_str = fetch_yahoo_options_str(request_url)
+            if response_str is None:
+                return Response(status=500)
+            new_cached_request = ExternalRequestCache(request_url=request_url,
+                                                      response_blob=response_str.decode("utf-8"))
+            new_cached_request.save()
+        else:
+            response_str = cached_requests[0].response_blob
+        response = json.loads(response_str)
+        expiration_datetimes = get_expiration_datetimes(response)
+
+        return Response({'expiration_dates': [dt.strftime("%m-%d-%Y") for dt in expiration_datetimes]})
 
 
 def best_call(request, ticker_symbol):
