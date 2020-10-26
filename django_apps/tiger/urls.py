@@ -5,6 +5,7 @@ from tiger import views
 restful_urlpatterns = [
     path('tickers/', views.ticker_list, name='tickers'),
     path('tickers/<str:ticker_symbol>/', views.ticker, name='ticker'),
+    path('tickers/<str:ticker_symbol>/calls/', views.calls, name='calls'),
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
 ]
 restful_urlpatterns = format_suffix_patterns(restful_urlpatterns)

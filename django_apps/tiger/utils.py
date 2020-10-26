@@ -17,6 +17,14 @@ def timestamp_to_datetime_with_default_tz(timestamp):
     return make_aware(datetime.fromtimestamp(timestamp), get_default_timezone())
 
 
+# TODO: we may want to change to open market days.
+def days_from_timestamp(timestamp):
+    input_datetime = make_aware(datetime.fromtimestamp(timestamp), get_default_timezone())
+    now = get_now()
+    delta = input_datetime - now
+    return delta.days
+
+
 if __name__ == "__main__":
     import os
     import sys
@@ -39,3 +47,5 @@ if __name__ == "__main__":
     contract = OptionContract(calls[0])
     serialized_contract = OptionContractSerializer(contract)
     print(serialized_contract.data)
+
+    print(days_from_timestamp(1604620800))

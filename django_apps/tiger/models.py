@@ -1,9 +1,11 @@
+import json
 from datetime import timedelta
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 
 from tiger.utils import get_now
-from tiger.yahoo import fetch_external_api
+from tiger.yahoo import fetch_external_api, get_yahoo_option_url, get_expiration_timestamps, get_option_contracts, \
+    get_quote
 
 
 class BaseModel(models.Model):
@@ -27,12 +29,36 @@ class Ticker(BaseModel):
     def __str__(self):
         return str(self.symbol)
 
+    def get_expiration_timestamps(self):
+        request_cache = ExternalRequestCache.objects.get_or_fetch_external_api(
+            get_yahoo_option_url(self.symbol.upper()))
+        if request_cache is None:
+            return None
+        response = json.loads(request_cache.response_blob)
+        return get_expiration_timestamps(response)
+
+    def get_option_contracts(self, expiration_timestamp):
+        request_cache = ExternalRequestCache.objects.get_or_fetch_external_api(
+            get_yahoo_option_url(self.symbol.upper(), expiration_timestamp))
+        if request_cache is None:
+            return None
+        response = json.loads(request_cache.response_blob)
+        return get_option_contracts(response)
+
+    def get_quote(self):
+        request_cache = ExternalRequestCache.objects.get_or_fetch_external_api(
+            get_yahoo_option_url(self.symbol.upper()))
+        if request_cache is None:
+            return None
+        response = json.loads(request_cache.response_blob)
+        return get_quote(response)
+
 
 class ExternalRequestCacheManager(models.Manager):
     def get_or_fetch_external_api(self, request_url):
-        # See if there was a request cached in the past 60 minutes.
+        # See if there was a request cached in the past 15 minutes.
         cached_requests = self.filter(request_url=request_url).filter(
-            created_time__gt=get_now() - timedelta(minutes=60)).order_by('-created_time')
+            created_time__gt=get_now() - timedelta(minutes=15)).order_by('-created_time')
 
         if cached_requests:
             return cached_requests[0]

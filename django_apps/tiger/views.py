@@ -1,19 +1,17 @@
 import yfinance as yf
 import pandas as pd
 import numpy as np
-import json
 
 from django.shortcuts import render, get_object_or_404
 from django.http import JsonResponse
-from django.views.decorators.csrf import csrf_exempt
 from tiger.forms import OptionForm
 from datetime import datetime
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
-from tiger.serializers import TickerSerializer
-from tiger.models import Ticker, ExternalRequestCache
-from tiger.yahoo import get_yahoo_option_url, get_expiration_datetimes
+from tiger.serializers import TickerSerializer, OptionContractSerializer
+from tiger.models import Ticker
+from tiger.classes import OptionContract
 
 
 def about(request):
@@ -42,19 +40,45 @@ def ticker_list(request, format=None):
 @api_view(['GET'])
 def ticker(request, ticker_symbol, format=None):
     if request.method == 'GET':
-        get_object_or_404(Ticker, symbol=ticker_symbol.upper(), status="unspecified")
-        request_url = get_yahoo_option_url(ticker_symbol.upper())
-
-        request_cache = ExternalRequestCache.objects.get_or_fetch_external_api(request_url)
-        if request_cache is None:
+        ticker = get_object_or_404(Ticker, symbol=ticker_symbol.upper(), status="unspecified")
+        expiration_timestamps = ticker.get_expiration_timestamps()
+        if expiration_timestamps is None:
             return Response(status=500)
+        return Response({'quote': ticker.get_quote(), 'expiration_timestamps': expiration_timestamps})
 
-        response = json.loads(request_cache.response_blob)
-        expiration_datetimes = get_expiration_datetimes(response)
-        if expiration_datetimes is None:
-            return Response(status=500)
 
-        return Response({'expiration_dates': [dt.strftime("%m-%d-%Y") for dt in expiration_datetimes]})
+@api_view(['GET'])
+def calls(request, ticker_symbol):
+    ticker = get_object_or_404(Ticker, symbol=ticker_symbol.upper(), status="unspecified")
+    # Validate inputs.
+    try:
+        target_price = float(request.query_params.get('target_price'))
+        month_to_gain = float(request.query_params.get('month_to_percent_gain'))
+    except Exception:
+        return Response(status=500)
+    if target_price < 0.0 or month_to_gain < 0.0 or month_to_gain > 1.0:
+        return Response(status=500)
+    # Check if option is available for this ticker.
+    all_expiration_timestamps = ticker.get_expiration_timestamps()
+    if all_expiration_timestamps is None:
+        return Response(status=500)
+
+    input_expiration_timestamps = set([int(ts) for ts in request.query_params.getlist('expiration_timestamps') if
+                                       int(ts) in all_expiration_timestamps])
+    all_calls = []
+    for ts in input_expiration_timestamps:
+        calls, _ = ticker.get_option_contracts(ts)
+        for call in calls:
+            all_calls.append(
+                OptionContract(call, ticker.get_quote().get('regularMarketPrice'), target_price, month_to_gain))
+    all_calls = list(filter(lambda call: call.gain > 0.0, all_calls))
+    all_calls = sorted(all_calls, key=lambda call: call.gain_after_tradeoff, reverse=True)
+    if all_calls:
+        max_gain_after_tradeoff = all_calls[0].gain_after_tradeoff
+        for call in all_calls:
+            call.save_normalized_score(max_gain_after_tradeoff)
+
+    return Response({'all_calls': OptionContractSerializer(all_calls, many=True).data})
 
 
 def best_call(request, ticker_symbol):
