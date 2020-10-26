@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Typeahead } from 'react-bootstrap-typeahead';
 import Axios from 'axios';
 
-export default function TickerTypeahead({ setSelectedTicker, setExpirationDates }) {
+export default function TickerTypeahead({ setSelectedTicker, setExpirationTimestamps }) {
     const [allTickers, setAllTickers] = useState([]);
 
     const loadTickers = async () => {
@@ -18,8 +18,8 @@ export default function TickerTypeahead({ setSelectedTicker, setExpirationDates 
     const loadExpirationDates = async (selected) => {
         try {
             const response = await Axios.get('http://localhost:8080/tickers/' + selected[0].symbol);
-            console.log(response);
-            setExpirationDates(response.data.expiration_dates);
+            // console.log(response);
+            setExpirationTimestamps(response.data.expiration_timestamps);
         } catch (error) {
             console.error(error);
         }

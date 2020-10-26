@@ -24,6 +24,12 @@ services:
       - 80:80
     depends_on:
       - web
-
+  fronted-prod:
+    container_name: fronted-prod
+    build:
+      context: .
+      dockerfile: Dockerfile.prod
+    ports:
+      - '81:81'
 volumes:
   static_volume:

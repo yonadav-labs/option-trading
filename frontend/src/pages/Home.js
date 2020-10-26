@@ -6,11 +6,18 @@ import Accordion from 'react-bootstrap/Accordion';
 import Card from 'react-bootstrap/Card';
 import Button from 'react-bootstrap/Button';
 import TickerTypeahead from '../components/TickerTypeahead';
+import Alert from 'react-bootstrap/Alert';
+import Table from 'react-bootstrap/Table';
+import BootstrapTable from 'react-bootstrap-table-next';
+import paginationFactory from 'react-bootstrap-table2-paginator';
+import Axios from 'axios';
 
 export default function Home() {
     const [selectedTicker, setSelectedTicker] = useState([]);
-    const [expirationDates, setExpirationDates] = useState([]);
-    const [validated, setValidated] = useState(false);
+    const [expirationTimestamps, setExpirationTimestamps] = useState([]);
+    const [showTimestampAlert, setShowTimestampAlert] = useState(false);
+    const [bestCalls, setBestCalls] = useState([]);
+    let selectedExpirationTimestamps = [];
     const tradeoffOptions = [{ value: 0, label: 'No tradeoff' },
     { value: 0.005, label: 'Trade 0.5% gain for 1 month additional expiration time' },
     { value: 0.01, label: 'Trade 1% gain for 1 month additional expiration time' },
@@ -23,21 +30,99 @@ export default function Home() {
     { value: 0.08, label: 'Trade 8% gain for 1 month additional expiration time' },
     { value: 0.09, label: 'Trade 9% gain for 1 month additional expiration time' },
     { value: 0.1, label: 'Trade 10% gain for 1 month additional expiration time' },];
+    const columns = [{
+        dataField: 'ask',
+        text: 'Ask',
+        sort: true
+    }, {
+        dataField: 'bid',
+        text: 'Bid',
+        sort: true
+    }, {
+        dataField: 'contract_symbol',
+        text: 'Contract Symbol',
+        sort: true
+    }, {
+        dataField: "expiration",
+        text: "Expiration",
+        sort: true
+    }, {
+        dataField: "strike",
+        text: "Strike",
+        sort: true
+    }, {
+        dataField: "estimated_price",
+        text: "Estimated Price",
+        sort: true
+    }, {
+        dataField: "break_even_price",
+        text: "Break Even Price",
+        sort: true
+    }, {
+        dataField: "days_till_expiration",
+        text: "Days Until Expiration",
+        sort: true
+    }, {
+        dataField: "gain",
+        text: "Gain",
+        sort: true
+    }, {
+        dataField: "gain_after_tradeoff",
+        text: "Gain After Tradeoff",
+        sort: true
+    }, {
+        dataField: "stock_gain",
+        text: "Stock Gain",
+        sort: true
+    }, {
+        dataField: "normalized_score",
+        text: "Normalized Score",
+        sort: true
+    }];
 
     const handleSubmit = (event) => {
-        console.log(event);
         event.preventDefault();
         event.stopPropagation();
         const form = event.currentTarget;
-        if (form.checkValidity() === false) {
-            event.preventDefault();
-            event.stopPropagation();
+        const formData = new FormData(event.target);
+        const formDataObj = Object.fromEntries(formData.entries());
+
+        if (selectedExpirationTimestamps.length > 0) {
+            setShowTimestampAlert(false);
+        } else {
+            setShowTimestampAlert(true);
         }
 
-        setValidated(true);
-        const formData = new FormData(event.target),
-            formDataObj = Object.fromEntries(formData.entries())
-        console.log(formDataObj)
+        if (form.checkValidity() !== false && selectedExpirationTimestamps.length > 0) {
+            console.log(selectedExpirationTimestamps);
+            console.log(formDataObj)
+            getBestCalls(selectedTicker[0].symbol, formDataObj.target_price, selectedExpirationTimestamps, formDataObj.tradeoff);
+        }
+    };
+
+    const handleInputChange = (event) => {
+        const target = event.target;
+        var value = target.value;
+
+        if (target.checked) {
+            selectedExpirationTimestamps.push(value);
+        } else {
+            selectedExpirationTimestamps.splice(selectedExpirationTimestamps.indexOf(value), 1);
+        }
+
+    };
+
+    const getBestCalls = async (selectedTicker, targetPrice, selectedExpirationTimestamps, tradeoff) => {
+        try {
+            let url = `http://localhost:8080/tickers/${selectedTicker}/calls/?target_price=${targetPrice}&`;
+            selectedExpirationTimestamps.map((timestamp) => { url += `expiration_timestamps=${timestamp}&` });
+            url += `month_to_percent_gain=${tradeoff}`
+            const response = await Axios.get(url);
+            console.log(response);
+            setBestCalls(response.data.all_calls)
+        } catch (error) {
+            console.error(error);
+        }
     };
 
     return (
@@ -47,7 +132,7 @@ export default function Home() {
                     <Form.Label className="requiredField"><b>Enter ticker symbol</b>*</Form.Label>
                     <TickerTypeahead
                         setSelectedTicker={setSelectedTicker}
-                        setExpirationDates={setExpirationDates}
+                        setExpirationTimestamps={setExpirationTimestamps}
                     />
                 </Form.Group>
             </Form>
@@ -74,21 +159,32 @@ export default function Home() {
                     <Form onSubmit={handleSubmit}>
                         <Form.Group>
                             <Form.Label>Target price (USD)*</Form.Label>
-                            <Form.Control as="input" type="number" placeholder="100.0" min="0.0" required />
+                            <Form.Control name="target_price" as="input" type="number" placeholder="100.0" min="0.0" required />
                         </Form.Group>
                         <Form.Group>
-                            <Form.Label>Expiration Dates</Form.Label>
-                            {expirationDates.map((date) => (
-                                <Form.Check
+                            {showTimestampAlert ?
+                                <Alert variant="warning">
+                                    Please select at least one expiration date.
+                                </Alert>
+                                :
+                                null
+                            }
+                            <Form.Label>Expiration Dates*</Form.Label>
+                            {expirationTimestamps.map((timestamp) => {
+                                const date = new Date(timestamp * 1000).toLocaleDateString();
+                                return (<Form.Check
+                                    value={timestamp}
+                                    name={`expiration_date_${timestamp}`}
                                     type="checkbox"
-                                    id={`checkbox-${date}`}
+                                    id={`checkbox-${timestamp}`}
                                     label={date}
-                                />
-                            ))}
+                                    onChange={handleInputChange}
+                                />);
+                            })}
                         </Form.Group>
                         <Form.Group>
                             <Form.Label>Month to percentage gain tradeoff*</Form.Label>
-                            <Form.Control as="select" defaultValue={0} required>
+                            <Form.Control name="tradeoff" as="select" defaultValue={0} required>
                                 {
                                     tradeoffOptions.map((option, index) => {
                                         return (<option key={index} value={option.value}>{option.label}</option>)
@@ -98,6 +194,8 @@ export default function Home() {
                         </Form.Group>
                         <Button type="submit">Give me the best contracts!</Button>
                     </Form>
+                    <br/>
+                    <BootstrapTable classes="table-responsive" bootstrap4={true} keyField="contract_symbol" data={bestCalls} columns={columns} pagination={paginationFactory()} />
                 </div>
                 :
                 null
