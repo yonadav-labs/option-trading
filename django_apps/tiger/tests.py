@@ -5,7 +5,7 @@ from unittest import mock
 from tiger.classes import OptionContract
 
 
-class StubDate(datetime):
+class StubDatetime(datetime):
     pass
 
 
@@ -29,9 +29,9 @@ class OptionContractTestCase(TestCase):
             "inTheMoney": True
         }
 
-    @mock.patch('tiger.utils.datetime', StubDate)
+    @mock.patch('tiger.utils.datetime', StubDatetime)
     def test_initialization(self):
-        StubDate.now = classmethod(lambda cls: datetime(2021, 1, 1))
+        StubDatetime.now = classmethod(lambda cls: datetime(2021, 1, 1))
         current_stock_price = 420.0
         target_stock_price = 600.0
         month_to_gain = 0.1
