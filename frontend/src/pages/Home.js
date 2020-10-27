@@ -114,7 +114,7 @@ export default function Home() {
 
     const getBestCalls = async (selectedTicker, targetPrice, selectedExpirationTimestamps, tradeoff) => {
         try {
-            let url = `http://localhost:8080/tickers/${selectedTicker}/calls/?target_price=${targetPrice}&`;
+            let url = `http://localhost/api/tickers/${selectedTicker}/calls/?target_price=${targetPrice}&`;
             selectedExpirationTimestamps.map((timestamp) => { url += `expiration_timestamps=${timestamp}&` });
             url += `month_to_percent_gain=${tradeoff}`
             const response = await Axios.get(url);

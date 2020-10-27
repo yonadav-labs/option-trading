@@ -7,8 +7,8 @@ export default function TickerTypeahead({ setSelectedTicker, setExpirationTimest
 
     const loadTickers = async () => {
         try {
-            const response = await Axios.get('http://localhost:8080/tickers/');
-            // console.log(response);
+            const response = await Axios.get('http://localhost/api/tickers/');
+            console.log(response);
             setAllTickers(response.data);
         } catch (error) {
             console.error(error);
@@ -17,7 +17,7 @@ export default function TickerTypeahead({ setSelectedTicker, setExpirationTimest
 
     const loadExpirationDates = async (selected) => {
         try {
-            const response = await Axios.get('http://localhost:8080/tickers/' + selected[0].symbol);
+            const response = await Axios.get('http://localhost/api/tickers/' + selected[0].symbol);
             // console.log(response);
             setExpirationTimestamps(response.data.expiration_timestamps);
         } catch (error) {
