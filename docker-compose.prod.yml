@@ -1,15 +1,15 @@
 version: '3.7'
 
 services:
-  web:
+  backend:
     build:
         context: ./django_apps
         dockerfile: Dockerfile.prod
-    image: 813539762970.dkr.ecr.us-east-2.amazonaws.com/options-ec2:web
+    image: 813539762970.dkr.ecr.us-east-2.amazonaws.com/options-ec2:backend
     restart: always
     command: gunicorn django_apps.wsgi:application --bind 0.0.0.0:8080
     volumes:
-      - static_volume:/home/app/web/staticfiles
+      - static_volume:/home/app/backend/staticfiles
     expose:
       - 8080
     env_file:
@@ -19,17 +19,21 @@ services:
     image: 813539762970.dkr.ecr.us-east-2.amazonaws.com/options-ec2:nginx
     restart: always
     volumes:
-      - static_volume:/home/app/web/staticfiles
+      - static_volume:/home/app/backend/staticfiles
+      - frontend_volume:/app/build
     ports:
       - 80:80
     depends_on:
-      - web
-  fronted-prod:
-    container_name: fronted-prod
+      - backend
+  fronted:
     build:
-      context: .
+      context: ./frontend
       dockerfile: Dockerfile.prod
-    ports:
-      - '81:81'
+    image: 813539762970.dkr.ecr.us-east-2.amazonaws.com/options-ec2:frontend
+    restart: always
+    volumes:
+      - frontend_volume:/app/build
 volumes:
+  frontend_volume:
   static_volume:
+  postgres_data:
