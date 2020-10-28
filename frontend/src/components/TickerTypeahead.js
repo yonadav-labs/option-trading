@@ -8,7 +8,6 @@ export default function TickerTypeahead({ setSelectedTicker, setExpirationTimest
     const loadTickers = async () => {
         try {
             const response = await Axios.get('http://localhost/api/tickers/');
-            console.log(response);
             setAllTickers(response.data);
         } catch (error) {
             console.error(error);

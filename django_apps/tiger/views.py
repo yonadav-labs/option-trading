@@ -8,6 +8,7 @@ from tiger.forms import OptionForm
 from datetime import datetime
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
+from rest_framework.exceptions import APIException
 
 from tiger.serializers import TickerSerializer, OptionContractSerializer
 from tiger.models import Ticker
@@ -55,13 +56,13 @@ def calls(request, ticker_symbol):
         target_price = float(request.query_params.get('target_price'))
         month_to_gain = float(request.query_params.get('month_to_percent_gain'))
     except Exception:
-        return Response(status=500)
+        raise APIException('Invalid query parameters.')
     if target_price < 0.0 or month_to_gain < 0.0 or month_to_gain > 1.0:
-        return Response(status=500)
+        raise APIException('Invalid query parameters.')
     # Check if option is available for this ticker.
     all_expiration_timestamps = ticker.get_expiration_timestamps()
     if all_expiration_timestamps is None:
-        return Response(status=500)
+        raise APIException('No contracts found.')
 
     input_expiration_timestamps = set([int(ts) for ts in request.query_params.getlist('expiration_timestamps') if
                                        int(ts) in all_expiration_timestamps])
@@ -71,7 +72,7 @@ def calls(request, ticker_symbol):
         for call in calls:
             all_calls.append(
                 OptionContract(call, ticker.get_quote().get('regularMarketPrice'), target_price, month_to_gain))
-    all_calls = list(filter(lambda call: call.gain > 0.0, all_calls))
+    all_calls = list(filter(lambda call: call.is_valid() and call.gain > 0.0, all_calls))
     all_calls = sorted(all_calls, key=lambda call: call.gain_after_tradeoff, reverse=True)
     if all_calls:
         max_gain_after_tradeoff = all_calls[0].gain_after_tradeoff

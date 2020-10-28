@@ -26,6 +26,10 @@ class OptionContract:
         self.month_to_gain = month_to_gain
 
         # Derived attributes:
+        if not self.is_valid():
+            # TODO: a better way to handle invalid inputs?
+            return
+
         self.estimated_price = self.__get_estimated_price()
         self.break_even_price = self.__get_break_even_price()
         self.days_till_expiration = days_from_timestamp(self.expiration)
@@ -59,3 +63,6 @@ class OptionContract:
     # Public methods:
     def save_normalized_score(self, max_gain_after_tradeoff):
         self.normalized_score = round(self.gain_after_tradeoff / max_gain_after_tradeoff * 100.0, 2)
+
+    def is_valid(self):
+        return self.bid + self.ask > 0.0

@@ -3,9 +3,8 @@ version: '3.7'
 services:
   backend:
     build:
-        context: ./django_apps
-        dockerfile: Dockerfile.prod
-    image: 813539762970.dkr.ecr.us-east-2.amazonaws.com/options-ec2:backend
+      context: ./django_apps
+      dockerfile: Dockerfile.prod
     restart: always
     command: gunicorn django_apps.wsgi:application --bind 0.0.0.0:8080
     volumes:
@@ -28,7 +27,6 @@ services:
       - POSTGRES_DB=hello_django_dev
   nginx:
     build: ./nginx
-    image: 813539762970.dkr.ecr.us-east-2.amazonaws.com/options-ec2:nginx
     restart: always
     volumes:
       - static_volume:/home/app/backend/staticfiles
@@ -42,7 +40,6 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile.prod
-    image: 813539762970.dkr.ecr.us-east-2.amazonaws.com/options-ec2:frontend
     restart: always
     volumes:
       - frontend_volume:/app/build
