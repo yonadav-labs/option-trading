@@ -11,8 +11,10 @@ import Table from 'react-bootstrap/Table';
 import BootstrapTable from 'react-bootstrap-table-next';
 import paginationFactory from 'react-bootstrap-table2-paginator';
 import Axios from 'axios';
+import getApiUrl from '../utils'
 
 export default function Home() {
+    const API_URL = getApiUrl();
     const [selectedTicker, setSelectedTicker] = useState([]);
     const [expirationTimestamps, setExpirationTimestamps] = useState([]);
     const [showTimestampAlert, setShowTimestampAlert] = useState(false);
@@ -114,11 +116,10 @@ export default function Home() {
 
     const getBestCalls = async (selectedTicker, targetPrice, selectedExpirationTimestamps, tradeoff) => {
         try {
-            let url = `http://localhost/api/tickers/${selectedTicker}/calls/?target_price=${targetPrice}&`;
+            let url = `${API_URL}/tickers/${selectedTicker}/calls/?target_price=${targetPrice}&`;
             selectedExpirationTimestamps.map((timestamp) => { url += `expiration_timestamps=${timestamp}&` });
             url += `month_to_percent_gain=${tradeoff}`
             const response = await Axios.get(url);
-            console.log(response);
             setBestCalls(response.data.all_calls)
         } catch (error) {
             console.error(error);
@@ -194,7 +195,7 @@ export default function Home() {
                         </Form.Group>
                         <Button type="submit">Give me the best contracts!</Button>
                     </Form>
-                    <br/>
+                    <br />
                     <BootstrapTable classes="table-responsive" bootstrap4={true} keyField="contract_symbol" data={bestCalls} columns={columns} pagination={paginationFactory()} />
                 </div>
                 :
