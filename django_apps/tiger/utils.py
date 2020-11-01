@@ -1,4 +1,5 @@
 from datetime import datetime
+from django.utils import timezone
 from django.utils.timezone import make_aware, get_default_timezone
 
 
@@ -10,7 +11,7 @@ def get_raw_calls(yh_ticker, expiration_date_str):
 
 
 def get_now():
-    return make_aware(datetime.now(), get_default_timezone())
+    return timezone.now()
 
 
 def timestamp_to_datetime_with_default_tz(timestamp):
