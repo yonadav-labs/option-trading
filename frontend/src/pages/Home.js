@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import Form from 'react-bootstrap/Form'
-import Base from '../components/Base';
 import TradingViewWidget from 'react-tradingview-widget';
 import Accordion from 'react-bootstrap/Accordion';
 import Card from 'react-bootstrap/Card';
@@ -11,7 +10,8 @@ import Table from 'react-bootstrap/Table';
 import BootstrapTable from 'react-bootstrap-table-next';
 import paginationFactory from 'react-bootstrap-table2-paginator';
 import Axios from 'axios';
-import getApiUrl from '../utils'
+import getApiUrl from '../utils';
+import NumberFormat from 'react-number-format';
 
 export default function Home() {
     const API_URL = getApiUrl();
@@ -19,6 +19,7 @@ export default function Home() {
     const [expirationTimestamps, setExpirationTimestamps] = useState([]);
     const [showTimestampAlert, setShowTimestampAlert] = useState(false);
     const [bestCalls, setBestCalls] = useState([]);
+    const [basicInfo, setbasicInfo] = useState({});
     let selectedExpirationTimestamps = [];
     const tradeoffOptions = [{ value: 0, label: 'No tradeoff' },
     { value: 0.005, label: 'Trade 0.5% gain for 1 month additional expiration time' },
@@ -32,55 +33,36 @@ export default function Home() {
     { value: 0.08, label: 'Trade 8% gain for 1 month additional expiration time' },
     { value: 0.09, label: 'Trade 9% gain for 1 month additional expiration time' },
     { value: 0.1, label: 'Trade 10% gain for 1 month additional expiration time' },];
-    const columns = [{
-        dataField: 'ask',
-        text: 'Ask',
-        sort: true
-    }, {
-        dataField: 'bid',
-        text: 'Bid',
-        sort: true
-    }, {
-        dataField: 'contract_symbol',
-        text: 'Contract Symbol',
-        sort: true
-    }, {
-        dataField: "expiration",
-        text: "Expiration",
-        sort: true
-    }, {
-        dataField: "strike",
-        text: "Strike",
-        sort: true
-    }, {
-        dataField: "estimated_price",
-        text: "Estimated Price",
-        sort: true
-    }, {
-        dataField: "break_even_price",
-        text: "Break Even Price",
-        sort: true
-    }, {
-        dataField: "days_till_expiration",
-        text: "Days Until Expiration",
-        sort: true
-    }, {
-        dataField: "gain",
-        text: "Gain",
-        sort: true
-    }, {
-        dataField: "gain_after_tradeoff",
-        text: "Gain After Tradeoff",
-        sort: true
-    }, {
-        dataField: "stock_gain",
-        text: "Stock Gain",
-        sort: true
-    }, {
-        dataField: "normalized_score",
-        text: "Normalized Score",
-        sort: true
-    }];
+    const columns = [
+        {
+            dataField: 'contract_symbol',
+            text: 'Contract Symbol',
+        }, {
+            dataField: "expiration",
+            text: "Expiration",
+        }, {
+            dataField: "days_till_expiration",
+            text: "Days Remaining",
+        }, {
+            dataField: "strike",
+            text: "Strike",
+        }, {
+            dataField: "estimated_price",
+            text: "Premium",
+        }, {
+            dataField: "break_even_price",
+            text: "Breakeven Point",
+        }, {
+            dataField: "gain",
+            text: "Option Gain",
+        }, {
+            dataField: "stock_gain",
+            text: "Stock Gain",
+        }, {
+            dataField: "normalized_score",
+            text: "Final Score",
+            sort: true,
+        }];
 
     const handleSubmit = (event) => {
         event.preventDefault();
@@ -96,8 +78,6 @@ export default function Home() {
         }
 
         if (form.checkValidity() !== false && selectedExpirationTimestamps.length > 0) {
-            console.log(selectedExpirationTimestamps);
-            console.log(formDataObj)
             getBestCalls(selectedTicker[0].symbol, formDataObj.target_price, selectedExpirationTimestamps, formDataObj.tradeoff);
         }
     };
@@ -120,42 +100,69 @@ export default function Home() {
             selectedExpirationTimestamps.map((timestamp) => { url += `expiration_timestamps=${timestamp}&` });
             url += `month_to_percent_gain=${tradeoff}`
             const response = await Axios.get(url);
-            setBestCalls(response.data.all_calls)
+            let all_calls = response.data.all_calls;
+            all_calls.forEach(function (row) {
+                const precent_gain = Math.round(row.gain * 100);
+                row.gain = `${precent_gain}%`;
+                const precent_stock_gain = Math.round(row.stock_gain * 100);
+                row.stock_gain = `${precent_stock_gain}%`;
+                row.break_even_price = `$${row.break_even_price}`;
+                row.estimated_price = `$${row.estimated_price}`;
+                row.strike = `$${row.strike}`;
+            });
+            setBestCalls(all_calls)
         } catch (error) {
             console.error(error);
         }
     };
 
     return (
-        <Base>
+        <div id="content">
             <Form>
                 <Form.Group>
                     <Form.Label className="requiredField"><b>Enter ticker symbol</b>*</Form.Label>
                     <TickerTypeahead
                         setSelectedTicker={setSelectedTicker}
                         setExpirationTimestamps={setExpirationTimestamps}
+                        setbasicInfo={setbasicInfo}
                     />
                 </Form.Group>
             </Form>
-
-            <Accordion>
-                <Card>
-                    <Accordion.Toggle as={Button} variant="link" eventKey="0">
-                        Show Chart
-                    </Accordion.Toggle>
-                    <Accordion.Collapse eventKey="0">
-                        <Card.Body>
-                            <TradingViewWidget
-                                symbol={selectedTicker.length > 0 ? selectedTicker[0].symbol : ""}
-                            />
-                        </Card.Body>
-                    </Accordion.Collapse>
-                </Card>
-            </Accordion>
             {selectedTicker.length > 0 ?
                 <div>
+                    <h4>Summary</h4>
+                    <div className="row">
+                        <div className="col-sm"><b>{basicInfo.shortName} ({basicInfo.symbol})</b></div>
+                    </div>
+                    <div className="row">
+                        <div className="col-sm">Last price: <NumberFormat value={basicInfo.regularMarketPrice} displayType={'text'} thousandSeparator={true} prefix={'$'} /></div>
+                        <div className="col-sm">52 Week Range:
+                        <NumberFormat value={basicInfo.fiftyTwoWeekLow} displayType={'text'} thousandSeparator={true} prefix={'$'} />
+                         -
+                        <NumberFormat value={basicInfo.fiftyTwoWeekHigh} displayType={'text'} thousandSeparator={true} prefix={'$'} />
+                        </div>
+                    </div>
+                    <div className="row">
+                        <div className="col-sm">Market Cap: <NumberFormat value={basicInfo.marketCap} displayType={'text'} thousandSeparator={true} prefix={'$'} /></div>
+                        <div className="col-sm">Outstanding Shares: <NumberFormat value={basicInfo.sharesOutstanding} displayType={'text'} thousandSeparator={true} /></div>
+                    </div>
+                    <br></br>
+                    <Accordion>
+                        <Card>
+                            <Accordion.Toggle as={Button} variant="link" eventKey="0">
+                                Price Chart
+                    </Accordion.Toggle>
+                            <Accordion.Collapse eventKey="0">
+                                <Card.Body>
+                                    <TradingViewWidget
+                                        symbol={selectedTicker.length > 0 ? selectedTicker[0].symbol : ""}
+                                    />
+                                </Card.Body>
+                            </Accordion.Collapse>
+                        </Card>
+                    </Accordion>
                     <br />
-                    <h4>Call option optimizer</h4>
+                    <h4>Best call options to buy</h4>
                     <hr />
                     <Form onSubmit={handleSubmit}>
                         <Form.Group>
@@ -171,17 +178,22 @@ export default function Home() {
                                 null
                             }
                             <Form.Label>Expiration Dates*</Form.Label>
-                            {expirationTimestamps.map((timestamp) => {
-                                const date = new Date(timestamp * 1000).toLocaleDateString();
-                                return (<Form.Check
-                                    value={timestamp}
-                                    name={`expiration_date_${timestamp}`}
-                                    type="checkbox"
-                                    id={`checkbox-${timestamp}`}
-                                    label={date}
-                                    onChange={handleInputChange}
-                                />);
-                            })}
+                            <div className="row">
+                                {expirationTimestamps.map((timestamp) => {
+                                    const date = new Date(timestamp * 1000).toLocaleDateString();
+                                    return (
+                                        <div className="col-sm-6">
+                                            <Form.Check
+                                                value={timestamp}
+                                                name={`expiration_date_${timestamp}`}
+                                                type="checkbox"
+                                                id={`checkbox-${timestamp}`}
+                                                label={date}
+                                                onChange={handleInputChange}
+                                            />
+                                        </div>);
+                                })}
+                            </div>
                         </Form.Group>
                         <Form.Group>
                             <Form.Label>Month to percentage gain tradeoff*</Form.Label>
@@ -193,7 +205,7 @@ export default function Home() {
                                 }
                             </Form.Control>
                         </Form.Group>
-                        <Button type="submit">Give me the best contracts!</Button>
+                        <Button type="submit">Analyze</Button>
                     </Form>
                     <br />
                     <BootstrapTable classes="table-responsive" bootstrap4={true} keyField="contract_symbol" data={bestCalls} columns={columns} pagination={paginationFactory()} />
@@ -201,6 +213,6 @@ export default function Home() {
                 :
                 null
             }
-        </Base>
+        </div>
     );
 }
