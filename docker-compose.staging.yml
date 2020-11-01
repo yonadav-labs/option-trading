@@ -25,25 +25,17 @@ services:
       - POSTGRES_USER=hello_django
       - POSTGRES_PASSWORD=hello_django
       - POSTGRES_DB=hello_django_dev
-  nginx:
-    build: ./nginx
-    restart: always
-    volumes:
-      - static_volume:/home/app/backend/staticfiles
-      - frontend_volume:/app/build
-    ports:
-      - 80:80
-    depends_on:
-      - backend
   fronted:
-    # container_name: fronted
     build:
       context: ./frontend
       dockerfile: Dockerfile.prod
     restart: always
     volumes:
-      - frontend_volume:/app/build
+      - static_volume:/home/app/backend/staticfiles
+    ports:
+      - 80:80
+    depends_on:
+      - backend
 volumes:
-  frontend_volume:
   static_volume:
   postgres_data:
