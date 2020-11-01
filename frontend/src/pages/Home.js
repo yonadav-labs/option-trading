@@ -20,7 +20,8 @@ export default function Home() {
     const [showTimestampAlert, setShowTimestampAlert] = useState(false);
     const [bestCalls, setBestCalls] = useState([]);
     const [basicInfo, setbasicInfo] = useState({});
-    let selectedExpirationTimestamps = [];
+    const [selectedExpirationTimestamps, setSelectedExpirationTimestamps] = useState([]);
+
     const tradeoffOptions = [{ value: 0, label: 'No tradeoff' },
     { value: 0.005, label: 'Trade 0.5% gain for 1 month additional expiration time' },
     { value: 0.01, label: 'Trade 1% gain for 1 month additional expiration time' },
@@ -87,11 +88,10 @@ export default function Home() {
         var value = target.value;
 
         if (target.checked) {
-            selectedExpirationTimestamps.push(value);
+            setSelectedExpirationTimestamps(selectedExpirationTimestamps.concat([value]));
         } else {
-            selectedExpirationTimestamps.splice(selectedExpirationTimestamps.indexOf(value), 1);
+            setSelectedExpirationTimestamps(selectedExpirationTimestamps.filter(item => item !== value));
         }
-
     };
 
     const getBestCalls = async (selectedTicker, targetPrice, selectedExpirationTimestamps, tradeoff) => {
