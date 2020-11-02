@@ -3,5 +3,5 @@
 *.pyc
 **/.DS_Store
 *.csv
-.env.prod
+/.env.prod
 /.vscode/

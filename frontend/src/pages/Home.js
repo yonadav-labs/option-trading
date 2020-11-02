@@ -120,7 +120,7 @@ export default function Home() {
         <div id="content">
             <Form>
                 <Form.Group>
-                    <Form.Label className="requiredField"><b>Enter ticker symbol</b>*</Form.Label>
+                    <Form.Label className="requiredField"><h5>Enter ticker symbol:</h5></Form.Label>
                     <TickerTypeahead
                         setSelectedTicker={setSelectedTicker}
                         setExpirationTimestamps={setExpirationTimestamps}
