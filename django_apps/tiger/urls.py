@@ -11,7 +11,5 @@ restful_urlpatterns = [
 restful_urlpatterns = format_suffix_patterns(restful_urlpatterns)
 
 urlpatterns = [
-                  path('about', views.about, name='about'),
-                  path('', views.index, name='index'),
-                  path('best_call/<str:ticker_symbol>/', views.best_call, name='best_call'),
+                  # other urls.
               ] + restful_urlpatterns
