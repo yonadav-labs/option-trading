@@ -14,8 +14,8 @@
 * `docker-compose -f docker-compose.prod.yml build`
 * `docker-compose -f docker-compose.prod.yml push`
 * `ssh -i ~/.ssh/roll_tech.pem ubuntu@3.135.138.142`
-* `scp -i ~/.ssh/roll_tech.pem -r $(pwd)/{roll,nginx,.env.prod,docker-compose.prod.yml} ubuntu@3.135.138.142:/home/ubuntu/app`
-
+* `scp -i ~/.ssh/roll_tech.pem -r $(pwd)/{django_apps,frontend,.env.prod,docker-compose.prod.yml} ubuntu@3.135.138.142:/home/ubuntu/app`
+* `nohup docker-compose exec -T backend python tiger/scripts/disable_tickers.py &`
 #### Remote
 * `aws ecr get-login-password --region us-east-2 | docker login --username AWS --password-stdin 813539762970.dkr.ecr.us-east-2.amazonaws.com`
 * `sudo systemctl enable docker`
