@@ -6,20 +6,25 @@ import Card from 'react-bootstrap/Card';
 import Button from 'react-bootstrap/Button';
 import TickerTypeahead from '../components/TickerTypeahead';
 import Alert from 'react-bootstrap/Alert';
-import Table from 'react-bootstrap/Table';
+// import Table from 'react-bootstrap/Table';
 import BootstrapTable from 'react-bootstrap-table-next';
 import paginationFactory from 'react-bootstrap-table2-paginator';
+import overlayFactory from 'react-bootstrap-table2-overlay';
 import Axios from 'axios';
 import getApiUrl from '../utils';
 import NumberFormat from 'react-number-format';
+import { useOktaAuth } from '@okta/okta-react';
 
 export default function Home() {
     const API_URL = getApiUrl();
+    // const { authState, authService } = useOktaAuth();
+    // const [userInfo, setUserInfo] = useState(null);
     const [selectedTicker, setSelectedTicker] = useState([]);
     const [expirationTimestamps, setExpirationTimestamps] = useState([]);
     const [showTimestampAlert, setShowTimestampAlert] = useState(false);
     const [bestCalls, setBestCalls] = useState([]);
     const [basicInfo, setbasicInfo] = useState({});
+    const [loading, setLoading] = useState(false);
     const [selectedExpirationTimestamps, setSelectedExpirationTimestamps] = useState([]);
 
     const tradeoffOptions = [{ value: 0, label: 'No tradeoff' },
@@ -65,6 +70,18 @@ export default function Home() {
             sort: true,
         }];
 
+    // useEffect(() => {
+    //     console.log("using effect")
+    //     if (!authState.isAuthenticated) {
+    //         // When user isn't authenticated, forget any user info
+    //         setUserInfo(null);
+    //     } else {
+    //         authService.getUser().then(info => {
+    //             setUserInfo(info);
+    //         });
+    //     }
+    // }, [authState, authService]);
+
     const handleSubmit = (event) => {
         event.preventDefault();
         event.stopPropagation();
@@ -79,6 +96,7 @@ export default function Home() {
         }
 
         if (form.checkValidity() !== false && selectedExpirationTimestamps.length > 0) {
+            setLoading(true);
             getBestCalls(selectedTicker[0].symbol, formDataObj.target_price, selectedExpirationTimestamps, formDataObj.tradeoff);
         }
     };
@@ -110,14 +128,31 @@ export default function Home() {
                 row.estimated_price = `$${row.estimated_price}`;
                 row.strike = `$${row.strike}`;
             });
-            setBestCalls(all_calls)
+            setBestCalls(all_calls);
+            setLoading(false);
         } catch (error) {
             console.error(error);
         }
     };
 
+    // if (!userInfo) {
+    //     return (
+    //         <div>
+    //             <p>Fetching user profile...</p>
+    //         </div>
+    //     );
+    // }
+
     return (
         <div id="content">
+            {/* <div>
+                <h1>User Profile</h1>
+                <ul>
+                    {Object.entries(userInfo).map((claim) => {
+                        return <li><strong>{claim[0]}:</strong> {claim[1]}</li>;
+                    })}
+                </ul>
+            </div> */}
             <Form>
                 <Form.Group>
                     <Form.Label className="requiredField"><h5>Enter ticker symbol:</h5></Form.Label>
@@ -125,6 +160,7 @@ export default function Home() {
                         setSelectedTicker={setSelectedTicker}
                         setExpirationTimestamps={setExpirationTimestamps}
                         setbasicInfo={setbasicInfo}
+                        setBestCalls={setBestCalls}
                     />
                 </Form.Group>
             </Form>
@@ -208,7 +244,17 @@ export default function Home() {
                         <Button type="submit">Analyze</Button>
                     </Form>
                     <br />
-                    <BootstrapTable classes="table-responsive" bootstrap4={true} keyField="contract_symbol" data={bestCalls} columns={columns} pagination={paginationFactory()} />
+                    <BootstrapTable
+                        classes="table-responsive"
+                        loading={loading}
+                        bootstrap4={true}
+                        keyField="contract_symbol"
+                        data={bestCalls}
+                        columns={columns}
+                        pagination={paginationFactory()}
+                        noDataIndication="No Data"
+                        bordered={false}
+                        overlay={overlayFactory({ spinner: true })} />
                 </div>
                 :
                 null

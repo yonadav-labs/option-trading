@@ -3,6 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@okta/okta-react": "^3.0.8",
+    "@okta/okta-signin-widget": "^4.5.2",
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.5.0",
     "@testing-library/user-event": "^7.2.1",
@@ -13,6 +15,7 @@
     "react": "^17.0.0",
     "react-bootstrap": "^1.4.0",
     "react-bootstrap-table-next": "^4.0.3",
+    "react-bootstrap-table2-overlay": "^2.0.0",
     "react-bootstrap-table2-paginator": "^2.1.2",
     "react-bootstrap-typeahead": "^5.1.2",
     "react-dom": "^17.0.0",
