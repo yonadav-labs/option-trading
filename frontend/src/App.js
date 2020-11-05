@@ -33,10 +33,10 @@ function App() {
   return (
     <Router history={history}>
       <Header></Header>
-      <div class="container">
+      <div className="container">
         <Security {...config.oidc} onAuthRequired={customAuthHandler}>
           <Switch>
-            <SecureRoute exact path="/" component={Home} />
+            <Route exact path="/" component={Home} />
             <Route path="/disclaimer">
               <Disclaimer />
             </Route>
