@@ -11,7 +11,15 @@ export default function TickerTypeahead({ setSelectedTicker, setExpirationTimest
     const loadTickers = async () => {
         try {
             const response = await Axios.get(`${API_URL}/tickers/`);
-            setAllTickers(response.data);
+            let tickers = response.data;
+            tickers.forEach(function (ticker) {
+                if (ticker.full_name) {
+                    ticker.display_label = ticker.symbol + ' - ' + ticker.full_name;
+                } else {
+                    ticker.display_label = ticker.symbol;
+                }
+            });
+            setAllTickers(tickers);
         } catch (error) {
             console.error(error);
         }
@@ -42,11 +50,15 @@ export default function TickerTypeahead({ setSelectedTicker, setExpirationTimest
             minLengh={2}
             highlightOnlyResult={true}
             id="tickerTypeahead"
-            labelKey="symbol"
-            filterBy={['full_name']}
+            labelKey="display_label"
             options={allTickers}
             placeholder="TSLA, APPL, GOOG..."
             onChange={onTickerSelectionChange}
+            filterBy={(option, props) => {
+                const uppercase_text = props.text.toUpperCase();
+                return option['symbol'].startsWith(uppercase_text)
+                    || option['full_name'].toUpperCase().startsWith(uppercase_text);
+            }}
         />
     );
 }
