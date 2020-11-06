@@ -216,7 +216,8 @@ export default function Home() {
                             <Form.Label>Expiration Dates*</Form.Label>
                             <div className="row">
                                 {expirationTimestamps.map((timestamp) => {
-                                    const date = new Date(timestamp * 1000).toLocaleDateString();
+                                    // Yahoo's contract expiration timestamp uses GMT.
+                                    const date = new Date(timestamp * 1000).toLocaleDateString('en-US', { 'timeZone': 'GMT' });
                                     return (
                                         <div className="col-sm-6">
                                             <Form.Check
