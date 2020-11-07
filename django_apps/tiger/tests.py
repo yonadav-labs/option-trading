@@ -1,12 +1,9 @@
 from datetime import datetime
 from django.test import TestCase
+from django.utils.timezone import make_aware, get_default_timezone
 from unittest import mock
 
 from tiger.classes import OptionContract
-
-
-class StubDatetime(datetime):
-    pass
 
 
 class OptionContractTestCase(TestCase):
@@ -29,9 +26,9 @@ class OptionContractTestCase(TestCase):
             "inTheMoney": True
         }
 
-    @mock.patch('tiger.utils.datetime', StubDatetime)
-    def test_initialization(self):
-        StubDatetime.now = classmethod(lambda cls: datetime(2021, 1, 1))
+    @mock.patch('django.utils.timezone.now')
+    def test_initialization(self, mock_now):
+        mock_now.return_value = make_aware(datetime.fromtimestamp(1609491600), get_default_timezone())
         current_stock_price = 420.0
         target_stock_price = 600.0
         month_to_gain = 0.1
@@ -71,3 +68,9 @@ class OptionContractTestCase(TestCase):
         self.assertEqual(contract.ask, None)
         self.assertEqual(contract.bid, 160.25)
         self.assertAlmostEqual(contract.estimated_price, 160.25)
+        # Missing both.
+        yahoo_input = dict(self.yahoo_input)
+        yahoo_input.pop('bid', None)
+        yahoo_input.pop('ask', None)
+        contract = OptionContract(yahoo_input, current_stock_price, target_stock_price, month_to_gain)
+        self.assertFalse(contract.is_valid())

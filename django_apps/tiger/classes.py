@@ -40,10 +40,12 @@ class OptionContract:
 
     # Private methods:
     # TODO: make @property work with Serializer.
+
+    # Returns None if both ask and bid are missing.
     def __get_estimated_price(self):
-        if self.ask is None or self.ask == 0:
+        if self.ask is None or self.ask == 0.0:
             return self.bid
-        elif self.bid is None or self.bid == 0:
+        elif self.bid is None or self.bid == 0.0:
             return self.ask
         else:
             return round((self.ask + self.bid) / 2.0, 2)
@@ -64,5 +66,6 @@ class OptionContract:
     def save_normalized_score(self, max_gain_after_tradeoff):
         self.normalized_score = round(self.gain_after_tradeoff / max_gain_after_tradeoff * 100.0, 2)
 
+    # Premium has to be positive.
     def is_valid(self):
-        return self.bid + self.ask > 0.0
+        return (self.ask is not None and self.ask > 0.0) or (self.bid is not None and self.bid > 0.0)

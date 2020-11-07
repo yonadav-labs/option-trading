@@ -5,7 +5,7 @@ import time
 
 
 def check_ticker_option():
-    for ticker in Ticker.objects.filter(id__gt=9187):
+    for ticker in Ticker.objects.filter(id__gt=0):
         print(ticker.id, ticker.symbol)
         time.sleep(2)
         for i in range(1, 4):
