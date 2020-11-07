@@ -5,7 +5,7 @@ from rest_framework.exceptions import APIException
 
 from tiger.serializers import TickerSerializer, OptionContractSerializer
 from tiger.models import Ticker
-from tiger.classes import OptionContract
+from tiger.classes import TargetPriceOptionContract
 
 
 @api_view(['GET'])
@@ -31,33 +31,54 @@ def ticker(request, ticker_symbol, format=None):
 
 @api_view(['GET'])
 def calls(request, ticker_symbol):
+    def get_calls_by_target_price():
+        try:
+            target_price = float(request.query_params.get('target_price'))
+            month_to_gain = float(request.query_params.get('month_to_percent_gain'))
+        except Exception:
+            raise APIException('Invalid query parameters.')
+        if target_price < 0.0 or month_to_gain < 0.0 or month_to_gain > 1.0:
+            raise APIException('Invalid query parameters.')
+
+        input_expiration_timestamps = set([int(ts) for ts in request.query_params.getlist('expiration_timestamps') if
+                                           int(ts) in all_expiration_timestamps])
+        all_calls = []
+        for ts in input_expiration_timestamps:
+            calls, _ = ticker.get_option_contracts(ts)
+            for call in calls:
+                if not TargetPriceOptionContract.is_valid(call):
+                    continue
+                all_calls.append(
+                    TargetPriceOptionContract(call, ticker.get_quote().get('regularMarketPrice'), target_price,
+                                              month_to_gain))
+        all_calls = list(filter(lambda call: call.gain > 0.0, all_calls))
+        all_calls = sorted(all_calls, key=lambda call: call.gain_after_tradeoff, reverse=True)
+        if all_calls:
+            max_gain_after_tradeoff = all_calls[0].gain_after_tradeoff
+            for call in all_calls:
+                call.save_normalized_score(max_gain_after_tradeoff)
+
+        return Response({'all_calls': OptionContractSerializer(all_calls, many=True).data})
+
+    def get_calls_by_target_gain():
+        try:
+            target_gain = float(request.query_params.get('target_gain'))
+            month_to_gain = float(request.query_params.get('month_to_percent_gain'))
+        except Exception:
+            raise APIException('Invalid query parameters.')
+        if target_gain < 0.0 or month_to_gain < 0.0 or month_to_gain > 1.0:
+            raise APIException('Invalid query parameters.')
+        return Response({'all_calls': []})
+
     ticker = get_object_or_404(Ticker, symbol=ticker_symbol.upper(), status="unspecified")
-    # Validate inputs.
-    try:
-        target_price = float(request.query_params.get('target_price'))
-        month_to_gain = float(request.query_params.get('month_to_percent_gain'))
-    except Exception:
-        raise APIException('Invalid query parameters.')
-    if target_price < 0.0 or month_to_gain < 0.0 or month_to_gain > 1.0:
-        raise APIException('Invalid query parameters.')
     # Check if option is available for this ticker.
     all_expiration_timestamps = ticker.get_expiration_timestamps()
     if all_expiration_timestamps is None:
         raise APIException('No contracts found.')
 
-    input_expiration_timestamps = set([int(ts) for ts in request.query_params.getlist('expiration_timestamps') if
-                                       int(ts) in all_expiration_timestamps])
-    all_calls = []
-    for ts in input_expiration_timestamps:
-        calls, _ = ticker.get_option_contracts(ts)
-        for call in calls:
-            all_calls.append(
-                OptionContract(call, ticker.get_quote().get('regularMarketPrice'), target_price, month_to_gain))
-    all_calls = list(filter(lambda call: call.is_valid() and call.gain > 0.0, all_calls))
-    all_calls = sorted(all_calls, key=lambda call: call.gain_after_tradeoff, reverse=True)
-    if all_calls:
-        max_gain_after_tradeoff = all_calls[0].gain_after_tradeoff
-        for call in all_calls:
-            call.save_normalized_score(max_gain_after_tradeoff)
-
-    return Response({'all_calls': OptionContractSerializer(all_calls, many=True).data})
+    if request.query_params.get('target_price') is not None:
+        return get_calls_by_target_price()
+    elif request.query_params.get('target_gain') is not None:
+        return get_calls_by_target_gain()
+    else:
+        return Response(status=500)

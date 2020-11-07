@@ -3,7 +3,7 @@ from django.test import TestCase
 from django.utils.timezone import make_aware, get_default_timezone
 from unittest import mock
 
-from tiger.classes import OptionContract
+from tiger.classes import TargetPriceOptionContract
 
 
 class OptionContractTestCase(TestCase):
@@ -32,7 +32,7 @@ class OptionContractTestCase(TestCase):
         current_stock_price = 420.0
         target_stock_price = 600.0
         month_to_gain = 0.1
-        contract = OptionContract(self.yahoo_input, current_stock_price, target_stock_price, month_to_gain)
+        contract = TargetPriceOptionContract(self.yahoo_input, current_stock_price, target_stock_price, month_to_gain)
         # Test attributes.
         self.assertEqual(contract.ask, 163.15)
         self.assertEqual(contract.bid, 160.25)
@@ -57,14 +57,14 @@ class OptionContractTestCase(TestCase):
         # Missing bid.
         yahoo_input = dict(self.yahoo_input)
         yahoo_input.pop('bid', None)
-        contract = OptionContract(yahoo_input, current_stock_price, target_stock_price, month_to_gain)
+        contract = TargetPriceOptionContract(yahoo_input, current_stock_price, target_stock_price, month_to_gain)
         self.assertEqual(contract.ask, 163.15)
         self.assertEqual(contract.bid, None)
         self.assertAlmostEqual(contract.estimated_price, 163.15)
         # Missing ask.
         yahoo_input = dict(self.yahoo_input)
         yahoo_input.pop('ask', None)
-        contract = OptionContract(yahoo_input, current_stock_price, target_stock_price, month_to_gain)
+        contract = TargetPriceOptionContract(yahoo_input, current_stock_price, target_stock_price, month_to_gain)
         self.assertEqual(contract.ask, None)
         self.assertEqual(contract.bid, 160.25)
         self.assertAlmostEqual(contract.estimated_price, 160.25)
@@ -72,5 +72,5 @@ class OptionContractTestCase(TestCase):
         yahoo_input = dict(self.yahoo_input)
         yahoo_input.pop('bid', None)
         yahoo_input.pop('ask', None)
-        contract = OptionContract(yahoo_input, current_stock_price, target_stock_price, month_to_gain)
-        self.assertFalse(contract.is_valid())
+        with self.assertRaisesMessage(ValueError, 'invalid bid and ask'):
+            TargetPriceOptionContract(yahoo_input, current_stock_price, target_stock_price, month_to_gain)
