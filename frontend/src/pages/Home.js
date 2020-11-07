@@ -168,7 +168,7 @@ export default function Home() {
                 <div>
                     <h4>Summary</h4>
                     <div className="row">
-                        <div className="col-sm"><b>{basicInfo.shortName} ({basicInfo.symbol})</b></div>
+                        <div className="col-sm"><b>{basicInfo.symbol} - {basicInfo.shortName}</b></div>
                     </div>
                     <div className="row">
                         <div className="col-sm">Last price: <NumberFormat value={basicInfo.regularMarketPrice} displayType={'text'} thousandSeparator={true} prefix={'$'} /></div>

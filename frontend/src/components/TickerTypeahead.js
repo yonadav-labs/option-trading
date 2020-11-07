@@ -56,8 +56,7 @@ export default function TickerTypeahead({ setSelectedTicker, setExpirationTimest
             onChange={onTickerSelectionChange}
             filterBy={(option, props) => {
                 const uppercase_text = props.text.toUpperCase();
-                return option['symbol'].startsWith(uppercase_text)
-                    || option['full_name'].toUpperCase().startsWith(uppercase_text);
+                return option['symbol'].startsWith(uppercase_text);
             }}
         />
     );
