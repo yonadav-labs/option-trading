@@ -1,10 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import Form from 'react-bootstrap/Form'
-import TradingViewWidget from 'react-tradingview-widget';
-import Accordion from 'react-bootstrap/Accordion';
-import Card from 'react-bootstrap/Card';
 import Button from 'react-bootstrap/Button';
 import TickerTypeahead from '../components/TickerTypeahead';
+import TickerSummary from '../components/TickerSummary.js';
 import Alert from 'react-bootstrap/Alert';
 // import Table from 'react-bootstrap/Table';
 import BootstrapTable from 'react-bootstrap-table-next';
@@ -12,7 +10,6 @@ import paginationFactory from 'react-bootstrap-table2-paginator';
 import overlayFactory from 'react-bootstrap-table2-overlay';
 import Axios from 'axios';
 import getApiUrl from '../utils';
-import NumberFormat from 'react-number-format';
 import { useOktaAuth } from '@okta/okta-react';
 
 export default function Home() {
@@ -166,38 +163,7 @@ export default function Home() {
             </Form>
             {selectedTicker.length > 0 ?
                 <div>
-                    <h4>Summary</h4>
-                    <div className="row">
-                        <div className="col-sm"><b>{basicInfo.symbol} - {basicInfo.shortName}</b></div>
-                    </div>
-                    <div className="row">
-                        <div className="col-sm">Last price: <NumberFormat value={basicInfo.regularMarketPrice} displayType={'text'} thousandSeparator={true} prefix={'$'} /></div>
-                        <div className="col-sm">52 Week Range:
-                        <NumberFormat value={basicInfo.fiftyTwoWeekLow} displayType={'text'} thousandSeparator={true} prefix={'$'} />
-                         -
-                        <NumberFormat value={basicInfo.fiftyTwoWeekHigh} displayType={'text'} thousandSeparator={true} prefix={'$'} />
-                        </div>
-                    </div>
-                    <div className="row">
-                        <div className="col-sm">Market Cap: <NumberFormat value={basicInfo.marketCap} displayType={'text'} thousandSeparator={true} prefix={'$'} /></div>
-                        <div className="col-sm">Outstanding Shares: <NumberFormat value={basicInfo.sharesOutstanding} displayType={'text'} thousandSeparator={true} /></div>
-                    </div>
-                    <br></br>
-                    <Accordion>
-                        <Card>
-                            <Accordion.Toggle as={Button} variant="link" eventKey="0">
-                                Price Chart
-                    </Accordion.Toggle>
-                            <Accordion.Collapse eventKey="0">
-                                <Card.Body>
-                                    <TradingViewWidget
-                                        symbol={selectedTicker.length > 0 ? selectedTicker[0].symbol : ""}
-                                    />
-                                </Card.Body>
-                            </Accordion.Collapse>
-                        </Card>
-                    </Accordion>
-                    <br />
+                    <TickerSummary basicInfo={basicInfo} />
                     <h4>Best call options to buy</h4>
                     <hr />
                     <Form onSubmit={handleSubmit}>
@@ -215,11 +181,11 @@ export default function Home() {
                             }
                             <Form.Label>Expiration Dates*</Form.Label>
                             <div className="row">
-                                {expirationTimestamps.map((timestamp) => {
+                                {expirationTimestamps.map((timestamp, index) => {
                                     // Yahoo's contract expiration timestamp uses GMT.
                                     const date = new Date(timestamp * 1000).toLocaleDateString('en-US', { 'timeZone': 'GMT' });
                                     return (
-                                        <div className="col-sm-6">
+                                        <div className="col-sm-6" key={index}>
                                             <Form.Check
                                                 value={timestamp}
                                                 name={`expiration_date_${timestamp}`}

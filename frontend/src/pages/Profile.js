@@ -3,14 +3,14 @@ import { useOktaAuth } from '@okta/okta-react';
 
 const Profile = () => {
   const { authState, authService } = useOktaAuth();
-  const [ userInfo, setUserInfo ] = useState(null);
+  const [userInfo, setUserInfo] = useState(null);
 
-  useEffect(() => { 
-    if(!authState.isAuthenticated) { 
+  useEffect(() => {
+    if (!authState.isAuthenticated) {
       // When user isn't authenticated, forget any user info
       setUserInfo(null);
-    } else { 
-      authService.getUser().then( info => { 
+    } else {
+      authService.getUser().then(info => {
         setUserInfo(info);
       });
     }
@@ -20,7 +20,7 @@ const Profile = () => {
     authService.logout('/');
   }
 
-  if(!userInfo){
+  if (!userInfo) {
     return (
       <div>
         <p>Fetching user profile...</p>
@@ -29,9 +29,8 @@ const Profile = () => {
   }
 
   return (
-    
     <div>
-        <button onClick={logout}>Logout</button>
+      <button onClick={logout}>Logout</button>
       <h1>User Profile</h1>
       <ul>
         {Object.entries(userInfo).map((claim) => {
