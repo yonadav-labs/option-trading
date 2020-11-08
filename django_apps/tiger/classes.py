@@ -52,9 +52,9 @@ class TargetPriceOptionContract(OptionContract):
     def __init__(self, yh_contract_dict, current_stock_price, target_stock_price, month_to_gain):
         super().__init__(yh_contract_dict, current_stock_price)
 
-        # Non-contract data.
         self.target_stock_price = target_stock_price
         self.month_to_gain = month_to_gain
+
         self.gain = self.__get_gain()
         self.gain_after_tradeoff = self.__get_gain_after_tradeoff()
         self.stock_gain = self.__get_stock_gain()
@@ -77,8 +77,23 @@ class TargetPriceOptionContract(OptionContract):
 
 
 class TargetGainOptionContract(OptionContract):
-    def __init__(self, yh_contract_dict, current_stock_price, target_gain):
+    def __init__(self, yh_contract_dict, current_stock_price, target_gain, month_to_gain):
         super().__init__(yh_contract_dict, current_stock_price)
 
-        # Non-contract data.
         self.target_gain = target_gain
+        self.month_to_gain = month_to_gain
+
+        self.price_for_gain = self.get_price_for_gain(self.target_gain)
+        self.target_gain_after_tradeoff = self.get_target_gain_after_tradeoff()
+        self.price_for_gain_after_tradeoff = self.get_price_for_gain(self.get_target_gain_after_tradeoff())
+        self.stock_gain = self.get_stock_gain(self.price_for_gain)
+        self.stock_gain_after_tradeoff = self.get_stock_gain(self.price_for_gain_after_tradeoff)
+
+    def get_price_for_gain(self, target_gain):
+        return target_gain * self.estimated_price + self.break_even_price
+
+    def get_target_gain_after_tradeoff(self):
+        return self.target_gain - (self.days_till_expiration / 30.0) * self.month_to_gain
+
+    def get_stock_gain(self, price_for_gain):
+        return (price_for_gain - self.current_stock_price) / self.current_stock_price

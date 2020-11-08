@@ -3,7 +3,7 @@ from django.test import TestCase
 from django.utils.timezone import make_aware, get_default_timezone
 from unittest import mock
 
-from tiger.classes import TargetPriceOptionContract
+from tiger.classes import TargetPriceOptionContract, TargetGainOptionContract
 
 
 class OptionContractTestCase(TestCase):
@@ -25,14 +25,15 @@ class OptionContractTestCase(TestCase):
             "impliedVolatility": 0.6649966361999513,
             "inTheMoney": True
         }
+        self.current_stock_price = 420.0
 
     @mock.patch('django.utils.timezone.now')
     def test_initialization(self, mock_now):
         mock_now.return_value = make_aware(datetime.fromtimestamp(1609491600), get_default_timezone())
-        current_stock_price = 420.0
         target_stock_price = 600.0
         month_to_gain = 0.1
-        contract = TargetPriceOptionContract(self.yahoo_input, current_stock_price, target_stock_price, month_to_gain)
+        contract = TargetPriceOptionContract(self.yahoo_input, self.current_stock_price, target_stock_price,
+                                             month_to_gain)
         # Test attributes.
         self.assertEqual(contract.ask, 163.15)
         self.assertEqual(contract.bid, 160.25)
@@ -51,20 +52,19 @@ class OptionContractTestCase(TestCase):
         self.assertAlmostEqual(contract.normalized_score, 78.97)
 
     def test_missing_bid_or_ask(self):
-        current_stock_price = 420.0
         target_stock_price = 600.0
         month_to_gain = 0.1
         # Missing bid.
         yahoo_input = dict(self.yahoo_input)
         yahoo_input.pop('bid', None)
-        contract = TargetPriceOptionContract(yahoo_input, current_stock_price, target_stock_price, month_to_gain)
+        contract = TargetPriceOptionContract(yahoo_input, self.current_stock_price, target_stock_price, month_to_gain)
         self.assertEqual(contract.ask, 163.15)
         self.assertEqual(contract.bid, None)
         self.assertAlmostEqual(contract.estimated_price, 163.15)
         # Missing ask.
         yahoo_input = dict(self.yahoo_input)
         yahoo_input.pop('ask', None)
-        contract = TargetPriceOptionContract(yahoo_input, current_stock_price, target_stock_price, month_to_gain)
+        contract = TargetPriceOptionContract(yahoo_input, self.current_stock_price, target_stock_price, month_to_gain)
         self.assertEqual(contract.ask, None)
         self.assertEqual(contract.bid, 160.25)
         self.assertAlmostEqual(contract.estimated_price, 160.25)
@@ -73,4 +73,20 @@ class OptionContractTestCase(TestCase):
         yahoo_input.pop('bid', None)
         yahoo_input.pop('ask', None)
         with self.assertRaisesMessage(ValueError, 'invalid bid and ask'):
-            TargetPriceOptionContract(yahoo_input, current_stock_price, target_stock_price, month_to_gain)
+            TargetPriceOptionContract(yahoo_input, self.current_stock_price, target_stock_price, month_to_gain)
+
+    @mock.patch('django.utils.timezone.now')
+    def test_target_gain(self, mock_now):
+        mock_now.return_value = make_aware(datetime.fromtimestamp(1609491600), get_default_timezone())
+        contract = TargetGainOptionContract(self.yahoo_input, self.current_stock_price, target_gain=0.3,
+                                            month_to_gain=0.01)
+
+        self.assertEqual(contract.target_gain, 0.3)
+        self.assertEqual(contract.month_to_gain, 0.01)
+
+        self.assertAlmostEqual(contract.price_for_gain, 161.7 * 0.3 + 161.7 + 288.0)
+        self.assertAlmostEqual(contract.target_gain_after_tradeoff, 0.3 - (195 / 30.0 * 0.01))
+        self.assertAlmostEqual(contract.price_for_gain_after_tradeoff,
+                               161.7 * (0.3 - (0.01 * 195 / 30.0)) + 161.7 + 288.0)
+        self.assertAlmostEqual(contract.stock_gain, 0.18621429)
+        self.assertAlmostEqual(contract.stock_gain_after_tradeoff, 0.161189285714)

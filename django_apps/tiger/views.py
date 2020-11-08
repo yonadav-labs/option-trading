@@ -3,9 +3,9 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.exceptions import APIException
 
-from tiger.serializers import TickerSerializer, OptionContractSerializer
+from tiger.serializers import TickerSerializer, TargetPriceOptionContractSerializer, TargetGainOptionContractSerializer
 from tiger.models import Ticker
-from tiger.classes import TargetPriceOptionContract
+from tiger.classes import TargetPriceOptionContract, TargetGainOptionContract
 
 
 @api_view(['GET'])
@@ -31,6 +31,15 @@ def ticker(request, ticker_symbol, format=None):
 
 @api_view(['GET'])
 def calls(request, ticker_symbol):
+    def get_valid_calls():
+        input_expiration_timestamps = set([int(ts) for ts in request.query_params.getlist('expiration_timestamps') if
+                                           int(ts) in all_expiration_timestamps])
+        valid_calls = []
+        for ts in input_expiration_timestamps:
+            calls, _ = ticker.get_option_contracts(ts)
+            valid_calls.append(calls)
+        return valid_calls
+
     def get_calls_by_target_price():
         try:
             target_price = float(request.query_params.get('target_price'))
@@ -40,11 +49,8 @@ def calls(request, ticker_symbol):
         if target_price < 0.0 or month_to_gain < 0.0 or month_to_gain > 1.0:
             raise APIException('Invalid query parameters.')
 
-        input_expiration_timestamps = set([int(ts) for ts in request.query_params.getlist('expiration_timestamps') if
-                                           int(ts) in all_expiration_timestamps])
         all_calls = []
-        for ts in input_expiration_timestamps:
-            calls, _ = ticker.get_option_contracts(ts)
+        for calls in get_valid_calls():
             for call in calls:
                 if not TargetPriceOptionContract.is_valid(call):
                     continue
@@ -58,7 +64,7 @@ def calls(request, ticker_symbol):
             for call in all_calls:
                 call.save_normalized_score(max_gain_after_tradeoff)
 
-        return Response({'all_calls': OptionContractSerializer(all_calls, many=True).data})
+        return Response({'all_calls': TargetPriceOptionContractSerializer(all_calls, many=True).data})
 
     def get_calls_by_target_gain():
         try:
@@ -68,7 +74,17 @@ def calls(request, ticker_symbol):
             raise APIException('Invalid query parameters.')
         if target_gain < 0.0 or month_to_gain < 0.0 or month_to_gain > 1.0:
             raise APIException('Invalid query parameters.')
-        return Response({'all_calls': []})
+
+        all_calls = []
+        for calls in get_valid_calls():
+            for call in calls:
+                if not TargetGainOptionContract.is_valid(call):
+                    continue
+                all_calls.append(
+                    TargetGainOptionContract(call, ticker.get_quote().get('regularMarketPrice'), target_gain,
+                                             month_to_gain))
+        all_calls = sorted(all_calls, key=lambda call: call.price_for_gain_after_tradeoff)
+        return Response({'all_calls': TargetGainOptionContractSerializer(all_calls, many=True).data})
 
     ticker = get_object_or_404(Ticker, symbol=ticker_symbol.upper(), status="unspecified")
     # Check if option is available for this ticker.
