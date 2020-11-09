@@ -8,6 +8,7 @@ import Alert from 'react-bootstrap/Alert';
 import BootstrapTable from 'react-bootstrap-table-next';
 import paginationFactory from 'react-bootstrap-table2-paginator';
 import overlayFactory from 'react-bootstrap-table2-overlay';
+import RangeSlider from 'react-bootstrap-range-slider';
 import Axios from 'axios';
 import getApiUrl from '../utils';
 import { useOktaAuth } from '@okta/okta-react';
@@ -23,25 +24,14 @@ export default function Home() {
     const [basicInfo, setbasicInfo] = useState({});
     const [loading, setLoading] = useState(false);
     const [selectedExpirationTimestamps, setSelectedExpirationTimestamps] = useState([]);
+    const [tradeoffValue, setTradeoffValue] = React.useState(0.0);
 
-    const tradeoffOptions = [{ value: 0, label: 'No tradeoff' },
-    { value: 0.005, label: 'Trade 0.5% gain for 1 month additional expiration time' },
-    { value: 0.01, label: 'Trade 1% gain for 1 month additional expiration time' },
-    { value: 0.02, label: 'Trade 2% gain for 1 month additional expiration time' },
-    { value: 0.03, label: 'Trade 3% gain for 1 month additional expiration time' },
-    { value: 0.04, label: 'Trade 4% gain for 1 month additional expiration time' },
-    { value: 0.05, label: 'Trade 5% gain for 1 month additional expiration time' },
-    { value: 0.06, label: 'Trade 6% gain for 1 month additional expiration time' },
-    { value: 0.07, label: 'Trade 7% gain for 1 month additional expiration time' },
-    { value: 0.08, label: 'Trade 8% gain for 1 month additional expiration time' },
-    { value: 0.09, label: 'Trade 9% gain for 1 month additional expiration time' },
-    { value: 0.1, label: 'Trade 10% gain for 1 month additional expiration time' },];
     const columns = [
         {
             dataField: 'contract_symbol',
             text: 'Contract Symbol',
         }, {
-            dataField: "expiration",
+            dataField: "expiration_str",
             text: "Expiration",
         }, {
             dataField: "days_till_expiration",
@@ -94,7 +84,7 @@ export default function Home() {
 
         if (form.checkValidity() !== false && selectedExpirationTimestamps.length > 0) {
             setLoading(true);
-            getBestCalls(selectedTicker[0].symbol, formDataObj.target_price, selectedExpirationTimestamps, formDataObj.tradeoff);
+            getBestCalls(selectedTicker[0].symbol, formDataObj.target_price, selectedExpirationTimestamps, tradeoffValue);
         }
     };
 
@@ -124,6 +114,7 @@ export default function Home() {
                 row.break_even_price = `$${row.break_even_price}`;
                 row.estimated_price = `$${row.estimated_price}`;
                 row.strike = `$${row.strike}`;
+                row.expiration_str = new Date(row.expiration * 1000).toLocaleDateString('en-US', { 'timeZone': 'GMT' });
             });
             setBestCalls(all_calls);
             setLoading(false);
@@ -168,7 +159,7 @@ export default function Home() {
                     <hr />
                     <Form onSubmit={handleSubmit}>
                         <Form.Group>
-                            <Form.Label>Target price (USD)*</Form.Label>
+                            <Form.Label className="font-weight-bold">Target price (USD):</Form.Label>
                             <Form.Control name="target_price" as="input" type="number" placeholder="100.0" min="0.0" required />
                         </Form.Group>
                         <Form.Group>
@@ -179,7 +170,7 @@ export default function Home() {
                                 :
                                 null
                             }
-                            <Form.Label>Expiration Dates*</Form.Label>
+                            <Form.Label className="font-weight-bold">Expiration Dates:</Form.Label>
                             <div className="row">
                                 {expirationTimestamps.map((timestamp, index) => {
                                     // Yahoo's contract expiration timestamp uses GMT.
@@ -198,16 +189,21 @@ export default function Home() {
                                 })}
                             </div>
                         </Form.Group>
-                        <Form.Group>
-                            <Form.Label>Month to percentage gain tradeoff*</Form.Label>
-                            <Form.Control name="tradeoff" as="select" defaultValue={0} required>
-                                {
-                                    tradeoffOptions.map((option, index) => {
-                                        return (<option key={index} value={option.value}>{option.label}</option>)
-                                    })
-                                }
-                            </Form.Control>
-                        </Form.Group>
+                        <div className="font-weight-bold">Month to gain tradeoff: </div>
+                        <div>Reduce {(tradeoffValue * 100.0).toFixed(2)}% gain for 30 days additional expiration time.</div>
+                        <div>
+                            <RangeSlider
+                                value={tradeoffValue}
+                                onChange={e => setTradeoffValue(e.target.value)}
+                                tooltipLabel={currentValue => `${(currentValue * 100.0).toFixed(2)}%`}
+                                step={0.0025}
+                                min={0.0}
+                                max={0.1}
+                                tooltip='auto'
+                                size='sm'
+                            />
+                        </div>
+                        <br />
                         <Button type="submit">Analyze</Button>
                     </Form>
                     <br />

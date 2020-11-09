@@ -14,6 +14,7 @@
     "history": "^5.0.0",
     "react": "^17.0.0",
     "react-bootstrap": "^1.4.0",
+    "react-bootstrap-range-slider": "^2.0.2",
     "react-bootstrap-table-next": "^4.0.3",
     "react-bootstrap-table2-overlay": "^2.0.0",
     "react-bootstrap-table2-paginator": "^2.1.2",
