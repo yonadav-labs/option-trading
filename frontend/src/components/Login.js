@@ -4,7 +4,7 @@ import "@okta/okta-signin-widget/dist/css/okta-sign-in.min.css";
 
 import config from "./../oktaConfig";
 
-export default class LoginPage extends Component {
+export default class Login extends Component {
     constructor(props) {
         super(props);
 
