@@ -44,8 +44,8 @@ export default function SellCoveredCall() {
             dataField: "gain_cap_str",
             text: "Upside Cap",
         }, {
-            dataField: "loss_buffer_str",
-            text: "Downside Buffer",
+            dataField: "premium_gain_str",
+            text: "Premium gain",
         }];
 
 
@@ -94,7 +94,10 @@ export default function SellCoveredCall() {
                     <NumberFormat value={row.gain_cap * 100} displayType={'text'} decimalScale={2} suffix={'%'} />
                     &nbsp;(<NumberFormat value={row.annualized_gain_cap * 100} displayType={'text'} decimalScale={2} suffix={'%'} /> annually)
                 </span>)
-                row.loss_buffer_str = (<NumberFormat value={row.loss_buffer * 100} displayType={'text'} decimalScale={2} suffix={'%'} />)
+                row.premium_gain_str = (<span>
+                    <NumberFormat value={row.premium_gain * 100} displayType={'text'} decimalScale={2} suffix={'%'} />
+                    &nbsp;(<NumberFormat value={row.annualized_premium_gain * 100} displayType={'text'} decimalScale={2} suffix={'%'} /> annually)
+                </span>)
                 const exp_date = new Date(row.expiration * 1000).toLocaleDateString('en-US', { 'timeZone': 'GMT' })
                 row.expiration_str = (<div>{exp_date} ({row.days_till_expiration} days)</div>);
             });

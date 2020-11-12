@@ -93,7 +93,8 @@ class SellCoveredCall(OptionContract):
         self.strike_diff_ratio = self.get_strike_diff_ratio()
         self.gain_cap = self.get_gain_cap()
         self.annualized_gain_cap = self.get_annualized_gain_cap()
-        self.loss_buffer = self.get_loss_buffer()
+        self.premium_gain = self.get_premium_gain()
+        self.annualized_premium_gain = self.get_annualized_premium_gain()
 
     def get_strike_diff_ratio(self):
         """Positive when current_stock_price is below strike."""
@@ -106,5 +107,9 @@ class SellCoveredCall(OptionContract):
         max_total = (self.strike + self.estimated_price) / self.current_stock_price
         return math.pow(max_total, 365 / self.days_till_expiration) - 1.0
 
-    def get_loss_buffer(self):
+    def get_premium_gain(self):
         return self.estimated_price / self.current_stock_price
+
+    def get_annualized_premium_gain(self):
+        total = (self.current_stock_price + self.estimated_price) / self.current_stock_price
+        return math.pow(total, 365 / self.days_till_expiration) - 1.0

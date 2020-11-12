@@ -31,4 +31,5 @@ class SellCoveredCallSerializer(OptionContractSerializer):
     strike_diff_ratio = serializers.FloatField()
     gain_cap = serializers.FloatField()
     annualized_gain_cap = serializers.FloatField()
-    loss_buffer = serializers.FloatField()
+    premium_gain = serializers.FloatField()
+    annualized_premium_gain = serializers.FloatField()
