@@ -1,3 +1,5 @@
+import math
+
 from tiger.utils import days_from_timestamp
 
 
@@ -77,23 +79,24 @@ class BuyCall(OptionContract):
 
 
 class SellCoveredCall(OptionContract):
-    def __init__(self, yh_contract_dict, current_stock_price, target_gain, month_to_gain):
+    def __init__(self, yh_contract_dict, current_stock_price):
         super().__init__(yh_contract_dict, current_stock_price)
 
-        self.target_gain = target_gain
-        self.month_to_gain = month_to_gain
+        self.strike_diff_ratio = self.get_strike_diff_ratio()
+        self.gain_cap = self.get_gain_cap()
+        self.annualized_gain_cap = self.get_annualized_gain_cap()
+        self.loss_buffer = self.get_loss_buffer()
 
-        self.price_for_gain = self.get_price_for_gain(self.target_gain)
-        self.target_gain_after_tradeoff = self.get_target_gain_after_tradeoff()
-        self.price_for_gain_after_tradeoff = self.get_price_for_gain(self.get_target_gain_after_tradeoff())
-        self.stock_gain = self.get_stock_gain(self.price_for_gain)
-        self.stock_gain_after_tradeoff = self.get_stock_gain(self.price_for_gain_after_tradeoff)
+    def get_strike_diff_ratio(self):
+        """Positive when current_stock_price is below strike."""
+        return (self.strike - self.current_stock_price) / self.current_stock_price
 
-    def get_price_for_gain(self, target_gain):
-        return target_gain * self.estimated_price + self.break_even_price
+    def get_gain_cap(self):
+        return (self.strike + self.estimated_price - self.current_stock_price) / self.current_stock_price
 
-    def get_target_gain_after_tradeoff(self):
-        return self.target_gain - (self.days_till_expiration / 30.0) * self.month_to_gain
+    def get_annualized_gain_cap(self):
+        max_total = (self.strike + self.estimated_price) / self.current_stock_price
+        return math.pow(max_total, 365 / self.days_till_expiration) - 1.0
 
-    def get_stock_gain(self, price_for_gain):
-        return (price_for_gain - self.current_stock_price) / self.current_stock_price
+    def get_loss_buffer(self):
+        return self.estimated_price / self.current_stock_price

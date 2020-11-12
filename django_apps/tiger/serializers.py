@@ -28,9 +28,7 @@ class BuyCallSerializer(OptionContractSerializer):
 
 
 class SellCoveredCallSerializer(OptionContractSerializer):
-    target_gain = serializers.FloatField()
-    price_for_gain = serializers.FloatField()
-    target_gain_after_tradeoff = serializers.FloatField()
-    price_for_gain_after_tradeoff = serializers.FloatField()
-    stock_gain = serializers.FloatField()
-    stock_gain_after_tradeoff = serializers.FloatField()
+    strike_diff_ratio = serializers.FloatField()
+    gain_cap = serializers.FloatField()
+    annualized_gain_cap = serializers.FloatField()
+    loss_buffer = serializers.FloatField()

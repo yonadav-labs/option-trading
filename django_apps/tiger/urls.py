@@ -6,6 +6,7 @@ restful_urlpatterns = [
     path('api/tickers/', views.ticker_list, name='tickers'),
     path('api/tickers/<str:ticker_symbol>/', views.ticker, name='ticker'),
     path('api/tickers/<str:ticker_symbol>/calls/', views.calls, name='calls'),
+    path('api/tickers/<str:ticker_symbol>/sell_covered_calls/', views.sell_covered_calls, name='sell_covered_calls'),
     path('api/api-auth/', include('rest_framework.urls', namespace='rest_framework')),
 ]
 restful_urlpatterns = format_suffix_patterns(restful_urlpatterns)
