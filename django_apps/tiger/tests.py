@@ -5,6 +5,8 @@ from unittest import mock
 
 from tiger.classes import BuyCall, SellCoveredCall
 
+MOCK_NOW_TIMESTAMP = 1609664400  # 01/03/2021
+
 
 class OptionContractTestCase(TestCase):
     def setUp(self):
@@ -29,7 +31,7 @@ class OptionContractTestCase(TestCase):
 
     @mock.patch('django.utils.timezone.now')
     def test_initialization(self, mock_now):
-        mock_now.return_value = make_aware(datetime.fromtimestamp(1609664400), get_default_timezone())
+        mock_now.return_value = make_aware(datetime.fromtimestamp(MOCK_NOW_TIMESTAMP), get_default_timezone())
         target_stock_price = 600.0
         month_to_gain = 0.1
         contract = BuyCall(self.yahoo_input, self.current_stock_price, target_stock_price,
@@ -51,7 +53,9 @@ class OptionContractTestCase(TestCase):
         contract.save_normalized_score(2.0)
         self.assertAlmostEqual(contract.normalized_score, 78.97)
 
-    def test_missing_bid_or_ask(self):
+    @mock.patch('django.utils.timezone.now')
+    def test_missing_bid_or_ask(self, mock_now):
+        mock_now.return_value = make_aware(datetime.fromtimestamp(MOCK_NOW_TIMESTAMP), get_default_timezone())
         target_stock_price = 600.0
         month_to_gain = 0.1
         # Missing bid.
@@ -68,16 +72,23 @@ class OptionContractTestCase(TestCase):
         self.assertEqual(contract.ask, None)
         self.assertEqual(contract.bid, 160.25)
         self.assertAlmostEqual(contract.estimated_price, 160.25)
-        # Missing both.
+        # Missing both bid and ask.
         yahoo_input = dict(self.yahoo_input)
         yahoo_input.pop('bid', None)
         yahoo_input.pop('ask', None)
         with self.assertRaisesMessage(ValueError, 'invalid bid and ask'):
             BuyCall(yahoo_input, self.current_stock_price, target_stock_price, month_to_gain)
+        # Missing both bid and ask but have valid last trade price.
+        yahoo_input = dict(self.yahoo_input)
+        yahoo_input.pop('bid', None)
+        yahoo_input.pop('ask', None)
+        yahoo_input['lastTradeDate'] = MOCK_NOW_TIMESTAMP - 2 * 24 * 3600  # Traded 2 days ago.
+        contract = BuyCall(yahoo_input, self.current_stock_price, target_stock_price, month_to_gain)
+        self.assertAlmostEqual(contract.estimated_price, 156.75)
 
     @mock.patch('django.utils.timezone.now')
     def test_target_gain(self, mock_now):
-        mock_now.return_value = make_aware(datetime.fromtimestamp(1609664400), get_default_timezone())
+        mock_now.return_value = make_aware(datetime.fromtimestamp(MOCK_NOW_TIMESTAMP), get_default_timezone())
         contract = SellCoveredCall(self.yahoo_input, self.current_stock_price)
 
         self.assertAlmostEqual(contract.strike_diff_ratio, -0.31428571428)

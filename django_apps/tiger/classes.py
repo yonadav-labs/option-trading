@@ -1,6 +1,8 @@
 import math
 
-from tiger.utils import days_from_timestamp
+from tiger.utils import days_from_timestamp, timedelta_from_timestamp
+
+LAST_PRICE_VALID_SECONDS = -3 * 24 * 3600  # 3 days.
 
 
 class OptionContract:
@@ -29,22 +31,28 @@ class OptionContract:
         self.current_stock_price = current_stock_price
         self.estimated_price = self.get_estimated_price()
         self.break_even_price = self.get_break_even_price()
-        self.days_till_expiration = days_from_timestamp(self.expiration)
+        # Yahoo expiration time is 2 days early.
+        self.days_till_expiration = days_from_timestamp(self.expiration) + 2
 
     # Premium has to be positive.
     @staticmethod
     def is_valid(yh_contract_dict):
         ask, bid = yh_contract_dict.get('ask'), yh_contract_dict.get('bid')
-        return (ask is not None and ask > 0.0) or (bid is not None and bid > 0.0)
+        last_price = yh_contract_dict.get('lastPrice') if timedelta_from_timestamp(yh_contract_dict.get(
+            'lastTradeDate')).total_seconds() > LAST_PRICE_VALID_SECONDS else None
+        return (ask is not None and ask > 0.0) or (bid is not None and bid > 0.0) or (
+                last_price is not None and last_price > 0.0)
 
     # Returns None if both ask and bid are missing.
     def get_estimated_price(self):
-        if self.ask is None or self.ask == 0.0:
+        if not self.ask and not self.bid:
+            return self.last_price
+        elif not self.ask:
             return self.bid
-        elif self.bid is None or self.bid == 0.0:
+        elif not self.bid:
             return self.ask
         else:
-            return round((self.ask + self.bid) / 2.0, 2)
+            return (self.ask + self.bid) / 2.0
 
     def get_break_even_price(self):
         return round(self.get_estimated_price() + self.strike, 2)

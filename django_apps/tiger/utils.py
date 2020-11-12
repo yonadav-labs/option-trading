@@ -24,7 +24,13 @@ def days_from_timestamp(timestamp):
     input_datetime = make_aware(datetime.fromtimestamp(timestamp), get_default_timezone())
     now = get_now()
     delta = input_datetime - now
-    return delta.days + 2
+    return delta.days
+
+
+def timedelta_from_timestamp(timestamp):
+    input_datetime = make_aware(datetime.fromtimestamp(timestamp), get_default_timezone())
+    now = get_now()
+    return input_datetime - now
 
 
 if __name__ == "__main__":
@@ -37,3 +43,5 @@ if __name__ == "__main__":
     django.setup()
 
     print(days_from_timestamp(1605225600))
+
+    print(timedelta_from_timestamp(1603466039).total_seconds())

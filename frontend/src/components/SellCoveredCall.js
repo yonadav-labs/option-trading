@@ -87,7 +87,7 @@ export default function SellCoveredCall() {
             let all_calls = response.data.all_calls;
 
             all_calls.forEach(function (row) {
-                row.estimated_price_str = (<NumberFormat value={row.estimated_price} displayType={'text'} thousandSeparator={true} prefix={'$'} />)
+                row.estimated_price_str = (<NumberFormat value={row.estimated_price} displayType={'text'} thousandSeparator={true} prefix={'$'} decimalScale={2} />)
                 row.strike_str = (<NumberFormat value={row.strike} displayType={'text'} thousandSeparator={true} prefix={'$'} />)
                 row.strike_diff_ratio_str = (<NumberFormat value={row.strike_diff_ratio * 100} displayType={'text'} decimalScale={2} suffix={'%'} />)
                 row.gain_cap_str = (<span>

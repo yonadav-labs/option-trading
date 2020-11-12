@@ -85,7 +85,7 @@ export default function BestCallByPrice({ selectedTicker, expirationTimestamps }
             let all_calls = response.data.all_calls;
             all_calls.forEach(function (row) {
                 row.strike_str = (<NumberFormat value={row.strike} displayType={'text'} thousandSeparator={true} prefix={'$'} />)
-                row.estimated_price_str = (<NumberFormat value={row.estimated_price} displayType={'text'} thousandSeparator={true} prefix={'$'} />)
+                row.estimated_price_str = (<NumberFormat value={row.estimated_price} displayType={'text'} thousandSeparator={true} prefix={'$'} decimalScale={2} />)
                 row.break_even_price_str = (<NumberFormat value={row.break_even_price} displayType={'text'} thousandSeparator={true} prefix={'$'} />)
                 row.gain_str = (<NumberFormat value={row.gain * 100} displayType={'text'} decimalScale={2} suffix={'%'} />)
                 row.stock_gain_str = (<NumberFormat value={row.stock_gain * 100} displayType={'text'} decimalScale={2} suffix={'%'} />)
