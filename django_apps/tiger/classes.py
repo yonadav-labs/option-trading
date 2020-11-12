@@ -48,7 +48,7 @@ class OptionContract:
         return round(self.get_estimated_price() + self.strike, 2)
 
 
-class TargetPriceOptionContract(OptionContract):
+class BuyCall(OptionContract):
     def __init__(self, yh_contract_dict, current_stock_price, target_stock_price, month_to_gain):
         super().__init__(yh_contract_dict, current_stock_price)
 
@@ -76,7 +76,7 @@ class TargetPriceOptionContract(OptionContract):
         self.normalized_score = round(self.gain_after_tradeoff / max_gain_after_tradeoff * 100.0, 2)
 
 
-class TargetGainOptionContract(OptionContract):
+class SellCoveredCall(OptionContract):
     def __init__(self, yh_contract_dict, current_stock_price, target_gain, month_to_gain):
         super().__init__(yh_contract_dict, current_stock_price)
 

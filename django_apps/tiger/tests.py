@@ -3,7 +3,7 @@ from django.test import TestCase
 from django.utils.timezone import make_aware, get_default_timezone
 from unittest import mock
 
-from tiger.classes import TargetPriceOptionContract, TargetGainOptionContract
+from tiger.classes import BuyCall, SellCoveredCall
 
 
 class OptionContractTestCase(TestCase):
@@ -32,8 +32,8 @@ class OptionContractTestCase(TestCase):
         mock_now.return_value = make_aware(datetime.fromtimestamp(1609491600), get_default_timezone())
         target_stock_price = 600.0
         month_to_gain = 0.1
-        contract = TargetPriceOptionContract(self.yahoo_input, self.current_stock_price, target_stock_price,
-                                             month_to_gain)
+        contract = BuyCall(self.yahoo_input, self.current_stock_price, target_stock_price,
+                           month_to_gain)
         # Test attributes.
         self.assertEqual(contract.ask, 163.15)
         self.assertEqual(contract.bid, 160.25)
@@ -57,14 +57,14 @@ class OptionContractTestCase(TestCase):
         # Missing bid.
         yahoo_input = dict(self.yahoo_input)
         yahoo_input.pop('bid', None)
-        contract = TargetPriceOptionContract(yahoo_input, self.current_stock_price, target_stock_price, month_to_gain)
+        contract = BuyCall(yahoo_input, self.current_stock_price, target_stock_price, month_to_gain)
         self.assertEqual(contract.ask, 163.15)
         self.assertEqual(contract.bid, None)
         self.assertAlmostEqual(contract.estimated_price, 163.15)
         # Missing ask.
         yahoo_input = dict(self.yahoo_input)
         yahoo_input.pop('ask', None)
-        contract = TargetPriceOptionContract(yahoo_input, self.current_stock_price, target_stock_price, month_to_gain)
+        contract = BuyCall(yahoo_input, self.current_stock_price, target_stock_price, month_to_gain)
         self.assertEqual(contract.ask, None)
         self.assertEqual(contract.bid, 160.25)
         self.assertAlmostEqual(contract.estimated_price, 160.25)
@@ -73,13 +73,13 @@ class OptionContractTestCase(TestCase):
         yahoo_input.pop('bid', None)
         yahoo_input.pop('ask', None)
         with self.assertRaisesMessage(ValueError, 'invalid bid and ask'):
-            TargetPriceOptionContract(yahoo_input, self.current_stock_price, target_stock_price, month_to_gain)
+            BuyCall(yahoo_input, self.current_stock_price, target_stock_price, month_to_gain)
 
     @mock.patch('django.utils.timezone.now')
     def test_target_gain(self, mock_now):
         mock_now.return_value = make_aware(datetime.fromtimestamp(1609491600), get_default_timezone())
-        contract = TargetGainOptionContract(self.yahoo_input, self.current_stock_price, target_gain=0.3,
-                                            month_to_gain=0.01)
+        contract = SellCoveredCall(self.yahoo_input, self.current_stock_price, target_gain=0.3,
+                                   month_to_gain=0.01)
 
         self.assertEqual(contract.target_gain, 0.3)
         self.assertEqual(contract.month_to_gain, 0.01)

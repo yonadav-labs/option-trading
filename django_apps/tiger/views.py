@@ -3,9 +3,9 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.exceptions import APIException
 
-from tiger.serializers import TickerSerializer, TargetPriceOptionContractSerializer, TargetGainOptionContractSerializer
+from tiger.serializers import TickerSerializer, BuyCallSerializer, SellCoveredCallSerializer
 from tiger.models import Ticker
-from tiger.classes import TargetPriceOptionContract, TargetGainOptionContract
+from tiger.classes import BuyCall, SellCoveredCall
 
 
 @api_view(['GET'])
@@ -52,11 +52,11 @@ def calls(request, ticker_symbol):
         all_calls = []
         for calls in get_valid_calls():
             for call in calls:
-                if not TargetPriceOptionContract.is_valid(call):
+                if not BuyCall.is_valid(call):
                     continue
                 all_calls.append(
-                    TargetPriceOptionContract(call, ticker.get_quote().get('regularMarketPrice'), target_price,
-                                              month_to_gain))
+                    BuyCall(call, ticker.get_quote().get('regularMarketPrice'), target_price,
+                            month_to_gain))
         all_calls = list(filter(lambda call: call.gain > 0.0, all_calls))
         all_calls = sorted(all_calls, key=lambda call: call.gain_after_tradeoff, reverse=True)
         if all_calls:
@@ -64,7 +64,7 @@ def calls(request, ticker_symbol):
             for call in all_calls:
                 call.save_normalized_score(max_gain_after_tradeoff)
 
-        return Response({'all_calls': TargetPriceOptionContractSerializer(all_calls, many=True).data})
+        return Response({'all_calls': BuyCallSerializer(all_calls, many=True).data})
 
     def get_calls_by_target_gain():
         try:
@@ -78,13 +78,13 @@ def calls(request, ticker_symbol):
         all_calls = []
         for calls in get_valid_calls():
             for call in calls:
-                if not TargetGainOptionContract.is_valid(call):
+                if not SellCoveredCall.is_valid(call):
                     continue
                 all_calls.append(
-                    TargetGainOptionContract(call, ticker.get_quote().get('regularMarketPrice'), target_gain,
-                                             month_to_gain))
+                    SellCoveredCall(call, ticker.get_quote().get('regularMarketPrice'), target_gain,
+                                    month_to_gain))
         all_calls = sorted(all_calls, key=lambda call: call.price_for_gain_after_tradeoff)
-        return Response({'all_calls': TargetGainOptionContractSerializer(all_calls, many=True).data})
+        return Response({'all_calls': SellCoveredCallSerializer(all_calls, many=True).data})
 
     ticker = get_object_or_404(Ticker, symbol=ticker_symbol.upper(), status="unspecified")
     # Check if option is available for this ticker.

@@ -42,10 +42,10 @@ if __name__ == "__main__":
     print(stock._expirations)
     calls = get_raw_calls(stock, stock.options[0])
 
-    from tiger.classes import TargetPriceOptionContract
+    from tiger.classes import BuyCall
     from tiger.serializers import OptionContractSerializer
 
-    contract = TargetPriceOptionContract(calls[0])
+    contract = BuyCall(calls[0])
     serialized_contract = OptionContractSerializer(contract)
     print(serialized_contract.data)
 

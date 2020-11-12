@@ -20,14 +20,14 @@ class OptionContractSerializer(serializers.Serializer):
     current_stock_price = serializers.FloatField(min_value=0.0)
 
 
-class TargetPriceOptionContractSerializer(OptionContractSerializer):
+class BuyCallSerializer(OptionContractSerializer):
     gain = serializers.FloatField()
     gain_after_tradeoff = serializers.FloatField()
     stock_gain = serializers.FloatField()
     normalized_score = serializers.FloatField()
 
 
-class TargetGainOptionContractSerializer(OptionContractSerializer):
+class SellCoveredCallSerializer(OptionContractSerializer):
     target_gain = serializers.FloatField()
     price_for_gain = serializers.FloatField()
     target_gain_after_tradeoff = serializers.FloatField()
