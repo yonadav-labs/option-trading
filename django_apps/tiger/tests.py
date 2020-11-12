@@ -29,7 +29,7 @@ class OptionContractTestCase(TestCase):
 
     @mock.patch('django.utils.timezone.now')
     def test_initialization(self, mock_now):
-        mock_now.return_value = make_aware(datetime.fromtimestamp(1609491600), get_default_timezone())
+        mock_now.return_value = make_aware(datetime.fromtimestamp(1609664400), get_default_timezone())
         target_stock_price = 600.0
         month_to_gain = 0.1
         contract = BuyCall(self.yahoo_input, self.current_stock_price, target_stock_price,
@@ -77,7 +77,7 @@ class OptionContractTestCase(TestCase):
 
     @mock.patch('django.utils.timezone.now')
     def test_target_gain(self, mock_now):
-        mock_now.return_value = make_aware(datetime.fromtimestamp(1609491600), get_default_timezone())
+        mock_now.return_value = make_aware(datetime.fromtimestamp(1609664400), get_default_timezone())
         contract = SellCoveredCall(self.yahoo_input, self.current_stock_price)
 
         self.assertAlmostEqual(contract.strike_diff_ratio, -0.31428571428)

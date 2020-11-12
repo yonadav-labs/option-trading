@@ -8,6 +8,7 @@ import overlayFactory from 'react-bootstrap-table2-overlay';
 import RangeSlider from 'react-bootstrap-range-slider';
 import Axios from 'axios';
 import getApiUrl from '../utils';
+import NumberFormat from 'react-number-format';
 
 export default function BestCallByPrice({ selectedTicker, expirationTimestamps }) {
     const API_URL = getApiUrl();
@@ -25,22 +26,19 @@ export default function BestCallByPrice({ selectedTicker, expirationTimestamps }
             dataField: "expiration_str",
             text: "Expiration",
         }, {
-            dataField: "days_till_expiration",
-            text: "Days Remaining",
-        }, {
-            dataField: "strike",
+            dataField: "strike_str",
             text: "Strike",
         }, {
-            dataField: "estimated_price",
+            dataField: "estimated_price_str",
             text: "Premium",
         }, {
-            dataField: "break_even_price",
+            dataField: "break_even_price_str",
             text: "Breakeven Point",
         }, {
-            dataField: "gain",
+            dataField: "gain_str",
             text: "Option Gain",
         }, {
-            dataField: "stock_gain",
+            dataField: "stock_gain_str",
             text: "Stock Gain",
         }, {
             dataField: "normalized_score",
@@ -86,14 +84,13 @@ export default function BestCallByPrice({ selectedTicker, expirationTimestamps }
             const response = await Axios.get(url);
             let all_calls = response.data.all_calls;
             all_calls.forEach(function (row) {
-                const precent_gain = Math.round(row.gain * 100);
-                row.gain = `${precent_gain}%`;
-                const precent_stock_gain = Math.round(row.stock_gain * 100);
-                row.stock_gain = `${precent_stock_gain}%`;
-                row.break_even_price = `$${row.break_even_price}`;
-                row.estimated_price = `$${row.estimated_price}`;
-                row.strike = `$${row.strike}`;
-                row.expiration_str = new Date(row.expiration * 1000).toLocaleDateString('en-US', { 'timeZone': 'GMT' });
+                row.strike_str = (<NumberFormat value={row.strike} displayType={'text'} thousandSeparator={true} prefix={'$'} />)
+                row.estimated_price_str = (<NumberFormat value={row.estimated_price} displayType={'text'} thousandSeparator={true} prefix={'$'} />)
+                row.break_even_price_str = (<NumberFormat value={row.break_even_price} displayType={'text'} thousandSeparator={true} prefix={'$'} />)
+                row.gain_str = (<NumberFormat value={row.gain * 100} displayType={'text'} decimalScale={2} suffix={'%'} />)
+                row.stock_gain_str = (<NumberFormat value={row.stock_gain * 100} displayType={'text'} decimalScale={2} suffix={'%'} />)
+                const exp_date = new Date(row.expiration * 1000).toLocaleDateString('en-US', { 'timeZone': 'GMT' })
+                row.expiration_str = (<div>{exp_date} ({row.days_till_expiration} days)</div>);
             });
             setBestCalls(all_calls);
             setLoading(false);
