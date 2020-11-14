@@ -7,8 +7,7 @@ import paginationFactory from 'react-bootstrap-table2-paginator';
 import overlayFactory from 'react-bootstrap-table2-overlay';
 import RangeSlider from 'react-bootstrap-range-slider';
 import Axios from 'axios';
-import getApiUrl from '../utils';
-import NumberFormat from 'react-number-format';
+import getApiUrl, { PercentageFormatter, PriceFormatter, TimestampWithDaysFormatter } from '../utils';
 
 export default function BestCallByPrice({ selectedTicker, expirationTimestamps }) {
     const API_URL = getApiUrl();
@@ -23,23 +22,31 @@ export default function BestCallByPrice({ selectedTicker, expirationTimestamps }
             dataField: 'contract_symbol',
             text: 'Contract Symbol',
         }, {
-            dataField: "expiration_str",
+            dataField: "expiration",
             text: "Expiration",
+            formatter: (cell, row, rowIndex, extraData) => (
+                TimestampWithDaysFormatter(cell, row.days_till_expiration)
+            )
         }, {
-            dataField: "strike_str",
+            dataField: "strike",
             text: "Strike",
+            formatter: PriceFormatter
         }, {
-            dataField: "estimated_price_str",
+            dataField: "estimated_price",
             text: "Premium",
+            formatter: PriceFormatter
         }, {
-            dataField: "break_even_price_str",
+            dataField: "break_even_price",
             text: "Breakeven Point",
+            formatter: PriceFormatter
         }, {
-            dataField: "gain_str",
+            dataField: "gain",
             text: "Option Gain",
+            formatter: PercentageFormatter
         }, {
-            dataField: "stock_gain_str",
+            dataField: "stock_gain",
             text: "Stock Gain",
+            formatter: PercentageFormatter
         }, {
             dataField: "normalized_score",
             text: "Final Score",
@@ -82,17 +89,7 @@ export default function BestCallByPrice({ selectedTicker, expirationTimestamps }
             selectedExpirationTimestamps.map((timestamp) => { url += `expiration_timestamps=${timestamp}&` });
             url += `month_to_percent_gain=${tradeoffValue}`
             const response = await Axios.get(url);
-            let all_calls = response.data.all_calls;
-            all_calls.forEach(function (row) {
-                row.strike_str = (<NumberFormat value={row.strike} displayType={'text'} thousandSeparator={true} prefix={'$'} />)
-                row.estimated_price_str = (<NumberFormat value={row.estimated_price} displayType={'text'} thousandSeparator={true} prefix={'$'} decimalScale={2} />)
-                row.break_even_price_str = (<NumberFormat value={row.break_even_price} displayType={'text'} thousandSeparator={true} prefix={'$'} />)
-                row.gain_str = (<NumberFormat value={row.gain * 100} displayType={'text'} decimalScale={2} suffix={'%'} />)
-                row.stock_gain_str = (<NumberFormat value={row.stock_gain * 100} displayType={'text'} decimalScale={2} suffix={'%'} />)
-                const exp_date = new Date(row.expiration * 1000).toLocaleDateString('en-US', { 'timeZone': 'GMT' })
-                row.expiration_str = (<div>{exp_date} ({row.days_till_expiration} days)</div>);
-            });
-            setBestCalls(all_calls);
+            setBestCalls(response.data.all_calls);
             setLoading(false);
         } catch (error) {
             console.error(error);
@@ -160,7 +157,10 @@ export default function BestCallByPrice({ selectedTicker, expirationTimestamps }
                 keyField="contract_symbol"
                 data={bestCalls}
                 columns={result_table_columns}
-                pagination={paginationFactory()}
+                pagination={paginationFactory({
+                    sizePerPage: 25,
+                    hidePageListOnlyOnePage: true
+                })}
                 noDataIndication="No Data"
                 bordered={false}
                 overlay={overlayFactory({ spinner: true })} />

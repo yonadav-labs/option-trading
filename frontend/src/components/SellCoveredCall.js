@@ -3,14 +3,12 @@ import Form from 'react-bootstrap/Form'
 import TickerTypeahead from '../components/TickerTypeahead';
 import TickerSummary from '../components/TickerSummary.js';
 import Axios from 'axios';
-import getApiUrl from '../utils';
+import getApiUrl, { PercentageFormatter, PriceFormatter, PercentageWithAnnualizedFormatter, TimestampWithDaysFormatter } from '../utils';
 import Button from 'react-bootstrap/Button';
 import Alert from 'react-bootstrap/Alert';
 import BootstrapTable from 'react-bootstrap-table-next';
 import paginationFactory from 'react-bootstrap-table2-paginator';
 import overlayFactory from 'react-bootstrap-table2-overlay';
-import NumberFormat from 'react-number-format';
-
 
 
 export default function SellCoveredCall() {
@@ -29,23 +27,33 @@ export default function SellCoveredCall() {
             dataField: 'contract_symbol',
             text: 'Contract Symbol',
         }, {
-            dataField: "expiration_str",
+            dataField: "expiration",
             text: "Expiration",
+            formatter: (cell, row, rowIndex, extraData) => (
+                TimestampWithDaysFormatter(cell, row.days_till_expiration)
+            )
         }, {
-            dataField: "strike_str",
+            dataField: "strike",
             text: "Strike",
+            formatter: PriceFormatter
         }, {
-            dataField: "estimated_price_str",
+            dataField: "estimated_price",
             text: "Premium",
+            formatter: PriceFormatter
         }, {
-            dataField: "strike_diff_ratio_str",
+            dataField: "strike_diff_ratio",
             text: "To strike",
+            formatter: PercentageFormatter
         }, {
-            dataField: "gain_cap_str",
+            dataField: "gain_cap",
             text: "Upside Cap",
+            formatter: PercentageFormatter
         }, {
-            dataField: "premium_gain_str",
+            dataField: "premium_gain",
             text: "Premium gain",
+            formatter: (cell, row, rowIndex, extraData) => (
+                PercentageWithAnnualizedFormatter(cell, row.annualized_premium_gain)
+            )
         }];
 
 
@@ -84,25 +92,7 @@ export default function SellCoveredCall() {
             let url = `${API_URL}/tickers/${selectedTicker[0].symbol}/sell_covered_calls/?`;
             selectedExpirationTimestamps.map((timestamp) => { url += `expiration_timestamps=${timestamp}&` });
             const response = await Axios.get(url);
-            let all_calls = response.data.all_calls;
-
-            all_calls.forEach(function (row) {
-                row.estimated_price_str = (<NumberFormat value={row.estimated_price} displayType={'text'} thousandSeparator={true} prefix={'$'} decimalScale={2} />)
-                row.strike_str = (<NumberFormat value={row.strike} displayType={'text'} thousandSeparator={true} prefix={'$'} />)
-                row.strike_diff_ratio_str = (<NumberFormat value={row.strike_diff_ratio * 100} displayType={'text'} decimalScale={2} suffix={'%'} />)
-                row.gain_cap_str = (<span>
-                    <NumberFormat value={row.gain_cap * 100} displayType={'text'} decimalScale={2} suffix={'%'} />
-                    &nbsp;(<NumberFormat value={row.annualized_gain_cap * 100} displayType={'text'} decimalScale={2} suffix={'%'} /> annually)
-                </span>)
-                row.premium_gain_str = (<span>
-                    <NumberFormat value={row.premium_gain * 100} displayType={'text'} decimalScale={2} suffix={'%'} />
-                    &nbsp;(<NumberFormat value={row.annualized_premium_gain * 100} displayType={'text'} decimalScale={2} suffix={'%'} /> annually)
-                </span>)
-                const exp_date = new Date(row.expiration * 1000).toLocaleDateString('en-US', { 'timeZone': 'GMT' })
-                row.expiration_str = (<div>{exp_date} ({row.days_till_expiration} days)</div>);
-            });
-
-            setBestCalls(all_calls);
+            setBestCalls(response.data.all_calls);
             setLoading(false);
         } catch (error) {
             console.error(error);
@@ -167,7 +157,10 @@ export default function SellCoveredCall() {
                             keyField="contract_symbol"
                             data={bestCalls}
                             columns={result_table_columns}
-                            pagination={paginationFactory()}
+                            pagination={paginationFactory({
+                                sizePerPage: 25,
+                                hidePageListOnlyOnePage: true
+                            })}
                             noDataIndication="No Data"
                             bordered={false}
                             overlay={overlayFactory({ spinner: true })} />
