@@ -7,7 +7,7 @@ import paginationFactory from 'react-bootstrap-table2-paginator';
 import overlayFactory from 'react-bootstrap-table2-overlay';
 import RangeSlider from 'react-bootstrap-range-slider';
 import Axios from 'axios';
-import getApiUrl, { PercentageFormatter, PriceFormatter, TimestampWithDaysFormatter } from '../utils';
+import getApiUrl, { PercentageFormatter, PriceFormatter, TimestampWithDaysFormatter, NumberRoundFormatter } from '../utils';
 
 export default function BestCallByPrice({ selectedTicker, expirationTimestamps }) {
     const API_URL = getApiUrl();
@@ -50,7 +50,8 @@ export default function BestCallByPrice({ selectedTicker, expirationTimestamps }
         }, {
             dataField: "normalized_score",
             text: "Final Score",
-            sort: true,
+            formatter: NumberRoundFormatter,
+            sort: true
         }];
 
     const handleSubmit = (event) => {

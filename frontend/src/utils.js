@@ -10,19 +10,24 @@ export default function getApiUrl() {
     return `${window.location.origin}/api`
 };
 
-export function PercentageFormatter(num) {
-    return (<NumberFormat value={num * 100} displayType={'text'} decimalScale={2} suffix={'%'} />);
+export function NumberRoundFormatter(num) {
+    return (<NumberFormat value={num} displayType={'text'} decimalScale={2} />);
 };
 
 export function PriceFormatter(num) {
     return (<NumberFormat value={num} displayType={'text'} thousandSeparator={true} decimalScale={2} prefix={'$'} />);
 };
 
+export function PercentageFormatter(num) {
+    if (num < 10) {
+        return (<NumberFormat value={num * 100} displayType={'text'} decimalScale={2} suffix={'%'} />);
+    } else {
+        return (<NumberFormat value={num} displayType={'text'} decimalScale={0} suffix={'X'} />);
+    }
+};
+
 export function PercentageWithAnnualizedFormatter(num, annualized_num) {
-    return (<span>
-        <NumberFormat value={num * 100} displayType={'text'} decimalScale={2} suffix={'%'} />
-        &nbsp;(<NumberFormat value={annualized_num * 100} displayType={'text'} decimalScale={2} suffix={'%'} /> in APR)
-    </span>)
+    return (<span> {PercentageFormatter(num)} &nbsp;({PercentageFormatter(annualized_num)} in APR)</span>)
 };
 
 export function TimestampFormatter(ts) {
@@ -31,6 +36,5 @@ export function TimestampFormatter(ts) {
 };
 
 export function TimestampWithDaysFormatter(ts, days_till_expiration) {
-    const exp_date = new Date(ts * 1000).toLocaleDateString('en-US', { 'timeZone': 'GMT' })
-    return (<span>{exp_date} ({days_till_expiration} days)</span>);
+    return (<span>{TimestampFormatter(ts)} ({days_till_expiration} days)</span>);
 };
