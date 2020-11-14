@@ -55,7 +55,7 @@ class OptionContract:
             return (self.ask + self.bid) / 2.0
 
     def get_break_even_price(self):
-        return round(self.get_estimated_price() + self.strike, 2)
+        return self.get_estimated_price() + self.strike
 
 
 class BuyCall(OptionContract):
@@ -73,17 +73,17 @@ class BuyCall(OptionContract):
     # Private methods:
     # TODO: make @property work with Serializer.
     def __get_gain(self):
-        return round((self.target_stock_price - self.break_even_price) / self.estimated_price, 4)
+        return (self.target_stock_price - self.break_even_price) / self.estimated_price
 
     def __get_gain_after_tradeoff(self):
-        return round(self.gain + (self.days_till_expiration / 30.0) * self.month_to_gain, 4)
+        return self.gain + (self.days_till_expiration / 30.0) * self.month_to_gain
 
     def __get_stock_gain(self):
-        return round(self.target_stock_price / self.current_stock_price - 1.0, 4)
+        return self.target_stock_price / self.current_stock_price - 1.0
 
     # Public methods:
     def save_normalized_score(self, max_gain_after_tradeoff):
-        self.normalized_score = round(self.gain_after_tradeoff / max_gain_after_tradeoff * 100.0, 2)
+        self.normalized_score = self.gain_after_tradeoff / max_gain_after_tradeoff * 100.0
 
 
 class SellCoveredCall(OptionContract):
