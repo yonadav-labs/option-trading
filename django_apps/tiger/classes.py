@@ -29,7 +29,7 @@ class OptionContract:
 
         # Non-contract data.
         self.current_stock_price = current_stock_price
-        self.estimated_price = self.get_estimated_price()
+        self.estimated_premium = self.get_estimated_premium()
         self.break_even_price = self.get_break_even_price()
         # Yahoo expiration time is 2 days early.
         self.days_till_expiration = days_from_timestamp(self.expiration) + 2
@@ -44,7 +44,7 @@ class OptionContract:
                 last_price is not None and last_price > 0.0)
 
     # Returns None if both ask and bid are missing.
-    def get_estimated_price(self):
+    def get_estimated_premium(self):
         if not self.ask and not self.bid:
             return self.last_price
         elif not self.ask:
@@ -55,7 +55,7 @@ class OptionContract:
             return (self.ask + self.bid) / 2.0
 
     def get_break_even_price(self):
-        return self.get_estimated_price() + self.strike
+        return self.get_estimated_premium() + self.strike
 
 
 class BuyCall(OptionContract):
@@ -73,7 +73,7 @@ class BuyCall(OptionContract):
     # Private methods:
     # TODO: make @property work with Serializer.
     def __get_gain(self):
-        return (self.target_stock_price - self.break_even_price) / self.estimated_price
+        return (self.target_stock_price - self.break_even_price) / self.estimated_premium
 
     def __get_gain_after_tradeoff(self):
         return self.gain + (self.days_till_expiration / 30.0) * self.month_to_gain
@@ -101,15 +101,15 @@ class SellCoveredCall(OptionContract):
         return (self.strike - self.current_stock_price) / self.current_stock_price
 
     def get_gain_cap(self):
-        return (self.strike + self.estimated_price - self.current_stock_price) / self.current_stock_price
+        return (self.strike + self.estimated_premium - self.current_stock_price) / self.current_stock_price
 
     def get_annualized_gain_cap(self):
-        max_total = (self.strike + self.estimated_price) / self.current_stock_price
+        max_total = (self.strike + self.estimated_premium) / self.current_stock_price
         return math.pow(max_total, 365 / self.days_till_expiration) - 1.0
 
     def get_premium_gain(self):
-        return self.estimated_price / self.current_stock_price
+        return self.estimated_premium / self.current_stock_price
 
     def get_annualized_premium_gain(self):
-        total = (self.current_stock_price + self.estimated_price) / self.current_stock_price
+        total = (self.current_stock_price + self.estimated_premium) / self.current_stock_price
         return math.pow(total, 365 / self.days_till_expiration) - 1.0

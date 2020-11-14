@@ -14,7 +14,7 @@ class OptionContractSerializer(serializers.Serializer):
     contract_symbol = serializers.CharField(max_length=100)
     expiration = serializers.IntegerField(min_value=0)
     strike = serializers.FloatField(min_value=0.0)
-    estimated_price = serializers.FloatField(min_value=0.0)
+    estimated_premium = serializers.FloatField(min_value=0.0)
     break_even_price = serializers.FloatField(min_value=0.0)
     days_till_expiration = serializers.IntegerField(min_value=0)
     current_stock_price = serializers.FloatField(min_value=0.0)

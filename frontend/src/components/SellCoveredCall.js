@@ -37,7 +37,7 @@ export default function SellCoveredCall() {
             text: "Strike",
             formatter: PriceFormatter
         }, {
-            dataField: "estimated_price",
+            dataField: "estimated_premium",
             text: "Premium",
             formatter: PriceFormatter
         }, {
