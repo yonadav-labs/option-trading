@@ -7,7 +7,7 @@ import paginationFactory from 'react-bootstrap-table2-paginator';
 import overlayFactory from 'react-bootstrap-table2-overlay';
 import RangeSlider from 'react-bootstrap-range-slider';
 import Axios from 'axios';
-import getApiUrl, { PercentageFormatter, PriceFormatter, TimestampWithDaysFormatter, NumberRoundFormatter } from '../utils';
+import getApiUrl, { PercentageFormatter, PriceFormatter, TimestampWithDaysFormatter, NumberRoundFormatter, ExpandContractRow } from '../utils';
 
 export default function BestCallByPrice({ selectedTicker, expirationTimestamps }) {
     const API_URL = getApiUrl();
@@ -164,7 +164,9 @@ export default function BestCallByPrice({ selectedTicker, expirationTimestamps }
                 })}
                 noDataIndication="No Data"
                 bordered={false}
-                overlay={overlayFactory({ spinner: true })} />
+                overlay={overlayFactory({ spinner: true })}
+                expandRow={ExpandContractRow()}
+            />
         </div>
     );
 }
