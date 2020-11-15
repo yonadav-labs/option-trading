@@ -76,3 +76,20 @@ export function ExpandContractRow() {
         }
     }
 }
+
+export function InTheMoneyRowStyle(row, rowIndex) {
+    const style = {};
+    if (row.in_the_money) {
+        style.backgroundColor = '#e0f0ff';
+    }
+    return style;
+};
+
+export function InTheMoneySign() {
+    return (
+        <div display="block" style={{
+            backgroundColor: '#e0f0ff', float: 'right', borderLeftWidth: '5px',
+            borderLeftStyle: 'solid', borderLeftColor: '#007bff', padding: '5px',
+            marginBottom: '5px'
+        }}><span>In The Money</span></div>)
+}

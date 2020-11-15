@@ -7,7 +7,10 @@ import paginationFactory from 'react-bootstrap-table2-paginator';
 import overlayFactory from 'react-bootstrap-table2-overlay';
 import RangeSlider from 'react-bootstrap-range-slider';
 import Axios from 'axios';
-import getApiUrl, { PercentageFormatter, PriceFormatter, TimestampFormatter, NumberRoundFormatter, ExpandContractRow } from '../utils';
+import getApiUrl, {
+    PercentageFormatter, PriceFormatter, TimestampFormatter, NumberRoundFormatter,
+    ExpandContractRow, InTheMoneyRowStyle, InTheMoneySign
+} from '../utils';
 
 export default function BestCallByPrice({ selectedTicker, expirationTimestamps }) {
     const API_URL = getApiUrl();
@@ -149,8 +152,9 @@ export default function BestCallByPrice({ selectedTicker, expirationTimestamps }
                 <Button type="submit">Analyze</Button>
             </Form>
             <br />
+            {InTheMoneySign()}
             <BootstrapTable
-                classes="table-hover table-responsive"
+                classes="table-responsive"
                 loading={loading}
                 bootstrap4={true}
                 keyField="contract_symbol"
@@ -164,7 +168,8 @@ export default function BestCallByPrice({ selectedTicker, expirationTimestamps }
                 bordered={false}
                 overlay={overlayFactory({ spinner: true })}
                 expandRow={ExpandContractRow()}
+                rowStyle={InTheMoneyRowStyle}
             />
-        </div>
+        </div >
     );
 }
