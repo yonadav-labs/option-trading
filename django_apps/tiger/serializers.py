@@ -9,11 +9,22 @@ class TickerSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class OptionContractSerializer(serializers.Serializer):
-    ask = serializers.FloatField(min_value=0.0)
-    bid = serializers.FloatField(min_value=0.0)
+    ask = serializers.FloatField(min_value=0.0, allow_null=True)
+    bid = serializers.FloatField(min_value=0.0, allow_null=True)
     contract_symbol = serializers.CharField(max_length=100)
     expiration = serializers.IntegerField(min_value=0)
     strike = serializers.FloatField(min_value=0.0)
+    change = serializers.FloatField()
+    contract_size = serializers.CharField()
+    currency = serializers.CharField()
+    implied_volatility = serializers.FloatField()
+    in_the_money = serializers.BooleanField()
+    last_price = serializers.FloatField(min_value=0.0)
+    last_trade_date = serializers.IntegerField(min_value=0)
+    open_interest = serializers.IntegerField(min_value=0)
+    percent_change = serializers.FloatField()
+    volume = serializers.IntegerField(allow_null=True)
+
     estimated_premium = serializers.FloatField(min_value=0.0)
     break_even_price = serializers.FloatField(min_value=0.0)
     days_till_expiration = serializers.IntegerField(min_value=0)
