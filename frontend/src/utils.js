@@ -60,7 +60,7 @@ export function ExpandContractRow() {
                     <div className="col-sm"><b>Implied volatility:</b> {PercentageFormatter(row.implied_volatility)}</div>
                     <div className="col-sm"><b>Contract size:</b> {row.contract_size}</div>
                     <div className="col-sm"><b>In the money:</b> {row.in_the_money ? 'Yes' : 'No'}</div>
-                    <div className="col-sm"></div>
+                    <div className="col-sm"><b>Expire in:</b> {row.days_till_expiration} days</div>
                 </div>
             </div>
         ),

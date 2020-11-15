@@ -7,7 +7,7 @@ import paginationFactory from 'react-bootstrap-table2-paginator';
 import overlayFactory from 'react-bootstrap-table2-overlay';
 import RangeSlider from 'react-bootstrap-range-slider';
 import Axios from 'axios';
-import getApiUrl, { PercentageFormatter, PriceFormatter, TimestampWithDaysFormatter, NumberRoundFormatter, ExpandContractRow } from '../utils';
+import getApiUrl, { PercentageFormatter, PriceFormatter, TimestampFormatter, NumberRoundFormatter, ExpandContractRow } from '../utils';
 
 export default function BestCallByPrice({ selectedTicker, expirationTimestamps }) {
     const API_URL = getApiUrl();
@@ -24,9 +24,7 @@ export default function BestCallByPrice({ selectedTicker, expirationTimestamps }
         }, {
             dataField: "expiration",
             text: "Expiration",
-            formatter: (cell, row, rowIndex, extraData) => (
-                TimestampWithDaysFormatter(cell, row.days_till_expiration)
-            )
+            formatter: TimestampFormatter
         }, {
             dataField: "strike",
             text: "Strike",
@@ -152,7 +150,7 @@ export default function BestCallByPrice({ selectedTicker, expirationTimestamps }
             </Form>
             <br />
             <BootstrapTable
-                classes="table-responsive"
+                classes="table-hover table-responsive"
                 loading={loading}
                 bootstrap4={true}
                 keyField="contract_symbol"

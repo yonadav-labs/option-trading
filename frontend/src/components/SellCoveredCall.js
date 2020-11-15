@@ -3,7 +3,7 @@ import Form from 'react-bootstrap/Form'
 import TickerTypeahead from '../components/TickerTypeahead';
 import TickerSummary from '../components/TickerSummary.js';
 import Axios from 'axios';
-import getApiUrl, { PercentageFormatter, PriceFormatter, PercentageWithAnnualizedFormatter, TimestampWithDaysFormatter, ExpandContractRow } from '../utils';
+import getApiUrl, { PercentageFormatter, PriceFormatter, PercentageWithAnnualizedFormatter, TimestampFormatter, ExpandContractRow } from '../utils';
 import Button from 'react-bootstrap/Button';
 import Alert from 'react-bootstrap/Alert';
 import BootstrapTable from 'react-bootstrap-table-next';
@@ -29,9 +29,7 @@ export default function SellCoveredCall() {
         }, {
             dataField: "expiration",
             text: "Expiration",
-            formatter: (cell, row, rowIndex, extraData) => (
-                TimestampWithDaysFormatter(cell, row.days_till_expiration)
-            )
+            formatter: TimestampFormatter
         }, {
             dataField: "strike",
             text: "Strike",
@@ -152,7 +150,7 @@ export default function SellCoveredCall() {
                         </Form>
                         <br />
                         <BootstrapTable
-                            classes="table-responsive"
+                            classes="table-hover table-responsive"
                             loading={loading}
                             bootstrap4={true}
                             keyField="contract_symbol"
