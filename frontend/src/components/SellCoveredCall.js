@@ -109,6 +109,7 @@ export default function SellCoveredCall() {
                         setSelectedTicker={setSelectedTicker}
                         setExpirationTimestamps={setExpirationTimestamps}
                         setbasicInfo={setbasicInfo}
+                        setBestCalls={setBestCalls}
                     />
                 </Form.Group>
             </Form>
