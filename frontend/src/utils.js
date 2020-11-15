@@ -93,3 +93,14 @@ export function InTheMoneySign() {
             marginBottom: '5px'
         }}><span>In The Money</span></div>)
 }
+
+export function onInTheMoneyFilterChange(event, inTheMoneyFilter) {
+    const { value } = event.target;
+    if (value == 'all') {
+        inTheMoneyFilter([true, false]);
+    } else if (value == 'itm') {
+        inTheMoneyFilter([true]);
+    } else if (value == 'otm') {
+        inTheMoneyFilter([false]);
+    }
+};

@@ -4,13 +4,15 @@ import Button from 'react-bootstrap/Button';
 import Alert from 'react-bootstrap/Alert';
 import BootstrapTable from 'react-bootstrap-table-next';
 import paginationFactory from 'react-bootstrap-table2-paginator';
-import overlayFactory from 'react-bootstrap-table2-overlay';
 import RangeSlider from 'react-bootstrap-range-slider';
 import Axios from 'axios';
 import getApiUrl, {
     PercentageFormatter, PriceFormatter, TimestampFormatter, NumberRoundFormatter,
-    ExpandContractRow, InTheMoneyRowStyle, InTheMoneySign
+    ExpandContractRow, InTheMoneyRowStyle, InTheMoneySign, onInTheMoneyFilterChange
 } from '../utils';
+import filterFactory, { multiSelectFilter } from 'react-bootstrap-table2-filter';
+
+let inTheMoneyFilter;
 
 export default function BestCallByPrice({ selectedTicker, expirationTimestamps }) {
     const API_URL = getApiUrl();
@@ -20,6 +22,10 @@ export default function BestCallByPrice({ selectedTicker, expirationTimestamps }
     const [selectedExpirationTimestamps, setSelectedExpirationTimestamps] = useState([]);
     const [tradeoffValue, setTradeoffValue] = React.useState(0.0);
 
+    const selectOptions = {
+        true: 'ITM',
+        false: 'OTM'
+    };
     const result_table_columns = [
         {
             dataField: 'contract_symbol',
@@ -53,6 +59,19 @@ export default function BestCallByPrice({ selectedTicker, expirationTimestamps }
             text: "Final Score",
             formatter: NumberRoundFormatter,
             sort: true
+        }, {
+            dataField: 'in_the_money',
+            text: 'In the money',
+            // hidden: true, getFilter() won't be called if hidden is true.
+            style: { 'display': 'none' },
+            headerStyle: { 'display': 'none' },
+            formatter: cell => selectOptions[cell],
+            filter: multiSelectFilter({
+                options: selectOptions,
+                getFilter: (filter) => {
+                    inTheMoneyFilter = filter;
+                }
+            })
         }];
 
     const handleSubmit = (event) => {
@@ -153,6 +172,21 @@ export default function BestCallByPrice({ selectedTicker, expirationTimestamps }
             </Form>
             <br />
             {InTheMoneySign()}
+
+            <div className="row">
+                <Form>
+                    <Form.Group>
+                        <Form.Label className="font-weight-bold">Filter by strike price:</Form.Label>
+                        <Form.Control name="tradeoff" as="select" defaultValue={0}
+                            onChange={(e) => onInTheMoneyFilterChange(e, inTheMoneyFilter)}>
+                            <option key="all" value="all">All</option>
+                            <option key="itm" value="itm">In the money</option>
+                            <option key="otm" value="otm">Out of the money</option>
+                        </Form.Control>
+                    </Form.Group>
+                </Form>
+            </div>
+
             <BootstrapTable
                 classes="table-responsive"
                 loading={loading}
@@ -166,9 +200,9 @@ export default function BestCallByPrice({ selectedTicker, expirationTimestamps }
                 })}
                 noDataIndication="No Data"
                 bordered={false}
-                overlay={overlayFactory({ spinner: true })}
                 expandRow={ExpandContractRow()}
                 rowStyle={InTheMoneyRowStyle}
+                filter={filterFactory()}
             />
         </div >
     );

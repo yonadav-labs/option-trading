@@ -5,7 +5,7 @@ import TickerSummary from '../components/TickerSummary.js';
 import Axios from 'axios';
 import getApiUrl, {
     PercentageFormatter, PriceFormatter, PercentageWithAnnualizedFormatter, TimestampFormatter,
-    ExpandContractRow, InTheMoneyRowStyle, InTheMoneySign
+    ExpandContractRow, InTheMoneyRowStyle, InTheMoneySign, onInTheMoneyFilterChange
 } from '../utils';
 import Button from 'react-bootstrap/Button';
 import Alert from 'react-bootstrap/Alert';
@@ -30,7 +30,6 @@ export default function SellCoveredCall() {
         true: 'ITM',
         false: 'OTM'
     };
-
     const result_table_columns = [
         {
             dataField: 'contract_symbol',
@@ -118,18 +117,6 @@ export default function SellCoveredCall() {
         }
     };
 
-    const onInTheMoneyFilterChange = (event) => {
-        const { value } = event.target;
-        console.log(inTheMoneyFilter);
-        if (value == 'all') {
-            inTheMoneyFilter([true, false]);
-        } else if (value == 'itm') {
-            inTheMoneyFilter([true]);
-        } else if (value == 'otm') {
-            inTheMoneyFilter([false]);
-        }
-    };
-
     return (
         <div id="content">
             <h1 className="text-center">Sell covered call</h1>
@@ -188,7 +175,8 @@ export default function SellCoveredCall() {
                             <Form>
                                 <Form.Group>
                                     <Form.Label className="font-weight-bold">Filter by strike price:</Form.Label>
-                                    <Form.Control name="tradeoff" as="select" defaultValue={0} onChange={onInTheMoneyFilterChange}>
+                                    <Form.Control name="tradeoff" as="select" defaultValue={0}
+                                        onChange={(e) => onInTheMoneyFilterChange(e, inTheMoneyFilter)}>
                                         <option key="all" value="all">All</option>
                                         <option key="itm" value="itm">In the money</option>
                                         <option key="otm" value="otm">Out of the money</option>
