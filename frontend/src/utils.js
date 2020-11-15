@@ -52,7 +52,7 @@ export function ExpandContractRow() {
                 </div>
                 <div className="row">
                     <div className="col-sm"><b>Change:</b> {NumberRoundFormatter(row.change)}</div>
-                    <div className="col-sm"><b>% Change:</b> {PercentageFormatter(row.percent_change)}</div>
+                    <div className="col-sm"><b>% Change:</b> {NumberRoundFormatter(row.percent_change)}%</div>
                     <div className="col-sm"><b>Volume:</b> {NumberRoundFormatter(row.volume)}</div>
                     <div className="col-sm"><b>Open interest:</b> {NumberRoundFormatter(row.open_interest)}</div>
                 </div>
