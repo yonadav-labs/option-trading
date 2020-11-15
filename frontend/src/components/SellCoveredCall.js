@@ -11,8 +11,9 @@ import Button from 'react-bootstrap/Button';
 import Alert from 'react-bootstrap/Alert';
 import BootstrapTable from 'react-bootstrap-table-next';
 import paginationFactory from 'react-bootstrap-table2-paginator';
-import overlayFactory from 'react-bootstrap-table2-overlay';
+import filterFactory, { multiSelectFilter } from 'react-bootstrap-table2-filter';
 
+let inTheMoneyFilter;
 
 export default function SellCoveredCall() {
     const [selectedTicker, setSelectedTicker] = useState([]);
@@ -24,6 +25,11 @@ export default function SellCoveredCall() {
     const [bestCalls, setBestCalls] = useState([]);
     const [loading, setLoading] = useState(false);
     const [selectedExpirationTimestamps, setSelectedExpirationTimestamps] = useState([]);
+
+    const selectOptions = {
+        true: 'ITM',
+        false: 'OTM'
+    };
 
     const result_table_columns = [
         {
@@ -55,6 +61,19 @@ export default function SellCoveredCall() {
             formatter: (cell, row, rowIndex, extraData) => (
                 PercentageWithAnnualizedFormatter(cell, row.annualized_premium_gain)
             )
+        }, {
+            dataField: 'in_the_money',
+            text: 'In the money',
+            // hidden: true, getFilter() won't be called if hidden is true.
+            style: { 'display': 'none' },
+            headerStyle: { 'display': 'none' },
+            formatter: cell => selectOptions[cell],
+            filter: multiSelectFilter({
+                options: selectOptions,
+                getFilter: (filter) => {
+                    inTheMoneyFilter = filter;
+                }
+            })
         }];
 
     const handleSubmit = (event) => {
@@ -96,6 +115,18 @@ export default function SellCoveredCall() {
             setLoading(false);
         } catch (error) {
             console.error(error);
+        }
+    };
+
+    const onInTheMoneyFilterChange = (event) => {
+        const { value } = event.target;
+        console.log(inTheMoneyFilter);
+        if (value == 'all') {
+            inTheMoneyFilter([true, false]);
+        } else if (value == 'itm') {
+            inTheMoneyFilter([true]);
+        } else if (value == 'otm') {
+            inTheMoneyFilter([false]);
         }
     };
 
@@ -152,6 +183,20 @@ export default function SellCoveredCall() {
                         </Form>
                         <br />
                         {InTheMoneySign()}
+
+                        <div className="row">
+                            <Form>
+                                <Form.Group>
+                                    <Form.Label className="font-weight-bold">Filter by strike price:</Form.Label>
+                                    <Form.Control name="tradeoff" as="select" defaultValue={0} onChange={onInTheMoneyFilterChange}>
+                                        <option key="all" value="all">All</option>
+                                        <option key="itm" value="itm">In the money</option>
+                                        <option key="otm" value="otm">Out of the money</option>
+                                    </Form.Control>
+                                </Form.Group>
+                            </Form>
+                        </div>
+
                         <BootstrapTable
                             classes="table-responsive"
                             loading={loading}
@@ -165,9 +210,10 @@ export default function SellCoveredCall() {
                             })}
                             noDataIndication="No Data"
                             bordered={false}
-                            overlay={overlayFactory({ spinner: true })}
+                            // overlay={overlayFactory({ spinner: true })} does not work with filter.
                             expandRow={ExpandContractRow()}
                             rowStyle={InTheMoneyRowStyle}
+                            filter={filterFactory()}
                         />
                     </div>
                 </div>
