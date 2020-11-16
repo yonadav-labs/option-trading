@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   BrowserRouter as Router
 } from "react-router-dom";
@@ -7,8 +7,11 @@ import { createBrowserHistory } from 'history';
 import './App.css';
 import 'react-bootstrap-table-next/dist/react-bootstrap-table2.min.css';
 import AppWithRouterAccess from './AppWithRouterAccess';
+import UserContext from './UserContext';
 
 function App() {
+  const [user, setUser] = useState(null);
+  const value = { user, setUser };
   const history = createBrowserHistory();
   // Initialize google analytics page view tracking
   history.listen(location => {
@@ -18,9 +21,11 @@ function App() {
   });
 
   return (
-    <Router>
-      <AppWithRouterAccess/>
-    </Router>
+    <UserContext.Provider value={value}>
+      <Router>
+        <AppWithRouterAccess />
+      </Router>
+    </UserContext.Provider>
   );
 }
 

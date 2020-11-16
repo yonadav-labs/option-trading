@@ -3,7 +3,7 @@
 ## Local
 * `docker-compose up -d`
 * `docker-compose down`
-* `docker-compose exec web python tiger/scripts/fetch_tickets.py`
+* `docker-compose exec web python tiger/scripts/fetch_tickers.py`
 * `docker-compose exec web python tiger/scripts/disable_tickers.py`
 
 ## Deployment

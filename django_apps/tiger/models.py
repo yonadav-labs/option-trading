@@ -2,6 +2,7 @@ import json
 from datetime import timedelta
 from django.db import models
 from django.contrib.auth.models import AbstractUser
+from django.contrib.postgres.fields import ArrayField
 
 from tiger.utils import get_now
 from tiger.yahoo import fetch_external_api, get_yahoo_option_url, get_expiration_timestamps, get_option_contracts, \
@@ -83,5 +84,8 @@ class ExternalRequestCache(BaseModel):
 
 
 class User(AbstractUser):
+    okta_id = models.CharField(max_length=50, null=False, blank=False)
+    is_subscriber = models.BooleanField(null=False)
+    watchlist = ArrayField(models.CharField(max_length=5), size=200)
     class Meta:
         app_label = 'tiger'
