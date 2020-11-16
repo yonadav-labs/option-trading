@@ -4,7 +4,6 @@ import django.contrib.auth.models
 import django.contrib.auth.validators
 from django.db import migrations, models
 import django.utils.timezone
-from django.contrib.postgres.fields import ArrayField
 
 
 class Migration(migrations.Migration):
@@ -20,8 +19,6 @@ class Migration(migrations.Migration):
             name='User',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('okta_id', models.CharField(max_length=50, blank=False, verbose_name='Okta ID')),
-                ('is_subscriber', models.BooleanField(default=False, null=False, help_text='Designates whether the user is a subscriver.', verbose_name='subscriber status')),
                 ('password', models.CharField(max_length=128, verbose_name='password')),
                 ('last_login', models.DateTimeField(blank=True, null=True, verbose_name='last login')),
                 ('is_superuser', models.BooleanField(default=False, help_text='Designates that this user has all permissions without explicitly assigning them.', verbose_name='superuser status')),
@@ -34,7 +31,6 @@ class Migration(migrations.Migration):
                 ('date_joined', models.DateTimeField(default=django.utils.timezone.now, verbose_name='date joined')),
                 ('groups', models.ManyToManyField(blank=True, help_text='The groups this user belongs to. A user will get all permissions granted to each of their groups.', related_name='user_set', related_query_name='user', to='auth.Group', verbose_name='groups')),
                 ('user_permissions', models.ManyToManyField(blank=True, help_text='Specific permissions for this user.', related_name='user_set', related_query_name='user', to='auth.Permission', verbose_name='user permissions')),
-                ('watchlist', ArrayField(models.CharField(max_length=5, verbose_name='Watchlist'), size=200))
             ],
             managers=[
                 ('objects', django.contrib.auth.models.UserManager()),
