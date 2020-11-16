@@ -83,8 +83,19 @@ export function ExpandContractRow() {
 
 export function InTheMoneyRowStyle(row, rowIndex) {
     const style = {};
-    if (row.in_the_money) {
-        style.backgroundColor = '#e0f0ff';
+    if (row.unique_strike_count) {
+        if (row.in_the_money) {
+            style.backgroundColor = row.unique_strike_count % 2 > 0 ? '#e0f0ff' : '#c8d6e3';
+        } else {
+            if (row.unique_strike_count % 2 === 0) {
+                style.backgroundColor = '#dedede';
+            }
+        }
+    } else {
+        // Without strike grouping.
+        if (row.in_the_money) {
+            style.backgroundColor = '#e0f0ff';
+        }
     }
     return style;
 };

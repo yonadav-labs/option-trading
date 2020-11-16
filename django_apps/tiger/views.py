@@ -88,4 +88,5 @@ def sell_covered_calls(request, ticker_symbol):
                 continue
             all_calls.append(
                 SellCoveredCall(call, ticker.get_quote().get('regularMarketPrice')))
+    all_calls = sorted(all_calls, key=lambda call: (call.strike, call.expiration))
     return Response({'all_calls': SellCoveredCallSerializer(all_calls, many=True).data})

@@ -33,13 +33,6 @@ export default function SellCoveredCall() {
     };
     const result_table_columns = [
         {
-            dataField: 'contract_symbol',
-            text: 'Contract Symbol',
-        }, {
-            dataField: "expiration",
-            text: "Expiration",
-            formatter: TimestampFormatter
-        }, {
             dataField: "strike",
             text: "Strike",
             formatter: PriceFormatter
@@ -76,6 +69,13 @@ export default function SellCoveredCall() {
                     inTheMoneyFilter = filter;
                 }
             })
+        }, {
+            dataField: "expiration",
+            text: "Expiration",
+            formatter: TimestampFormatter
+        }, {
+            dataField: 'contract_symbol',
+            text: 'Contract Symbol',
         }];
 
     const handleSubmit = (event) => {
@@ -113,7 +113,14 @@ export default function SellCoveredCall() {
             let url = `${API_URL}/tickers/${selectedTicker[0].symbol}/sell_covered_calls/?`;
             selectedExpirationTimestamps.map((timestamp) => { url += `expiration_timestamps=${timestamp}&` });
             const response = await Axios.get(url);
-            setBestCalls(response.data.all_calls);
+            let allCalls = response.data.all_calls;
+            let strikeSet = new Set()
+            for (const row of allCalls) {
+                // Requires calls to be sorted by strike.
+                strikeSet.add(row.strike);
+                row.unique_strike_count = strikeSet.size;
+            }
+            setBestCalls(allCalls);
             setLoading(false);
         } catch (error) {
             console.error(error);
@@ -155,7 +162,7 @@ export default function SellCoveredCall() {
                                         // Yahoo's contract expiration timestamp uses GMT.
                                         const date = new Date(timestamp * 1000).toLocaleDateString('en-US', { 'timeZone': 'GMT' });
                                         return (
-                                            <div className="col-sm-6" key={index}>
+                                            <div className="col-sm-3" key={index}>
                                                 <Form.Check
                                                     value={timestamp}
                                                     name={`expiration_date_${timestamp}`}
