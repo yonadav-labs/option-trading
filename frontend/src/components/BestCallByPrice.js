@@ -4,15 +4,10 @@ import Button from 'react-bootstrap/Button';
 import Alert from 'react-bootstrap/Alert';
 import BootstrapTable from 'react-bootstrap-table-next';
 import paginationFactory from 'react-bootstrap-table2-paginator';
+import overlayFactory from 'react-bootstrap-table2-overlay';
 import RangeSlider from 'react-bootstrap-range-slider';
 import Axios from 'axios';
-import getApiUrl, {
-    PercentageFormatter, PriceFormatter, TimestampFormatter, NumberRoundFormatter,
-    ExpandContractRow, InTheMoneyRowStyle, InTheMoneySign, onInTheMoneyFilterChange
-} from '../utils';
-import filterFactory, { multiSelectFilter } from 'react-bootstrap-table2-filter';
-
-let inTheMoneyFilter;
+import getApiUrl from '../utils';
 
 export default function BestCallByPrice({ selectedTicker, expirationTimestamps }) {
     const API_URL = getApiUrl();
@@ -22,58 +17,35 @@ export default function BestCallByPrice({ selectedTicker, expirationTimestamps }
     const [selectedExpirationTimestamps, setSelectedExpirationTimestamps] = useState([]);
     const [tradeoffValue, setTradeoffValue] = React.useState(0.0);
 
-    const selectOptions = {
-        true: 'ITM',
-        false: 'OTM'
-    };
     const result_table_columns = [
-        {
-            dataField: "strike",
-            text: "Strike",
-            formatter: PriceFormatter
-        }, {
-            dataField: "estimated_premium",
-            text: "Premium",
-            formatter: PriceFormatter
-        }, {
-            dataField: "break_even_price",
-            text: "Breakeven Point",
-            formatter: PriceFormatter
-        }, {
-            dataField: "gain",
-            text: "Option Gain",
-            formatter: PercentageFormatter
-        }, {
-            dataField: "stock_gain",
-            text: "Stock Gain",
-            formatter: PercentageFormatter
-        }, {
-            dataField: "normalized_score",
-            text: "Final Score",
-            formatter: NumberRoundFormatter,
-            sort: true
-        }, {
-            dataField: 'in_the_money',
-            text: 'In the money',
-            // hidden: true, getFilter() won't be called if hidden is true.
-            style: { 'display': 'none' },
-            headerStyle: { 'display': 'none' },
-            formatter: cell => selectOptions[cell],
-            filter: multiSelectFilter({
-                options: selectOptions,
-                getFilter: (filter) => {
-                    inTheMoneyFilter = filter;
-                }
-            })
-        },
-        {
-            dataField: "expiration",
-            text: "Expiration",
-            formatter: TimestampFormatter
-        },
         {
             dataField: 'contract_symbol',
             text: 'Contract Symbol',
+        }, {
+            dataField: "expiration_str",
+            text: "Expiration",
+        }, {
+            dataField: "days_till_expiration",
+            text: "Days Remaining",
+        }, {
+            dataField: "strike",
+            text: "Strike",
+        }, {
+            dataField: "estimated_price",
+            text: "Premium",
+        }, {
+            dataField: "break_even_price",
+            text: "Breakeven Point",
+        }, {
+            dataField: "gain",
+            text: "Option Gain",
+        }, {
+            dataField: "stock_gain",
+            text: "Stock Gain",
+        }, {
+            dataField: "normalized_score",
+            text: "Final Score",
+            sort: true,
         }];
 
     const handleSubmit = (event) => {
@@ -112,7 +84,18 @@ export default function BestCallByPrice({ selectedTicker, expirationTimestamps }
             selectedExpirationTimestamps.map((timestamp) => { url += `expiration_timestamps=${timestamp}&` });
             url += `month_to_percent_gain=${tradeoffValue}`
             const response = await Axios.get(url);
-            setBestCalls(response.data.all_calls);
+            let all_calls = response.data.all_calls;
+            all_calls.forEach(function (row) {
+                const precent_gain = Math.round(row.gain * 100);
+                row.gain = `${precent_gain}%`;
+                const precent_stock_gain = Math.round(row.stock_gain * 100);
+                row.stock_gain = `${precent_stock_gain}%`;
+                row.break_even_price = `$${row.break_even_price}`;
+                row.estimated_price = `$${row.estimated_price}`;
+                row.strike = `$${row.strike}`;
+                row.expiration_str = new Date(row.expiration * 1000).toLocaleDateString('en-US', { 'timeZone': 'GMT' });
+            });
+            setBestCalls(all_calls);
             setLoading(false);
         } catch (error) {
             console.error(error);
@@ -142,7 +125,7 @@ export default function BestCallByPrice({ selectedTicker, expirationTimestamps }
                             // Yahoo's contract expiration timestamp uses GMT.
                             const date = new Date(timestamp * 1000).toLocaleDateString('en-US', { 'timeZone': 'GMT' });
                             return (
-                                <div className="col-sm-3" key={index}>
+                                <div className="col-sm-6" key={index}>
                                     <Form.Check
                                         value={timestamp}
                                         name={`expiration_date_${timestamp}`}
@@ -173,22 +156,6 @@ export default function BestCallByPrice({ selectedTicker, expirationTimestamps }
                 <Button type="submit">Analyze</Button>
             </Form>
             <br />
-            {InTheMoneySign()}
-
-            <div className="row">
-                <Form>
-                    <Form.Group>
-                        <Form.Label className="font-weight-bold">Filter by strike price:</Form.Label>
-                        <Form.Control name="tradeoff" as="select" defaultValue={0}
-                            onChange={(e) => onInTheMoneyFilterChange(e, inTheMoneyFilter)}>
-                            <option key="all" value="all">All</option>
-                            <option key="itm" value="itm">In the money</option>
-                            <option key="otm" value="otm">Out of the money</option>
-                        </Form.Control>
-                    </Form.Group>
-                </Form>
-            </div>
-
             <BootstrapTable
                 classes="table-responsive"
                 loading={loading}
@@ -196,16 +163,10 @@ export default function BestCallByPrice({ selectedTicker, expirationTimestamps }
                 keyField="contract_symbol"
                 data={bestCalls}
                 columns={result_table_columns}
-                pagination={paginationFactory({
-                    sizePerPage: 25,
-                    hidePageListOnlyOnePage: true
-                })}
+                pagination={paginationFactory()}
                 noDataIndication="No Data"
                 bordered={false}
-                expandRow={ExpandContractRow()}
-                rowStyle={InTheMoneyRowStyle}
-                filter={filterFactory()}
-            />
-        </div >
+                overlay={overlayFactory({ spinner: true })} />
+        </div>
     );
 }

@@ -19,18 +19,11 @@ def timestamp_to_datetime_with_default_tz(timestamp):
 
 
 # TODO: we may want to change to open market days.
-# TODO: handle holidays.
 def days_from_timestamp(timestamp):
     input_datetime = make_aware(datetime.fromtimestamp(timestamp), get_default_timezone())
     now = get_now()
     delta = input_datetime - now
     return delta.days
-
-
-def timedelta_from_timestamp(timestamp):
-    input_datetime = make_aware(datetime.fromtimestamp(timestamp), get_default_timezone())
-    now = get_now()
-    return input_datetime - now
 
 
 if __name__ == "__main__":
@@ -42,6 +35,18 @@ if __name__ == "__main__":
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'django_apps.settings')
     django.setup()
 
-    print(days_from_timestamp(1605225600))
+    import yfinance as yf
 
-    print(timedelta_from_timestamp(1603466039).total_seconds())
+    stock = yf.Ticker('TSLA')
+    print(stock.options)
+    print(stock._expirations)
+    calls = get_raw_calls(stock, stock.options[0])
+
+    from tiger.classes import TargetPriceOptionContract
+    from tiger.serializers import OptionContractSerializer
+
+    contract = TargetPriceOptionContract(calls[0])
+    serialized_contract = OptionContractSerializer(contract)
+    print(serialized_contract.data)
+
+    print(days_from_timestamp(1604620800))
