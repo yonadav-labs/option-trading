@@ -106,16 +106,18 @@ class OptionContractTestCase(TestCase):
     @mock.patch('django.utils.timezone.now')
     def test_sell_covered_call(self, mock_now):
         mock_now.return_value = make_aware(datetime.fromtimestamp(MOCK_NOW_TIMESTAMP), get_default_timezone())
-        contract = SellCoveredCall(self.yahoo_input, self.current_stock_price)
 
-        self.assertAlmostEqual(contract.strike_diff_ratio, -0.31428571428)
+        contract = SellCoveredCall(self.yahoo_input, self.current_stock_price)
+        self.assertEqual(contract.to_strike, -132.0)
+        self.assertAlmostEqual(contract.to_strike_ratio, -0.31428571428)
         self.assertAlmostEqual(contract.gain_cap, 0.07071428571)
         self.assertAlmostEqual(contract.annualized_gain_cap, 0.13643051577)
         self.assertAlmostEqual(contract.premium_gain, 0.07071428571)  # premium_gain is capped by gain_cap.
         self.assertAlmostEqual(contract.annualized_premium_gain, 0.13643051577)
 
         contract2 = SellCoveredCall(self.yahoo_input2, self.current_stock_price)
-        self.assertAlmostEqual(contract2.strike_diff_ratio, 0.05952380952)
+        self.assertEqual(contract2.to_strike, 25.0)
+        self.assertAlmostEqual(contract2.to_strike_ratio, 0.05952380952)
         self.assertAlmostEqual(contract2.gain_cap, 0.24130952381)
         self.assertAlmostEqual(contract2.annualized_gain_cap, 0.49873298736)
         self.assertAlmostEqual(contract2.premium_gain, 0.18178571428)

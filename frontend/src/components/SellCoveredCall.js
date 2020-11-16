@@ -5,7 +5,8 @@ import TickerSummary from '../components/TickerSummary.js';
 import Axios from 'axios';
 import getApiUrl, {
     PercentageFormatter, PriceFormatter, PercentageWithAnnualizedFormatter, TimestampFormatter,
-    ExpandContractRow, InTheMoneyRowStyle, InTheMoneySign, onInTheMoneyFilterChange
+    ExpandContractRow, InTheMoneyRowStyle, InTheMoneySign, onInTheMoneyFilterChange,
+    PriceWithPercentageFormatter
 } from '../utils';
 import Button from 'react-bootstrap/Button';
 import Alert from 'react-bootstrap/Alert';
@@ -47,9 +48,11 @@ export default function SellCoveredCall() {
             text: "Premium",
             formatter: PriceFormatter
         }, {
-            dataField: "strike_diff_ratio",
+            dataField: "to_strike",
             text: "To strike",
-            formatter: PercentageFormatter
+            formatter: (cell, row, rowIndex, extraData) => (
+                PriceWithPercentageFormatter(cell, row.to_strike_ratio)
+            )
         }, {
             dataField: "gain_cap",
             text: "Upside Cap",

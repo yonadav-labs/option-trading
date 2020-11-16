@@ -90,15 +90,19 @@ class SellCoveredCall(OptionContract):
     def __init__(self, yh_contract_dict, current_stock_price):
         super().__init__(yh_contract_dict, current_stock_price)
 
-        self.strike_diff_ratio = self.get_strike_diff_ratio()
+        self.to_strike = self.get_to_strike()
+        self.to_strike_ratio = self.get_to_strike_ratio()
         self.gain_cap = self.get_gain_cap()
         self.annualized_gain_cap = self.get_annualized_gain_cap()
         self.premium_gain = self.get_premium_gain()
         self.annualized_premium_gain = self.get_annualized_premium_gain()
 
-    def get_strike_diff_ratio(self):
+    def get_to_strike(self):
         """Positive when current_stock_price is below strike."""
-        return (self.strike - self.current_stock_price) / self.current_stock_price
+        return self.strike - self.current_stock_price
+
+    def get_to_strike_ratio(self):
+        return self.get_to_strike() / self.current_stock_price
 
     def get_gain_cap(self):
         return (self.strike + self.estimated_premium - self.current_stock_price) / self.current_stock_price

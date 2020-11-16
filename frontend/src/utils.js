@@ -27,8 +27,12 @@ export function PercentageFormatter(num) {
     }
 };
 
+export function PriceWithPercentageFormatter(price_num, percentage_num) {
+    return (<span>{PriceFormatter(price_num)}&nbsp;({PercentageFormatter(percentage_num)})</span>);
+};
+
 export function PercentageWithAnnualizedFormatter(num, annualized_num) {
-    return (<span> {PercentageFormatter(num)} &nbsp;({PercentageFormatter(annualized_num)} in APR)</span>)
+    return (<span> {PercentageFormatter(num)}&nbsp;({PercentageFormatter(annualized_num)} in APR)</span>)
 };
 
 export function TimestampFormatter(ts) {
