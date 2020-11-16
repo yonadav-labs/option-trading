@@ -42,6 +42,7 @@ export default function Home() {
                     })}
                 </ul>
             </div> */}
+            <h1 className="text-center">Buy call</h1>
             <Form>
                 <Form.Group>
                     <Form.Label className="requiredField"><h5>Enter ticker symbol:</h5></Form.Label>

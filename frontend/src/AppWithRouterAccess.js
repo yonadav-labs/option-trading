@@ -7,6 +7,7 @@ import config from "./oktaConfig";
 import Home from './pages/Home';
 import Header from './components/header'
 import Footer from './components/footer'
+import SellCoveredCall from './components/SellCoveredCall'
 import Disclaimer from './components/disclaimer';
 
 export default withRouter(class AppWithRouterAccess extends Component {
@@ -27,6 +28,7 @@ export default withRouter(class AppWithRouterAccess extends Component {
                     <Security  {...config.oidc} onAuthRequired={this.onAuthRequired} >
                         <Switch>
                             <Route path='/' exact={true} component={Home} />
+                            <Route path='/sell-covered-call' exact={true} component={SellCoveredCall} />
                             <SecureRoute path='/profile' component={Profile} />
                             <Route path="/disclaimer" component={Disclaimer}></Route>
                             <Route path='/login' component={Login} />
