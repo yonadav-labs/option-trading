@@ -108,8 +108,7 @@ class SellCoveredCall(OptionContract):
         return math.pow(max_total, 365 / self.days_till_expiration) - 1.0
 
     def get_premium_gain(self):
-        return self.estimated_premium / self.current_stock_price
+        return min(self.estimated_premium / self.current_stock_price, self.get_gain_cap())
 
     def get_annualized_premium_gain(self):
-        total = (self.current_stock_price + self.estimated_premium) / self.current_stock_price
-        return math.pow(total, 365 / self.days_till_expiration) - 1.0
+        return math.pow((self.get_premium_gain() + 1.0), 365 / self.days_till_expiration) - 1.0
