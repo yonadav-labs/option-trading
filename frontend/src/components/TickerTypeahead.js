@@ -30,13 +30,13 @@ export default function TickerTypeahead({ setSelectedTicker, setExpirationTimest
             const response = await Axios.get(`${API_URL}/tickers/${selected[0].symbol}`);
             setExpirationTimestamps(response.data.expiration_timestamps);
             setbasicInfo(response.data.quote)
+            setSelectedTicker(selected);
         } catch (error) {
             console.error(error);
         }
     };
 
     const onTickerSelectionChange = (selected) => {
-        setSelectedTicker(selected);
         loadExpirationDates(selected);
         if (setBestCalls) {
             setBestCalls([]);

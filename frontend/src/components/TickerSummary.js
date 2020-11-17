@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import TradingViewWidget from 'react-tradingview-widget';
 import Accordion from 'react-bootstrap/Accordion';
 import Card from 'react-bootstrap/Card';
@@ -15,10 +15,21 @@ export default function TickerSummary({ basicInfo }) {
     const [onWatchlist, setOnWatchlist] = useState(user ? user.watchlist.includes(basicInfo.symbol) : false);
     const API_URL = getApiUrl();
 
+    useEffect(() => {
+        setOnWatchlist(user ? user.watchlist.includes(basicInfo.symbol) : false);
+    }, [basicInfo]);
+
     const updateWatchlist = async () => {
         try {
-            // TODO fix this put
-            const response = await Axios.put(`${API_URL}/watchlist?user=${user.id}`);
+            if (onWatchlist) {
+                const newWatchlist = user.watchlist.filter(item => item !== basicInfo.symbol);
+                user.watchlist = newWatchlist;
+                
+            } else {
+                user.watchlist.push(basicInfo.symbol);
+            }
+            console.log(user);
+            const response = await Axios.put(`${API_URL}/users/${user.okta_id}`, user);
             setUser(response.data, setOnWatchlist(user.watchlist.includes(basicInfo.symbol)));
         } catch (error) {
             console.error(error);
@@ -30,13 +41,13 @@ export default function TickerSummary({ basicInfo }) {
             <div className="row">
                 <h4>Summary</h4>
                 <ButtonGroup toggle className="mb-2 ml-auto">
-                    <ToggleButton 
-                    type="checkbox" 
-                    variant="outline-primary" 
-                    size="sm" 
-                    checked={onWatchlist} 
-                    value={basicInfo.symbol}
-                    onChange={(e) => updateWatchlist()}
+                    <ToggleButton
+                        type="checkbox"
+                        variant="outline-primary"
+                        size="sm"
+                        checked={onWatchlist}
+                        value={basicInfo.symbol}
+                        onChange={(e) => updateWatchlist()}
                     >
                         {onWatchlist ? "-" : "+"}
                     </ToggleButton>

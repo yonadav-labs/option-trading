@@ -128,6 +128,7 @@ def user_detail(request, id):
     elif request.method == 'PUT': 
         user_data = JSONParser().parse(request) 
         serializer = UserSerializer(user, data=user_data) 
+        print(user_data)
         if serializer.is_valid(): 
             serializer.save() 
             return JsonResponse(serializer.data) 

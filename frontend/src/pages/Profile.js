@@ -35,6 +35,7 @@ const Profile = () => {
   if (!user) {
     return (
       <div>
+        <button onClick={logout}>Logout</button>
         <p>Fetching user profile...</p>
       </div>
     );
@@ -42,7 +43,6 @@ const Profile = () => {
 
   return (
     <div>
-      <button onClick={logout}>Logout</button>
       <h1>User Profile</h1>
       <ul>
         {Object.entries(user).map((claim) => {
