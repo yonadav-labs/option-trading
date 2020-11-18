@@ -70,13 +70,16 @@ export function ExpandContractRow() {
         ),
         showExpandColumn: true,
         expandHeaderColumnRenderer: ({ isAnyExpands }) => {
-            return <span></span>;
+            if (isAnyExpands) {
+                return (<BsArrowsCollapse style={{ "cursor": "pointer" }} />);
+            }
+            return (<BsArrowsExpand style={{ "cursor": "pointer" }} />);
         },
         expandColumnRenderer: ({ expanded }) => {
             if (expanded) {
-                return (<BsArrowsCollapse />);
+                return (<BsArrowsCollapse style={{ "cursor": "pointer" }} />);
             }
-            return (<BsArrowsExpand />);
+            return (<BsArrowsExpand style={{ "cursor": "pointer" }} />);
         }
     }
 }
@@ -85,10 +88,10 @@ export function InTheMoneyRowStyle(row, rowIndex) {
     const style = {};
     if (row.unique_strike_count) {
         if (row.in_the_money) {
-            style.backgroundColor = row.unique_strike_count % 2 > 0 ? '#e0f0ff' : '#c8d6e3';
+            style.backgroundColor = row.unique_strike_count % 2 > 0 ? '#e0f0ff' : '#d3e2f0';
         } else {
             if (row.unique_strike_count % 2 === 0) {
-                style.backgroundColor = '#dedede';
+                style.backgroundColor = '#f0f0f0';
             }
         }
     } else {
