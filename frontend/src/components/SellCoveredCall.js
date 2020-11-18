@@ -48,8 +48,10 @@ export default function SellCoveredCall() {
             )
         }, {
             dataField: "gain_cap",
-            text: "Upside Cap",
-            formatter: PercentageFormatter
+            text: "Max gain",
+            formatter: (cell, row, rowIndex, extraData) => (
+                PercentageWithAnnualizedFormatter(cell, row.annualized_gain_cap)
+            )
         }, {
             dataField: "premium_gain",
             text: "Premium gain",
