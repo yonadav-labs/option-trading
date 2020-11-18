@@ -4,7 +4,7 @@ import Axios from 'axios';
 import getApiUrl from '../utils'
 
 
-export default function TickerTypeahead({ setSelectedTicker, setExpirationTimestamps, setbasicInfo, /*optional*/setBestCalls }) {
+export default function TickerTypeahead({ setSelectedTicker, setExpirationTimestamps, setbasicInfo, /*optional*/resetStates }) {
     const API_URL = getApiUrl();
     const [allTickers, setAllTickers] = useState([]);
 
@@ -37,10 +37,10 @@ export default function TickerTypeahead({ setSelectedTicker, setExpirationTimest
     };
 
     const onTickerSelectionChange = (selected) => {
-        loadExpirationDates(selected);
-        if (setBestCalls) {
-            setBestCalls([]);
+        if (resetStates) {
+            resetStates([]);
         }
+        loadExpirationDates(selected);
     };
 
     useEffect(() => {

@@ -4,7 +4,7 @@ import TickerTypeahead from '../components/TickerTypeahead';
 import TickerSummary from '../components/TickerSummary.js';
 import Axios from 'axios';
 import getApiUrl, {
-    PercentageFormatter, PriceFormatter, PercentageWithAnnualizedFormatter, TimestampFormatter,
+    PriceFormatter, PercentageWithAnnualizedFormatter, TimestampFormatter,
     ExpandContractRow, InTheMoneyRowStyle, InTheMoneySign, onInTheMoneyFilterChange,
     PriceWithPercentageFormatter
 } from '../utils';
@@ -20,12 +20,22 @@ export default function SellCoveredCall() {
     const [selectedTicker, setSelectedTicker] = useState([]);
     const [expirationTimestamps, setExpirationTimestamps] = useState([]);
     const [basicInfo, setbasicInfo] = useState({});
-
-    const API_URL = getApiUrl();
     const [showTimestampAlert, setShowTimestampAlert] = useState(false);
     const [bestCalls, setBestCalls] = useState([]);
     const [loading, setLoading] = useState(false);
     const [selectedExpirationTimestamps, setSelectedExpirationTimestamps] = useState([]);
+
+    const resetStates = () => {
+        setSelectedTicker([]);
+        setExpirationTimestamps([]);
+        setbasicInfo({});
+        setShowTimestampAlert(false);
+        setBestCalls([]);
+        setLoading(false);
+        setSelectedExpirationTimestamps([]);
+    }
+
+    const API_URL = getApiUrl();
 
     const selectOptions = {
         true: 'ITM',
@@ -139,7 +149,7 @@ export default function SellCoveredCall() {
                         setSelectedTicker={setSelectedTicker}
                         setExpirationTimestamps={setExpirationTimestamps}
                         setbasicInfo={setbasicInfo}
-                        setBestCalls={setBestCalls}
+                        resetStates={resetStates}
                     />
                 </Form.Group>
             </Form>
