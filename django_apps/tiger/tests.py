@@ -89,19 +89,35 @@ class OptionContractTestCase(TestCase):
         self.assertEqual(contract.ask, None)
         self.assertEqual(contract.bid, 160.25)
         self.assertAlmostEqual(contract.estimated_premium, 160.25)
-        # Missing both bid and ask.
+        # Missing strike.
         yahoo_input = dict(self.yahoo_input)
-        yahoo_input.pop('bid', None)
-        yahoo_input.pop('ask', None)
-        with self.assertRaisesMessage(ValueError, 'invalid bid and ask'):
+        yahoo_input.pop('strike', None)
+        with self.assertRaisesMessage(ValueError, 'invalid yh_contract_dict'):
             BuyCall(yahoo_input, self.current_stock_price, target_stock_price, month_to_gain)
-        # Missing both bid and ask but have valid last trade price.
+        # Missing both bid and ask but have last price.
         yahoo_input = dict(self.yahoo_input)
         yahoo_input.pop('bid', None)
         yahoo_input.pop('ask', None)
-        yahoo_input['lastTradeDate'] = MOCK_NOW_TIMESTAMP - 2 * 24 * 3600  # Traded 2 days ago.
         contract = BuyCall(yahoo_input, self.current_stock_price, target_stock_price, month_to_gain)
         self.assertAlmostEqual(contract.estimated_premium, 156.75)
+        # Missing bid, ask and last price.
+        yahoo_input = dict(self.yahoo_input)
+        yahoo_input.pop('bid', None)
+        yahoo_input.pop('ask', None)
+        yahoo_input.pop('lastPrice', None)
+        contract = BuyCall(yahoo_input, self.current_stock_price, target_stock_price, month_to_gain)
+        self.assertIsNone(contract.estimated_premium)
+        self.assertIsNone(contract.gain_after_tradeoff)
+        self.assertAlmostEqual(contract.stock_gain, 0.42857142857143)
+        # All bid, ask and last price are 0.
+        yahoo_input = dict(self.yahoo_input)
+        yahoo_input['bid'] = 0.0
+        yahoo_input['ask'] = 0.0
+        yahoo_input['lastPrice'] = 0.0
+        contract = BuyCall(yahoo_input, self.current_stock_price, target_stock_price, month_to_gain)
+        self.assertIsNone(contract.estimated_premium)
+        self.assertIsNone(contract.gain_after_tradeoff)
+        self.assertAlmostEqual(contract.stock_gain, 0.42857142857143)
 
     @mock.patch('django.utils.timezone.now')
     def test_sell_covered_call(self, mock_now):
