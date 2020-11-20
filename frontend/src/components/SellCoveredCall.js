@@ -231,8 +231,8 @@ export default function SellCoveredCall() {
                                             {[1, 4, 8, 24, 48, 72, 120, 240].map((hour, index) => {
                                                 return (
                                                     <option key={hour} value={hour}>
-                                                        Traded in last&nbsp;
-                                                        {(hour <= 24 ? hour + " hours" : hour / 24 + " days")}
+                                                        Last traded in&nbsp;
+                                                        {(hour <= 24 ? hour + (hour > 1 ? " hours" : " hour") : hour / 24 + " days")}
                                                     </option>
                                                 );
                                             })}
