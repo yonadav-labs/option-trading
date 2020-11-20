@@ -7,8 +7,8 @@ import paginationFactory from 'react-bootstrap-table2-paginator';
 import RangeSlider from 'react-bootstrap-range-slider';
 import Axios from 'axios';
 import getApiUrl, {
-    PercentageFormatter, PriceFormatter, TimestampFormatter, NumberRoundFormatter,
-    ExpandContractRow, InTheMoneyRowStyle, InTheMoneySign, onInTheMoneyFilterChange
+    PercentageFormatter, PriceFormatter, TimestampWithDaysFormatter, NumberRoundFormatter,
+    ExpandContractRow, InTheMoneyRowStyle, InTheMoneySign, onInTheMoneyFilterChange, SmallTextFormatter
 } from '../utils';
 import filterFactory, { multiSelectFilter } from 'react-bootstrap-table2-filter';
 
@@ -69,11 +69,14 @@ export default function BestCallByPrice({ selectedTicker, expirationTimestamps }
         {
             dataField: "expiration",
             text: "Expiration",
-            formatter: TimestampFormatter
+            formatter: (cell, row, rowIndex, extraData) => (
+                TimestampWithDaysFormatter(cell, row.days_till_expiration)
+            )
         },
         {
             dataField: 'contract_symbol',
             text: 'Contract Symbol',
+            formatter: SmallTextFormatter
         }];
 
     const handleSubmit = (event) => {

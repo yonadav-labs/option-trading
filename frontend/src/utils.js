@@ -35,13 +35,23 @@ export function PercentageWithAnnualizedFormatter(num, annualized_num) {
     return (<span>{PercentageFormatter(num)}&nbsp;({PercentageFormatter(annualized_num)} APR)</span>)
 };
 
-export function TimestampFormatter(ts) {
+export function TimestampDateFormatter(ts) {
     const exp_date = new Date(ts * 1000).toLocaleDateString('en-US', { 'timeZone': 'GMT' })
     return (<span>{exp_date}</span>);
 };
 
+export function TimestampTimeFormatter(ts) {
+    const exp_date = new Date(ts * 1000).toLocaleDateString('en-US', { 'timeZone': 'GMT' })
+    const exp_time = new Date(ts * 1000).toLocaleTimeString('en-US', { 'timeZone': 'GMT', hour: '2-digit', minute: '2-digit', hour12: false })
+    return (<span>{exp_date} {exp_time}</span>);
+};
+
 export function TimestampWithDaysFormatter(ts, days_till_expiration) {
-    return (<span>{TimestampFormatter(ts)} (in {days_till_expiration} days)</span>);
+    return (<span>{TimestampDateFormatter(ts)} ({days_till_expiration} days)</span>);
+};
+
+export function SmallTextFormatter(text) {
+    return (<small>{text}</small>);
 };
 
 export function ExpandContractRow() {
@@ -52,7 +62,7 @@ export function ExpandContractRow() {
                     <div className="col-sm"><b>Last price:</b> {PriceFormatter(row.last_price)}</div>
                     <div className="col-sm"><b>Bid:</b> {PriceFormatter(row.bid)}</div>
                     <div className="col-sm"><b>Ask:</b> {PriceFormatter(row.ask)}</div>
-                    <div className="col-sm"><b>Last trade date:</b> {TimestampFormatter(row.last_trade_date)}</div>
+                    <div className="col-sm"><b>Last traded:</b> {TimestampTimeFormatter(row.last_trade_date)}</div>
                 </div>
                 <div className="row">
                     <div className="col-sm"><b>Change:</b> {NumberRoundFormatter(row.change)}</div>
@@ -64,7 +74,7 @@ export function ExpandContractRow() {
                     <div className="col-sm"><b>Implied volatility:</b> {PercentageFormatter(row.implied_volatility)}</div>
                     <div className="col-sm"><b>Contract size:</b> {row.contract_size}</div>
                     <div className="col-sm"><b>In the money:</b> {row.in_the_money ? 'Yes' : 'No'}</div>
-                    <div className="col-sm"><b>Expire in:</b> {row.days_till_expiration} days</div>
+                    <div className="col-sm"></div>
                 </div>
             </div>
         ),

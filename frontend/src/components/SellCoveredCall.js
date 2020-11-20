@@ -4,9 +4,9 @@ import TickerTypeahead from '../components/TickerTypeahead';
 import TickerSummary from '../components/TickerSummary.js';
 import Axios from 'axios';
 import getApiUrl, {
-    PriceFormatter, PercentageWithAnnualizedFormatter, TimestampFormatter,
+    PriceFormatter, PercentageWithAnnualizedFormatter, TimestampWithDaysFormatter,
     ExpandContractRow, InTheMoneyRowStyle, InTheMoneySign, onInTheMoneyFilterChange,
-    PriceWithPercentageFormatter
+    PriceWithPercentageFormatter, SmallTextFormatter
 } from '../utils';
 import Button from 'react-bootstrap/Button';
 import Alert from 'react-bootstrap/Alert';
@@ -84,10 +84,13 @@ export default function SellCoveredCall() {
         }, {
             dataField: "expiration",
             text: "Expiration",
-            formatter: TimestampFormatter
+            formatter: (cell, row, rowIndex, extraData) => (
+                TimestampWithDaysFormatter(cell, row.days_till_expiration)
+            )
         }, {
             dataField: 'contract_symbol',
             text: 'Contract Symbol',
+            formatter: SmallTextFormatter
         }];
 
     const handleSubmit = (event) => {
