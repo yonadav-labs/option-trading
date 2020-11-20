@@ -6,15 +6,16 @@ import Axios from 'axios';
 import getApiUrl, {
     PriceFormatter, PercentageWithAnnualizedFormatter, TimestampWithDaysFormatter,
     ExpandContractRow, InTheMoneyRowStyle, InTheMoneySign, onInTheMoneyFilterChange,
-    PriceWithPercentageFormatter, SmallTextFormatter
+    PriceWithPercentageFormatter, SmallTextFormatter, onLastTradedFilterChange
 } from '../utils';
 import Button from 'react-bootstrap/Button';
 import Alert from 'react-bootstrap/Alert';
 import BootstrapTable from 'react-bootstrap-table-next';
 import paginationFactory from 'react-bootstrap-table2-paginator';
-import filterFactory, { multiSelectFilter } from 'react-bootstrap-table2-filter';
+import filterFactory, { multiSelectFilter, numberFilter } from 'react-bootstrap-table2-filter';
 
 let inTheMoneyFilter;
+let lastTradedFilter;
 
 export default function SellCoveredCall() {
     const [selectedTicker, setSelectedTicker] = useState([]);
@@ -79,6 +80,16 @@ export default function SellCoveredCall() {
                 options: selectOptions,
                 getFilter: (filter) => {
                     inTheMoneyFilter = filter;
+                }
+            })
+        }, {
+            dataField: 'last_trade_date',
+            text: 'last_trade_date',
+            style: { 'display': 'none' },
+            headerStyle: { 'display': 'none' },
+            filter: numberFilter({
+                getFilter: (filter) => {
+                    lastTradedFilter = filter;
                 }
             })
         }, {
@@ -197,17 +208,40 @@ export default function SellCoveredCall() {
                         {InTheMoneySign()}
 
                         <div className="row">
-                            <Form>
-                                <Form.Group>
-                                    <Form.Label className="font-weight-bold">Filter by strike price:</Form.Label>
-                                    <Form.Control name="tradeoff" as="select" defaultValue={0}
-                                        onChange={(e) => onInTheMoneyFilterChange(e, inTheMoneyFilter)}>
-                                        <option key="all" value="all">All</option>
-                                        <option key="itm" value="itm">In the money</option>
-                                        <option key="otm" value="otm">Out of the money</option>
-                                    </Form.Control>
-                                </Form.Group>
-                            </Form>
+                            <div className="col-3">
+                                <Form>
+                                    <Form.Group>
+                                        <Form.Label className="font-weight-bold">Filter by strike:</Form.Label>
+                                        <Form.Control name="tradeoff" as="select" defaultValue={0}
+                                            onChange={(e) => onInTheMoneyFilterChange(e, inTheMoneyFilter)}>
+                                            <option key="all" value="all">All</option>
+                                            <option key="itm" value="itm">In the money</option>
+                                            <option key="otm" value="otm">Out of the money</option>
+                                        </Form.Control>
+                                    </Form.Group>
+                                </Form>
+                            </div>
+                            <div className="col-3">
+                                <Form>
+                                    <Form.Group>
+                                        <Form.Label className="font-weight-bold">Filter by last traded:</Form.Label>
+                                        <Form.Control name="tradeoff" as="select" defaultValue={0}
+                                            onChange={(e) => onLastTradedFilterChange(e, lastTradedFilter)}>
+                                            <option key="9999999" value="9999999">All</option>
+                                            {[1, 4, 8, 24, 48, 72, 120, 240].map((hour, index) => {
+                                                return (
+                                                    <option key={hour} value={hour}>
+                                                        Traded in last&nbsp;
+                                                        {(hour <= 24 ? hour + " hours" : hour / 24 + " days")}
+                                                    </option>
+                                                );
+                                            })}
+                                        </Form.Control>
+                                    </Form.Group>
+                                </Form>
+                            </div>
+                            <div className="col-6">
+                            </div>
                         </div>
 
                         <BootstrapTable

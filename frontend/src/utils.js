@@ -1,6 +1,7 @@
 import React from 'react';
 import NumberFormat from 'react-number-format';
 import { BsArrowsExpand, BsArrowsCollapse } from 'react-icons/bs';
+import { Comparator } from 'react-bootstrap-table2-filter';
 
 // Returns the backend API base url.
 export default function getApiUrl() {
@@ -131,4 +132,12 @@ export function onInTheMoneyFilterChange(event, inTheMoneyFilter) {
     } else if (value == 'otm') {
         inTheMoneyFilter([false]);
     }
+};
+
+export function onLastTradedFilterChange(event, lastTradedFilter) {
+    const { value } = event.target;
+    lastTradedFilter({
+        number: Date.now() / 1000 - value * 3600,
+        comparator: Comparator.GT
+    });
 };
