@@ -205,10 +205,8 @@ export default function SellCoveredCall() {
                             <Button type="submit">Analyze</Button>
                         </Form>
                         <br />
-                        {InTheMoneySign()}
-
                         <div className="row">
-                            <div className="col-3">
+                            <div className="col-sm-3">
                                 <Form>
                                     <Form.Group>
                                         <Form.Label className="font-weight-bold">Filter by strike:</Form.Label>
@@ -221,7 +219,7 @@ export default function SellCoveredCall() {
                                     </Form.Group>
                                 </Form>
                             </div>
-                            <div className="col-3">
+                            <div className="col-sm-3">
                                 <Form>
                                     <Form.Group>
                                         <Form.Label className="font-weight-bold">Filter by last traded:</Form.Label>
@@ -240,7 +238,10 @@ export default function SellCoveredCall() {
                                     </Form.Group>
                                 </Form>
                             </div>
-                            <div className="col-6">
+                            <div className="col-sm-4">
+                            </div>
+                            <div className="col-sm-2">
+                                {InTheMoneySign()}
                             </div>
                         </div>
 
