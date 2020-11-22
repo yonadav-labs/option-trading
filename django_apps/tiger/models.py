@@ -57,9 +57,10 @@ class Ticker(BaseModel):
 
 class ExternalRequestCacheManager(models.Manager):
     def get_or_fetch_external_api(self, request_url):
-        # See if there was a request cached in the past 15 minutes.
+        # See if there was a request cached in the past 1 minutes.
+        # TODO: make the cache time longer during market closed hours.
         cached_requests = self.filter(request_url=request_url).filter(
-            created_time__gt=get_now() - timedelta(minutes=15)).order_by('-created_time')
+            created_time__gt=get_now() - timedelta(minutes=1)).order_by('-created_time')
 
         if cached_requests:
             return cached_requests[0]

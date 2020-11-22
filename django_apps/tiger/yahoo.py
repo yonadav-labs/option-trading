@@ -1,6 +1,8 @@
 import requests
 from requests.adapters import HTTPAdapter
 
+from django.conf import settings
+
 
 def get_yahoo_base_url():
     return 'https://query1.finance.yahoo.com/v7/finance/'
@@ -18,6 +20,9 @@ def is_valid_option_response(response):
 
 
 def fetch_external_api(request_url):
+    if settings.SCRAPE_PROXY:
+        request_url = settings.SCRAPE_PROXY + request_url
+
     s = requests.Session()
     s.mount('https://', HTTPAdapter(max_retries=2))
     try:
