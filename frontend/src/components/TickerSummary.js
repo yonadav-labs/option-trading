@@ -24,7 +24,7 @@ export default function TickerSummary({ basicInfo }) {
             if (onWatchlist) {
                 const newWatchlist = user.watchlist.filter(item => item !== basicInfo.symbol);
                 user.watchlist = newWatchlist;
-                
+
             } else {
                 user.watchlist.push(basicInfo.symbol);
             }
@@ -39,7 +39,7 @@ export default function TickerSummary({ basicInfo }) {
     return (
         <div>
             <div className="row">
-                <h4>Summary</h4>
+                <div className="col-sm"><h4>{basicInfo.symbol} - {basicInfo.shortName}</h4></div>
                 <ButtonGroup toggle className="mb-2 ml-auto">
                     <ToggleButton
                         type="checkbox"
@@ -52,10 +52,6 @@ export default function TickerSummary({ basicInfo }) {
                         {onWatchlist ? "-" : "+"}
                     </ToggleButton>
                 </ButtonGroup>
-            </div>
-
-            <div className="row">
-                <div className="col-sm"><b>{basicInfo.symbol} - {basicInfo.shortName}</b></div>
             </div>
             <div className="row">
                 <div className="col-sm">Last price: <NumberFormat value={basicInfo.regularMarketPrice} displayType={'text'} thousandSeparator={true} prefix={'$'} /></div>
