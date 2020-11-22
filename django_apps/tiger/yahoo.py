@@ -20,17 +20,11 @@ def is_valid_option_response(response):
 
 
 def fetch_external_api(request_url):
-    if settings.SCRAPE_PROXY:
-        request_url = settings.SCRAPE_PROXY + request_url
-
-    s = requests.Session()
-    s.mount('https://', HTTPAdapter(max_retries=2))
-    try:
-        raw_response = s.get(request_url)
-        response = raw_response.json()
-    except Exception:
-        # TODO: add logging.
-        return None
+    raw_response = requests.get(
+        request_url,
+        proxies={"https": settings.SCRAPE_PROXY}, verify=False
+    ) if settings.SCRAPE_PROXY else requests.get(request_url)
+    response = raw_response.json()
     if not is_valid_option_response(response):
         return None
     # Returns raw string.
