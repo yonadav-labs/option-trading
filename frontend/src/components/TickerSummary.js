@@ -39,7 +39,7 @@ export default function TickerSummary({ basicInfo }) {
     return (
         <div>
             <div className="row">
-                <div className="col-sm"><h4>{basicInfo.symbol} - {basicInfo.shortName}</h4></div>
+                <div className="col-sm"><h5>{basicInfo.symbol} - {basicInfo.shortName}</h5></div>
                 <ButtonGroup toggle className="mb-2 ml-auto">
                     <ToggleButton
                         type="checkbox"

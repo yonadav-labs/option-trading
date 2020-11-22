@@ -179,7 +179,7 @@ export default function SellCoveredCall() {
                 <div>
                     <TickerSummary basicInfo={basicInfo} />
                     <div>
-                        <h4>Best call options to buy with targeted price</h4>
+                        <h5>Configurations</h5>
                         <hr />
                         <Form onSubmit={handleSubmit}>
                             <Form.Group>
@@ -216,16 +216,21 @@ export default function SellCoveredCall() {
                                         <Form.Control name="use_as_premium" as="select" defaultValue="estimated"
                                             onChange={handleUseAsPremiumChange}>
                                             <option key="estimated" value="estimated">Use estimated mid price</option>
-                                            <option key="bid" value="bid">Use bid price</option>
-                                            <option key="ask" value="ask">Use ask price</option>
+                                            <option key="bid" value="bid">Use bid (buyer's) price</option>
+                                            <option key="ask" value="ask">Use ask (seller's) price</option>
                                         </Form.Control>
                                     </Form.Group>
                                 </div>
                             </div>
-                            <br />
-                            <Button type="submit">Analyze</Button>
+                            <div class="row">
+                                <div className="col">
+                                    <Button type="submit" className="btn btn-primary">Analyze</Button>
+                                </div>
+                            </div>
                         </Form>
                         <br />
+                        <h5>Results</h5>
+                        <hr />
                         <div className="row">
                             <div className="col-sm-3">
                                 <Form>
