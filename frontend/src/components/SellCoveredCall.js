@@ -25,6 +25,7 @@ export default function SellCoveredCall() {
     const [bestCalls, setBestCalls] = useState([]);
     const [loading, setLoading] = useState(false);
     const [selectedExpirationTimestamps, setSelectedExpirationTimestamps] = useState([]);
+    const [useAsPremium, setUseAsPremium] = useState('estimated');
 
     const resetStates = () => {
         setSelectedTicker([]);
@@ -134,10 +135,17 @@ export default function SellCoveredCall() {
         }
     };
 
+    const handleUseAsPremiumChange = (event) => {
+        const target = event.target;
+        var value = target.value;
+        setUseAsPremium(value);
+    };
+
     const getCoveredCalls = async (selectedExpirationTimestamps) => {
         try {
             let url = `${API_URL}/tickers/${selectedTicker[0].symbol}/sell_covered_calls/?`;
             selectedExpirationTimestamps.map((timestamp) => { url += `expiration_timestamps=${timestamp}&` });
+            url += `use_as_premium=${useAsPremium}`
             const response = await Axios.get(url);
             let allCalls = response.data.all_calls;
             let strikeSet = new Set()
@@ -201,6 +209,19 @@ export default function SellCoveredCall() {
                                     })}
                                 </div>
                             </Form.Group>
+                            <div className="row">
+                                <div className="col-sm-3">
+                                    <Form.Group>
+                                        <Form.Label className="font-weight-bold">Premium price options:</Form.Label>
+                                        <Form.Control name="use_as_premium" as="select" defaultValue="estimated"
+                                            onChange={handleUseAsPremiumChange}>
+                                            <option key="estimated" value="estimated">Use estimated mid price</option>
+                                            <option key="bid" value="bid">Use bid price</option>
+                                            <option key="ask" value="ask">Use ask price</option>
+                                        </Form.Control>
+                                    </Form.Group>
+                                </div>
+                            </div>
                             <br />
                             <Button type="submit">Analyze</Button>
                         </Form>

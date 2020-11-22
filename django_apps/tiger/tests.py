@@ -3,7 +3,7 @@ from django.test import TestCase
 from django.utils.timezone import make_aware, get_default_timezone
 from unittest import mock
 
-from tiger.classes import BuyCall, SellCoveredCall
+from tiger.classes import BuyCall, SellCoveredCall, OptionContract
 
 MOCK_NOW_TIMESTAMP = 1609664400  # 01/03/2021
 
@@ -135,3 +135,12 @@ class OptionContractTestCase(TestCase):
         self.assertAlmostEqual(contract2.annualized_gain_cap, 0.49873298736)
         self.assertAlmostEqual(contract2.premium_gain, 0.18178571428)
         self.assertAlmostEqual(contract2.annualized_premium_gain, 0.3670287040215)
+
+    def test_use_as_premium(self):
+        yahoo_input = dict(self.yahoo_input)
+        self.assertAlmostEqual(
+            OptionContract(yahoo_input, self.current_stock_price, use_as_premium='bid').estimated_premium, 160.25)
+        self.assertAlmostEqual(
+            OptionContract(yahoo_input, self.current_stock_price, use_as_premium='ask').estimated_premium, 163.15)
+        self.assertAlmostEqual(
+            OptionContract(yahoo_input, self.current_stock_price, use_as_premium='estimated').estimated_premium, 161.7)

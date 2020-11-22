@@ -23,6 +23,7 @@ export default function BestCallByPrice({ selectedTicker, expirationTimestamps }
     const [loading, setLoading] = useState(false);
     const [selectedExpirationTimestamps, setSelectedExpirationTimestamps] = useState([]);
     const [tradeoffValue, setTradeoffValue] = React.useState(0.0);
+    const [useAsPremium, setUseAsPremium] = useState('estimated');
 
     const selectOptions = {
         true: 'ITM',
@@ -116,11 +117,18 @@ export default function BestCallByPrice({ selectedTicker, expirationTimestamps }
         }
     };
 
+    const handleUseAsPremiumChange = (event) => {
+        const target = event.target;
+        var value = target.value;
+        setUseAsPremium(value);
+    };
+
     const getBestCalls = async (targetPrice, selectedExpirationTimestamps) => {
         try {
             let url = `${API_URL}/tickers/${selectedTicker}/calls/?target_price=${targetPrice}&`;
             selectedExpirationTimestamps.map((timestamp) => { url += `expiration_timestamps=${timestamp}&` });
             url += `month_to_percent_gain=${tradeoffValue}`
+            url += `&use_as_premium=${useAsPremium}`
             const response = await Axios.get(url);
             setBestCalls(response.data.all_calls);
             setLoading(false);
@@ -165,6 +173,19 @@ export default function BestCallByPrice({ selectedTicker, expirationTimestamps }
                         })}
                     </div>
                 </Form.Group>
+                <div className="row">
+                    <div className="col-sm-3">
+                        <Form.Group>
+                            <Form.Label className="font-weight-bold">Premium price options:</Form.Label>
+                            <Form.Control name="use_as_premium" as="select" defaultValue="estimated"
+                                onChange={handleUseAsPremiumChange}>
+                                <option key="estimated" value="estimated">Use estimated mid price</option>
+                                <option key="bid" value="bid">Use bid price</option>
+                                <option key="ask" value="ask">Use ask price</option>
+                            </Form.Control>
+                        </Form.Group>
+                    </div>
+                </div>
                 <div className="font-weight-bold">Month to gain tradeoff: </div>
                 <div>Reduce {(tradeoffValue * 100.0).toFixed(2)}% gain for 30 days additional expiration time.</div>
                 <div>

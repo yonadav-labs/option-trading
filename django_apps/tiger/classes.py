@@ -4,7 +4,7 @@ from tiger.utils import days_from_timestamp
 
 
 class OptionContract:
-    def __init__(self, yh_contract_dict, current_stock_price):
+    def __init__(self, yh_contract_dict, current_stock_price, use_as_premium='estimated'):
         if not self.is_valid(yh_contract_dict):
             raise ValueError('invalid yh_contract_dict')
 
@@ -27,6 +27,7 @@ class OptionContract:
 
         # Non-contract data.
         self.current_stock_price = current_stock_price
+        self.use_as_premium = use_as_premium if use_as_premium in ('bid', 'ask', 'estimated') else 'estimated'
         self.estimated_premium = self.get_estimated_premium()  # Could be None.
         self.break_even_price = self.get_break_even_price()  # Could be None.
         # Yahoo expiration time is 2 days early.
@@ -39,16 +40,23 @@ class OptionContract:
 
     # Returns None if both ask and bid are missing.
     def get_estimated_premium(self):
-        if not self.ask and not self.bid and not self.last_price:
-            return None
-        if not self.ask and not self.bid:
-            return self.last_price
-        elif not self.ask:
-            return self.bid
-        elif not self.bid:
-            return self.ask
+        if self.use_as_premium == 'estimated':
+            if not self.ask and not self.bid and not self.last_price:
+                return None
+            if not self.ask and not self.bid:
+                return self.last_price
+            elif not self.ask:
+                return self.bid
+            elif not self.bid:
+                return self.ask
+            else:
+                return (self.ask + self.bid) / 2.0
+        elif self.use_as_premium == 'bid':
+            return self.bid if self.bid else None
+        elif self.use_as_premium == 'ask':
+            return self.ask if self.ask else None
         else:
-            return (self.ask + self.bid) / 2.0
+            return None
 
     def get_break_even_price(self):
         if self.get_estimated_premium() is None:
@@ -57,8 +65,9 @@ class OptionContract:
 
 
 class BuyCall(OptionContract):
-    def __init__(self, yh_contract_dict, current_stock_price, target_stock_price, month_to_gain):
-        super().__init__(yh_contract_dict, current_stock_price)
+    def __init__(self, yh_contract_dict, current_stock_price, target_stock_price, month_to_gain,
+                 use_as_premium='estimated'):
+        super().__init__(yh_contract_dict, current_stock_price, use_as_premium)
 
         self.target_stock_price = target_stock_price
         self.month_to_gain = month_to_gain
@@ -84,8 +93,8 @@ class BuyCall(OptionContract):
 
 
 class SellCoveredCall(OptionContract):
-    def __init__(self, yh_contract_dict, current_stock_price):
-        super().__init__(yh_contract_dict, current_stock_price)
+    def __init__(self, yh_contract_dict, current_stock_price, use_as_premium='estimated'):
+        super().__init__(yh_contract_dict, current_stock_price, use_as_premium)
 
         self.to_strike = self.get_to_strike()
         self.to_strike_ratio = self.get_to_strike_ratio()
