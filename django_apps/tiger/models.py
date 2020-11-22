@@ -59,6 +59,7 @@ class ExternalRequestCacheManager(models.Manager):
     def get_or_fetch_external_api(self, request_url):
         # See if there was a request cached in the past 1 minutes.
         # TODO: make the cache time longer during market closed hours.
+        # TODO: make the cache time configurable for different request pattern.
         cached_requests = self.filter(request_url=request_url).filter(
             created_time__gt=get_now() - timedelta(minutes=1)).order_by('-created_time')
 

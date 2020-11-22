@@ -70,11 +70,6 @@ def calls(request, ticker_symbol):
                         month_to_gain))
     all_calls = list(filter(lambda call: call.gain > 0.0, all_calls))
     all_calls = sorted(all_calls, key=lambda call: call.gain_after_tradeoff, reverse=True)
-    if all_calls:
-        max_gain_after_tradeoff = all_calls[0].gain_after_tradeoff
-        for call in all_calls:
-            call.save_normalized_score(max_gain_after_tradeoff)
-
     return Response({'all_calls': BuyCallSerializer(all_calls, many=True).data})
 
 

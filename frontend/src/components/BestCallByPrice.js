@@ -50,11 +50,6 @@ export default function BestCallByPrice({ selectedTicker, expirationTimestamps }
             text: "Stock Gain",
             formatter: PercentageFormatter
         }, {
-            dataField: "normalized_score",
-            text: "Final Score",
-            formatter: NumberRoundFormatter,
-            sort: true
-        }, {
             dataField: 'in_the_money',
             text: 'In the money',
             // hidden: true, getFilter() won't be called if hidden is true.

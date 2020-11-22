@@ -66,9 +66,6 @@ class OptionContractTestCase(TestCase):
         self.assertAlmostEqual(contract.gain, 0.9294990723562)
         self.assertAlmostEqual(contract.gain_after_tradeoff, 1.5794990723562)
         self.assertAlmostEqual(contract.stock_gain, 0.42857142857143)
-        # Test methods.
-        contract.save_normalized_score(2.0)
-        self.assertAlmostEqual(contract.normalized_score, 78.974953617811)
 
     @mock.patch('django.utils.timezone.now')
     def test_missing_bid_or_ask(self, mock_now):

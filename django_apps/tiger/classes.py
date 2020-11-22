@@ -66,7 +66,6 @@ class BuyCall(OptionContract):
         self.gain = self.get_gain()
         self.gain_after_tradeoff = self.get_gain_after_tradeoff()
         self.stock_gain = self.get_stock_gain()
-        self.normalized_score = None
 
     # Private methods:
     # TODO: make @property work with Serializer.
@@ -82,12 +81,6 @@ class BuyCall(OptionContract):
 
     def get_stock_gain(self):
         return self.target_stock_price / self.current_stock_price - 1.0
-
-    # Public methods:
-    def save_normalized_score(self, max_gain_after_tradeoff):
-        if self.get_gain_after_tradeoff() is None:
-            return
-        self.normalized_score = self.get_gain_after_tradeoff() / max_gain_after_tradeoff * 100.0
 
 
 class SellCoveredCall(OptionContract):
