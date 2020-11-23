@@ -13,6 +13,7 @@ import Alert from 'react-bootstrap/Alert';
 import BootstrapTable from 'react-bootstrap-table-next';
 import paginationFactory from 'react-bootstrap-table2-paginator';
 import filterFactory, { multiSelectFilter, numberFilter } from 'react-bootstrap-table2-filter';
+import ModalSpinner from '../components/ModalSpinner';
 
 let inTheMoneyFilter;
 let lastTradedFilter;
@@ -23,9 +24,9 @@ export default function SellCoveredCall() {
     const [basicInfo, setbasicInfo] = useState({});
     const [showTimestampAlert, setShowTimestampAlert] = useState(false);
     const [bestCalls, setBestCalls] = useState([]);
-    const [loading, setLoading] = useState(false);
     const [selectedExpirationTimestamps, setSelectedExpirationTimestamps] = useState([]);
     const [useAsPremium, setUseAsPremium] = useState('estimated');
+    const [modalActive, setModalActive] = useState(false);
 
     const resetStates = () => {
         setSelectedTicker([]);
@@ -33,7 +34,7 @@ export default function SellCoveredCall() {
         setbasicInfo({});
         setShowTimestampAlert(false);
         setBestCalls([]);
-        setLoading(false);
+        setModalActive(false);
         setSelectedExpirationTimestamps([]);
     }
 
@@ -119,7 +120,6 @@ export default function SellCoveredCall() {
         }
 
         if (form.checkValidity() !== false && selectedExpirationTimestamps.length > 0) {
-            setLoading(true);
             getCoveredCalls(selectedExpirationTimestamps);
         }
     };
@@ -146,6 +146,7 @@ export default function SellCoveredCall() {
             let url = `${API_URL}/tickers/${selectedTicker[0].symbol}/sell_covered_calls/?`;
             selectedExpirationTimestamps.map((timestamp) => { url += `expiration_timestamps=${timestamp}&` });
             url += `use_as_premium=${useAsPremium}`
+            setModalActive(true);
             const response = await Axios.get(url);
             let allCalls = response.data.all_calls;
             let strikeSet = new Set()
@@ -155,14 +156,16 @@ export default function SellCoveredCall() {
                 row.unique_strike_count = strikeSet.size;
             }
             setBestCalls(allCalls);
-            setLoading(false);
+            setModalActive(false);
         } catch (error) {
             console.error(error);
+            setModalActive(false);
         }
     };
 
     return (
         <div id="content">
+            <ModalSpinner active={modalActive}></ModalSpinner>
             <h1 className="text-center">Sell covered call</h1>
             <Form>
                 <Form.Group>
@@ -172,6 +175,7 @@ export default function SellCoveredCall() {
                         setExpirationTimestamps={setExpirationTimestamps}
                         setbasicInfo={setbasicInfo}
                         resetStates={resetStates}
+                        setModalActive={setModalActive}
                     />
                 </Form.Group>
             </Form>
@@ -273,7 +277,6 @@ export default function SellCoveredCall() {
 
                         <BootstrapTable
                             classes="table-responsive"
-                            loading={loading}
                             bootstrap4={true}
                             keyField="contract_symbol"
                             data={bestCalls}

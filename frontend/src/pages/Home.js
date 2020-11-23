@@ -4,6 +4,7 @@ import TickerTypeahead from '../components/TickerTypeahead';
 import TickerSummary from '../components/TickerSummary.js';
 import BestCallByPrice from '../components/BestCallByPrice.js';
 import { useOktaAuth } from '@okta/okta-react';
+import ModalSpinner from '../components/ModalSpinner';
 
 export default function Home() {
     // const { authState, authService } = useOktaAuth();
@@ -11,6 +12,7 @@ export default function Home() {
     const [selectedTicker, setSelectedTicker] = useState([]);
     const [expirationTimestamps, setExpirationTimestamps] = useState([]);
     const [basicInfo, setbasicInfo] = useState({});
+    const [modalActive, setModalActive] = useState(false);
 
     // useEffect(() => {
     //     console.log("using effect")
@@ -34,6 +36,7 @@ export default function Home() {
 
     return (
         <div id="content">
+            <ModalSpinner active={modalActive}></ModalSpinner>
             {/* <div>
                 <h1>User Profile</h1>
                 <ul>
@@ -50,13 +53,17 @@ export default function Home() {
                         setSelectedTicker={setSelectedTicker}
                         setExpirationTimestamps={setExpirationTimestamps}
                         setbasicInfo={setbasicInfo}
+                        setModalActive={setModalActive}
                     />
                 </Form.Group>
             </Form>
             {selectedTicker.length > 0 ?
                 <div>
                     <TickerSummary basicInfo={basicInfo} />
-                    <BestCallByPrice selectedTicker={selectedTicker[0].symbol} expirationTimestamps={expirationTimestamps} />
+                    <BestCallByPrice
+                        selectedTicker={selectedTicker[0].symbol}
+                        expirationTimestamps={expirationTimestamps}
+                        setModalActive={setModalActive} />
                 </div>
                 :
                 null

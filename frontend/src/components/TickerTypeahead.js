@@ -4,7 +4,7 @@ import Axios from 'axios';
 import getApiUrl from '../utils'
 
 
-export default function TickerTypeahead({ setSelectedTicker, setExpirationTimestamps, setbasicInfo, /*optional*/resetStates }) {
+export default function TickerTypeahead({ setSelectedTicker, setExpirationTimestamps, setbasicInfo, /*optional*/resetStates, setModalActive }) {
     const API_URL = getApiUrl();
     const [allTickers, setAllTickers] = useState([]);
 
@@ -27,12 +27,15 @@ export default function TickerTypeahead({ setSelectedTicker, setExpirationTimest
 
     const loadExpirationDates = async (selected) => {
         try {
+            setModalActive(true);
             const response = await Axios.get(`${API_URL}/tickers/${selected[0].symbol}`);
             setExpirationTimestamps(response.data.expiration_timestamps);
             setbasicInfo(response.data.quote)
             setSelectedTicker(selected);
+            setModalActive(false);
         } catch (error) {
             console.error(error);
+            setModalActive(false);
         }
     };
 

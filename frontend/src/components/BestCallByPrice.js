@@ -16,11 +16,10 @@ import filterFactory, { multiSelectFilter, numberFilter } from 'react-bootstrap-
 let inTheMoneyFilter;
 let lastTradedFilter;
 
-export default function BestCallByPrice({ selectedTicker, expirationTimestamps }) {
+export default function BestCallByPrice({ selectedTicker, expirationTimestamps, setModalActive }) {
     const API_URL = getApiUrl();
     const [showTimestampAlert, setShowTimestampAlert] = useState(false);
     const [bestCalls, setBestCalls] = useState([]);
-    const [loading, setLoading] = useState(false);
     const [selectedExpirationTimestamps, setSelectedExpirationTimestamps] = useState([]);
     const [tradeoffValue, setTradeoffValue] = React.useState(0.0);
     const [useAsPremium, setUseAsPremium] = useState('estimated');
@@ -101,7 +100,6 @@ export default function BestCallByPrice({ selectedTicker, expirationTimestamps }
         }
 
         if (form.checkValidity() !== false && selectedExpirationTimestamps.length > 0) {
-            setLoading(true);
             getBestCalls(formDataObj.target_price, selectedExpirationTimestamps);
         }
     };
@@ -129,11 +127,13 @@ export default function BestCallByPrice({ selectedTicker, expirationTimestamps }
             selectedExpirationTimestamps.map((timestamp) => { url += `expiration_timestamps=${timestamp}&` });
             url += `month_to_percent_gain=${tradeoffValue}`
             url += `&use_as_premium=${useAsPremium}`
+            setModalActive(true);
             const response = await Axios.get(url);
             setBestCalls(response.data.all_calls);
-            setLoading(false);
+            setModalActive(false);
         } catch (error) {
             console.error(error);
+            setModalActive(false);
         }
     };
 
@@ -251,7 +251,6 @@ export default function BestCallByPrice({ selectedTicker, expirationTimestamps }
 
             <BootstrapTable
                 classes="table-responsive"
-                loading={loading}
                 bootstrap4={true}
                 keyField="contract_symbol"
                 data={bestCalls}
