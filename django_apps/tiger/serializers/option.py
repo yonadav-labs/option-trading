@@ -1,4 +1,4 @@
-from tiger.models import Ticker, User
+from tiger.models import Ticker
 from rest_framework import serializers
 
 
@@ -44,10 +44,3 @@ class SellCoveredCallSerializer(OptionContractSerializer):
     annualized_gain_cap = serializers.FloatField(allow_null=True)
     premium_gain = serializers.FloatField(allow_null=True)
     annualized_premium_gain = serializers.FloatField(allow_null=True)
-
-
-class UserSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = User
-        fields = ('username', 'email', 'id', 'okta_id', 'is_subscriber', 'first_name', 'last_name', 'is_superuser',
-                  'is_staff', 'is_active', 'watchlist')
