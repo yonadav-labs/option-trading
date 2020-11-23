@@ -11,7 +11,7 @@ function Header() {
                 <a className="p-2 text-dark" href="#">Support</a>
                 <a className="p-2 text-dark" href="#">Pricing</a>
             </nav>
-            <a className="btn btn-outline-primary" href="#">Sign up</a>
+            <a className="btn btn-outline-primary" href="/login">Log in / Sign up</a>
         </div>
     )
 }

@@ -43,6 +43,7 @@ const Profile = () => {
 
   return (
     <div>
+      <button onClick={logout}>Logout</button>
       <h1>User Profile</h1>
       <ul>
         {Object.entries(user).map((claim) => {
