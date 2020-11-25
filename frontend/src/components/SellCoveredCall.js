@@ -48,29 +48,34 @@ export default function SellCoveredCall() {
         {
             dataField: "strike",
             text: "Strike",
-            formatter: PriceFormatter
+            formatter: PriceFormatter,
+            sort: true
         }, {
             dataField: "estimated_premium",
             text: "Premium",
-            formatter: PriceFormatter
+            formatter: PriceFormatter,
+            sort: true
         }, {
             dataField: "to_strike",
             text: "To strike",
             formatter: (cell, row, rowIndex, extraData) => (
                 PriceWithPercentageFormatter(cell, row.to_strike_ratio)
-            )
+            ),
+            sort: true
         }, {
             dataField: "gain_cap",
             text: "Max gain",
             formatter: (cell, row, rowIndex, extraData) => (
                 PercentageWithAnnualizedFormatter(cell, row.annualized_gain_cap)
-            )
+            ),
+            sort: true
         }, {
             dataField: "premium_gain",
             text: "Premium gain",
             formatter: (cell, row, rowIndex, extraData) => (
                 PercentageWithAnnualizedFormatter(cell, row.annualized_premium_gain)
-            )
+            ),
+            sort: true
         }, {
             dataField: 'in_the_money',
             text: 'In the money',

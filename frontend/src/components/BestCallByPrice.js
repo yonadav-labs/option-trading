@@ -32,19 +32,23 @@ export default function BestCallByPrice({ selectedTicker, expirationTimestamps, 
         {
             dataField: "strike",
             text: "Strike",
-            formatter: PriceFormatter
+            formatter: PriceFormatter,
+            sort: true
         }, {
             dataField: "estimated_premium",
             text: "Premium",
-            formatter: PriceFormatter
+            formatter: PriceFormatter,
+            sort: true
         }, {
             dataField: "break_even_price",
             text: "Breakeven Point",
-            formatter: PriceFormatter
+            formatter: PriceFormatter,
+            sort: true
         }, {
             dataField: "gain",
             text: "Option Gain",
-            formatter: PercentageFormatter
+            formatter: PercentageFormatter,
+            sort: true
         }, {
             dataField: "stock_gain",
             text: "Stock Gain",
