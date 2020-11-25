@@ -73,6 +73,7 @@ class BuyCall(OptionContract):
         self.month_to_gain = month_to_gain
 
         self.gain = self.get_gain()
+        self.annualized_gain = self.get_annualized_gain()
         self.gain_after_tradeoff = self.get_gain_after_tradeoff()
         self.stock_gain = self.get_stock_gain()
 
@@ -82,6 +83,18 @@ class BuyCall(OptionContract):
         if self.break_even_price is None or self.estimated_premium is None:
             return None
         return (self.target_stock_price - self.break_even_price) / self.estimated_premium
+
+    def get_annualized_gain(self):
+        gain = self.get_gain()
+        if gain is None or gain < 0.0:
+            return None
+
+        daily_gain = math.pow(gain + 1.0, 1.0 / self.days_till_expiration) - 1.0
+        # annualized_gain would overflow if too large
+        if daily_gain > 0.1:
+            return None
+
+        return math.pow(gain + 1.0, 365.0 / self.days_till_expiration) - 1.0
 
     def get_gain_after_tradeoff(self):
         if self.get_gain() is None:
@@ -119,7 +132,7 @@ class SellCoveredCall(OptionContract):
         if self.estimated_premium is None:
             return None
         max_total = (self.strike + self.estimated_premium) / self.current_stock_price
-        return math.pow(max_total, 365 / self.days_till_expiration) - 1.0
+        return math.pow(max_total, 365.0 / self.days_till_expiration) - 1.0
 
     def get_premium_gain(self):
         if self.estimated_premium is None or self.get_gain_cap() is None:
@@ -129,4 +142,4 @@ class SellCoveredCall(OptionContract):
     def get_annualized_premium_gain(self):
         if self.get_premium_gain() is None:
             return None
-        return math.pow((self.get_premium_gain() + 1.0), 365 / self.days_till_expiration) - 1.0
+        return math.pow((self.get_premium_gain() + 1.0), 365.0 / self.days_till_expiration) - 1.0

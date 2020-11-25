@@ -41,6 +41,9 @@ export function PriceWithPercentageFormatter(price_num, percentage_num) {
 };
 
 export function PercentageWithAnnualizedFormatter(num, annualized_num) {
+    if (annualized_num == null) {
+        return (<span>{PercentageFormatter(num)}</span>)
+    }
     return (<span>{PercentageFormatter(num)}&nbsp;<small>({PercentageFormatter(annualized_num)} APR)</small></span>)
 };
 

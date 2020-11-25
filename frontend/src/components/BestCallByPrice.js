@@ -7,7 +7,7 @@ import paginationFactory from 'react-bootstrap-table2-paginator';
 import RangeSlider from 'react-bootstrap-range-slider';
 import Axios from 'axios';
 import getApiUrl, {
-    PercentageFormatter, PriceFormatter, TimestampWithDaysFormatter, NumberRoundFormatter,
+    PercentageFormatter, PriceFormatter, TimestampWithDaysFormatter, PercentageWithAnnualizedFormatter,
     ExpandContractRow, InTheMoneyRowStyle, InTheMoneySign, onInTheMoneyFilterChange, SmallTextFormatter,
     onLastTradedFilterChange
 } from '../utils';
@@ -47,7 +47,9 @@ export default function BestCallByPrice({ selectedTicker, expirationTimestamps, 
         }, {
             dataField: "gain",
             text: "Option Gain",
-            formatter: PercentageFormatter,
+            formatter: (cell, row, rowIndex, extraData) => (
+                PercentageWithAnnualizedFormatter(cell, row.annualized_gain)
+            ),
             sort: true
         }, {
             dataField: "stock_gain",
@@ -148,7 +150,7 @@ export default function BestCallByPrice({ selectedTicker, expirationTimestamps, 
             <Form onSubmit={handleSubmit}>
                 <Form.Group>
                     <Form.Label className="font-weight-bold">Target price (USD):</Form.Label>
-                    <Form.Control name="target_price" as="input" type="number" placeholder="100.0" min="0.0" step="0.001" required />
+                    <Form.Control name="target_price" as="input" type="number" placeholder="100.0" min="0.0" max="10000.0" step="0.01" required />
                 </Form.Group>
                 <Form.Group>
                     {showTimestampAlert ?
@@ -190,7 +192,8 @@ export default function BestCallByPrice({ selectedTicker, expirationTimestamps, 
                         </Form.Group>
                     </div>
                 </div>
-                <div className="font-weight-bold">Month to gain tradeoff: </div>
+                {/* TODO(Bo): change to annulized gain and move to a custom sorting function */}
+                {/* <div className="font-weight-bold">Month to gain tradeoff: </div>
                 <div>Reduce {(tradeoffValue * 100.0).toFixed(2)}% gain for 30 days additional expiration time.</div>
                 <div>
                     <RangeSlider
@@ -203,7 +206,7 @@ export default function BestCallByPrice({ selectedTicker, expirationTimestamps, 
                         tooltip='auto'
                         size='sm'
                     />
-                </div>
+                </div> */}
                 <div class="row">
                     <div className="col">
                         <Button type="submit" className="btn btn-primary">Analyze</Button>

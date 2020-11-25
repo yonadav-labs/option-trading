@@ -33,6 +33,7 @@ class OptionContractSerializer(serializers.Serializer):
 
 class BuyCallSerializer(OptionContractSerializer):
     gain = serializers.FloatField(allow_null=True)
+    annualized_gain = serializers.FloatField(allow_null=True)
     gain_after_tradeoff = serializers.FloatField(allow_null=True)
     stock_gain = serializers.FloatField()
 
