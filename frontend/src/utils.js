@@ -37,11 +37,11 @@ export function PercentageFormatter(num) {
 };
 
 export function PriceWithPercentageFormatter(price_num, percentage_num) {
-    return (<span>{PriceFormatter(price_num)}&nbsp;({PercentageFormatter(percentage_num)})</span>);
+    return (<span>{PriceFormatter(price_num)}&nbsp;<small>({PercentageFormatter(percentage_num)})</small></span>);
 };
 
 export function PercentageWithAnnualizedFormatter(num, annualized_num) {
-    return (<span>{PercentageFormatter(num)}&nbsp;({PercentageFormatter(annualized_num)} APR)</span>)
+    return (<span>{PercentageFormatter(num)}&nbsp;<small>({PercentageFormatter(annualized_num)} APR)</small></span>)
 };
 
 export function TimestampDateFormatter(ts) {
@@ -56,7 +56,7 @@ export function TimestampTimeFormatter(ts) {
 };
 
 export function TimestampWithDaysFormatter(ts, days_till_expiration) {
-    return (<span>{TimestampDateFormatter(ts)} ({days_till_expiration} days)</span>);
+    return (<span>{TimestampDateFormatter(ts)} <small>({days_till_expiration} days)</small></span>);
 };
 
 export function SmallTextFormatter(text) {
