@@ -148,7 +148,7 @@ export default function BestCallByPrice({ selectedTicker, expirationTimestamps, 
             <Form onSubmit={handleSubmit}>
                 <Form.Group>
                     <Form.Label className="font-weight-bold">Target price (USD):</Form.Label>
-                    <Form.Control name="target_price" as="input" type="number" placeholder="100.0" min="0.0" required />
+                    <Form.Control name="target_price" as="input" type="number" placeholder="100.0" min="0.0" step="0.001" required />
                 </Form.Group>
                 <Form.Group>
                     {showTimestampAlert ?
