@@ -24,7 +24,15 @@ export function PercentageFormatter(num) {
     if (num < 10) {
         return (<NumberFormat value={num * 100} displayType={'text'} decimalScale={2} suffix={'%'} />);
     } else {
-        return (<NumberFormat value={num} displayType={'text'} decimalScale={0} suffix={'X'} />);
+        const billion = 1000000000;
+        const trillion = billion * 1000;
+        if (num > trillion) {
+            return (<NumberFormat value={num / trillion} displayType={'text'} decimalScale={0} suffix={' trillion X'} />);
+        } else if (num > billion) {
+            return (<NumberFormat value={num / billion} displayType={'text'} decimalScale={0} suffix={' billion X'} />);
+        } else {
+            return (<NumberFormat value={num} displayType={'text'} decimalScale={0} suffix={'X'} />);
+        }
     }
 };
 
