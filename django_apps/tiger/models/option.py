@@ -1,6 +1,7 @@
 import json
 from datetime import timedelta
 from django.db import models
+from django.conf import settings
 
 from tiger.utils import get_now
 from tiger.yahoo import fetch_external_api, get_yahoo_option_url, get_expiration_timestamps, get_option_contracts, \
@@ -51,7 +52,7 @@ class ExternalRequestCacheManager(models.Manager):
         # TODO: make the cache time longer during market closed hours.
         # TODO: make the cache time configurable for different request pattern.
         cached_requests = self.filter(request_url=request_url).filter(
-            created_time__gt=get_now() - timedelta(minutes=1)).order_by('-created_time')
+            created_time__gt=get_now() - timedelta(minutes=60 if settings.DEBUG else 1)).order_by('-created_time')
 
         if cached_requests:
             return cached_requests[0]
