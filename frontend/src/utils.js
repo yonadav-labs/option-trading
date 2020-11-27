@@ -40,20 +40,20 @@ export function PriceWithPercentageFormatter(price_num, percentage_num) {
     return (<span>{PriceFormatter(price_num)}<small>({PercentageFormatter(percentage_num)})</small></span>);
 };
 
-export function DailyProfitFormatter(daily_gain, gain, days_till_expiration) {
+export function DailyProfitFormatter(gain_daily, gain, days_till_expiration) {
     return (
         <span>
             {PercentageFormatter(gain)}
-            <small><br />{PercentageFormatter(daily_gain, 4)} daily</small>
+            <small><br />{PercentageFormatter(gain_daily, 4)} daily</small>
         </span>
     );
 };
 
-export function AnnualProfitFormatter(annualized_premium_gain, premium_gain, days_till_expiration) {
+export function AnnualProfitFormatter(premium_gain_annualized, premium_gain, days_till_expiration) {
     return (
         <span>
             {PercentageFormatter(premium_gain)}
-            <small><br />{PercentageFormatter(annualized_premium_gain)} APR</small>
+            <small><br />{PercentageFormatter(premium_gain_annualized)} APR</small>
         </span >
     );
 };

@@ -29,7 +29,7 @@ export default function BestCallByPrice({ selectedTicker, expirationTimestamps, 
     };
     const result_table_columns = [
         {
-            dataField: "annualized_to_strike_ratio",
+            dataField: "to_strike_ratio_annualized",
             text: "Strike price",
             formatter: (cell, row, rowIndex, extraData) => (
                 PriceMovementFormatter(cell, row.to_strike_ratio, row.strike)
@@ -41,7 +41,7 @@ export default function BestCallByPrice({ selectedTicker, expirationTimestamps, 
             formatter: PriceFormatter,
             sort: true
         }, {
-            dataField: "daily_gain",
+            dataField: "gain_daily",
             text: "Profit at Target",
             formatter: (cell, row, rowIndex, extraData) => (
                 DailyProfitFormatter(cell, row.gain, row.days_till_expiration)
@@ -49,7 +49,7 @@ export default function BestCallByPrice({ selectedTicker, expirationTimestamps, 
             sort: true
         },
         {
-            dataField: "annualized_to_break_even_ratio",
+            dataField: "to_break_even_ratio_annualized",
             text: "Break Even Price",
             formatter: (cell, row, rowIndex, extraData) => (
                 PriceMovementFormatter(cell, row.to_break_even_ratio, row.break_even_price)
@@ -93,7 +93,7 @@ export default function BestCallByPrice({ selectedTicker, expirationTimestamps, 
         },
     ];
     const defaultSorted = [{
-        dataField: "daily_gain",
+        dataField: "gain_daily",
         order: "desc"
     }];
 

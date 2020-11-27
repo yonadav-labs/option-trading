@@ -46,7 +46,7 @@ export default function SellCoveredCall() {
     };
     const result_table_columns = [
         {
-            dataField: "annualized_to_strike_ratio",
+            dataField: "to_strike_ratio_annualized",
             text: "Strike price",
             formatter: (cell, row, rowIndex, extraData) => (
                 PriceMovementFormatter(cell, row.to_strike_ratio, row.strike)
@@ -58,14 +58,14 @@ export default function SellCoveredCall() {
             formatter: PriceFormatter,
             sort: true
         }, {
-            dataField: "annualized_premium_gain",
+            dataField: "premium_gain_annualized",
             text: "Premium Profit",
             formatter: (cell, row, rowIndex, extraData) => (
                 AnnualProfitFormatter(cell, row.premium_gain, row.days_till_expiration)
             ),
             sort: true
         }, {
-            dataField: "annualized_gain_cap",
+            dataField: "gain_cap_annualized",
             text: "Profit Ceiling",
             formatter: (cell, row, rowIndex, extraData) => (
                 AnnualProfitFormatter(cell, row.gain_cap, row.days_till_expiration)
@@ -103,7 +103,7 @@ export default function SellCoveredCall() {
         },
     ];
     const defaultSorted = [{
-        dataField: "annualized_to_strike_ratio",
+        dataField: "to_strike_ratio_annualized",
         order: "asc"
     }];
 

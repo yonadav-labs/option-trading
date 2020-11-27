@@ -34,10 +34,10 @@ class OptionContract:
         self.estimated_premium = self.get_estimated_premium()  # Could be None.
         self.break_even_price = self.get_break_even_price()  # Could be None.
         self.to_break_even_ratio = self.get_to_break_even_ratio()  # Could be None.
-        self.annualized_to_break_even_ratio = self.get_annualized_to_break_even_ratio()  # Could be None.
+        self.to_break_even_ratio_annualized = self.get_to_break_even_ratio_annualized()  # Could be None.
         self.to_strike = self.get_to_strike()
         self.to_strike_ratio = self.get_to_strike_ratio()
-        self.annualized_to_strike_ratio = self.get_annualized_to_strike_ratio()
+        self.to_strike_ratio_annualized = self.get_to_strike_ratio_annualized()
 
     @staticmethod
     def is_valid(yh_contract_dict):
@@ -54,7 +54,7 @@ class OptionContract:
     def get_annualized_ratio(self, ratio):
         if ratio is None:
             return None
-        # annualized_gain would overflow if too large
+        # gain_annualized would overflow if too large
         if self.get_daily_ratio(ratio) > 0.1:
             return None
         return math.pow(ratio + 1.0, 365.0 / self.days_till_expiration) - 1.0
@@ -89,7 +89,7 @@ class OptionContract:
             return None
         return (self.get_break_even_price() - self.current_stock_price) / self.current_stock_price
 
-    def get_annualized_to_break_even_ratio(self):
+    def get_to_break_even_ratio_annualized(self):
         if self.get_break_even_price() is None:
             return None
         return math.pow(self.get_break_even_price() / self.current_stock_price,
@@ -102,7 +102,7 @@ class OptionContract:
     def get_to_strike_ratio(self):
         return self.get_to_strike() / self.current_stock_price
 
-    def get_annualized_to_strike_ratio(self):
+    def get_to_strike_ratio_annualized(self):
         return self.get_annualized_ratio(self.get_to_strike_ratio())
 
 
@@ -115,8 +115,8 @@ class BuyCall(OptionContract):
         self.month_to_gain = month_to_gain
 
         self.gain = self.get_gain()
-        self.annualized_gain = self.get_annualized_gain()
-        self.daily_gain = self.get_daily_gain()
+        self.gain_annualized = self.get_gain_annualized()
+        self.gain_daily = self.get_gain_daily()
         self.gain_after_tradeoff = self.get_gain_after_tradeoff()
         self.to_target_price_ratio = self.get_to_target_price_ratio()
         self.to_target_price_ratio_annualized = self.get_to_target_price_ratio_annualized()
@@ -128,10 +128,10 @@ class BuyCall(OptionContract):
             return None
         return max(-1.0, (self.target_stock_price - self.break_even_price) / self.estimated_premium)
 
-    def get_daily_gain(self):
+    def get_gain_daily(self):
         return self.get_daily_ratio(self.get_gain())
 
-    def get_annualized_gain(self):
+    def get_gain_annualized(self):
         return self.get_annualized_ratio(self.get_gain())
 
     # Not used.
@@ -152,16 +152,16 @@ class SellCoveredCall(OptionContract):
         super().__init__(yh_contract_dict, current_stock_price, use_as_premium)
 
         self.gain_cap = self.get_gain_cap()
-        self.annualized_gain_cap = self.get_annualized_gain_cap()
+        self.gain_cap_annualized = self.get_gain_cap_annualized()
         self.premium_gain = self.get_premium_gain()
-        self.annualized_premium_gain = self.get_annualized_premium_gain()
+        self.premium_gain_annualized = self.get_premium_gain_annualized()
 
     def get_gain_cap(self):
         if self.estimated_premium is None:
             return None
         return (self.strike + self.estimated_premium - self.current_stock_price) / self.current_stock_price
 
-    def get_annualized_gain_cap(self):
+    def get_gain_cap_annualized(self):
         return self.get_annualized_ratio(self.get_gain_cap())
 
     def get_premium_gain(self):
@@ -169,5 +169,5 @@ class SellCoveredCall(OptionContract):
             return None
         return min(self.estimated_premium / self.current_stock_price, self.get_gain_cap())
 
-    def get_annualized_premium_gain(self):
+    def get_premium_gain_annualized(self):
         return self.get_annualized_ratio(self.get_premium_gain())
