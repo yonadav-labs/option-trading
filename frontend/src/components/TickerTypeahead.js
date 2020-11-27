@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { Typeahead } from 'react-bootstrap-typeahead';
 import Axios from 'axios';
 import getApiUrl from '../utils'
@@ -7,6 +7,7 @@ import getApiUrl from '../utils'
 export default function TickerTypeahead({ setSelectedTicker, setExpirationTimestamps, setbasicInfo, /*optional*/resetStates, setModalActive }) {
     const API_URL = getApiUrl();
     const [allTickers, setAllTickers] = useState([]);
+    const inputEl = useRef(null);
 
     const loadTickers = async () => {
         try {
@@ -44,6 +45,7 @@ export default function TickerTypeahead({ setSelectedTicker, setExpirationTimest
             resetStates([]);
         }
         loadExpirationDates(selected);
+        inputEl.current.blur();
     };
 
     useEffect(() => {
@@ -63,6 +65,7 @@ export default function TickerTypeahead({ setSelectedTicker, setExpirationTimest
                 const uppercase_text = props.text.toUpperCase();
                 return option['symbol'].startsWith(uppercase_text);
             }}
+            ref={inputEl}
         />
     );
 }
