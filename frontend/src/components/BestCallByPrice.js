@@ -29,6 +29,13 @@ export default function BestCallByPrice({ selectedTicker, expirationTimestamps, 
     };
     const result_table_columns = [
         {
+            dataField: "annualized_to_strike_ratio",
+            text: "Strike price",
+            formatter: (cell, row, rowIndex, extraData) => (
+                PriceMovementFormatter(cell, row.to_strike_ratio, row.strike)
+            ),
+            sort: true
+        }, {
             dataField: "estimated_premium",
             text: "Premium",
             formatter: PriceFormatter,
@@ -42,13 +49,6 @@ export default function BestCallByPrice({ selectedTicker, expirationTimestamps, 
             sort: true
         },
         {
-            dataField: "annualized_to_strike_ratio",
-            text: "Strike price",
-            formatter: (cell, row, rowIndex, extraData) => (
-                PriceMovementFormatter(cell, row.to_strike_ratio, row.strike)
-            ),
-            sort: true
-        }, {
             dataField: "annualized_to_break_even_ratio",
             text: "Break Even Price",
             formatter: (cell, row, rowIndex, extraData) => (
@@ -56,7 +56,7 @@ export default function BestCallByPrice({ selectedTicker, expirationTimestamps, 
             ),
             sort: true
         }, {
-            dataField: "annualized_to_target_price_ratio",
+            dataField: "to_target_price_ratio_annualized",
             text: "Target Price",
             formatter: (cell, row, rowIndex, extraData) => (
                 PriceMovementFormatter(cell, row.to_target_price_ratio, row.target_stock_price)

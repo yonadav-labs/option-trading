@@ -44,6 +44,21 @@ class OptionContract:
         return 'strike' in yh_contract_dict and 'expiration' in yh_contract_dict \
                and 'contractSymbol' in yh_contract_dict
 
+    # Expect input ratio to be already -1.0.
+    def get_daily_ratio(self, ratio):
+        if ratio is None:
+            return None
+        return math.pow(ratio + 1.0, 1.0 / self.days_till_expiration) - 1.0
+
+    # Expect input ratio to be already -1.0.
+    def get_annualized_ratio(self, ratio):
+        if ratio is None:
+            return None
+        # annualized_gain would overflow if too large
+        if self.get_daily_ratio(ratio) > 0.1:
+            return None
+        return math.pow(ratio + 1.0, 365.0 / self.days_till_expiration) - 1.0
+
     # Returns None if both ask and bid are missing.
     def get_estimated_premium(self):
         if self.use_as_premium == 'estimated':
@@ -88,7 +103,7 @@ class OptionContract:
         return self.get_to_strike() / self.current_stock_price
 
     def get_annualized_to_strike_ratio(self):
-        return math.pow(self.strike / self.current_stock_price, 365.0 / self.days_till_expiration) - 1.0
+        return self.get_annualized_ratio(self.get_to_strike_ratio())
 
 
 class BuyCall(OptionContract):
@@ -111,25 +126,13 @@ class BuyCall(OptionContract):
     def get_gain(self):
         if self.break_even_price is None or self.estimated_premium is None:
             return None
-        return (self.target_stock_price - self.break_even_price) / self.estimated_premium
+        return max(-1.0, (self.target_stock_price - self.break_even_price) / self.estimated_premium)
 
     def get_daily_gain(self):
-        gain = self.get_gain()
-        if gain is None or gain < 0.0:
-            return None
-        return math.pow(gain + 1.0, 1.0 / self.days_till_expiration) - 1.0
+        return self.get_daily_ratio(self.get_gain())
 
     def get_annualized_gain(self):
-        gain = self.get_gain()
-        if gain is None or gain < 0.0:
-            return None
-
-        daily_gain = math.pow(gain + 1.0, 1.0 / self.days_till_expiration) - 1.0
-        # annualized_gain would overflow if too large
-        if daily_gain > 0.1:
-            return None
-
-        return math.pow(gain + 1.0, 365.0 / self.days_till_expiration) - 1.0
+        return self.get_annualized_ratio(self.get_gain())
 
     # Not used.
     def get_gain_after_tradeoff(self):
@@ -141,7 +144,7 @@ class BuyCall(OptionContract):
         return self.target_stock_price / self.current_stock_price - 1.0
 
     def get_to_target_price_ratio_annualized(self):
-        return math.pow(self.target_stock_price / self.current_stock_price, 365.0 / self.days_till_expiration) - 1.0
+        return self.get_annualized_ratio(self.get_to_target_price_ratio())
 
 
 class SellCoveredCall(OptionContract):
@@ -159,10 +162,7 @@ class SellCoveredCall(OptionContract):
         return (self.strike + self.estimated_premium - self.current_stock_price) / self.current_stock_price
 
     def get_annualized_gain_cap(self):
-        if self.estimated_premium is None:
-            return None
-        max_total = (self.strike + self.estimated_premium) / self.current_stock_price
-        return math.pow(max_total, 365.0 / self.days_till_expiration) - 1.0
+        return self.get_annualized_ratio(self.get_gain_cap())
 
     def get_premium_gain(self):
         if self.estimated_premium is None or self.get_gain_cap() is None:
@@ -170,6 +170,4 @@ class SellCoveredCall(OptionContract):
         return min(self.estimated_premium / self.current_stock_price, self.get_gain_cap())
 
     def get_annualized_premium_gain(self):
-        if self.get_premium_gain() is None:
-            return None
-        return math.pow((self.get_premium_gain() + 1.0), 365.0 / self.days_till_expiration) - 1.0
+        return self.get_annualized_ratio(self.get_premium_gain())
