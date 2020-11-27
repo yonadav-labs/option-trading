@@ -4,9 +4,9 @@ import TickerTypeahead from '../components/TickerTypeahead';
 import TickerSummary from '../components/TickerSummary.js';
 import Axios from 'axios';
 import getApiUrl, {
-    PriceFormatter, PercentageWithAnnualizedFormatter, TimestampWithDaysFormatter,
-    ExpandContractRow, InTheMoneyRowStyle, InTheMoneySign, onInTheMoneyFilterChange,
-    PriceWithPercentageFormatter, SmallTextFormatter, onLastTradedFilterChange
+    PriceFormatter, SymbolWithExpFormatter, ExpandContractRow, InTheMoneyRowStyle,
+    InTheMoneySign, onInTheMoneyFilterChange, onLastTradedFilterChange,
+    AnnualProfitFormatter, PriceMovementFormatter
 } from '../utils';
 import Button from 'react-bootstrap/Button';
 import Alert from 'react-bootstrap/Alert';
@@ -46,36 +46,37 @@ export default function SellCoveredCall() {
     };
     const result_table_columns = [
         {
-            dataField: "strike",
-            text: "Strike",
-            formatter: PriceFormatter,
-            sort: true
+            dataField: "annualized_to_strike_ratio",
+            text: "Strike price",
+            formatter: (cell, row, rowIndex, extraData) => (
+                PriceMovementFormatter(cell, row.to_strike_ratio, row.strike)
+            ),
+            sort: true,
         }, {
             dataField: "estimated_premium",
             text: "Premium",
             formatter: PriceFormatter,
             sort: true
         }, {
-            dataField: "to_strike",
-            text: "To strike",
+            dataField: "annualized_premium_gain",
+            text: "Premium Profit",
             formatter: (cell, row, rowIndex, extraData) => (
-                PriceWithPercentageFormatter(cell, row.to_strike_ratio)
+                AnnualProfitFormatter(cell, row.premium_gain, row.days_till_expiration)
             ),
             sort: true
         }, {
-            dataField: "gain_cap",
-            text: "Max gain",
+            dataField: "annualized_gain_cap",
+            text: "Profit Ceiling",
             formatter: (cell, row, rowIndex, extraData) => (
-                PercentageWithAnnualizedFormatter(cell, row.annualized_gain_cap)
+                AnnualProfitFormatter(cell, row.gain_cap, row.days_till_expiration)
             ),
             sort: true
         }, {
-            dataField: "premium_gain",
-            text: "Premium gain",
+            dataField: "expiration",
+            text: "Symbol / Expiration",
             formatter: (cell, row, rowIndex, extraData) => (
-                PercentageWithAnnualizedFormatter(cell, row.annualized_premium_gain)
-            ),
-            sort: true
+                SymbolWithExpFormatter(cell, row.days_till_expiration, row.contract_symbol)
+            )
         }, {
             dataField: 'in_the_money',
             text: 'In the money',
@@ -99,17 +100,12 @@ export default function SellCoveredCall() {
                     lastTradedFilter = filter;
                 }
             })
-        }, {
-            dataField: "expiration",
-            text: "Expiration",
-            formatter: (cell, row, rowIndex, extraData) => (
-                TimestampWithDaysFormatter(cell, row.days_till_expiration)
-            )
-        }, {
-            dataField: 'contract_symbol',
-            text: 'Contract Symbol',
-            formatter: SmallTextFormatter
-        }];
+        },
+    ];
+    const defaultSorted = [{
+        dataField: "annualized_to_strike_ratio",
+        order: "asc"
+    }];
 
     const handleSubmit = (event) => {
         event.preventDefault();
@@ -296,6 +292,7 @@ export default function SellCoveredCall() {
                             expandRow={ExpandContractRow()}
                             rowStyle={InTheMoneyRowStyle}
                             filter={filterFactory()}
+                            defaultSorted={defaultSorted}
                         />
                     </div>
                 </div>

@@ -7,9 +7,8 @@ import paginationFactory from 'react-bootstrap-table2-paginator';
 import RangeSlider from 'react-bootstrap-range-slider';
 import Axios from 'axios';
 import getApiUrl, {
-    PercentageFormatter, PriceFormatter, TimestampWithDaysFormatter, PercentageWithAnnualizedFormatter,
-    ExpandContractRow, InTheMoneyRowStyle, InTheMoneySign, onInTheMoneyFilterChange, SmallTextFormatter,
-    onLastTradedFilterChange
+    PriceFormatter, SymbolWithExpFormatter, ExpandContractRow, InTheMoneyRowStyle, InTheMoneySign, onInTheMoneyFilterChange,
+    onLastTradedFilterChange, DailyProfitFormatter, PriceMovementFormatter
 } from '../utils';
 import filterFactory, { multiSelectFilter, numberFilter } from 'react-bootstrap-table2-filter';
 
@@ -30,31 +29,44 @@ export default function BestCallByPrice({ selectedTicker, expirationTimestamps, 
     };
     const result_table_columns = [
         {
-            dataField: "strike",
-            text: "Strike",
-            formatter: PriceFormatter,
-            sort: true
-        }, {
             dataField: "estimated_premium",
             text: "Premium",
             formatter: PriceFormatter,
             sort: true
         }, {
-            dataField: "break_even_price",
-            text: "Breakeven Point",
-            formatter: PriceFormatter,
-            sort: true
-        }, {
-            dataField: "gain",
-            text: "Option Gain",
+            dataField: "daily_gain",
+            text: "Profit at Target",
             formatter: (cell, row, rowIndex, extraData) => (
-                PercentageWithAnnualizedFormatter(cell, row.annualized_gain)
+                DailyProfitFormatter(cell, row.gain, row.days_till_expiration)
+            ),
+            sort: true
+        },
+        {
+            dataField: "annualized_to_strike_ratio",
+            text: "Strike price",
+            formatter: (cell, row, rowIndex, extraData) => (
+                PriceMovementFormatter(cell, row.to_strike_ratio, row.strike)
             ),
             sort: true
         }, {
-            dataField: "stock_gain",
-            text: "Stock Gain",
-            formatter: PercentageFormatter
+            dataField: "annualized_to_break_even_ratio",
+            text: "Break Even Price",
+            formatter: (cell, row, rowIndex, extraData) => (
+                PriceMovementFormatter(cell, row.to_break_even_ratio, row.break_even_price)
+            ),
+            sort: true
+        }, {
+            dataField: "annualized_to_target_price_ratio",
+            text: "Target Price",
+            formatter: (cell, row, rowIndex, extraData) => (
+                PriceMovementFormatter(cell, row.to_target_price_ratio, row.target_stock_price)
+            ),
+        }, {
+            dataField: "expiration",
+            text: "Symbol / Expiration",
+            formatter: (cell, row, rowIndex, extraData) => (
+                SymbolWithExpFormatter(cell, row.days_till_expiration, row.contract_symbol)
+            )
         }, {
             dataField: 'in_the_money',
             text: 'In the money',
@@ -79,18 +91,11 @@ export default function BestCallByPrice({ selectedTicker, expirationTimestamps, 
                 }
             })
         },
-        {
-            dataField: "expiration",
-            text: "Expiration",
-            formatter: (cell, row, rowIndex, extraData) => (
-                TimestampWithDaysFormatter(cell, row.days_till_expiration)
-            )
-        },
-        {
-            dataField: 'contract_symbol',
-            text: 'Contract Symbol',
-            formatter: SmallTextFormatter
-        }];
+    ];
+    const defaultSorted = [{
+        dataField: "daily_gain",
+        order: "desc"
+    }];
 
     const handleSubmit = (event) => {
         event.preventDefault();
@@ -271,6 +276,7 @@ export default function BestCallByPrice({ selectedTicker, expirationTimestamps, 
                 expandRow={ExpandContractRow()}
                 rowStyle={InTheMoneyRowStyle}
                 filter={filterFactory()}
+                defaultSorted={defaultSorted}
             />
         </div >
     );

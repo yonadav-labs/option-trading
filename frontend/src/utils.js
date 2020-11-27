@@ -20,9 +20,9 @@ export function PriceFormatter(num) {
     return (<NumberFormat value={num} displayType={'text'} thousandSeparator={true} decimalScale={2} prefix={'$'} />);
 };
 
-export function PercentageFormatter(num) {
+export function PercentageFormatter(num, percentage_decimal = 2) {
     if (num < 10) {
-        return (<NumberFormat value={num * 100} displayType={'text'} decimalScale={2} suffix={'%'} />);
+        return (<NumberFormat value={num * 100} displayType={'text'} decimalScale={percentage_decimal} suffix={'%'} />);
     } else {
         const billion = 1000000000;
         const trillion = billion * 1000;
@@ -37,14 +37,44 @@ export function PercentageFormatter(num) {
 };
 
 export function PriceWithPercentageFormatter(price_num, percentage_num) {
-    return (<span>{PriceFormatter(price_num)}&nbsp;<small>({PercentageFormatter(percentage_num)})</small></span>);
+    return (<span>{PriceFormatter(price_num)}<small>({PercentageFormatter(percentage_num)})</small></span>);
 };
+
+export function DailyProfitFormatter(daily_gain, gain, days_till_expiration) {
+    return (
+        <span>
+            {PercentageFormatter(gain)}
+            <small><br />{PercentageFormatter(daily_gain, 4)} daily</small>
+        </span>
+    );
+};
+
+export function AnnualProfitFormatter(annualized_premium_gain, premium_gain, days_till_expiration) {
+    return (
+        <span>
+            {PercentageFormatter(premium_gain)}
+            <small><br />{PercentageFormatter(annualized_premium_gain)} APR</small>
+        </span >
+    );
+};
+
+export function PriceMovementFormatter(annualized_ratio, ratio, price) {
+    return (
+        <span>
+            {PriceFormatter(price)}<small>({ratio > 0 ? '+' : '-'}{PercentageFormatter(Math.abs(ratio))})</small>
+            <small><br />{ratio > 0 ? '+' : '-'}
+                {PercentageFormatter(Math.abs(annualized_ratio))} annually</small>
+        </span >
+    );
+};
+
+
 
 export function PercentageWithAnnualizedFormatter(num, annualized_num) {
     if (annualized_num == null) {
         return (<span>{PercentageFormatter(num)}</span>)
     }
-    return (<span>{PercentageFormatter(num)}&nbsp;<small>({PercentageFormatter(annualized_num)} APR)</small></span>)
+    return (<span>{PercentageFormatter(num)}<small><br />{PercentageFormatter(annualized_num)} APR</small></span>)
 };
 
 export function TimestampDateFormatter(ts) {
@@ -58,12 +88,13 @@ export function TimestampTimeFormatter(ts) {
     return (<span>{exp_date} {exp_time}</span>);
 };
 
-export function TimestampWithDaysFormatter(ts, days_till_expiration) {
-    return (<span>{TimestampDateFormatter(ts)} <small>({days_till_expiration} days)</small></span>);
-};
-
-export function SmallTextFormatter(text) {
-    return (<small>{text}</small>);
+export function SymbolWithExpFormatter(ts, days_till_expiration, contract_symbol) {
+    return (
+        <span>
+            <small>{contract_symbol}</small><br />
+            <small>Expire on {TimestampDateFormatter(ts)} ({days_till_expiration} days)</small>
+        </span>
+    );
 };
 
 export function ExpandContractRow() {

@@ -27,20 +27,26 @@ class OptionContractSerializer(serializers.Serializer):
 
     estimated_premium = serializers.FloatField(min_value=0.0, allow_null=True)
     break_even_price = serializers.FloatField(min_value=0.0, allow_null=True)
+    to_break_even_ratio = serializers.FloatField(allow_null=True)
+    annualized_to_break_even_ratio = serializers.FloatField(allow_null=True)
     days_till_expiration = serializers.IntegerField(min_value=0)
     current_stock_price = serializers.FloatField(min_value=0.0)
+    to_strike = serializers.FloatField()
+    to_strike_ratio = serializers.FloatField()
+    annualized_to_strike_ratio = serializers.FloatField()
 
 
 class BuyCallSerializer(OptionContractSerializer):
+    target_stock_price = serializers.FloatField(min_value=0.0)
     gain = serializers.FloatField(allow_null=True)
     annualized_gain = serializers.FloatField(allow_null=True)
+    daily_gain = serializers.FloatField(allow_null=True)
     gain_after_tradeoff = serializers.FloatField(allow_null=True)
-    stock_gain = serializers.FloatField()
+    to_target_price_ratio = serializers.FloatField()
+    to_target_price_ratio_annualized = serializers.FloatField()
 
 
 class SellCoveredCallSerializer(OptionContractSerializer):
-    to_strike = serializers.FloatField()
-    to_strike_ratio = serializers.FloatField()
     gain_cap = serializers.FloatField(allow_null=True)
     annualized_gain_cap = serializers.FloatField(allow_null=True)
     premium_gain = serializers.FloatField(allow_null=True)

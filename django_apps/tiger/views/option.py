@@ -65,7 +65,6 @@ def calls(request, ticker_symbol):
                 BuyCall(call, ticker.get_quote().get('regularMarketPrice'), target_price,
                         month_to_gain, use_as_premium))
     all_calls = list(filter(lambda call: call.gain is not None and call.gain > 0.0, all_calls))
-    all_calls = sorted(all_calls, key=lambda call: call.gain_after_tradeoff, reverse=True)
     return Response({'all_calls': BuyCallSerializer(all_calls, many=True).data})
 
 
@@ -85,5 +84,4 @@ def sell_covered_calls(request, ticker_symbol):
                 continue
             all_calls.append(
                 SellCoveredCall(call, ticker.get_quote().get('regularMarketPrice'), use_as_premium))
-    all_calls = sorted(all_calls, key=lambda call: (call.strike, call.expiration))
     return Response({'all_calls': SellCoveredCallSerializer(all_calls, many=True).data})

@@ -60,13 +60,22 @@ class OptionContractTestCase(TestCase):
         self.assertEqual(contract.expiration, 1626393600)  # 07/15/2020
         self.assertEqual(contract.strike, 288.0)
         # Test derived methods.
+        self.assertAlmostEqual(contract.target_stock_price, 600.0)
+        self.assertAlmostEqual(contract.to_target_price_ratio, 0.42857142857)
+        self.assertAlmostEqual(contract.to_target_price_ratio_annualized, 0.94959631065)
         self.assertAlmostEqual(contract.estimated_premium, 161.7)
         self.assertAlmostEqual(contract.break_even_price, 449.7)
+        self.assertAlmostEqual(contract.to_break_even_ratio, 0.07071428571)
+        self.assertAlmostEqual(contract.annualized_to_break_even_ratio, 0.13643051577)
+        self.assertAlmostEqual(contract.to_strike, -132.0)
+        self.assertAlmostEqual(contract.to_strike_ratio, -0.31428571428)
+        self.assertAlmostEqual(contract.annualized_to_strike_ratio, -0.50649259097)
         self.assertEqual(contract.days_till_expiration, 195)
         self.assertAlmostEqual(contract.gain, 0.9294990723562)
+        self.assertAlmostEqual(contract.daily_gain, 0.00337625301)
         self.assertAlmostEqual(contract.annualized_gain, 2.42210783034)
         self.assertAlmostEqual(contract.gain_after_tradeoff, 1.5794990723562)
-        self.assertAlmostEqual(contract.stock_gain, 0.42857142857143)
+        self.assertAlmostEqual(contract.to_target_price_ratio, 0.42857142857143)
 
     @mock.patch('django.utils.timezone.now')
     def test_missing_bid_or_ask(self, mock_now):
@@ -106,7 +115,7 @@ class OptionContractTestCase(TestCase):
         contract = BuyCall(yahoo_input, self.current_stock_price, target_stock_price, month_to_gain)
         self.assertIsNone(contract.estimated_premium)
         self.assertIsNone(contract.gain_after_tradeoff)
-        self.assertAlmostEqual(contract.stock_gain, 0.42857142857143)
+        self.assertAlmostEqual(contract.to_target_price_ratio, 0.42857142857143)
         # All bid, ask and last price are 0.
         yahoo_input = dict(self.yahoo_input)
         yahoo_input['bid'] = 0.0
@@ -115,7 +124,7 @@ class OptionContractTestCase(TestCase):
         contract = BuyCall(yahoo_input, self.current_stock_price, target_stock_price, month_to_gain)
         self.assertIsNone(contract.estimated_premium)
         self.assertIsNone(contract.gain_after_tradeoff)
-        self.assertAlmostEqual(contract.stock_gain, 0.42857142857143)
+        self.assertAlmostEqual(contract.to_target_price_ratio, 0.42857142857143)
 
     @mock.patch('django.utils.timezone.now')
     def test_sell_covered_call(self, mock_now):

@@ -25,13 +25,19 @@ class OptionContract:
         self.percent_change = yh_contract_dict.get('percentChange')
         self.volume = yh_contract_dict.get('volume')  # Could be None.
 
+        # Yahoo expiration time is 2 days early.
+        self.days_till_expiration = days_from_timestamp(self.expiration) + 2
+
         # Non-contract data.
         self.current_stock_price = current_stock_price
         self.use_as_premium = use_as_premium if use_as_premium in ('bid', 'ask', 'estimated') else 'estimated'
         self.estimated_premium = self.get_estimated_premium()  # Could be None.
         self.break_even_price = self.get_break_even_price()  # Could be None.
-        # Yahoo expiration time is 2 days early.
-        self.days_till_expiration = days_from_timestamp(self.expiration) + 2
+        self.to_break_even_ratio = self.get_to_break_even_ratio()  # Could be None.
+        self.annualized_to_break_even_ratio = self.get_annualized_to_break_even_ratio()  # Could be None.
+        self.to_strike = self.get_to_strike()
+        self.to_strike_ratio = self.get_to_strike_ratio()
+        self.annualized_to_strike_ratio = self.get_annualized_to_strike_ratio()
 
     @staticmethod
     def is_valid(yh_contract_dict):
@@ -63,6 +69,27 @@ class OptionContract:
             return None
         return self.get_estimated_premium() + self.strike
 
+    def get_to_break_even_ratio(self):
+        if self.get_break_even_price() is None:
+            return None
+        return (self.get_break_even_price() - self.current_stock_price) / self.current_stock_price
+
+    def get_annualized_to_break_even_ratio(self):
+        if self.get_break_even_price() is None:
+            return None
+        return math.pow(self.get_break_even_price() / self.current_stock_price,
+                        365.0 / self.days_till_expiration) - 1.0
+
+    def get_to_strike(self):
+        """Positive when current_stock_price is below strike."""
+        return self.strike - self.current_stock_price
+
+    def get_to_strike_ratio(self):
+        return self.get_to_strike() / self.current_stock_price
+
+    def get_annualized_to_strike_ratio(self):
+        return math.pow(self.strike / self.current_stock_price, 365.0 / self.days_till_expiration) - 1.0
+
 
 class BuyCall(OptionContract):
     def __init__(self, yh_contract_dict, current_stock_price, target_stock_price, month_to_gain,
@@ -74,8 +101,10 @@ class BuyCall(OptionContract):
 
         self.gain = self.get_gain()
         self.annualized_gain = self.get_annualized_gain()
+        self.daily_gain = self.get_daily_gain()
         self.gain_after_tradeoff = self.get_gain_after_tradeoff()
-        self.stock_gain = self.get_stock_gain()
+        self.to_target_price_ratio = self.get_to_target_price_ratio()
+        self.to_target_price_ratio_annualized = self.get_to_target_price_ratio_annualized()
 
     # Private methods:
     # TODO: make @property work with Serializer.
@@ -83,6 +112,12 @@ class BuyCall(OptionContract):
         if self.break_even_price is None or self.estimated_premium is None:
             return None
         return (self.target_stock_price - self.break_even_price) / self.estimated_premium
+
+    def get_daily_gain(self):
+        gain = self.get_gain()
+        if gain is None or gain < 0.0:
+            return None
+        return math.pow(gain + 1.0, 1.0 / self.days_till_expiration) - 1.0
 
     def get_annualized_gain(self):
         gain = self.get_gain()
@@ -96,32 +131,27 @@ class BuyCall(OptionContract):
 
         return math.pow(gain + 1.0, 365.0 / self.days_till_expiration) - 1.0
 
+    # Not used.
     def get_gain_after_tradeoff(self):
         if self.get_gain() is None:
             return None
         return self.get_gain() + (self.days_till_expiration / 30.0) * self.month_to_gain
 
-    def get_stock_gain(self):
+    def get_to_target_price_ratio(self):
         return self.target_stock_price / self.current_stock_price - 1.0
+
+    def get_to_target_price_ratio_annualized(self):
+        return math.pow(self.target_stock_price / self.current_stock_price, 365.0 / self.days_till_expiration) - 1.0
 
 
 class SellCoveredCall(OptionContract):
     def __init__(self, yh_contract_dict, current_stock_price, use_as_premium='estimated'):
         super().__init__(yh_contract_dict, current_stock_price, use_as_premium)
 
-        self.to_strike = self.get_to_strike()
-        self.to_strike_ratio = self.get_to_strike_ratio()
         self.gain_cap = self.get_gain_cap()
         self.annualized_gain_cap = self.get_annualized_gain_cap()
         self.premium_gain = self.get_premium_gain()
         self.annualized_premium_gain = self.get_annualized_premium_gain()
-
-    def get_to_strike(self):
-        """Positive when current_stock_price is below strike."""
-        return self.strike - self.current_stock_price
-
-    def get_to_strike_ratio(self):
-        return self.get_to_strike() / self.current_stock_price
 
     def get_gain_cap(self):
         if self.estimated_premium is None:
