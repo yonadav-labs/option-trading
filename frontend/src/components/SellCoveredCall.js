@@ -61,14 +61,14 @@ export default function SellCoveredCall() {
             dataField: "premium_gain_annualized",
             text: "Premium Profit",
             formatter: (cell, row, rowIndex, extraData) => (
-                AnnualProfitFormatter(cell, row.premium_gain, row.days_till_expiration)
+                AnnualProfitFormatter(cell, row.premium_gain, row)
             ),
             sort: true
         }, {
             dataField: "gain_cap_annualized",
             text: "Profit Ceiling",
             formatter: (cell, row, rowIndex, extraData) => (
-                AnnualProfitFormatter(cell, row.gain_cap, row.days_till_expiration)
+                AnnualProfitFormatter(cell, row.gain_cap, row)
             ),
             sort: true
         }, {

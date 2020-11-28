@@ -44,7 +44,7 @@ export default function BestCallByPrice({ selectedTicker, expirationTimestamps, 
             dataField: "gain_daily",
             text: "Profit at Target",
             formatter: (cell, row, rowIndex, extraData) => (
-                DailyProfitFormatter(cell, row.gain, row.days_till_expiration)
+                DailyProfitFormatter(cell, row.gain)
             ),
             sort: true
         },
