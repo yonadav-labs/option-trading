@@ -1,8 +1,10 @@
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from django.http.response import JsonResponse
 from rest_framework.parsers import JSONParser
 from rest_framework import status
+from rest_framework.permissions import IsAuthenticated
+from django.shortcuts import get_object_or_404
 import requests
 import os
 
@@ -10,46 +12,23 @@ from tiger.serializers import UserSerializer
 from tiger.models import User
 
 
-@api_view(['GET', 'PUT', 'DELETE'])
+@api_view(['GET', 'PUT'])
+@permission_classes([IsAuthenticated])
 def user_detail(request, id):
-    try:
-        user = User.objects.get(okta_id=id)
-    except User.DoesNotExist:
-        headers = {'Authorization': f"SSWS{os.environ['OKTA_API_KEY']}"}
-        response = requests.get(f"https://dev-7756696.okta.com/api/v1/users/{id}", headers=headers)
-        if response.ok:
-            data = response.json()
-            user = User(
-                okta_id=data["id"],
-                username=data["profile"]["login"],
-                is_superuser=False,
-                first_name=data["profile"]["firstName"],
-                last_name=data["profile"]["lastName"],
-                email=data["profile"]["email"],
-                is_staff=False,
-                is_active=True,
-                is_subscriber=False,
-                watchlist=[]
-            )
-            user.save()
-            # return Response(response.json(), status=response.status_code)
-        else:
-            return Response(response.json(), status=response.status_code)
-
     if request.method == 'GET':
+        user = get_object_or_404(User, pk=id)
         serializer = UserSerializer(user)
-        return JsonResponse(serializer.data)
+        return Response(serializer.data)
     elif request.method == 'PUT':
         user_data = JSONParser().parse(request)
         serializer = UserSerializer(user, data=user_data)
-        print(user_data)
         if serializer.is_valid():
             serializer.save()
-            return JsonResponse(serializer.data)
-        return JsonResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    elif request.method == 'DELETE':
-        user.delete()
-        return JsonResponse({'message': 'User was deleted successfully!'}, status=status.HTTP_204_NO_CONTENT)
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    # elif request.method == 'DELETE':
+    #     user.delete()
+    #     return JsonResponse({'message': 'User was deleted successfully!'}, status=status.HTTP_204_NO_CONTENT)
 
     # if request.method == 'GET':
     #     user_obj = get_object_or_404(User, id=user_id)
@@ -61,7 +40,8 @@ def user_detail(request, id):
     #     return Response({'user': serializer.data})
 
 
-@api_view(['GET', 'POST', 'DELETE'])
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
 def user_list(request):
     if request.method == 'GET':
         users = User.objects.all()
@@ -71,16 +51,16 @@ def user_list(request):
             users = users.filter(username_icontains=username)
 
         serializer = UserSerializer(users, many=True)
-        return JsonResponse(serializer.data, safe=False)
+        return Response(serializer.data)
         # 'safe=False' for objects serialization
-    elif request.method == 'POST':
-        user_data = JSONParser().parse(request)
-        serializer = UserSerializer(data=user_data)
-        if serializer.is_valid():
-            serializer.save()
-            return JsonResponse(serializer.data, status=status.HTTP_201_CREATED)
-        return JsonResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    elif request.method == 'DELETE':
-        count = User.objects.all().delete()
-        return JsonResponse({'message': '{} Users were deleted successfully!'.format(count[0])},
-                            status=status.HTTP_204_NO_CONTENT)
+    # elif request.method == 'POST':
+    #     user_data = JSONParser().parse(request)
+    #     serializer = UserSerializer(data=user_data)
+    #     if serializer.is_valid():
+    #         serializer.save()
+    #         return Response(serializer.data, status=status.HTTP_201_CREATED)
+    #     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    # elif request.method == 'DELETE':
+    #     count = User.objects.all().delete()
+    #     return Response({'message': '{} Users were deleted successfully!'.format(count[0])},
+    #                         status=status.HTTP_204_NO_CONTENT)

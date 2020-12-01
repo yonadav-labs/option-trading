@@ -15,8 +15,28 @@ const Profile = () => {
       // When user isn't authenticated, forget any user info
       setUser(null);
     } else {
+      const { accessToken } = authState;
       authService.getUser().then(info => {
-        getUser(info);
+        fetch(`${API_URL}/users`, {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        })
+          .then((response) => {
+            if (!response.ok) {
+              return Promise.reject();
+            }
+            return response.json();
+          })
+          .then((data) => {
+            console.log(data);
+            setUser(data);
+          })
+          .catch((err) => {
+            /* eslint-disable no-console */
+            console.error(err);
+          });
+        // getUser(info);
       });
     }
   }, [authState, authService]); // Update if authState changes
