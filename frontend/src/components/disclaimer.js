@@ -2,7 +2,7 @@ import React from 'react'
 
 function Disclaimer() {
     return (
-        <div>
+        <div className="container" style={{ "marginTop": "4rem" }}>
             <h1 align="center">Legal Disclaimer</h1>
             <h4>TERMS AND CONDITIONS</h4>
             <p>
