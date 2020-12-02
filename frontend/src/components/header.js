@@ -1,8 +1,51 @@
-import React from 'react'
+import React, { useContext, useEffect } from 'react'
 import { Link } from "react-router-dom"
 import { Navbar, Nav, NavDropdown } from 'react-bootstrap';
+import { useOktaAuth } from '@okta/okta-react';
+import UserContext from '../UserContext';
+import getApiUrl from '../utils';
 
 function Header() {
+    const { authState, authService } = useOktaAuth();
+    const { user, setUser } = useContext(UserContext);
+    const API_URL = getApiUrl();
+
+    useEffect(() => {
+        if (!authState.isAuthenticated) {
+            // When user isn't authenticated, forget any user info
+            setUser(null);
+        } else {
+            const { accessToken } = authState;
+            authService.getUser().then(info => {
+                // console.log(info);
+                fetch(`${API_URL}/users/${info.sub}`, {
+                    headers: {
+                        Authorization: `Bearer ${accessToken}`,
+                    },
+                })
+                    .then((response) => {
+                        if (!response.ok) {
+                            return Promise.reject();
+                        }
+                        return response.json();
+                    })
+                    .then((data) => {
+                        // console.log(data);
+                        setUser(data);
+                    })
+                    .catch((err) => {
+                        /* eslint-disable no-console */
+                        console.error(err);
+                    });
+                // getUser(info);
+            });
+        }
+    }, [authState, authService]); // Update if authState changes
+
+    async function logout() {
+        authService.logout('/');
+    }
+
     return (
         <header>
             <Navbar className="fixed-top" collapseOnSelect expand="lg" bg="dark" variant="dark">
@@ -21,8 +64,12 @@ function Header() {
                             <NavDropdown.Item href="#action/3.4">Separated link</NavDropdown.Item>
                         </NavDropdown>
                     </Nav>
+                    {authState.isAuthenticated ? <Nav><Nav.Link as={Link} to="/profile">Profile</Nav.Link></Nav> : null}
                     <Nav>
-                        <Nav.Link as={Link} to="/login">Sign Up / Login</Nav.Link>
+                        {authState.isAuthenticated ?
+                            <Nav.Link href="#" onClick={logout}>Logout</Nav.Link>
+                            :
+                            <Nav.Link as={Link} to="/login">Sign Up / Login</Nav.Link>}
                     </Nav>
                 </Navbar.Collapse>
             </Navbar>

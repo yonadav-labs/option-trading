@@ -24,9 +24,9 @@ export default withRouter(class AppWithRouterAccess extends Component {
     render() {
         return (
             <div>
-                <Header></Header>
-                <main role="main">
-                    <Security  {...config.oidc} onAuthRequired={this.onAuthRequired} >
+                <Security  {...config.oidc} onAuthRequired={this.onAuthRequired} >
+                    <Header></Header>
+                    <main role="main">
                         <Switch>
                             <Route path='/' exact={true} component={Home} />
                             <Route path='/buy-call' exact={true} component={BestCallByPrice} />
@@ -36,9 +36,9 @@ export default withRouter(class AppWithRouterAccess extends Component {
                             <Route path='/login' component={Login} />
                             <Route path='/callback' component={LoginCallback} />
                         </Switch>
-                    </Security>
-                    <Footer></Footer>
-                </main>
+                        <Footer></Footer>
+                    </main>
+                </Security>
             </div>
         );
     }

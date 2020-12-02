@@ -12,20 +12,20 @@ from tiger.serializers import UserSerializer
 from tiger.models import User
 
 
-@api_view(['GET', 'PUT'])
+@api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def user_detail(request, id):
     if request.method == 'GET':
-        user = get_object_or_404(User, pk=id)
+        user = get_object_or_404(User, okta_id=id)
         serializer = UserSerializer(user)
         return Response(serializer.data)
-    elif request.method == 'PUT':
-        user_data = JSONParser().parse(request)
-        serializer = UserSerializer(user, data=user_data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    # elif request.method == 'PUT':
+    #     user_data = JSONParser().parse(request)
+    #     serializer = UserSerializer(user, data=user_data)
+    #     if serializer.is_valid():
+    #         serializer.save()
+    #         return Response(serializer.data)
+    #     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     # elif request.method == 'DELETE':
     #     user.delete()
     #     return JsonResponse({'message': 'User was deleted successfully!'}, status=status.HTTP_204_NO_CONTENT)
@@ -46,9 +46,9 @@ def user_list(request):
     if request.method == 'GET':
         users = User.objects.all()
 
-        username = request.GET.get('username', None)
-        if username is not None:
-            users = users.filter(username_icontains=username)
+        email = request.GET.get('email', None)
+        if email is not None:
+            users = users.filter(email_icontains=email)
 
         serializer = UserSerializer(users, many=True)
         return Response(serializer.data)
