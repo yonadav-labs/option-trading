@@ -9,6 +9,7 @@ import Header from './components/header'
 import Footer from './components/footer'
 import SellCoveredCall from './components/SellCoveredCall'
 import Disclaimer from './components/disclaimer';
+import BestCallByPrice from './components/BestCallByPrice';
 
 export default withRouter(class AppWithRouterAccess extends Component {
     constructor(props) {
@@ -28,6 +29,7 @@ export default withRouter(class AppWithRouterAccess extends Component {
                     <Security  {...config.oidc} onAuthRequired={this.onAuthRequired} >
                         <Switch>
                             <Route path='/' exact={true} component={Home} />
+                            <Route path='/buy-call' exact={true} component={BestCallByPrice} />
                             <Route path='/sell-covered-call' exact={true} component={SellCoveredCall} />
                             <SecureRoute path='/profile' component={Profile} />
                             <Route path="/disclaimer" component={Disclaimer}></Route>
