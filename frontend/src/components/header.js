@@ -1,30 +1,33 @@
 import React from 'react'
 import { Link } from "react-router-dom"
+import { Navbar, Nav, NavDropdown } from 'react-bootstrap';
 
 function Header() {
     return (
         <header>
-            <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
-                <Link className="navbar-brand" to="/">Tiger Stance</Link>
-                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="collapse navbar-collapse" id="navbarCollapse">
-                    <ul class="navbar-nav mr-auto">
-                        <li class="nav-item active">
-                            <a class="nav-link" href="/">Home</a>
-                        </li>
-                        <li class="nav-item active">
-                            <Link className="nav-link" to="/buy-call">Buy call</Link>
-                        </li>
-                        <li class="nav-item active">
-                            <Link className="nav-link" to="/sell-covered-call">Sell covered call</Link>
-                        </li>
-                    </ul>
-                </div>
-            </nav>
+            <Navbar className="fixed-top" collapseOnSelect expand="lg" bg="dark" variant="dark">
+                <Navbar.Brand as={Link} to="/">Tigerstance</Navbar.Brand>
+                <Navbar.Toggle aria-controls="responsive-navbar-nav" />
+                <Navbar.Collapse id="responsive-navbar-nav">
+                    <Nav className="mr-auto">
+                        <Nav.Link as={Link} to="/">Home</Nav.Link>
+                        <Nav.Link as={Link} to="/buy-call">Buy call</Nav.Link>
+                        <Nav.Link as={Link} to="/sell-covered-call">Sell covered call</Nav.Link>
+                        <NavDropdown title="Dropdown" id="collasible-nav-dropdown">
+                            <NavDropdown.Item href="#action/3.1">Action</NavDropdown.Item>
+                            <NavDropdown.Item href="#action/3.2">Another action</NavDropdown.Item>
+                            <NavDropdown.Item href="#action/3.3">Something</NavDropdown.Item>
+                            <NavDropdown.Divider />
+                            <NavDropdown.Item href="#action/3.4">Separated link</NavDropdown.Item>
+                        </NavDropdown>
+                    </Nav>
+                    <Nav>
+                        <Nav.Link as={Link} to="/login">Sign Up / Login</Nav.Link>
+                    </Nav>
+                </Navbar.Collapse>
+            </Navbar>
         </header>
-    )
+    );
 }
 
 export default Header
