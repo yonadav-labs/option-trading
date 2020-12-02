@@ -165,7 +165,7 @@ export default function SellCoveredCall() {
     };
 
     return (
-        <div id="content">
+        <div id="content" className="container" style={{ "marginTop": "4rem" }}>
             <ModalSpinner active={modalActive}></ModalSpinner>
             <h1 className="text-center">Sell covered call</h1>
             <Form>

@@ -3,8 +3,9 @@ import { Link } from "react-router-dom"
 
 function Footer() {
     return (
-        <footer className="border-top align-items-center p-3 px-md-4 mb-3">
-            <div className="container">
+        <div>
+            <hr className="featurette-divider-last" />
+            <footer className="container">
                 <div className="row">
                     <div className="col">
                         <p className="text-muted">
@@ -26,8 +27,8 @@ function Footer() {
                         <small className="d-block mb-3 text-muted">Copyright &copy; 2020 tigerstance.com. All Rights Reserved.</small>
                     </div>
                 </div>
-            </div>
-        </footer>
+            </footer>
+        </div>
     )
 }
 

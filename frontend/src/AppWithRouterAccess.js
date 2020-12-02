@@ -25,7 +25,7 @@ export default withRouter(class AppWithRouterAccess extends Component {
         return (
             <div>
                 <Header></Header>
-                <div className="container">
+                <main role="main">
                     <Security  {...config.oidc} onAuthRequired={this.onAuthRequired} >
                         <Switch>
                             <Route path='/' exact={true} component={Home} />
@@ -37,8 +37,8 @@ export default withRouter(class AppWithRouterAccess extends Component {
                             <Route path='/callback' component={LoginCallback} />
                         </Switch>
                     </Security>
-                </div>
-                <Footer></Footer>
+                    <Footer></Footer>
+                </main>
             </div>
         );
     }

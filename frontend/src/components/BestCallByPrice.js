@@ -155,7 +155,7 @@ export default function BestCallByPrice() {
     };
 
     return (
-        <div id="content">
+        <div id="content" className="container" style={{ "marginTop": "4rem" }}>
             <ModalSpinner active={modalActive}></ModalSpinner>
             <h1 className="text-center">Buy call</h1>
             <Form>
@@ -177,7 +177,7 @@ export default function BestCallByPrice() {
                         <hr />
                         <Form onSubmit={handleSubmit}>
                             <Form.Group>
-                                <Form.Label className="font-weight-bold">Target price (USD):</Form.Label>
+                                <Form.Label className="font-weight-bold">Target price on expiration date (USD):</Form.Label>
                                 <Form.Control name="target_price" as="input" type="number" placeholder="100.0" min="0.0" max="10000.0" step="0.01" required />
                             </Form.Group>
                             <Form.Group>
@@ -188,7 +188,7 @@ export default function BestCallByPrice() {
                                     :
                                     null
                                 }
-                                <Form.Label className="font-weight-bold">Expiration Dates:</Form.Label>
+                                <Form.Label className="font-weight-bold">Expiration dates:</Form.Label>
                                 <div className="row">
                                     {expirationTimestamps.map((timestamp, index) => {
                                         // Yahoo's contract expiration timestamp uses GMT.
