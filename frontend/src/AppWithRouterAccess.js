@@ -3,7 +3,7 @@ import { Route, withRouter, Switch } from 'react-router-dom';
 import { Security, SecureRoute, LoginCallback } from '@okta/okta-react';
 import Profile from './pages/Profile';
 import Login from './components/Login';
-import config from "./oktaConfig";
+import getOktaConfig from "./oktaConfig";
 import Home from './pages/Home';
 import Header from './components/header'
 import Footer from './components/footer'
@@ -24,7 +24,7 @@ export default withRouter(class AppWithRouterAccess extends Component {
     render() {
         return (
             <div>
-                <Security  {...config.oidc} onAuthRequired={this.onAuthRequired} >
+                <Security  {...(getOktaConfig().oidc)} onAuthRequired={this.onAuthRequired} >
                     <Header></Header>
                     <main role="main">
                         <Switch>
