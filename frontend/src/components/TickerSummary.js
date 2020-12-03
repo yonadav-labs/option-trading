@@ -11,6 +11,7 @@ import getApiUrl from '../utils';
 import Axios from 'axios';
 
 export default function TickerSummary({ basicInfo }) {
+    /*
     const { user, setUser } = useContext(UserContext);
     const [onWatchlist, setOnWatchlist] = useState(user ? user.watchlist.includes(basicInfo.symbol) : false);
     const API_URL = getApiUrl();
@@ -24,7 +25,6 @@ export default function TickerSummary({ basicInfo }) {
             if (onWatchlist) {
                 const newWatchlist = user.watchlist.filter(item => item !== basicInfo.symbol);
                 user.watchlist = newWatchlist;
-
             } else {
                 user.watchlist.push(basicInfo.symbol);
             }
@@ -35,12 +35,13 @@ export default function TickerSummary({ basicInfo }) {
             console.error(error);
         }
     };
+    */
 
     return (
         <div>
             <div className="row">
                 <div className="col-sm"><h5>{basicInfo.symbol} - {basicInfo.shortName}</h5></div>
-                <ButtonGroup toggle className="mb-2 ml-auto">
+                {/* <ButtonGroup toggle className="mb-2 ml-auto">
                     <ToggleButton
                         type="checkbox"
                         variant="outline-primary"
@@ -51,7 +52,7 @@ export default function TickerSummary({ basicInfo }) {
                     >
                         {onWatchlist ? "-" : "+"}
                     </ToggleButton>
-                </ButtonGroup>
+                </ButtonGroup> */}
             </div>
             <div className="row">
                 <div className="col-sm">Last price: <NumberFormat value={basicInfo.regularMarketPrice} displayType={'text'} thousandSeparator={true} prefix={'$'} /></div>

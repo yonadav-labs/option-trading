@@ -18,13 +18,13 @@ const Profile = () => {
   }
 
   return (
-    <div>
+    <div className="container" style={{ "marginTop": "4rem" }}>
       <h1>User Profile</h1>
-      <ul>
+      {/* <ul>
         {Object.entries(user).map((claim) => {
           return <li><strong>{claim[0]}:</strong> {claim[1].toString()}</li>;
         })}
-      </ul>
+      </ul> */}
     </div>
   );
 }
