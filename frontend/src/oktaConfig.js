@@ -1,9 +1,11 @@
+const { REACT_APP_OIDC_CLIENT_ID, REACT_APP_OIDC_ISSUER, REACT_APP_OIDC_REDIRECT_URI } = process.env;
+
 export default function getOktaConfig() {
   return {
     oidc: {
-      clientId: '0oaiu6u2629106dxq5d5',
-      issuer: 'https://dev-7756696.okta.com/oauth2/default',
-      redirectUri: 'http://localhost:3000/callback',
+      clientId: REACT_APP_OIDC_CLIENT_ID,
+      issuer: REACT_APP_OIDC_ISSUER,
+      redirectUri: REACT_APP_OIDC_REDIRECT_URI,
       scopes: ['openid', 'profile', 'email'],
       pkce: true
     }
