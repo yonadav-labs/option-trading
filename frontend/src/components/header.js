@@ -18,7 +18,7 @@ function Header() {
             const { accessToken } = authState;
             authService.getUser().then(info => {
                 // console.log(info);
-                fetch(`${API_URL}/users/${info.sub}`, {
+                fetch(`${API_URL}/user`, {
                     headers: {
                         Authorization: `Bearer ${accessToken}`,
                     },
