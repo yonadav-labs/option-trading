@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import Carousel from "react-bootstrap/Carousel";
 import StockChart1 from '../images/home/stock-chart-1.jpg';
+import { Link } from "react-router-dom"
 
 export default function Home() {
     return (
@@ -36,20 +37,28 @@ export default function Home() {
                     <div className="col-lg-4">
                         <img className="rounded-circle" src="data:image/gif;base64,R0lGODlhAQABAIAAAHd3dwAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" width="140" height="140" />
                         <h2>Buy Call</h2>
-                        <p>Donec sed odio dui. Etiam porta sem malesuada magna mollis euismod. Nullam id dolor id nibh ultricies vehicula ut id elit. Morbi leo risus, porta ac consectetur ac, vestibulum at eros. Praesent commodo cursus magna.</p>
-                        <p><a className="btn btn-secondary" href="#" role="button">View details &raquo;</a></p>
+                        <p>Find the best call option contract to buy.</p>
+                        <p>
+                            <Link className="btn btn-secondary" to="/buy-call" >Start &raquo;</Link>
+                        </p>
                     </div>
                     <div className="col-lg-4">
                         <img className="rounded-circle" src="data:image/gif;base64,R0lGODlhAQABAIAAAHd3dwAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" width="140" height="140" />
-                        <h2>Sell Covered Call</h2>
-                        <p>Duis mollis, est non commodo luctus, nisi erat porttitor ligula, eget lacinia odio sem nec elit. Cras mattis consectetur purus sit amet fermentum. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh.</p>
-                        <p><a className="btn btn-secondary" href="#" role="button">View details &raquo;</a></p>
+                        <h2>Covered Call</h2>
+                        <p>Explore covered call contracts to sell.</p>
+                        <p><Link className="btn btn-secondary" to="/sell-covered-call" >Start &raquo;</Link></p>
                     </div>
                     <div className="col-lg-4">
                         <img className="rounded-circle" src="data:image/gif;base64,R0lGODlhAQABAIAAAHd3dwAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" width="140" height="140" />
-                        <h2>Heading</h2>
-                        <p>Donec sed odio dui. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Vestibulum id ligula porta felis euismod semper. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus.</p>
-                        <p><a className="btn btn-secondary" href="#" role="button">View details &raquo;</a></p>
+                        <h2>Buy Put</h2>
+                        <p>Coming soon...</p>
+                        <p><a className="btn btn-secondary" href="#" role="button">Start &raquo;</a></p>
+                    </div>
+                    <div className="col-lg-4">
+                        <img className="rounded-circle" src="data:image/gif;base64,R0lGODlhAQABAIAAAHd3dwAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" width="140" height="140" />
+                        <h2>Cash Secured Put</h2>
+                        <p>Coming soon...</p>
+                        <p><a className="btn btn-secondary" href="#" role="button">Start &raquo;</a></p>
                     </div>
                 </div>
 
