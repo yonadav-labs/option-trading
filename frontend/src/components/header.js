@@ -56,13 +56,17 @@ function Header() {
                         <Nav.Link as={Link} to="/buy-call">Buy call</Nav.Link>
                         <Nav.Link as={Link} to="/sell-covered-call">Sell covered call</Nav.Link>
                     </Nav>
-                    {authState.isAuthenticated ? <Nav><Nav.Link as={Link} to="/profile">Profile</Nav.Link></Nav> : null}
-                    <Nav>
-                        {authState.isAuthenticated ?
+                    {authState.isAuthenticated ?
+                        <Nav>
+                            <Nav.Link as={Link} to="/profile">Profile</Nav.Link>
                             <Nav.Link href="#" onClick={logout}>Logout</Nav.Link>
-                            :
-                            <Nav.Link as={Link} to="/login">Sign Up / Login</Nav.Link>}
-                    </Nav>
+                        </Nav>
+                        :
+                        <Nav>
+                            <Nav.Link href="/signin">Login</Nav.Link>
+                            <Nav.Link href="/signin/register">Sign Up</Nav.Link>
+                        </Nav>
+                    }
                 </Navbar.Collapse>
             </Navbar>
         </header>
