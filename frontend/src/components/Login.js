@@ -36,7 +36,7 @@ export default function Login() {
         //         onSuccess(response);
         //     }
         // },
-        features: { registration: true }
+        features: { registration: true, router: true }
     });
 
     useEffect(() => {

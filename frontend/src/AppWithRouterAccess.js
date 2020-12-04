@@ -33,7 +33,8 @@ export default withRouter(class AppWithRouterAccess extends Component {
                             <Route path='/sell-covered-call' exact={true} component={SellCoveredCall} />
                             <SecureRoute path='/profile' component={Profile} />
                             <Route path="/disclaimer" component={Disclaimer}></Route>
-                            <Route path='/login' component={Login} />
+                            <Route path='/signin' component={Login} />
+                            <Route path='/signin/register' component={Login} />
                             <Route path='/callback' component={LoginCallback} />
                         </Switch>
                         <Footer></Footer>
