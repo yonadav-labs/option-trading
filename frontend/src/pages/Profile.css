@@ -1,0 +1,30 @@
+.bg-gradient {
+    background: -webkit-gradient(linear, left top, right top, from(#FFD338), to(#FF8F2B));
+    background: linear-gradient(to right, #FF8F2B, #FFD338)
+}
+
+.user-profile {
+    padding: 20px 0
+}
+
+.card-block {
+    padding: 1.25rem
+}
+
+@media only screen and (min-width: 1400px) {
+    p {
+        font-size: 14px
+    }
+}
+
+.b-b-default {
+    border-bottom: 1px solid #e0e0e0
+}
+
+.text-muted {
+    color: #919aa3 !important
+}
+
+.f-w-600 {
+    font-weight: 600
+}

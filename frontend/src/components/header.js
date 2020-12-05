@@ -28,7 +28,6 @@ function Header() {
                     return response.json();
                 })
                 .then((data) => {
-                    console.log(data);
                     setUser(data);
                 })
                 .catch((err) => {
