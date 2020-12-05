@@ -16,29 +16,25 @@ function Header() {
             setUser(null);
         } else {
             const { accessToken } = authState;
-            authService.getUser().then(info => {
-                // console.log(info);
-                fetch(`${API_URL}/user`, {
-                    headers: {
-                        Authorization: `Bearer ${accessToken}`,
-                    },
+            fetch(`${API_URL}/user`, {
+                headers: {
+                    Authorization: `Bearer ${accessToken}`,
+                },
+            })
+                .then((response) => {
+                    if (!response.ok) {
+                        return Promise.reject();
+                    }
+                    return response.json();
                 })
-                    .then((response) => {
-                        if (!response.ok) {
-                            return Promise.reject();
-                        }
-                        return response.json();
-                    })
-                    .then((data) => {
-                        // console.log(data);
-                        setUser(data);
-                    })
-                    .catch((err) => {
-                        /* eslint-disable no-console */
-                        console.error(err);
-                    });
-                // getUser(info);
-            });
+                .then((data) => {
+                    console.log(data);
+                    setUser(data);
+                })
+                .catch((err) => {
+                    /* eslint-disable no-console */
+                    console.error(err);
+                });
         }
     }, [authState, authService]); // Update if authState changes
 
@@ -48,7 +44,7 @@ function Header() {
 
     return (
         <header>
-            <Navbar collapseOnSelect expand="lg" bg="dark" variant="dark">
+            <Navbar collapseOnSelect expand="lg">
                 <Navbar.Brand as={Link} to="/" className="font-weight-bold">Tigerstance</Navbar.Brand>
                 <Navbar.Toggle aria-controls="responsive-navbar-nav" />
                 <Navbar.Collapse id="responsive-navbar-nav">
