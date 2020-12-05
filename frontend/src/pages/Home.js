@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import Carousel from "react-bootstrap/Carousel";
-import StockChart1 from '../images/home/stock-chart-1.jpg';
+import HomeBanner1 from '../images/home/home-banner-1.jpg';
+import HomeBanner2 from '../images/home/home-banner-2.jpg';
 import { Link } from "react-router-dom"
 
 export default function Home() {
@@ -10,22 +11,22 @@ export default function Home() {
                 <Carousel.Item>
                     <img
                         className="d-block w-100"
-                        src={StockChart1}
+                        src={HomeBanner1}
                     />
                     <Carousel.Caption>
-                        <h1>Use market-beating hedge fund manager’s option trading tactic to manage your portfolio.</h1>
-                        <p>Cras justo odio, dapibus ac facilisis in, egestas eget quam.</p>
+                        <h1>We do the math, so you don't have to.</h1>
+                        <p>Understand option contracts in one glance.</p>
                         <p><a class="btn btn-lg btn-primary" href="signin/register" role="button">Sign up today</a></p>
                     </Carousel.Caption>
                 </Carousel.Item>
                 <Carousel.Item>
                     <img
-                        className="d-block w-100"
-                        src={StockChart1}
+                        className="img-responsive d-block w-100"
+                        src={HomeBanner2}
                     />
                     <Carousel.Caption>
-                        <h1>One-stop Option Investing Analytics Software for Everyone.</h1>
-                        <p>Cras justo odio, dapibus ac facilisis in, egestas eget quam. Donec id elit non mi porta gravida at eget metus. Nullam id dolor id nibh ultricies vehicula ut id elit.</p>
+                        <h1>Never get lost in the option chain again.</h1>
+                        <p>Find the right contract just for you.</p>
                         <p><a class="btn btn-lg btn-primary" href="signin/register" role="button">Sign up today</a></p>
                     </Carousel.Caption>
                 </Carousel.Item>
