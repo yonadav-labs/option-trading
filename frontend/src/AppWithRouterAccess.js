@@ -23,10 +23,10 @@ export default withRouter(class AppWithRouterAccess extends Component {
 
     render() {
         return (
-            <div>
+            <body class="d-flex flex-column min-vh-100">
                 <Security  {...(getOktaConfig().oidc)} onAuthRequired={this.onAuthRequired} >
                     <Header></Header>
-                    <main role="main">
+                    <main role="main" className="mb-2">
                         <Switch>
                             <Route path='/' exact={true} component={Home} />
                             <Route path='/buy-call' exact={true} component={BestCallByPrice} />
@@ -37,10 +37,10 @@ export default withRouter(class AppWithRouterAccess extends Component {
                             <Route path='/signin/register' component={Login} />
                             <Route path='/callback' component={LoginCallback} />
                         </Switch>
-                        <Footer></Footer>
                     </main>
+                    <Footer class="mt-auto"></Footer>
                 </Security>
-            </div>
+            </body>
         );
     }
 });

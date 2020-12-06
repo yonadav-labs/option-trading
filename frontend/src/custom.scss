@@ -4,7 +4,7 @@
 $headings-font-family:Yantramanav;
 
 $primary:#F2F3F4;
-$secondary:#333333;
+$secondary:#c9c9c9;
 $success:#37bd74;
 $danger:#e8286b;
 $info:#7ebcfa;
@@ -19,3 +19,8 @@ $btn-border-radius:0;
 
 // Import Bootstrap and its default variables
 @import '~bootstrap/scss/bootstrap.scss';
+
+hr {
+    opacity: 0.3;
+    border:1px solid #FFFFFF;
+}
