@@ -75,10 +75,10 @@ export default function Home() {
 
                 <div className="row justify-content-center p-5 bg-secondary">
                     <div className="col-lg-12 text-center mb-5">
-                        <h1>How it Works</h1>
+                        <h1 className="display-4">How it Works</h1>
                     </div>
-                    <div className="col-lg-5">
-                        <img className="img-fluid mx-auto" src="data:image/gif;base64,R0lGODlhAQABAIAAAHd3dwAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" width="400" height="400" />
+                    <div className="col-lg-5 mb-3">
+                        <img className="img-fluid mx-auto d-block" src="data:image/gif;base64,R0lGODlhAQABAIAAAHd3dwAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" width="400" height="400" />
                     </div>
                     <div className="col-lg-7">
                         <div className="row">
@@ -121,20 +121,20 @@ export default function Home() {
                 </div>
 
                 <div className="row justify-content-center p-5 bg-primary">
-                    <div className="col-lg-12 text-center mb-5">
-                        <h1 className="display-3">Our Customers Love Us</h1>
+                    <div className="col-lg-12 text-center">
+                        <h1 className="display-4">Our Customers Love Us</h1>
                     </div>
-                    <div className="row col-lg-12 p-5">
+                    <div className="row col-lg-12 p-5 justify-content-center">
                         <h2>“Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec varius, diam vitae.”</h2>
                     </div>
                     <div className="row col-lg-6 justify-content-center">
-                        <div className="col-lg-2">
+                        <div className="col-lg-2 text-center">
                             <img className="rounded-circle mb-4" src="data:image/gif;base64,R0lGODlhAQABAIAAAHd3dwAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" width="70" height="70" />
                         </div>
-                        <div className="col-lg-2">
+                        <div className="col-lg-2 text-center">
                             <img className="rounded-circle mb-4" src="data:image/gif;base64,R0lGODlhAQABAIAAAHd3dwAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" width="70" height="70" />
                         </div>
-                        <div className="col-lg-2">
+                        <div className="col-lg-2 text-center">
                             <img className="rounded-circle mb-4" src="data:image/gif;base64,R0lGODlhAQABAIAAAHd3dwAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" width="70" height="70" />
                         </div>
                     </div>
