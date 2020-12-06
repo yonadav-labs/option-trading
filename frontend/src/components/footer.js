@@ -6,7 +6,7 @@ function Footer(props) {
         <div className={`container-fluid bg-secondary ${ props.class }`} >
             {/* <hr className="featurette-divider-last" /> */}
             <footer className="featurette-divider-last">
-                <div className="row">
+                <div className="row pt-5">
                     <div className="col-4">
                         <p className="text-muted">
                             Helping everyday investors learn and invest in options the right way.
@@ -72,9 +72,9 @@ function Footer(props) {
                         </p>
                     </div>
                 </div>
-                <div className="row">
+                <div className="row pb-5">
                     <div className="col">
-                        <small className="d-block mb-3 text-muted">Copyright &copy; 2020 tigerstance.com. All Rights Reserved.</small>
+                        <small className="d-block text-muted">Copyright &copy; 2020 tigerstance.com. All Rights Reserved.</small>
                     </div>
                 </div>
             </footer>
