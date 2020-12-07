@@ -11,6 +11,7 @@ import SellCoveredCall from './components/SellCoveredCall'
 import SellCashSecuredPut from './components/SellCashSecuredPut'
 import Disclaimer from './components/disclaimer';
 import BestCallByPrice from './components/BestCallByPrice';
+import BuyPutByPrice from './components/BuyPutByPrice';
 
 export default withRouter(class AppWithRouterAccess extends Component {
     constructor(props) {
@@ -32,6 +33,7 @@ export default withRouter(class AppWithRouterAccess extends Component {
                             <Route path='/' exact={true} component={Home} />
                             <Route path='/buy-call' exact={true} component={BestCallByPrice} />
                             <Route path='/sell-covered-call' exact={true} component={SellCoveredCall} />
+                            <Route path='/buy-put' exact={true} component={BuyPutByPrice} />
                             <Route path='/sell-cash-secured-put' exact={true} component={SellCashSecuredPut} />
                             <SecureRoute path='/profile' component={Profile} />
                             <Route path="/disclaimer" component={Disclaimer}></Route>
