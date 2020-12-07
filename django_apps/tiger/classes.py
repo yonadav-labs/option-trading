@@ -4,10 +4,11 @@ from tiger.utils import days_from_timestamp
 
 
 class OptionContract:
-    def __init__(self, yh_contract_dict, current_stock_price, use_as_premium='estimated'):
+    def __init__(self, is_call, yh_contract_dict, current_stock_price, use_as_premium='estimated'):
         if not self.is_valid(yh_contract_dict):
             raise ValueError('invalid yh_contract_dict')
 
+        self.is_call = is_call  # There are only 2 types of options: "call" and "put".
         self.ask = yh_contract_dict.get('ask')  # Could be None.
         self.bid = yh_contract_dict.get('bid')  # Could be None.
         self.contract_symbol = yh_contract_dict.get('contractSymbol')
@@ -79,10 +80,9 @@ class OptionContract:
         else:
             return None
 
+    # To be implemented in subclasses.
     def get_break_even_price(self):
-        if self.get_estimated_premium() is None:
-            return None
-        return self.get_estimated_premium() + self.strike
+        return None
 
     def get_to_break_even_ratio(self):
         if self.get_break_even_price() is None:
@@ -106,7 +106,28 @@ class OptionContract:
         return self.get_annualized_ratio(self.get_to_strike_ratio())
 
 
-class BuyCall(OptionContract):
+class CallContract(OptionContract):
+    def __init__(self, yh_contract_dict, current_stock_price, use_as_premium='estimated'):
+        super().__init__(True, yh_contract_dict, current_stock_price, use_as_premium)
+
+    def get_break_even_price(self):
+        if self.get_estimated_premium() is None:
+            return None
+        return self.get_estimated_premium() + self.strike
+
+
+class PutContract(OptionContract):
+    def __init__(self, yh_contract_dict, current_stock_price, use_as_premium='estimated'):
+        super().__init__(False, yh_contract_dict, current_stock_price, use_as_premium)
+
+    def get_break_even_price(self):
+        if self.get_estimated_premium() is None:
+            return None
+        return self.strike - self.get_estimated_premium()
+
+
+# TODO: refactor into Trades classes.
+class BuyCall(CallContract):
     def __init__(self, yh_contract_dict, current_stock_price, target_stock_price, month_to_gain,
                  use_as_premium='estimated'):
         super().__init__(yh_contract_dict, current_stock_price, use_as_premium)
@@ -147,7 +168,8 @@ class BuyCall(OptionContract):
         return self.get_annualized_ratio(self.get_to_target_price_ratio())
 
 
-class SellCoveredCall(OptionContract):
+# TODO: refactor into Trades classes.
+class SellCoveredCall(CallContract):
     def __init__(self, yh_contract_dict, current_stock_price, use_as_premium='estimated'):
         super().__init__(yh_contract_dict, current_stock_price, use_as_premium)
 
@@ -168,6 +190,23 @@ class SellCoveredCall(OptionContract):
         if self.estimated_premium is None or self.get_gain_cap() is None:
             return None
         return min(self.estimated_premium / self.current_stock_price, self.get_gain_cap())
+
+    def get_premium_gain_annualized(self):
+        return self.get_annualized_ratio(self.get_premium_gain())
+
+
+# TODO: refactor into Trades classes.
+class SellCashSecuredPut(PutContract):
+    def __init__(self, yh_contract_dict, current_stock_price, use_as_premium='estimated'):
+        super().__init__(yh_contract_dict, current_stock_price, use_as_premium)
+
+        self.premium_gain = self.get_premium_gain()
+        self.premium_gain_annualized = self.get_premium_gain_annualized()
+
+    def get_premium_gain(self):
+        if self.estimated_premium is None:
+            return None
+        return self.estimated_premium / self.current_stock_price
 
     def get_premium_gain_annualized(self):
         return self.get_annualized_ratio(self.get_premium_gain())

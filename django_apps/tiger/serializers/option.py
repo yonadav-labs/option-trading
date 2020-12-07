@@ -9,6 +9,7 @@ class TickerSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class OptionContractSerializer(serializers.Serializer):
+    is_call = serializers.BooleanField(allow_null=False)
     ask = serializers.FloatField(min_value=0.0, allow_null=True)
     bid = serializers.FloatField(min_value=0.0, allow_null=True)
     contract_symbol = serializers.CharField(max_length=100)
@@ -49,5 +50,10 @@ class BuyCallSerializer(OptionContractSerializer):
 class SellCoveredCallSerializer(OptionContractSerializer):
     gain_cap = serializers.FloatField(allow_null=True)
     gain_cap_annualized = serializers.FloatField(allow_null=True)
+    premium_gain = serializers.FloatField(allow_null=True)
+    premium_gain_annualized = serializers.FloatField(allow_null=True)
+
+
+class SellCashSecuredPutSerializer(OptionContractSerializer):
     premium_gain = serializers.FloatField(allow_null=True)
     premium_gain_annualized = serializers.FloatField(allow_null=True)

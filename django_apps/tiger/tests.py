@@ -3,12 +3,12 @@ from django.test import TestCase
 from django.utils.timezone import make_aware, get_default_timezone
 from unittest import mock
 
-from tiger.classes import BuyCall, SellCoveredCall, OptionContract
+from tiger.classes import BuyCall, SellCoveredCall, CallContract, SellCashSecuredPut
 
 MOCK_NOW_TIMESTAMP = 1609664400  # 01/03/2021
 
 
-class OptionContractTestCase(TestCase):
+class CallTradesTestCase(TestCase):
     def setUp(self):
         self.yahoo_input = {
             "contractSymbol": "TSLA210716C00288000",
@@ -149,8 +149,50 @@ class OptionContractTestCase(TestCase):
     def test_use_as_premium(self):
         yahoo_input = dict(self.yahoo_input)
         self.assertAlmostEqual(
-            OptionContract(yahoo_input, self.current_stock_price, use_as_premium='bid').estimated_premium, 160.25)
+            CallContract(yahoo_input, self.current_stock_price, use_as_premium='bid').estimated_premium, 160.25)
         self.assertAlmostEqual(
-            OptionContract(yahoo_input, self.current_stock_price, use_as_premium='ask').estimated_premium, 163.15)
+            CallContract(yahoo_input, self.current_stock_price, use_as_premium='ask').estimated_premium, 163.15)
         self.assertAlmostEqual(
-            OptionContract(yahoo_input, self.current_stock_price, use_as_premium='estimated').estimated_premium, 161.7)
+            CallContract(yahoo_input, self.current_stock_price, use_as_premium='estimated').estimated_premium, 161.7)
+
+
+class PutTradesTestCase(TestCase):
+    def setUp(self):
+        self.yahoo_input = {
+            "contractSymbol": "QQQE210115P00068000",
+            "strike": 68.0,
+            "currency": "USD",
+            "lastPrice": 0.65,
+            "change": 0.65,
+            "volume": 3,
+            "openInterest": 0,
+            "bid": 0.4,
+            "ask": 1.0,
+            "contractSize": "REGULAR",
+            "expiration": 1626393600,
+            "lastTradeDate": 1603466039,
+            "impliedVolatility": 0.32031929687499994,
+            "inTheMoney": False
+        }
+
+        self.current_stock_price = 73.55
+
+    @mock.patch('django.utils.timezone.now')
+    def test_initialization(self, mock_now):
+        mock_now.return_value = make_aware(datetime.fromtimestamp(MOCK_NOW_TIMESTAMP), get_default_timezone())
+        trade = SellCashSecuredPut(self.yahoo_input, self.current_stock_price)
+        # Test attributes.
+        self.assertEqual(trade.ask, 1.0)
+        self.assertEqual(trade.bid, 0.4)
+        self.assertEqual(trade.contract_symbol, 'QQQE210115P00068000')
+        self.assertEqual(trade.expiration, 1626393600)  # 07/15/2020
+        self.assertEqual(trade.strike, 68.0)
+        # Test derived methods.
+        self.assertAlmostEqual(trade.estimated_premium, 0.7)
+        self.assertAlmostEqual(trade.break_even_price, 67.3)
+        self.assertAlmostEqual(trade.to_break_even_ratio, -0.08497620666)
+        self.assertAlmostEqual(trade.to_break_even_ratio_annualized, -0.15314444614)
+        self.assertAlmostEqual(trade.to_strike, -5.55)
+        self.assertAlmostEqual(trade.to_strike_ratio, -0.07545887151)
+        self.assertAlmostEqual(trade.to_strike_ratio_annualized, -0.13658238907)
+        self.assertEqual(trade.days_till_expiration, 195)
