@@ -68,8 +68,8 @@ export default function Home() {
                     <div className="col-lg-3 text-center">
                         <img className="rounded-circle mb-4" src="data:image/gif;base64,R0lGODlhAQABAIAAAHd3dwAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" width="160" height="160" />
                         <h2>Cash Secured Put</h2>
-                        <p>Coming soon...</p>
-                        <p><a className="btn btn-secondary" href="#" role="button">Start &raquo;</a></p>
+                        <p>Explore cash secured put contracts to sell.</p>
+                        <p><Link className="btn btn-secondary" to="/sell-cash-secured-put" >Start &raquo;</Link></p>
                     </div>
                 </div>
 

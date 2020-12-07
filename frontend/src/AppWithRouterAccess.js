@@ -8,6 +8,7 @@ import Home from './pages/Home';
 import Header from './components/header'
 import Footer from './components/footer'
 import SellCoveredCall from './components/SellCoveredCall'
+import SellCashSecuredPut from './components/SellCashSecuredPut'
 import Disclaimer from './components/disclaimer';
 import BestCallByPrice from './components/BestCallByPrice';
 
@@ -31,6 +32,7 @@ export default withRouter(class AppWithRouterAccess extends Component {
                             <Route path='/' exact={true} component={Home} />
                             <Route path='/buy-call' exact={true} component={BestCallByPrice} />
                             <Route path='/sell-covered-call' exact={true} component={SellCoveredCall} />
+                            <Route path='/sell-cash-secured-put' exact={true} component={SellCashSecuredPut} />
                             <SecureRoute path='/profile' component={Profile} />
                             <Route path="/disclaimer" component={Disclaimer}></Route>
                             <Route path='/signin' component={Login} />

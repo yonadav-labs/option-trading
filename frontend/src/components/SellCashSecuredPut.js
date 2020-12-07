@@ -1,29 +1,29 @@
 import React, { useEffect, useState } from 'react';
 import Form from 'react-bootstrap/Form'
-import TickerTypeahead from '../components/TickerTypeahead';
-import TickerSummary from '../components/TickerSummary.js';
+import TickerTypeahead from './TickerTypeahead';
+import TickerSummary from './TickerSummary.js';
 import Axios from 'axios';
 import getApiUrl, {
-    PriceFormatter, SymbolWithExpFormatter, ExpandContractRow, InTheMoneyRowStyle,
+    PriceFormatter, ExpandContractRow, InTheMoneyRowStyle,
     InTheMoneySign, onInTheMoneyFilterChange, onLastTradedFilterChange,
-    AnnualProfitFormatter, PriceMovementFormatter
+    AnnualProfitFormatter, PriceMovementFormatter, SymbolWithExpFormatter
 } from '../utils';
 import Button from 'react-bootstrap/Button';
 import Alert from 'react-bootstrap/Alert';
 import BootstrapTable from 'react-bootstrap-table-next';
 import paginationFactory from 'react-bootstrap-table2-paginator';
 import filterFactory, { multiSelectFilter, numberFilter } from 'react-bootstrap-table2-filter';
-import ModalSpinner from '../components/ModalSpinner';
+import ModalSpinner from './ModalSpinner';
 
 let inTheMoneyFilter;
 let lastTradedFilter;
 
-export default function SellCoveredCall() {
+export default function SellCashSecuredPut() {
     const [selectedTicker, setSelectedTicker] = useState([]);
     const [expirationTimestamps, setExpirationTimestamps] = useState([]);
     const [basicInfo, setbasicInfo] = useState({});
     const [showTimestampAlert, setShowTimestampAlert] = useState(false);
-    const [bestCalls, setBestCalls] = useState([]);
+    const [cashSecuredPuts, setCashSecuredPuts] = useState([]);
     const [selectedExpirationTimestamps, setSelectedExpirationTimestamps] = useState([]);
     const [useAsPremium, setUseAsPremium] = useState('estimated');
     const [modalActive, setModalActive] = useState(false);
@@ -33,7 +33,7 @@ export default function SellCoveredCall() {
         setExpirationTimestamps([]);
         setbasicInfo({});
         setShowTimestampAlert(false);
-        setBestCalls([]);
+        setCashSecuredPuts([]);
         setModalActive(false);
         setSelectedExpirationTimestamps([]);
     }
@@ -65,11 +65,16 @@ export default function SellCoveredCall() {
             ),
             sort: true
         }, {
-            dataField: "gain_cap_annualized",
-            text: "Profit Ceiling",
+            dataField: "to_break_even_ratio_annualized",
+            text: "Cost basis if assigned",
             formatter: (cell, row, rowIndex, extraData) => (
-                AnnualProfitFormatter(cell, row.gain_cap, row)
+                PriceMovementFormatter(cell, row.to_break_even_ratio, row.break_even_price)
             ),
+            sort: true
+        }, {
+            dataField: "cash_required",
+            text: "Cash required",
+            formatter: PriceFormatter,
             sort: true
         }, {
             dataField: "expiration",
@@ -121,7 +126,7 @@ export default function SellCoveredCall() {
         }
 
         if (form.checkValidity() !== false && selectedExpirationTimestamps.length > 0) {
-            getCoveredCalls(selectedExpirationTimestamps);
+            getCashSecuredPuts(selectedExpirationTimestamps);
         }
     };
 
@@ -142,21 +147,21 @@ export default function SellCoveredCall() {
         setUseAsPremium(value);
     };
 
-    const getCoveredCalls = async (selectedExpirationTimestamps) => {
+    const getCashSecuredPuts = async (selectedExpirationTimestamps) => {
         try {
-            let url = `${API_URL}/tickers/${selectedTicker[0].symbol}/sell_covered_calls/?`;
+            let url = `${API_URL}/tickers/${selectedTicker[0].symbol}/sell_cash_secured_puts/?`;
             selectedExpirationTimestamps.map((timestamp) => { url += `expiration_timestamps=${timestamp}&` });
             url += `use_as_premium=${useAsPremium}`
             setModalActive(true);
             const response = await Axios.get(url);
-            let allCalls = response.data.all_calls;
+            let allPuts = response.data.all_puts;
             let strikeSet = new Set()
-            for (const row of allCalls) {
-                // Requires calls to be sorted by strike.
+            for (const row of allPuts) {
+                // TODO: retire this logic.
                 strikeSet.add(row.strike);
                 row.unique_strike_count = strikeSet.size;
             }
-            setBestCalls(allCalls);
+            setCashSecuredPuts(allPuts);
             setModalActive(false);
         } catch (error) {
             console.error(error);
@@ -167,7 +172,7 @@ export default function SellCoveredCall() {
     return (
         <div id="content" className="container" style={{ "marginTop": "4rem" }}>
             <ModalSpinner active={modalActive}></ModalSpinner>
-            <h1 className="text-center">Sell covered call</h1>
+            <h1 className="text-center">Sell cash secured put</h1>
             <Form>
                 <Form.Group>
                     <Form.Label className="requiredField"><h5>Enter ticker symbol:</h5></Form.Label>
@@ -280,7 +285,7 @@ export default function SellCoveredCall() {
                             classes="table-responsive"
                             bootstrap4={true}
                             keyField="contract_symbol"
-                            data={bestCalls}
+                            data={cashSecuredPuts}
                             columns={result_table_columns}
                             pagination={paginationFactory({
                                 sizePerPage: 20,

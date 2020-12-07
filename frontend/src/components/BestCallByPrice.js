@@ -276,7 +276,7 @@ export default function BestCallByPrice() {
                             data={bestCalls}
                             columns={result_table_columns}
                             pagination={paginationFactory({
-                                sizePerPage: 25,
+                                sizePerPage: 20,
                                 hidePageListOnlyOnePage: true
                             })}
                             noDataIndication="No Data"
