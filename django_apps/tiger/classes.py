@@ -202,6 +202,7 @@ class SellCashSecuredPut(PutContract):
 
         self.premium_gain = self.get_premium_gain()
         self.premium_gain_annualized = self.get_premium_gain_annualized()
+        self.cash_required = self.strike * 100.0
 
     def get_premium_gain(self):
         if self.estimated_premium is None:

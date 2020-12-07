@@ -57,3 +57,4 @@ class SellCoveredCallSerializer(OptionContractSerializer):
 class SellCashSecuredPutSerializer(OptionContractSerializer):
     premium_gain = serializers.FloatField(allow_null=True)
     premium_gain_annualized = serializers.FloatField(allow_null=True)
+    cash_required = serializers.FloatField(allow_null=True, min_value=0.0)

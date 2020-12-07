@@ -192,6 +192,7 @@ class PutTradesTestCase(TestCase):
         self.assertAlmostEqual(trade.break_even_price, 67.3)
         self.assertAlmostEqual(trade.to_break_even_ratio, -0.08497620666)
         self.assertAlmostEqual(trade.to_break_even_ratio_annualized, -0.15314444614)
+        self.assertAlmostEqual(trade.cash_required, 6800.0)
         self.assertAlmostEqual(trade.to_strike, -5.55)
         self.assertAlmostEqual(trade.to_strike_ratio, -0.07545887151)
         self.assertAlmostEqual(trade.to_strike_ratio_annualized, -0.13658238907)
