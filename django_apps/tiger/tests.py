@@ -3,7 +3,7 @@ from django.test import TestCase
 from django.utils.timezone import make_aware, get_default_timezone
 from unittest import mock
 
-from tiger.classes import BuyCall, SellCoveredCall, CallContract, SellCashSecuredPut
+from tiger.classes import BuyCall, SellCoveredCall, CallContract, BuyPut, SellCashSecuredPut
 
 MOCK_NOW_TIMESTAMP = 1609664400  # 01/03/2021
 
@@ -178,7 +178,7 @@ class PutTradesTestCase(TestCase):
         self.current_stock_price = 73.55
 
     @mock.patch('django.utils.timezone.now')
-    def test_initialization(self, mock_now):
+    def test_sell_put(self, mock_now):
         mock_now.return_value = make_aware(datetime.fromtimestamp(MOCK_NOW_TIMESTAMP), get_default_timezone())
         trade = SellCashSecuredPut(self.yahoo_input, self.current_stock_price)
         # Test attributes.
@@ -197,3 +197,30 @@ class PutTradesTestCase(TestCase):
         self.assertAlmostEqual(trade.to_strike_ratio, -0.07545887151)
         self.assertAlmostEqual(trade.to_strike_ratio_annualized, -0.13658238907)
         self.assertEqual(trade.days_till_expiration, 195)
+
+    @mock.patch('django.utils.timezone.now')
+    def test_buy_put(self, mock_now):
+        mock_now.return_value = make_aware(datetime.fromtimestamp(MOCK_NOW_TIMESTAMP), get_default_timezone())
+        target_stock_price = 65.0
+        trade = BuyPut(self.yahoo_input, self.current_stock_price, 65.0)
+        # Test attributes.
+        self.assertEqual(trade.ask, 1.0)
+        self.assertEqual(trade.bid, 0.4)
+        self.assertEqual(trade.contract_symbol, 'QQQE210115P00068000')
+        self.assertEqual(trade.expiration, 1626393600)  # 07/15/2020
+        self.assertEqual(trade.strike, 68.0)
+        # Test derived methods.
+        self.assertAlmostEqual(trade.estimated_premium, 0.7)
+        self.assertAlmostEqual(trade.break_even_price, 67.3)
+        self.assertAlmostEqual(trade.to_break_even_ratio, -0.08497620666)
+        self.assertAlmostEqual(trade.to_break_even_ratio_annualized, -0.15314444614)
+        self.assertAlmostEqual(trade.to_strike, -5.55)
+        self.assertAlmostEqual(trade.to_strike_ratio, -0.07545887151)
+        self.assertAlmostEqual(trade.to_strike_ratio_annualized, -0.13658238907)
+        self.assertEqual(trade.days_till_expiration, 195)
+        # Test gains
+        self.assertAlmostEqual(trade.gain, 3.28571428571)
+        self.assertAlmostEqual(trade.gain_daily, 0.00749092913)
+        self.assertAlmostEqual(trade.gain_annualized, 14.2411526253)
+        self.assertAlmostEqual(trade.to_target_price_ratio, -0.11624745071)
+        self.assertAlmostEqual(trade.to_target_price_ratio_annualized, -0.20650893415)

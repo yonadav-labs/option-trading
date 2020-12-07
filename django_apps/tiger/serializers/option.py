@@ -54,6 +54,15 @@ class SellCoveredCallSerializer(OptionContractSerializer):
     premium_gain_annualized = serializers.FloatField(allow_null=True)
 
 
+class BuyPutSerializer(OptionContractSerializer):
+    target_stock_price = serializers.FloatField(min_value=0.0)
+    gain = serializers.FloatField(allow_null=True)
+    gain_annualized = serializers.FloatField(allow_null=True)
+    gain_daily = serializers.FloatField(allow_null=True)
+    to_target_price_ratio = serializers.FloatField()
+    to_target_price_ratio_annualized = serializers.FloatField()
+
+
 class SellCashSecuredPutSerializer(OptionContractSerializer):
     premium_gain = serializers.FloatField(allow_null=True)
     premium_gain_annualized = serializers.FloatField(allow_null=True)

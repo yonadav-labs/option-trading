@@ -211,3 +211,36 @@ class SellCashSecuredPut(PutContract):
 
     def get_premium_gain_annualized(self):
         return self.get_annualized_ratio(self.get_premium_gain())
+
+
+# TODO: refactor into Trades classes.
+class BuyPut(PutContract):
+    def __init__(self, yh_contract_dict, current_stock_price, target_stock_price, use_as_premium='estimated'):
+        super().__init__(yh_contract_dict, current_stock_price, use_as_premium)
+
+        self.target_stock_price = target_stock_price
+
+        self.gain = self.get_gain()
+        self.gain_annualized = self.get_gain_annualized()
+        self.gain_daily = self.get_gain_daily()
+        self.to_target_price_ratio = self.get_to_target_price_ratio()
+        self.to_target_price_ratio_annualized = self.get_to_target_price_ratio_annualized()
+
+    # Private methods:
+    # TODO: make @property work with Serializer.
+    def get_gain(self):
+        if self.break_even_price is None or self.estimated_premium is None:
+            return None
+        return max(-1.0, (self.break_even_price - self.target_stock_price) / self.estimated_premium)
+
+    def get_gain_daily(self):
+        return self.get_daily_ratio(self.get_gain())
+
+    def get_gain_annualized(self):
+        return self.get_annualized_ratio(self.get_gain())
+
+    def get_to_target_price_ratio(self):
+        return self.target_stock_price / self.current_stock_price - 1.0
+
+    def get_to_target_price_ratio_annualized(self):
+        return self.get_annualized_ratio(self.get_to_target_price_ratio())

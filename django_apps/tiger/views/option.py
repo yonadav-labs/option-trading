@@ -4,9 +4,9 @@ from rest_framework.response import Response
 from rest_framework.exceptions import APIException
 
 from tiger.serializers import TickerSerializer, BuyCallSerializer, SellCoveredCallSerializer, \
-    SellCashSecuredPutSerializer
+    SellCashSecuredPutSerializer, BuyPutSerializer
 from tiger.models import Ticker
-from tiger.classes import BuyCall, SellCoveredCall, SellCashSecuredPut
+from tiger.classes import BuyCall, SellCoveredCall, BuyPut, SellCashSecuredPut
 
 
 def get_valid_contracts(ticker, request, all_expiration_timestamps, get_calls=True):
@@ -108,3 +108,28 @@ def sell_cash_secured_puts(request, ticker_symbol):
             all_puts.append(
                 SellCashSecuredPut(put, ticker.get_quote().get('regularMarketPrice'), use_as_premium))
     return Response({'all_puts': SellCashSecuredPutSerializer(all_puts, many=True).data})
+
+
+@api_view(['GET'])
+def buy_puts(request, ticker_symbol):
+    ticker = get_object_or_404(Ticker, symbol=ticker_symbol.upper(), status="unspecified")
+    # Check if option is available for this ticker.
+    all_expiration_timestamps = ticker.get_expiration_timestamps()
+    if all_expiration_timestamps is None:
+        raise APIException('No contracts found.')
+
+    try:
+        target_price = float(request.query_params.get('target_price'))
+        use_as_premium = request.query_params.get('use_as_premium', 'estimated')
+    except Exception:
+        raise APIException('Invalid query parameters.')
+
+    all_puts = []
+    for puts in get_valid_contracts(ticker, request, all_expiration_timestamps, get_calls=False):
+        for put in puts:
+            if not BuyPut.is_valid(put):
+                continue
+            all_puts.append(
+                BuyPut(put, ticker.get_quote().get('regularMarketPrice'), target_price, use_as_premium))
+    all_puts = list(filter(lambda put: put.gain is not None and put.gain > 0.0, all_puts))
+    return Response({'all_puts': BuyPutSerializer(all_puts, many=True).data})
