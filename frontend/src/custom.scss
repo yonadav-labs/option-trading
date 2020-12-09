@@ -24,3 +24,11 @@ hr {
     opacity: 0.3;
     border:1px solid #FFFFFF;
 }
+
+.page-link {
+    color: #3c4055;
+}
+
+.page-item.active .page-link {
+    color: #3c4055;
+}
