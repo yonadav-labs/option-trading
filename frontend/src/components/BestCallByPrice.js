@@ -222,7 +222,7 @@ export default function BestCallByPrice() {
                             </div>
                             <div class="row">
                                 <div className="col">
-                                    <Button type="submit" className="btn btn-primary">Analyze</Button>
+                                    <Button type="submit" className="btn btn-dark">Analyze</Button>
                                 </div>
                             </div>
                         </Form>

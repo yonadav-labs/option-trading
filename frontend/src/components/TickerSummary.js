@@ -70,8 +70,8 @@ export default function TickerSummary({ basicInfo }) {
             <Accordion>
                 <Card>
                     <Accordion.Toggle as={Button} variant="link" eventKey="0">
-                        Price Chart
-                            </Accordion.Toggle>
+                        <span className="text-dark">Price Chart</span>
+                    </Accordion.Toggle>
                     <Accordion.Collapse eventKey="0">
                         <Card.Body>
                             <TradingViewWidget
