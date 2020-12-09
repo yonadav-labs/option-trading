@@ -25,6 +25,7 @@
     "react-ga": "^3.2.0",
     "react-icons": "^3.11.0",
     "react-number-format": "^4.4.1",
+    "react-paypal-button-v2": "^2.6.2",
     "react-router-dom": "^5.2.0",
     "react-scripts": "3.4.4",
     "react-tradingview-widget": "^1.3.2"
