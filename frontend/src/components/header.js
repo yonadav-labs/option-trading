@@ -1,7 +1,9 @@
 import React, { useContext, useEffect } from 'react'
 import { Link } from "react-router-dom"
-import { Navbar, Nav, NavDropdown } from 'react-bootstrap';
+import { Navbar, Nav } from 'react-bootstrap';
 import { useOktaAuth } from '@okta/okta-react';
+import { useHistory } from "react-router-dom";
+import ReactGA from 'react-ga';
 import UserContext from '../UserContext';
 import getApiUrl from '../utils';
 
@@ -9,6 +11,16 @@ function Header() {
     const { authState, authService } = useOktaAuth();
     const { user, setUser } = useContext(UserContext);
     const API_URL = getApiUrl();
+    const history = useHistory();
+
+    function trackPageView() {
+        ReactGA.pageview(window.location.pathname + window.location.search);
+    }
+
+    useEffect(() => {
+        trackPageView();
+        history.listen(trackPageView);
+    }, [history]);
 
     useEffect(() => {
         if (!authState.isAuthenticated) {

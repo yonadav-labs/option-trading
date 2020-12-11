@@ -21,7 +21,7 @@ export default withRouter(class AppWithRouterAccess extends Component {
     }
 
     onAuthRequired() {
-        this.props.history.push('/signin')
+        this.props.history.push('/signin');
     }
 
     render() {

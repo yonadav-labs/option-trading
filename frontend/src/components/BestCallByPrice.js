@@ -13,6 +13,7 @@ import filterFactory, { multiSelectFilter, numberFilter } from 'react-bootstrap-
 import TickerTypeahead from '../components/TickerTypeahead';
 import TickerSummary from '../components/TickerSummary.js';
 import ModalSpinner from '../components/ModalSpinner';
+import ReactGA from 'react-ga';
 
 let inTheMoneyFilter;
 let lastTradedFilter;
