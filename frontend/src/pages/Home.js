@@ -1,7 +1,5 @@
 import React from 'react';
 import Carousel from "react-bootstrap/Carousel";
-import HomeBanner1 from '../images/home/home-banner-1.jpg';
-import HomeBanner2 from '../images/home/home-banner-2.jpg';
 import { Link } from "react-router-dom"
 import './Home.css';
 
@@ -12,7 +10,7 @@ export default function Home() {
                 <Carousel.Item>
                     <img
                         className="d-block"
-                        src={HomeBanner1}
+                        src="/images/home/home-banner-1.jpg"
                     />
                     <Carousel.Caption>
                         <h1>We do the math, so you don't have to.</h1>
@@ -26,7 +24,7 @@ export default function Home() {
                 <Carousel.Item>
                     <img
                         className="img-responsive d-block"
-                        src={HomeBanner2}
+                        src="/images/home/home-banner-2.jpg"
                     />
                     <Carousel.Caption>
                         <h1>Never get lost in the option chain again.</h1>

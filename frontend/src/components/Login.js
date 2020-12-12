@@ -13,7 +13,7 @@ export default function Login() {
         logo: "/logo192.png",
         i18n: {
             en: {
-                'primaryauth.title': 'Sign in TigerStance'
+                'primaryauth.title': 'Sign in Tigerstance'
             }
         },
         authParams: {

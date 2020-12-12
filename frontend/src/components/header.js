@@ -1,6 +1,6 @@
 import React, { useContext, useEffect } from 'react'
 import { Link } from "react-router-dom"
-import { Navbar, Nav } from 'react-bootstrap';
+import { Navbar, Nav, Image } from 'react-bootstrap';
 import { useOktaAuth } from '@okta/okta-react';
 import { useHistory } from "react-router-dom";
 import ReactGA from 'react-ga';
@@ -56,6 +56,7 @@ function Header() {
     return (
         <header>
             <Navbar collapseOnSelect expand="lg">
+                <Image src="/logo192.png" style={{ 'height': '1.5rem', 'paddingRight': '0.2rem' }} />
                 <Navbar.Brand as={Link} to="/" className="font-weight-bold">Tigerstance</Navbar.Brand>
                 <Navbar.Toggle aria-controls="responsive-navbar-nav" />
                 <Navbar.Collapse id="responsive-navbar-nav">
