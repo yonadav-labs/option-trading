@@ -3,7 +3,7 @@ import { Link } from "react-router-dom"
 
 function Footer(props) {
     return (
-        <div className={`container-fluid bg-secondary ${ props.class }`} >
+        <div className={`container-fluid bg-secondary ${props.class}`} >
             {/* <hr className="featurette-divider-last" /> */}
             <footer className="featurette-divider-last">
                 <div className="row pt-5">
@@ -68,7 +68,7 @@ function Footer(props) {
                 <div className="row">
                     <div className="col">
                         <p className="text-muted">
-                            Data on tigerstance.com is delayed and may not reflect the latest market condition.
+                            Data and information on tigerstance.com is provided 'as-is' and solely for informational purposes, not for trading purposes or advice, and is delayed.
                         </p>
                     </div>
                 </div>
