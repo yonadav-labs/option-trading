@@ -3,7 +3,7 @@ from django.test import TestCase
 from django.utils.timezone import make_aware, get_default_timezone
 from unittest import mock
 
-from tiger.classes import BuyCall, SellCoveredCall, CallContract, BuyPut, SellCashSecuredPut
+from tiger.classes import BuyCall, SellCoveredCall, CallContract, BuyPut, SellCashSecuredPut, OptionContract
 
 MOCK_NOW_TIMESTAMP = 1609664400  # 01/03/2021
 
@@ -57,7 +57,7 @@ class CallTradesTestCase(TestCase):
         self.assertEqual(contract.ask, 163.15)
         self.assertEqual(contract.bid, 160.25)
         self.assertEqual(contract.contract_symbol, 'TSLA210716C00288000')
-        self.assertEqual(contract.expiration, 1626393600)  # 07/15/2020
+        self.assertEqual(contract.expiration, 1626465600)  # 07/16/2021
         self.assertEqual(contract.strike, 288.0)
         # Test derived methods.
         self.assertAlmostEqual(contract.target_stock_price, 600.0)
@@ -185,7 +185,7 @@ class PutTradesTestCase(TestCase):
         self.assertEqual(trade.ask, 1.0)
         self.assertEqual(trade.bid, 0.4)
         self.assertEqual(trade.contract_symbol, 'QQQE210115P00068000')
-        self.assertEqual(trade.expiration, 1626393600)  # 07/15/2020
+        self.assertEqual(trade.expiration, 1626465600)  # 07/16/2021
         self.assertEqual(trade.strike, 68.0)
         # Test derived methods.
         self.assertAlmostEqual(trade.estimated_premium, 0.7)
@@ -207,7 +207,7 @@ class PutTradesTestCase(TestCase):
         self.assertEqual(trade.ask, 1.0)
         self.assertEqual(trade.bid, 0.4)
         self.assertEqual(trade.contract_symbol, 'QQQE210115P00068000')
-        self.assertEqual(trade.expiration, 1626393600)  # 07/15/2020
+        self.assertEqual(trade.expiration, 1626465600)  # 07/16/2021
         self.assertEqual(trade.strike, 68.0)
         # Test derived methods.
         self.assertAlmostEqual(trade.estimated_premium, 0.7)
@@ -224,3 +224,95 @@ class PutTradesTestCase(TestCase):
         self.assertAlmostEqual(trade.gain_annualized, 14.2411526253)
         self.assertAlmostEqual(trade.to_target_price_ratio, -0.11624745071)
         self.assertAlmostEqual(trade.to_target_price_ratio_annualized, -0.20650893415)
+
+
+class TdTestCase(TestCase):
+    def setUp(self):
+        self.td_input = {
+            "putCall": "CALL",
+            "symbol": "MSFT_121820C215",
+            "description": "MSFT Dec 18 2020 215 Call",
+            "exchangeName": "OPR",
+            "bid": 1.98,
+            "ask": 2.06,
+            "last": 2,
+            "mark": 2.02,
+            "bidSize": 22,
+            "askSize": 20,
+            "bidAskSize": "22X20",
+            "lastSize": 0,
+            "highPrice": 2.29,
+            "lowPrice": 1.12,
+            "openPrice": 0,
+            "closePrice": 2.02,
+            "totalVolume": 16151,
+            "tradeDate": None,
+            "tradeTimeInLong": 1607720391942,
+            "quoteTimeInLong": 1607720399718,
+            "netChange": -0.02,
+            "volatility": 22.763,
+            "delta": 0.407,
+            "gamma": 0.055,
+            "theta": -0.176,
+            "vega": 0.12,
+            "rho": 0.018,
+            "openInterest": 26690,
+            "timeValue": 2,
+            "theoreticalOptionValue": 2.02,
+            "theoreticalVolatility": 29,
+            "optionDeliverablesList": None,
+            "strikePrice": 215,
+            "expirationDate": 1626465600000,
+            "daysToExpiration": 5,
+            "expirationType": "R",
+            "lastTradingDay": 1608339600000,
+            "multiplier": 100,
+            "settlementType": " ",
+            "deliverableNote": "",
+            "isIndexOption": None,
+            "percentChange": -0.99,
+            "markChange": 0,
+            "markPercentChange": 0,
+            "nonStandard": False,
+            "inTheMoney": False,
+            "mini": False
+        }
+        self.current_stock_price = 210.0
+
+    @mock.patch('django.utils.timezone.now')
+    def test_initialization(self, mock_now):
+        mock_now.return_value = make_aware(datetime.fromtimestamp(MOCK_NOW_TIMESTAMP), get_default_timezone())
+        contract = OptionContract(True, self.td_input, self.current_stock_price)
+        # Test attributes.
+        self.assertTrue(contract.is_call)
+        self.assertEqual(contract.ask, 2.06)
+        self.assertEqual(contract.bid, 1.98)
+        self.assertEqual(contract.contract_symbol, 'MSFT_121820C215')
+        self.assertEqual(contract.expiration, 1626465600)  # 07/16/2020
+        self.assertEqual(contract.strike, 215.0)
+        self.assertEqual(contract.change, -0.02)
+        self.assertEqual(contract.contract_size, 100)
+        self.assertIsNone(contract.currency)
+        self.assertAlmostEqual(contract.implied_volatility, 0.22763)
+        self.assertFalse(contract.in_the_money)
+        self.assertEqual(contract.last_price, 2.0)
+        self.assertEqual(contract.last_trade_date, 1607720391)
+        self.assertEqual(contract.open_interest, 26690)
+        self.assertAlmostEqual(contract.percent_change, -0.99)
+        self.assertEqual(contract.volume, 16151)
+        self.assertEqual(contract.mark, 2.02)
+        self.assertEqual(contract.high_price, 2.29)
+        self.assertEqual(contract.low_price, 1.12)
+        self.assertEqual(contract.open_price, 0)
+        self.assertEqual(contract.time_value, 2)
+        self.assertEqual(contract.bid_size, 22)
+        self.assertEqual(contract.ask_size, 20)
+        self.assertEqual(contract.delta, 0.407)
+        self.assertEqual(contract.gamma, 0.055)
+        self.assertEqual(contract.theta, -0.176)
+        self.assertEqual(contract.vega, 0.12)
+        self.assertEqual(contract.rho, 0.018)
+
+        # Test derived methods.
+        self.assertAlmostEqual(contract.estimated_premium, 2.02)
+        self.assertEqual(contract.days_till_expiration, 195)

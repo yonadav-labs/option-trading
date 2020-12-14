@@ -24,7 +24,7 @@ def days_from_timestamp(timestamp):
     input_datetime = make_aware(datetime.fromtimestamp(timestamp), get_default_timezone())
     now = get_now()
     delta = input_datetime - now
-    return delta.days
+    return delta.days + 1
 
 
 def timedelta_from_timestamp(timestamp):

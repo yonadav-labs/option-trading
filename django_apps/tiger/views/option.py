@@ -14,7 +14,7 @@ def get_valid_contracts(ticker, request, all_expiration_timestamps, get_calls=Tr
                                        int(ts) in all_expiration_timestamps])
     valid_contracts = []
     for ts in input_expiration_timestamps:
-        calls, puts = ticker.get_option_contracts(ts)
+        calls, puts = ticker.get_call_puts(ts)
         if get_calls:
             valid_contracts.append(calls)
         else:
@@ -44,7 +44,7 @@ def ticker(request, ticker_symbol, format=None):
 
 
 @api_view(['GET'])
-def calls(request, ticker_symbol):
+def buy_calls(request, ticker_symbol):
     ticker = get_object_or_404(Ticker, symbol=ticker_symbol.upper(), status="unspecified")
     # Check if option is available for this ticker.
     all_expiration_timestamps = ticker.get_expiration_timestamps()
