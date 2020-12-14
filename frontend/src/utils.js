@@ -102,21 +102,21 @@ export function ExpandContractRow() {
         renderer: row => (
             <div>
                 <div className="row">
-                    <div className="col-sm"><b>Last price:</b> {PriceFormatter(row.last_price)}</div>
-                    <div className="col-sm"><b>Bid:</b> {PriceFormatter(row.bid)}</div>
-                    <div className="col-sm"><b>Ask:</b> {PriceFormatter(row.ask)}</div>
-                    <div className="col-sm"><b>Last traded:</b> {TimestampTimeFormatter(row.last_trade_date)}</div>
+                    <div className="col-sm"><b>Last price:</b> {PriceFormatter(row.contract.last_price)}</div>
+                    <div className="col-sm"><b>Bid:</b> {PriceFormatter(row.contract.bid)}</div>
+                    <div className="col-sm"><b>Ask:</b> {PriceFormatter(row.contract.ask)}</div>
+                    <div className="col-sm"><b>Last traded:</b> {TimestampTimeFormatter(row.contract.last_trade_date)}</div>
                 </div>
                 <div className="row">
-                    <div className="col-sm"><b>Change:</b> {NumberRoundFormatter(row.change)}</div>
-                    <div className="col-sm"><b>% Change:</b> {NumberRoundFormatter(row.percent_change)}%</div>
-                    <div className="col-sm"><b>Volume:</b> {NumberRoundFormatter(row.volume)}</div>
-                    <div className="col-sm"><b>Open interest:</b> {NumberRoundFormatter(row.open_interest)}</div>
+                    <div className="col-sm"><b>Change:</b> {NumberRoundFormatter(row.contract.change)}</div>
+                    <div className="col-sm"><b>% Change:</b> {NumberRoundFormatter(row.contract.percent_change)}%</div>
+                    <div className="col-sm"><b>Volume:</b> {NumberRoundFormatter(row.contract.volume)}</div>
+                    <div className="col-sm"><b>Open interest:</b> {NumberRoundFormatter(row.contract.open_interest)}</div>
                 </div>
                 <div className="row">
-                    <div className="col-sm"><b>Implied volatility:</b> {PercentageFormatter(row.implied_volatility)}</div>
-                    <div className="col-sm"><b>Contract size:</b> {row.contract_size}</div>
-                    <div className="col-sm"><b>In the money:</b> {row.in_the_money ? 'Yes' : 'No'}</div>
+                    <div className="col-sm"><b>Implied volatility:</b> {PercentageFormatter(row.contract.implied_volatility)}</div>
+                    <div className="col-sm"><b>Contract size:</b> {row.contract.contract_size}</div>
+                    <div className="col-sm"><b>In the money:</b> {row.contract.in_the_money ? 'Yes' : 'No'}</div>
                     <div className="col-sm"></div>
                 </div>
             </div>
@@ -139,7 +139,7 @@ export function ExpandContractRow() {
 
 export function InTheMoneyRowStyle(row, rowIndex) {
     const style = {};
-    if (row.in_the_money) {
+    if (row.contract.in_the_money) {
         style.backgroundColor = '#e0f0ff';
     }
     return style;

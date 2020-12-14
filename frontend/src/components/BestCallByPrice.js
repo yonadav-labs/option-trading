@@ -13,7 +13,6 @@ import filterFactory, { multiSelectFilter, numberFilter } from 'react-bootstrap-
 import TickerTypeahead from '../components/TickerTypeahead';
 import TickerSummary from '../components/TickerSummary.js';
 import ModalSpinner from '../components/ModalSpinner';
-import ReactGA from 'react-ga';
 
 let inTheMoneyFilter;
 let lastTradedFilter;
@@ -39,11 +38,11 @@ export default function BestCallByPrice() {
             dataField: "to_strike_ratio_annualized",
             text: "Strike price",
             formatter: (cell, row, rowIndex, extraData) => (
-                PriceMovementFormatter(cell, row.to_strike_ratio, row.strike)
+                PriceMovementFormatter(cell, row.to_strike_ratio, row.contract.strike)
             ),
             sort: true
         }, {
-            dataField: "estimated_premium",
+            dataField: "contract.estimated_premium",
             text: "Premium",
             formatter: PriceFormatter,
             sort: true
@@ -72,10 +71,10 @@ export default function BestCallByPrice() {
             dataField: "expiration",
             text: "Symbol / Expiration",
             formatter: (cell, row, rowIndex, extraData) => (
-                SymbolWithExpFormatter(cell, row.days_till_expiration, row.contract_symbol)
+                SymbolWithExpFormatter(cell, row.contract.days_till_expiration, row.contract.contract_symbol)
             )
         }, {
-            dataField: 'in_the_money',
+            dataField: 'contract.in_the_money',
             text: 'In the money',
             // hidden: true, getFilter() won't be called if hidden is true.
             style: { 'display': 'none' },
@@ -88,7 +87,7 @@ export default function BestCallByPrice() {
                 }
             })
         }, {
-            dataField: 'last_trade_date',
+            dataField: 'contract.last_trade_date',
             text: 'last_trade_date',
             style: { 'display': 'none' },
             headerStyle: { 'display': 'none' },

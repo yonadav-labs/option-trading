@@ -49,11 +49,11 @@ export default function SellCoveredCall() {
             dataField: "to_strike_ratio_annualized",
             text: "Strike price",
             formatter: (cell, row, rowIndex, extraData) => (
-                PriceMovementFormatter(cell, row.to_strike_ratio, row.strike)
+                PriceMovementFormatter(cell, row.to_strike_ratio, row.contract.strike)
             ),
             sort: true,
         }, {
-            dataField: "estimated_premium",
+            dataField: "contract.estimated_premium",
             text: "Premium",
             formatter: PriceFormatter,
             sort: true
@@ -72,13 +72,13 @@ export default function SellCoveredCall() {
             ),
             sort: true
         }, {
-            dataField: "expiration",
+            dataField: "contract.expiration",
             text: "Symbol / Expiration",
             formatter: (cell, row, rowIndex, extraData) => (
-                SymbolWithExpFormatter(cell, row.days_till_expiration, row.contract_symbol)
+                SymbolWithExpFormatter(cell, row.contract.days_till_expiration, row.contract.contract_symbol)
             )
         }, {
-            dataField: 'in_the_money',
+            dataField: 'contract.in_the_money',
             text: 'In the money',
             // hidden: true, getFilter() won't be called if hidden is true.
             style: { 'display': 'none' },
@@ -91,7 +91,7 @@ export default function SellCoveredCall() {
                 }
             })
         }, {
-            dataField: 'last_trade_date',
+            dataField: 'contract.last_trade_date',
             text: 'last_trade_date',
             style: { 'display': 'none' },
             headerStyle: { 'display': 'none' },
@@ -149,14 +149,7 @@ export default function SellCoveredCall() {
             url += `use_as_premium=${useAsPremium}`
             setModalActive(true);
             const response = await Axios.get(url);
-            let allCalls = response.data.all_calls;
-            let strikeSet = new Set()
-            for (const row of allCalls) {
-                // Requires calls to be sorted by strike.
-                strikeSet.add(row.strike);
-                row.unique_strike_count = strikeSet.size;
-            }
-            setBestCalls(allCalls);
+            setBestCalls(response.data.all_calls);
             setModalActive(false);
         } catch (error) {
             console.error(error);

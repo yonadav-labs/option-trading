@@ -49,11 +49,11 @@ export default function SellCashSecuredPut() {
             dataField: "to_strike_ratio_annualized",
             text: "Strike price",
             formatter: (cell, row, rowIndex, extraData) => (
-                PriceMovementFormatter(cell, row.to_strike_ratio, row.strike)
+                PriceMovementFormatter(cell, row.to_strike_ratio, row.contract.strike)
             ),
             sort: true,
         }, {
-            dataField: "estimated_premium",
+            dataField: "contract.estimated_premium",
             text: "Premium",
             formatter: PriceFormatter,
             sort: true
@@ -61,7 +61,7 @@ export default function SellCashSecuredPut() {
             dataField: "premium_gain_annualized",
             text: "Premium Profit",
             formatter: (cell, row, rowIndex, extraData) => (
-                AnnualProfitFormatter(cell, row.premium_gain, row)
+                AnnualProfitFormatter(cell, row.premium_gain)
             ),
             sort: true
         }, {
@@ -77,13 +77,13 @@ export default function SellCashSecuredPut() {
             formatter: PriceFormatter,
             sort: true
         }, {
-            dataField: "expiration",
+            dataField: "contract.expiration",
             text: "Symbol / Expiration",
             formatter: (cell, row, rowIndex, extraData) => (
-                SymbolWithExpFormatter(cell, row.days_till_expiration, row.contract_symbol)
+                SymbolWithExpFormatter(cell, row.contract.days_till_expiration, row.contract.contract_symbol)
             )
         }, {
-            dataField: 'in_the_money',
+            dataField: 'contract.in_the_money',
             text: 'In the money',
             // hidden: true, getFilter() won't be called if hidden is true.
             style: { 'display': 'none' },
@@ -96,7 +96,7 @@ export default function SellCashSecuredPut() {
                 }
             })
         }, {
-            dataField: 'last_trade_date',
+            dataField: 'contract.last_trade_date',
             text: 'last_trade_date',
             style: { 'display': 'none' },
             headerStyle: { 'display': 'none' },
@@ -154,14 +154,7 @@ export default function SellCashSecuredPut() {
             url += `use_as_premium=${useAsPremium}`
             setModalActive(true);
             const response = await Axios.get(url);
-            let allPuts = response.data.all_puts;
-            let strikeSet = new Set()
-            for (const row of allPuts) {
-                // TODO: retire this logic.
-                strikeSet.add(row.strike);
-                row.unique_strike_count = strikeSet.size;
-            }
-            setCashSecuredPuts(allPuts);
+            setCashSecuredPuts(response.data.all_puts);
             setModalActive(false);
         } catch (error) {
             console.error(error);
