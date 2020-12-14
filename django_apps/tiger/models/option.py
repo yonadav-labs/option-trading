@@ -21,24 +21,24 @@ class Ticker(BaseModel):
     def __str__(self):
         return str(self.symbol)
 
-    def get_request_cache(self, expiration_timestamp=None):
-        url = get_yahoo_option_url(self.symbol.upper(),
-                                   expiration_timestamp) if settings.USE_YAHOO else get_td_option_url(
-            self.symbol.upper(), expiration_timestamp)
+    def get_request_cache(self, is_yahoo, expiration_timestamp=None):
+        url = get_yahoo_option_url(self.symbol.upper(), expiration_timestamp) if is_yahoo else get_td_option_url(
+            self.symbol.upper())
         request_cache = ExternalRequestCache.objects.get_or_fetch_external_api(url)
         return json.loads(request_cache.response_blob)
 
+    # TODO: change to use TD.
+    def get_quote(self):
+        response = self.get_request_cache(True)
+        return get_quote(response, True)
+
     def get_expiration_timestamps(self):
-        response = self.get_request_cache()
+        response = self.get_request_cache(settings.USE_YAHOO)
         return get_expiration_timestamps(response, settings.USE_YAHOO)
 
     def get_call_puts(self, expiration_timestamp):
-        response = self.get_request_cache(expiration_timestamp)
-        return get_call_puts(response, settings.USE_YAHOO)
-
-    def get_quote(self):
-        response = self.get_request_cache()
-        return get_quote(response, settings.USE_YAHOO)
+        response = self.get_request_cache(settings.USE_YAHOO, expiration_timestamp)
+        return get_call_puts(response, settings.USE_YAHOO, expiration_timestamp)
 
 
 class ExternalRequestCacheManager(models.Manager):

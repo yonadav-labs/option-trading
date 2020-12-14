@@ -85,6 +85,12 @@ class OptionContract:
         self.current_stock_price = current_stock_price
         self.days_till_expiration = days_from_timestamp(self.expiration)
 
+    def __str__(self):
+        return self.contract_symbol
+
+    def __repr__(self):
+        return self.__str__()
+
 
 class Trade:
     def __init__(self, contract, use_as_premium='estimated'):

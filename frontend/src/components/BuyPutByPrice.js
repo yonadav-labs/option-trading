@@ -191,8 +191,9 @@ export default function BuyPutByPrice() {
                                 <Form.Label className="font-weight-bold">Expiration dates:</Form.Label>
                                 <div className="row">
                                     {expirationTimestamps.map((timestamp, index) => {
-                                        // Yahoo's contract expiration timestamp uses GMT.
-                                        const date = new Date(timestamp * 1000).toLocaleDateString('en-US', { 'timeZone': 'GMT' });
+                                        // Yahoo's timestamp * 1000 = TD's timestamp.
+                                        const date = new Date(timestamp < 9999999999 ? timestamp * 1000 : timestamp)
+                                            .toLocaleDateString('en-US', { 'timeZone': 'GMT' });
                                         return (
                                             <div className="col-sm-3" key={index}>
                                                 <Form.Check
