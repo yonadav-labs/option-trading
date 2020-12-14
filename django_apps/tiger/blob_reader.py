@@ -1,12 +1,18 @@
 import requests
 from requests.adapters import HTTPAdapter
-
 from django.conf import settings
+from tiger.classes import OptionContract
 
 
 def is_valid_option_response(response):
     return 'optionChain' in response and 'result' in response.get('optionChain') and len(
         response.get('optionChain').get('result')) > 0
+
+
+def get_quote(response, is_yahoo):
+    if is_yahoo:
+        result = response.get('optionChain').get('result')[0]
+        return result.get('quote')
 
 
 def get_expiration_timestamps(response, is_yahoo):
@@ -25,13 +31,10 @@ def get_call_puts(response, is_yahoo):
             return None, None
         options = result.get('options')[0]
 
-        return options.get('calls', []), options.get('puts', [])
-
-
-def get_quote(response, is_yahoo):
-    if is_yahoo:
-        result = response.get('optionChain').get('result')[0]
-        return result.get('quote')
+        latest_price = get_quote(response, True).get('regularMarketPrice')
+        call_contracts = [OptionContract(True, row, latest_price) for row in options.get('calls', [])]
+        put_contracts = [OptionContract(False, row, latest_price) for row in options.get('puts', [])]
+        return call_contracts, put_contracts
 
 
 if __name__ == "__main__":

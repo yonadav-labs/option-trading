@@ -53,7 +53,7 @@ export default function SellCashSecuredPut() {
             ),
             sort: true,
         }, {
-            dataField: "contract.estimated_premium",
+            dataField: "estimated_premium",
             text: "Premium",
             formatter: PriceFormatter,
             sort: true

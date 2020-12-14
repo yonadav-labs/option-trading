@@ -26,13 +26,13 @@ class OptionContractSerializer(serializers.Serializer):
     percent_change = serializers.FloatField()
     volume = serializers.IntegerField(allow_null=True)
 
-    estimated_premium = serializers.FloatField(min_value=0.0, allow_null=True)
     days_till_expiration = serializers.IntegerField(min_value=0)
     current_stock_price = serializers.FloatField(min_value=0.0)
 
 
 class Trade(serializers.Serializer):
     contract = OptionContractSerializer()
+    estimated_premium = serializers.FloatField(min_value=0.0, allow_null=True)
     break_even_price = serializers.FloatField(min_value=0.0, allow_null=True)
     to_break_even_ratio = serializers.FloatField(allow_null=True)
     to_break_even_ratio_annualized = serializers.FloatField(allow_null=True)
