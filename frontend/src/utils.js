@@ -78,14 +78,15 @@ export function PercentageWithAnnualizedFormatter(num, annualized_num) {
 };
 
 export function TimestampDateFormatter(ts) {
-    const exp_date = new Date(ts * 1000).toLocaleDateString('en-US', { 'timeZone': 'GMT' })
+    const exp_date = new Date(ts * 1000).toLocaleDateString('en-US', { 'timeZone': 'EST' })
     return (<span>{exp_date}</span>);
 };
 
 export function TimestampTimeFormatter(ts) {
-    const exp_date = new Date(ts * 1000).toLocaleDateString('en-US', { 'timeZone': 'GMT' })
-    const exp_time = new Date(ts * 1000).toLocaleTimeString('en-US', { 'timeZone': 'GMT', hour: '2-digit', minute: '2-digit', hour12: false })
-    return (<span>{exp_date} {exp_time}</span>);
+    if (ts == 0) return (<span>N/A</span>);
+    const exp_date = new Date(ts * 1000).toLocaleDateString('en-US', { 'timeZone': 'EST' })
+    const exp_time = new Date(ts * 1000).toLocaleTimeString('en-US', { 'timeZone': 'EST', hour: '2-digit', minute: '2-digit' })
+    return (<span>{exp_date} {exp_time} EST</span>);
 };
 
 export function SymbolWithExpFormatter(ts, days_till_expiration, contract_symbol) {
@@ -105,19 +106,22 @@ export function ExpandContractRow() {
                     <div className="col-sm"><b>Last price:</b> {PriceFormatter(row.contract.last_price)}</div>
                     <div className="col-sm"><b>Bid:</b> {PriceFormatter(row.contract.bid)}</div>
                     <div className="col-sm"><b>Ask:</b> {PriceFormatter(row.contract.ask)}</div>
-                    <div className="col-sm"><b>Last traded:</b> {TimestampTimeFormatter(row.contract.last_trade_date)}</div>
+                    <div className="col-sm"><b>Change:</b> {NumberRoundFormatter(row.contract.change)}</div>
                 </div>
                 <div className="row">
-                    <div className="col-sm"><b>Change:</b> {NumberRoundFormatter(row.contract.change)}</div>
                     <div className="col-sm"><b>% Change:</b> {NumberRoundFormatter(row.contract.percent_change)}%</div>
                     <div className="col-sm"><b>Volume:</b> {NumberRoundFormatter(row.contract.volume)}</div>
                     <div className="col-sm"><b>Open interest:</b> {NumberRoundFormatter(row.contract.open_interest)}</div>
+                    <div className="col-sm"><b>Implied volatility:</b> {PercentageFormatter(row.contract.implied_volatility)}</div>
                 </div>
                 <div className="row">
-                    <div className="col-sm"><b>Implied volatility:</b> {PercentageFormatter(row.contract.implied_volatility)}</div>
                     <div className="col-sm"><b>Contract size:</b> {row.contract.contract_size}</div>
                     <div className="col-sm"><b>In the money:</b> {row.contract.in_the_money ? 'Yes' : 'No'}</div>
                     <div className="col-sm"></div>
+                    <div className="col-sm"></div>
+                </div>
+                <div className="row">
+                    <div className="col-sm"><b>Last traded:</b> {TimestampTimeFormatter(row.contract.last_trade_date)}</div>
                 </div>
             </div>
         ),

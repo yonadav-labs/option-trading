@@ -14,7 +14,7 @@ $dark:#3c4055;
 $body-bg:#efefef;
 $enable-gradients:false;
 $enable-rounded:false;
-$border-width:0;
+// $border-width:0; Commented out because it's removing result table's border.
 $btn-border-radius:0;
 
 // Import Bootstrap and its default variables

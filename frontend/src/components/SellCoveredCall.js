@@ -281,7 +281,6 @@ export default function SellCoveredCall() {
                                 hidePageListOnlyOnePage: true
                             })}
                             noDataIndication="No Data"
-                            bordered={false}
                             // overlay={overlayFactory({ spinner: true })} // does not work with filter.
                             expandRow={ExpandContractRow()}
                             rowStyle={InTheMoneyRowStyle}
