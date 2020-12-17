@@ -30,44 +30,44 @@ class OptionContractSerializer(serializers.Serializer):
     current_stock_price = serializers.FloatField(min_value=0.0)
 
 
-class Trade(serializers.Serializer):
+class TradeSerializer(serializers.Serializer):
+    name = serializers.CharField(max_length=50)
     contract = OptionContractSerializer()
     estimated_premium = serializers.FloatField(min_value=0.0, allow_null=True)
+
+    target_stock_price = serializers.FloatField(min_value=0.0)
+    to_target_price_ratio = serializers.FloatField()
+    to_target_price_ratio_annualized = serializers.FloatField()
+
     break_even_price = serializers.FloatField(min_value=0.0, allow_null=True)
     to_break_even_ratio = serializers.FloatField(allow_null=True)
     to_break_even_ratio_annualized = serializers.FloatField(allow_null=True)
+
     to_strike = serializers.FloatField()
     to_strike_ratio = serializers.FloatField()
     to_strike_ratio_annualized = serializers.FloatField()
 
-
-class BuyCallSerializer(Trade):
-    target_stock_price = serializers.FloatField(min_value=0.0)
     gain = serializers.FloatField(allow_null=True)
     gain_annualized = serializers.FloatField(allow_null=True)
     gain_daily = serializers.FloatField(allow_null=True)
-    gain_after_tradeoff = serializers.FloatField(allow_null=True)
-    to_target_price_ratio = serializers.FloatField()
-    to_target_price_ratio_annualized = serializers.FloatField()
 
 
-class SellCoveredCallSerializer(Trade):
+class BuyCallSerializer(TradeSerializer):
+    pass
+
+
+class BuyPutSerializer(TradeSerializer):
+    pass
+
+
+class SellCoveredCallSerializer(TradeSerializer):
     gain_cap = serializers.FloatField(allow_null=True)
     gain_cap_annualized = serializers.FloatField(allow_null=True)
     premium_gain = serializers.FloatField(allow_null=True)
     premium_gain_annualized = serializers.FloatField(allow_null=True)
 
 
-class BuyPutSerializer(Trade):
-    target_stock_price = serializers.FloatField(min_value=0.0)
-    gain = serializers.FloatField(allow_null=True)
-    gain_annualized = serializers.FloatField(allow_null=True)
-    gain_daily = serializers.FloatField(allow_null=True)
-    to_target_price_ratio = serializers.FloatField()
-    to_target_price_ratio_annualized = serializers.FloatField()
-
-
-class SellCashSecuredPutSerializer(Trade):
+class SellCashSecuredPutSerializer(TradeSerializer):
     premium_gain = serializers.FloatField(allow_null=True)
     premium_gain_annualized = serializers.FloatField(allow_null=True)
     cash_required = serializers.FloatField(allow_null=True, min_value=0.0)

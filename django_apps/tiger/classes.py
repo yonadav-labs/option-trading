@@ -43,6 +43,9 @@ class OptionContract:
             self.volume = data_dict.get('volume')  # Could be None.
         else:
             # TD.
+            for key in data_dict:
+                if data_dict[key] == 'NaN':
+                    data_dict[key] = None
             self.is_call = is_call
             self.ask = data_dict.get('ask')
             self.bid = data_dict.get('bid')
@@ -52,7 +55,8 @@ class OptionContract:
             self.change = data_dict.get('netChange')
             self.contract_size = data_dict.get('multiplier')  # 100, different from 'REGULAR' of yahoo
             self.currency = None
-            self.implied_volatility = data_dict.get('volatility') / 100.0
+            self.implied_volatility = data_dict.get('volatility') / 100.0 if data_dict.get(
+                'volatility') is not None else None
             self.in_the_money = data_dict.get('inTheMoney')
             self.last_price = data_dict.get('last')
             self.last_trade_date = int(data_dict.get('tradeTimeInLong') / 1000)
@@ -92,17 +96,45 @@ class OptionContract:
         return self.__str__()
 
 
+# TODO: align with TradeSerializer.
 class Trade:
-    def __init__(self, contract, use_as_premium='estimated'):
+    def __init__(self, name, contract, target_stock_price, use_as_premium='estimated'):
+        self.name = name
         self.contract = contract
         self.use_as_premium = use_as_premium if use_as_premium in ('bid', 'ask', 'estimated') else 'estimated'
         self.estimated_premium = self.get_estimated_premium()  # Could be None.
+
+        self.target_stock_price = target_stock_price
+        self.to_target_price_ratio = self.get_to_target_price_ratio()
+        self.to_target_price_ratio_annualized = self.get_to_target_price_ratio_annualized()
+
         self.break_even_price = self.get_break_even_price()  # Could be None.
         self.to_break_even_ratio = self.get_to_break_even_ratio()  # Could be None.
         self.to_break_even_ratio_annualized = self.get_to_break_even_ratio_annualized()  # Could be None.
+
+        self.gain = self.get_gain()
+        self.gain_daily = self.get_gain_daily()
+        self.gain_annualized = self.get_gain_annualized()
+
         self.to_strike = self.get_to_strike()
         self.to_strike_ratio = self.get_to_strike_ratio()
         self.to_strike_ratio_annualized = self.get_to_strike_ratio_annualized()
+
+    def get_to_target_price_ratio(self):
+        return self.target_stock_price / self.contract.current_stock_price - 1.0
+
+    def get_to_target_price_ratio_annualized(self):
+        return get_annualized_ratio(self.get_to_target_price_ratio(), self.contract.days_till_expiration)
+
+    # To be implemented in sub-class.
+    def get_gain(self):
+        pass
+
+    def get_gain_daily(self):
+        return get_daily_ratio(self.get_gain(), self.contract.days_till_expiration)
+
+    def get_gain_annualized(self):
+        return get_annualized_ratio(self.get_gain(), self.contract.days_till_expiration)
 
     # Returns None if both ask and bid are missing.
     def get_estimated_premium(self):
@@ -156,45 +188,39 @@ class Trade:
 
 # TODO: refactor into Trades classes.
 class BuyCall(Trade):
-    def __init__(self, contract, use_as_premium, target_stock_price):
-        super().__init__(contract, use_as_premium)
+    def __init__(self, contract, target_stock_price, use_as_premium):
+        super().__init__('buy_call', contract, target_stock_price, use_as_premium)
 
-        self.target_stock_price = target_stock_price
-        self.gain = self.get_gain()
-        self.gain_annualized = self.get_gain_annualized()
-        self.gain_daily = self.get_gain_daily()
-        self.to_target_price_ratio = self.get_to_target_price_ratio()
-        self.to_target_price_ratio_annualized = self.get_to_target_price_ratio_annualized()
-
-    # Private methods:
-    # TODO: make @property work with Serializer.
     def get_gain(self):
         if self.break_even_price is None or self.estimated_premium is None:
             return None
         return max(-1.0, (self.target_stock_price - self.break_even_price) / self.estimated_premium)
 
-    def get_gain_daily(self):
-        return get_daily_ratio(self.get_gain(), self.contract.days_till_expiration)
 
-    def get_gain_annualized(self):
-        return get_annualized_ratio(self.get_gain(), self.contract.days_till_expiration)
+# TODO: refactor into Trades classes.
+class BuyPut(Trade):
+    def __init__(self, contract, target_stock_price, use_as_premium):
+        super().__init__('buy_put', contract, target_stock_price, use_as_premium)
 
-    def get_to_target_price_ratio(self):
-        return self.target_stock_price / self.contract.current_stock_price - 1.0
-
-    def get_to_target_price_ratio_annualized(self):
-        return get_annualized_ratio(self.get_to_target_price_ratio(), self.contract.days_till_expiration)
+    def get_gain(self):
+        if self.break_even_price is None or self.estimated_premium is None:
+            return None
+        return max(-1.0, (self.break_even_price - self.target_stock_price) / self.estimated_premium)
 
 
 # TODO: refactor into Trades classes.
 class SellCoveredCall(Trade):
-    def __init__(self, contract, use_as_premium):
-        super().__init__(contract, use_as_premium)
+    def __init__(self, contract, target_stock_price, use_as_premium):
+        super().__init__('sell_covered_call', contract, target_stock_price, use_as_premium)
 
         self.gain_cap = self.get_gain_cap()
         self.gain_cap_annualized = self.get_gain_cap_annualized()
         self.premium_gain = self.get_premium_gain()
         self.premium_gain_annualized = self.get_premium_gain_annualized()
+
+    # TODO: to implement.
+    def get_gain(self):
+        return None
 
     def get_gain_cap(self):
         if self.estimated_premium is None:
@@ -216,12 +242,16 @@ class SellCoveredCall(Trade):
 
 # TODO: refactor into Trades classes.
 class SellCashSecuredPut(Trade):
-    def __init__(self, contract, use_as_premium):
-        super().__init__(contract, use_as_premium)
+    def __init__(self, contract, target_stock_price, use_as_premium):
+        super().__init__('sell_cash_secured', contract, target_stock_price, use_as_premium)
 
         self.premium_gain = self.get_premium_gain()
         self.premium_gain_annualized = self.get_premium_gain_annualized()
         self.cash_required = self.contract.strike * 100.0
+
+    # TODO: to implement.
+    def get_gain(self):
+        return None
 
     def get_premium_gain(self):
         if self.estimated_premium is None:
@@ -231,34 +261,4 @@ class SellCashSecuredPut(Trade):
     def get_premium_gain_annualized(self):
         return get_annualized_ratio(self.get_premium_gain(), self.contract.days_till_expiration)
 
-
-# TODO: refactor into Trades classes.
-class BuyPut(Trade):
-    def __init__(self, contract, use_as_premium, target_stock_price):
-        super().__init__(contract, use_as_premium)
-
-        self.target_stock_price = target_stock_price
-        self.gain = self.get_gain()
-        self.gain_annualized = self.get_gain_annualized()
-        self.gain_daily = self.get_gain_daily()
-        self.to_target_price_ratio = self.get_to_target_price_ratio()
-        self.to_target_price_ratio_annualized = self.get_to_target_price_ratio_annualized()
-
-    # Private methods:
-    # TODO: make @property work with Serializer.
-    def get_gain(self):
-        if self.break_even_price is None or self.estimated_premium is None:
-            return None
-        return max(-1.0, (self.break_even_price - self.target_stock_price) / self.estimated_premium)
-
-    def get_gain_daily(self):
-        return get_daily_ratio(self.get_gain(), self.contract.days_till_expiration)
-
-    def get_gain_annualized(self):
-        return get_annualized_ratio(self.get_gain(), self.contract.days_till_expiration)
-
-    def get_to_target_price_ratio(self):
-        return self.target_stock_price / self.contract.current_stock_price - 1.0
-
-    def get_to_target_price_ratio_annualized(self):
-        return get_annualized_ratio(self.get_to_target_price_ratio(), self.contract.days_till_expiration)
+# TODO: add a sell everything now and hold cash trade.

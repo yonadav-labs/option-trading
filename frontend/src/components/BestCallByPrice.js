@@ -25,7 +25,6 @@ export default function BestCallByPrice() {
     const [showTimestampAlert, setShowTimestampAlert] = useState(false);
     const [bestCalls, setBestCalls] = useState([]);
     const [selectedExpirationTimestamps, setSelectedExpirationTimestamps] = useState([]);
-    const [tradeoffValue, setTradeoffValue] = React.useState(0.0);
     const [useAsPremium, setUseAsPremium] = useState('estimated');
     const [modalActive, setModalActive] = useState(false);
 
@@ -140,13 +139,12 @@ export default function BestCallByPrice() {
 
     const getBestCalls = async (targetPrice, selectedExpirationTimestamps) => {
         try {
-            let url = `${API_URL}/tickers/${selectedTicker[0].symbol}/calls/?target_price=${targetPrice}&`;
+            let url = `${API_URL}/tickers/${selectedTicker[0].symbol}/trades/?target_price=${targetPrice}&`;
             selectedExpirationTimestamps.map((timestamp) => { url += `expiration_timestamps=${timestamp}&` });
-            url += `month_to_percent_gain=${tradeoffValue}`
-            url += `&use_as_premium=${useAsPremium}`
+            url += `use_as_premium=${useAsPremium}`
             setModalActive(true);
             const response = await Axios.get(url);
-            setBestCalls(response.data.all_calls);
+            setBestCalls(response.data.trades);
             setModalActive(false);
         } catch (error) {
             console.error(error);
@@ -228,65 +226,70 @@ export default function BestCallByPrice() {
                             </div>
                         </Form>
                         <br />
-                        <h5>Results</h5>
-                        <hr />
-                        <div className="row">
-                            <div className="col-sm-3">
-                                <Form>
-                                    <Form.Group>
-                                        <Form.Label className="font-weight-bold">Filter by strike:</Form.Label>
-                                        <Form.Control name="tradeoff" as="select" defaultValue={0}
-                                            onChange={(e) => onInTheMoneyFilterChange(e, inTheMoneyFilter)}>
-                                            <option key="all" value="all">All</option>
-                                            <option key="itm" value="itm">In the money</option>
-                                            <option key="otm" value="otm">Out of the money</option>
-                                        </Form.Control>
-                                    </Form.Group>
-                                </Form>
-                            </div>
-                            <div className="col-sm-3">
-                                <Form>
-                                    <Form.Group>
-                                        <Form.Label className="font-weight-bold">Filter by last traded:</Form.Label>
-                                        <Form.Control name="tradeoff" as="select" defaultValue={0}
-                                            onChange={(e) => onLastTradedFilterChange(e, lastTradedFilter)}>
-                                            <option key="9999999" value="9999999">All</option>
-                                            {[1, 4, 8, 24, 48, 72, 120, 240].map((hour, index) => {
-                                                return (
-                                                    <option key={hour} value={hour}>
-                                                        Last traded in&nbsp;
-                                                        {(hour <= 24 ? hour + (hour > 1 ? " hours" : " hour") : hour / 24 + " days")}
-                                                    </option>
-                                                );
-                                            })}
-                                        </Form.Control>
-                                    </Form.Group>
-                                </Form>
-                            </div>
-                            <div className="col-sm-4">
-                            </div>
-                            <div className="col-sm-2">
-                                {InTheMoneySign()}
-                            </div>
-                        </div>
+                        {bestCalls.length > 0 ?
+                            <div>
+                                <h5>Results</h5>
+                                <hr />
+                                <div className="row">
+                                    <div className="col-sm-3">
+                                        <Form>
+                                            <Form.Group>
+                                                <Form.Label className="font-weight-bold">Filter by strike:</Form.Label>
+                                                <Form.Control name="tradeoff" as="select" defaultValue={0}
+                                                    onChange={(e) => onInTheMoneyFilterChange(e, inTheMoneyFilter)}>
+                                                    <option key="all" value="all">All</option>
+                                                    <option key="itm" value="itm">In the money</option>
+                                                    <option key="otm" value="otm">Out of the money</option>
+                                                </Form.Control>
+                                            </Form.Group>
+                                        </Form>
+                                    </div>
+                                    <div className="col-sm-3">
+                                        <Form>
+                                            <Form.Group>
+                                                <Form.Label className="font-weight-bold">Filter by last traded:</Form.Label>
+                                                <Form.Control name="tradeoff" as="select" defaultValue={0}
+                                                    onChange={(e) => onLastTradedFilterChange(e, lastTradedFilter)}>
+                                                    <option key="9999999" value="9999999">All</option>
+                                                    {[1, 4, 8, 24, 48, 72, 120, 240].map((hour, index) => {
+                                                        return (
+                                                            <option key={hour} value={hour}>
+                                                                Last traded in&nbsp;
+                                                                {(hour <= 24 ? hour + (hour > 1 ? " hours" : " hour") : hour / 24 + " days")}
+                                                            </option>
+                                                        );
+                                                    })}
+                                                </Form.Control>
+                                            </Form.Group>
+                                        </Form>
+                                    </div>
+                                    <div className="col-sm-4">
+                                    </div>
+                                    <div className="col-sm-2">
+                                        {InTheMoneySign()}
+                                    </div>
+                                </div>
 
-                        <BootstrapTable
-                            classes="table-responsive"
-                            bootstrap4={true}
-                            keyField="contract_symbol"
-                            data={bestCalls}
-                            columns={result_table_columns}
-                            pagination={paginationFactory({
-                                sizePerPage: 20,
-                                hidePageListOnlyOnePage: true
-                            })}
-                            noDataIndication="No Data"
-                            bordered={false}
-                            expandRow={ExpandContractRow()}
-                            rowStyle={InTheMoneyRowStyle}
-                            filter={filterFactory()}
-                            defaultSorted={defaultSorted}
-                        />
+                                <BootstrapTable
+                                    classes="table-responsive"
+                                    bootstrap4={true}
+                                    keyField="contract_symbol"
+                                    data={bestCalls}
+                                    columns={result_table_columns}
+                                    pagination={paginationFactory({
+                                        sizePerPage: 20,
+                                        hidePageListOnlyOnePage: true
+                                    })}
+                                    noDataIndication="No Data"
+                                    bordered={false}
+                                    expandRow={ExpandContractRow()}
+                                    rowStyle={InTheMoneyRowStyle}
+                                    filter={filterFactory()}
+                                    defaultSorted={defaultSorted}
+                                /></div>
+                            :
+                            null
+                        }
                     </div >
                 </div>
                 :

@@ -228,65 +228,73 @@ export default function SellCoveredCall() {
                             </div>
                         </Form>
                         <br />
-                        <h5>Results</h5>
-                        <hr />
-                        <div className="row">
-                            <div className="col-sm-3">
-                                <Form>
-                                    <Form.Group>
-                                        <Form.Label className="font-weight-bold">Filter by strike:</Form.Label>
-                                        <Form.Control name="tradeoff" as="select" defaultValue={0}
-                                            onChange={(e) => onInTheMoneyFilterChange(e, inTheMoneyFilter)}>
-                                            <option key="all" value="all">All</option>
-                                            <option key="itm" value="itm">In the money</option>
-                                            <option key="otm" value="otm">Out of the money</option>
-                                        </Form.Control>
-                                    </Form.Group>
-                                </Form>
-                            </div>
-                            <div className="col-sm-3">
-                                <Form>
-                                    <Form.Group>
-                                        <Form.Label className="font-weight-bold">Filter by last traded:</Form.Label>
-                                        <Form.Control name="tradeoff" as="select" defaultValue={0}
-                                            onChange={(e) => onLastTradedFilterChange(e, lastTradedFilter)}>
-                                            <option key="9999999" value="9999999">All</option>
-                                            {[1, 4, 8, 24, 48, 72, 120, 240].map((hour, index) => {
-                                                return (
-                                                    <option key={hour} value={hour}>
-                                                        Last traded in&nbsp;
-                                                        {(hour <= 24 ? hour + (hour > 1 ? " hours" : " hour") : hour / 24 + " days")}
-                                                    </option>
-                                                );
-                                            })}
-                                        </Form.Control>
-                                    </Form.Group>
-                                </Form>
-                            </div>
-                            <div className="col-sm-4">
-                            </div>
-                            <div className="col-sm-2">
-                                {InTheMoneySign()}
-                            </div>
-                        </div>
+                        {bestCalls.length > 0 ?
+                            <div>
+                                <h5>Results</h5>
+                                <hr />
+                                <div className="row">
+                                    <div className="col-sm-3">
+                                        <Form>
+                                            <Form.Group>
+                                                <Form.Label className="font-weight-bold">Filter by strike:</Form.Label>
+                                                <Form.Control name="tradeoff" as="select" defaultValue={0}
+                                                    onChange={(e) => onInTheMoneyFilterChange(e, inTheMoneyFilter)}>
+                                                    <option key="all" value="all">All</option>
+                                                    <option key="itm" value="itm">In the money</option>
+                                                    <option key="otm" value="otm">Out of the money</option>
+                                                </Form.Control>
+                                            </Form.Group>
+                                        </Form>
+                                    </div>
+                                    <div className="col-sm-3">
+                                        <Form>
+                                            <Form.Group>
+                                                <Form.Label className="font-weight-bold">Filter by last traded:</Form.Label>
+                                                <Form.Control name="tradeoff" as="select" defaultValue={0}
+                                                    onChange={(e) => onLastTradedFilterChange(e, lastTradedFilter)}>
+                                                    <option key="9999999" value="9999999">All</option>
+                                                    {[1, 4, 8, 24, 48, 72, 120, 240].map((hour, index) => {
+                                                        return (
+                                                            <option key={hour} value={hour}>
+                                                                Last traded in&nbsp;
+                                                                {(hour <= 24 ? hour + (hour > 1 ? " hours" : " hour") : hour / 24 + " days")}
+                                                            </option>
+                                                        );
+                                                    })}
+                                                </Form.Control>
+                                            </Form.Group>
+                                        </Form>
+                                    </div>
+                                    <div className="col-sm-4">
+                                    </div>
+                                    <div className="col-sm-2">
+                                        {InTheMoneySign()}
+                                    </div>
+                                </div>
 
-                        <BootstrapTable
-                            classes="table-responsive"
-                            bootstrap4={true}
-                            keyField="contract_symbol"
-                            data={bestCalls}
-                            columns={result_table_columns}
-                            pagination={paginationFactory({
-                                sizePerPage: 20,
-                                hidePageListOnlyOnePage: true
-                            })}
-                            noDataIndication="No Data"
-                            // overlay={overlayFactory({ spinner: true })} // does not work with filter.
-                            expandRow={ExpandContractRow()}
-                            rowStyle={InTheMoneyRowStyle}
-                            filter={filterFactory()}
-                            defaultSorted={defaultSorted}
-                        />
+
+                                <BootstrapTable
+                                    classes="table-responsive"
+                                    bootstrap4={true}
+                                    keyField="contract_symbol"
+                                    data={bestCalls}
+                                    columns={result_table_columns}
+                                    pagination={paginationFactory({
+                                        sizePerPage: 20,
+                                        hidePageListOnlyOnePage: true
+                                    })}
+                                    noDataIndication="No Data"
+                                    bordered={false}
+                                    // overlay={overlayFactory({ spinner: true })} // does not work with filter.
+                                    expandRow={ExpandContractRow()}
+                                    rowStyle={InTheMoneyRowStyle}
+                                    filter={filterFactory()}
+                                    defaultSorted={defaultSorted}
+                                />
+                            </div>
+                            :
+                            null
+                        }
                     </div>
                 </div>
                 :

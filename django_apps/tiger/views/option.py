@@ -3,8 +3,8 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.exceptions import APIException
 
-from tiger.serializers import TickerSerializer, BuyCallSerializer, SellCoveredCallSerializer, \
-    SellCashSecuredPutSerializer, BuyPutSerializer
+from tiger.serializers import TickerSerializer, SellCoveredCallSerializer, \
+    SellCashSecuredPutSerializer, BuyCallSerializer, BuyPutSerializer, TradeSerializer
 from tiger.models import Ticker
 from tiger.classes import BuyCall, SellCoveredCall, BuyPut, SellCashSecuredPut, OptionContract
 
@@ -44,30 +44,6 @@ def ticker(request, ticker_symbol, format=None):
 
 
 @api_view(['GET'])
-def buy_calls(request, ticker_symbol):
-    ticker = get_object_or_404(Ticker, symbol=ticker_symbol.upper(), status="unspecified")
-    # Check if option is available for this ticker.
-    all_expiration_timestamps = ticker.get_expiration_timestamps()
-    if all_expiration_timestamps is None:
-        raise APIException('No contracts found.')
-
-    try:
-        target_price = float(request.query_params.get('target_price'))
-        use_as_premium = request.query_params.get('use_as_premium', 'estimated')
-    except Exception:
-        raise APIException('Invalid query parameters.')
-    if target_price < 0.0:
-        raise APIException('Invalid query parameters.')
-
-    all_calls = []
-    for calls_per_exp in get_valid_contracts(ticker, request, all_expiration_timestamps):
-        for contract in calls_per_exp:
-            all_calls.append(BuyCall(contract, use_as_premium, target_price))
-    all_calls = list(filter(lambda call: call.gain is not None and call.gain > 0.0, all_calls))
-    return Response({'all_calls': BuyCallSerializer(all_calls, many=True).data})
-
-
-@api_view(['GET'])
 def sell_covered_calls(request, ticker_symbol):
     ticker = get_object_or_404(Ticker, symbol=ticker_symbol.upper(), status="unspecified")
     # Check if option is available for this ticker.
@@ -79,7 +55,8 @@ def sell_covered_calls(request, ticker_symbol):
     all_calls = []
     for calls_per_exp in get_valid_contracts(ticker, request, all_expiration_timestamps):
         for contract in calls_per_exp:
-            all_calls.append(SellCoveredCall(contract, use_as_premium))
+            # TODO: fix this 10.0.
+            all_calls.append(SellCoveredCall(contract, 10.0, use_as_premium))
     return Response({'all_calls': SellCoveredCallSerializer(all_calls, many=True).data})
 
 
@@ -95,12 +72,13 @@ def sell_cash_secured_puts(request, ticker_symbol):
     all_puts = []
     for puts_per_exp in get_valid_contracts(ticker, request, all_expiration_timestamps, get_calls=False):
         for contract in puts_per_exp:
-            all_puts.append(SellCashSecuredPut(contract, use_as_premium))
+            # TODO: fix this 10.0.
+            all_puts.append(SellCashSecuredPut(contract, 10.0, use_as_premium))
     return Response({'all_puts': SellCashSecuredPutSerializer(all_puts, many=True).data})
 
 
 @api_view(['GET'])
-def buy_puts(request, ticker_symbol):
+def get_best_trades(request, ticker_symbol):
     ticker = get_object_or_404(Ticker, symbol=ticker_symbol.upper(), status="unspecified")
     # Check if option is available for this ticker.
     all_expiration_timestamps = ticker.get_expiration_timestamps()
@@ -113,9 +91,21 @@ def buy_puts(request, ticker_symbol):
     except Exception:
         raise APIException('Invalid query parameters.')
 
-    all_puts = []
+    stock_price = ticker.get_quote().get('regularMarketPrice')
+
+    all_trades = []
+
+    for calls_per_exp in get_valid_contracts(ticker, request, all_expiration_timestamps):
+        for call in calls_per_exp:
+            # all_trades.append(SellCoveredCall(call, target_price, use_as_premium))
+            if target_price > stock_price:
+                all_trades.append(BuyCall(call, target_price, use_as_premium))
+
     for puts_per_exp in get_valid_contracts(ticker, request, all_expiration_timestamps, get_calls=False):
-        for contract in puts_per_exp:
-            all_puts.append(BuyPut(contract, use_as_premium, target_price))
-    all_puts = list(filter(lambda put: put.gain is not None and put.gain > 0.0, all_puts))
-    return Response({'all_puts': BuyPutSerializer(all_puts, many=True).data})
+        for put in puts_per_exp:
+            # all_trades.append(SellCashSecuredPut(put, target_price, use_as_premium))
+            if target_price < stock_price:
+                all_trades.append(BuyPut(put, target_price, use_as_premium))
+
+    all_trades = list(filter(lambda trade: trade.gain is not None and trade.gain > 0.0, all_trades))
+    return Response({'trades': TradeSerializer(all_trades, many=True).data})
