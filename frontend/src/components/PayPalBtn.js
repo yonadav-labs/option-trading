@@ -5,6 +5,7 @@ export default function PayPalBtn(props) {
     const { amount, currency, createSubscription, onApprove, catchError, onError, onCancel } = props;
     const paypalKey = "AYBME3nnHQTrhS8teRe0ezxdHve057IVYf7B_Mkrwp7RFTJ-txheBCqQvqWZZkievIYvPA9uyFzmmffl"
     return (
+        // TODO: add venmo.
         <PayPalButton
             amount={amount}
             currency={currency}
@@ -19,7 +20,7 @@ export default function PayPalBtn(props) {
             }}
             style={{
                 shape: 'rect',
-                color: 'black',
+                color: 'gold',
                 layout: 'vertical',
                 label: 'subscribe'
             }}
