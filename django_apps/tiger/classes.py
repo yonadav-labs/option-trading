@@ -186,7 +186,6 @@ class Trade:
         return get_annualized_ratio(self.get_to_strike_ratio(), self.contract.days_till_expiration)
 
 
-# TODO: refactor into Trades classes.
 class BuyCall(Trade):
     def __init__(self, contract, target_stock_price, use_as_premium):
         super().__init__('buy_call', contract, target_stock_price, use_as_premium)
@@ -197,7 +196,6 @@ class BuyCall(Trade):
         return max(-1.0, (self.target_stock_price - self.break_even_price) / self.estimated_premium)
 
 
-# TODO: refactor into Trades classes.
 class BuyPut(Trade):
     def __init__(self, contract, target_stock_price, use_as_premium):
         super().__init__('buy_put', contract, target_stock_price, use_as_premium)
@@ -208,7 +206,7 @@ class BuyPut(Trade):
         return max(-1.0, (self.break_even_price - self.target_stock_price) / self.estimated_premium)
 
 
-# TODO: refactor into Trades classes.
+# TODO: refactor into multiple legs.
 class SellCoveredCall(Trade):
     def __init__(self, contract, target_stock_price, use_as_premium):
         super().__init__('sell_covered_call', contract, target_stock_price, use_as_premium)
@@ -240,7 +238,7 @@ class SellCoveredCall(Trade):
         return get_annualized_ratio(self.get_premium_gain(), self.contract.days_till_expiration)
 
 
-# TODO: refactor into Trades classes.
+# TODO: refactor into multiple legs.
 class SellCashSecuredPut(Trade):
     def __init__(self, contract, target_stock_price, use_as_premium):
         super().__init__('sell_cash_secured', contract, target_stock_price, use_as_premium)
