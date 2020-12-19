@@ -64,7 +64,7 @@ export default function BuyPutByPrice() {
             dataField: "to_target_price_ratio",
             text: "Target Price",
             formatter: (cell, row, rowIndex, extraData) => (
-                PriceMovementFormatter(cell, row.target_stock_price)
+                PriceMovementFormatter(cell, row.target_price)
             ),
         }, {
             dataField: "contract.expiration",

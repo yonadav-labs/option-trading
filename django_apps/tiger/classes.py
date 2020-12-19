@@ -4,7 +4,7 @@ from tiger.utils import days_from_timestamp
 
 
 class OptionContract:
-    def __init__(self, is_call, data_dict, current_stock_price):
+    def __init__(self, is_call, data_dict, stock_price):
         if 'contractSymbol' in data_dict:
             # Yahoo.
             self.is_call = is_call  # There are only 2 types of options: "call" and "put".
@@ -69,7 +69,7 @@ class OptionContract:
             '''
 
         # Non-contract data.
-        self.current_stock_price = current_stock_price
+        self.stock_price = stock_price
         self.days_till_expiration = days_from_timestamp(self.expiration)
 
     def __str__(self):
@@ -81,13 +81,13 @@ class OptionContract:
 
 # TODO: align with TradeSerializer.
 class Trade:
-    def __init__(self, name, contract, target_stock_price, use_as_premium='estimated'):
+    def __init__(self, name, contract, target_price, use_as_premium='estimated'):
         self.name = name
         self.contract = contract
         self.use_as_premium = use_as_premium if use_as_premium in ('bid', 'ask', 'estimated') else 'estimated'
         self.estimated_premium = self.get_estimated_premium()  # Could be None.
 
-        self.target_stock_price = target_stock_price
+        self.target_price = target_price
         self.to_target_price_ratio = self.get_to_target_price_ratio()
 
         self.break_even_price = self.get_break_even_price()  # Could be None.
@@ -99,7 +99,7 @@ class Trade:
         self.to_strike_ratio = self.get_to_strike_ratio()
 
     def get_to_target_price_ratio(self):
-        return self.target_stock_price / self.contract.current_stock_price - 1.0
+        return self.target_price / self.contract.stock_price - 1.0
 
     # To be implemented in sub-class.
     def get_gain(self):
@@ -136,40 +136,40 @@ class Trade:
     def get_to_break_even_ratio(self):
         if self.get_break_even_price() is None:
             return None
-        return (self.get_break_even_price() - self.contract.current_stock_price) / self.contract.current_stock_price
+        return (self.get_break_even_price() - self.contract.stock_price) / self.contract.stock_price
 
     def get_to_strike(self):
-        """Positive when current_stock_price is below strike."""
-        return self.contract.strike - self.contract.current_stock_price
+        """Positive when stock_price is below strike."""
+        return self.contract.strike - self.contract.stock_price
 
     def get_to_strike_ratio(self):
-        return self.get_to_strike() / self.contract.current_stock_price
+        return self.get_to_strike() / self.contract.stock_price
 
 
 class BuyCall(Trade):
-    def __init__(self, contract, target_stock_price, use_as_premium):
-        super().__init__('buy_call', contract, target_stock_price, use_as_premium)
+    def __init__(self, contract, target_price, use_as_premium):
+        super().__init__('buy_call', contract, target_price, use_as_premium)
 
     def get_gain(self):
         if self.break_even_price is None or self.estimated_premium is None:
             return None
-        return max(-1.0, (self.target_stock_price - self.break_even_price) / self.estimated_premium)
+        return max(-1.0, (self.target_price - self.break_even_price) / self.estimated_premium)
 
 
 class BuyPut(Trade):
-    def __init__(self, contract, target_stock_price, use_as_premium):
-        super().__init__('buy_put', contract, target_stock_price, use_as_premium)
+    def __init__(self, contract, target_price, use_as_premium):
+        super().__init__('buy_put', contract, target_price, use_as_premium)
 
     def get_gain(self):
         if self.break_even_price is None or self.estimated_premium is None:
             return None
-        return max(-1.0, (self.break_even_price - self.target_stock_price) / self.estimated_premium)
+        return max(-1.0, (self.break_even_price - self.target_price) / self.estimated_premium)
 
 
 # TODO: refactor into multiple legs.
 class SellCoveredCall(Trade):
-    def __init__(self, contract, target_stock_price, use_as_premium):
-        super().__init__('sell_covered_call', contract, target_stock_price, use_as_premium)
+    def __init__(self, contract, target_price, use_as_premium):
+        super().__init__('sell_covered_call', contract, target_price, use_as_premium)
 
         self.gain_cap = self.get_gain_cap()
         self.premium_gain = self.get_premium_gain()
@@ -181,19 +181,19 @@ class SellCoveredCall(Trade):
     def get_gain_cap(self):
         if self.estimated_premium is None:
             return None
-        return (self.contract.strike + self.estimated_premium - self.contract.current_stock_price) \
-               / self.contract.current_stock_price
+        return (self.contract.strike + self.estimated_premium - self.contract.stock_price) \
+               / self.contract.stock_price
 
     def get_premium_gain(self):
         if self.estimated_premium is None or self.get_gain_cap() is None:
             return None
-        return min(self.estimated_premium / self.contract.current_stock_price, self.get_gain_cap())
+        return min(self.estimated_premium / self.contract.stock_price, self.get_gain_cap())
 
 
 # TODO: refactor into multiple legs.
 class SellCashSecuredPut(Trade):
-    def __init__(self, contract, target_stock_price, use_as_premium):
-        super().__init__('sell_cash_secured', contract, target_stock_price, use_as_premium)
+    def __init__(self, contract, target_price, use_as_premium):
+        super().__init__('sell_cash_secured', contract, target_price, use_as_premium)
 
         self.premium_gain = self.get_premium_gain()
         self.cash_required = self.contract.strike * 100.0
@@ -205,6 +205,6 @@ class SellCashSecuredPut(Trade):
     def get_premium_gain(self):
         if self.estimated_premium is None:
             return None
-        return self.estimated_premium / self.contract.current_stock_price
+        return self.estimated_premium / self.contract.stock_price
 
 # TODO: add a sell everything now and hold cash trade.

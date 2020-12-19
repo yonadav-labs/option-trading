@@ -27,7 +27,7 @@ class OptionContractSerializer(serializers.Serializer):
     volume = serializers.IntegerField(allow_null=True)
 
     days_till_expiration = serializers.IntegerField(min_value=0)
-    current_stock_price = serializers.FloatField(min_value=0.0)
+    stock_price = serializers.FloatField(min_value=0.0)
 
 
 class TradeSerializer(serializers.Serializer):
@@ -35,7 +35,7 @@ class TradeSerializer(serializers.Serializer):
     contract = OptionContractSerializer()
     estimated_premium = serializers.FloatField(min_value=0.0, allow_null=True)
 
-    target_stock_price = serializers.FloatField(min_value=0.0)
+    target_price = serializers.FloatField(min_value=0.0)
     to_target_price_ratio = serializers.FloatField()
 
     break_even_price = serializers.FloatField(min_value=0.0, allow_null=True)
