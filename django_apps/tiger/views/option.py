@@ -107,5 +107,6 @@ def get_best_trades(request, ticker_symbol):
             if target_price < stock_price:
                 all_trades.append(BuyPut(put, target_price, use_as_premium))
 
-    all_trades = list(filter(lambda trade: trade.gain is not None and trade.gain > 0.0, all_trades))
+    all_trades = list(
+        filter(lambda trade: trade.target_price_profit is not None and trade.target_price_profit > 0.0, all_trades))
     return Response({'trades': TradeSerializer(all_trades, many=True).data})

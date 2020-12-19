@@ -64,12 +64,11 @@ class CallTradesTestCase(TestCase):
         self.assertAlmostEqual(buy_call.estimated_premium, 161.7)
         self.assertAlmostEqual(buy_call.target_price, 600.0)
         self.assertAlmostEqual(buy_call.to_target_price_ratio, 0.42857142857)
+        self.assertAlmostEqual(buy_call.target_price_profit, 0.9294990723562)
         self.assertAlmostEqual(buy_call.break_even_price, 449.7)
         self.assertAlmostEqual(buy_call.to_break_even_ratio, 0.07071428571)
         self.assertAlmostEqual(buy_call.to_strike, -132.0)
         self.assertAlmostEqual(buy_call.to_strike_ratio, -0.31428571428)
-        self.assertAlmostEqual(buy_call.gain, 0.9294990723562)
-        self.assertAlmostEqual(buy_call.to_target_price_ratio, 0.42857142857143)
 
     @mock.patch('django.utils.timezone.now')
     def test_missing_bid_or_ask(self, mock_now):
@@ -200,8 +199,8 @@ class PutTradesTestCase(TestCase):
         self.assertAlmostEqual(trade.to_break_even_ratio, -0.08497620666)
         self.assertAlmostEqual(trade.to_strike, -5.55)
         self.assertAlmostEqual(trade.to_strike_ratio, -0.07545887151)
-        # Test gains
-        self.assertAlmostEqual(trade.gain, 3.28571428571)
+        # Test target profit
+        self.assertAlmostEqual(trade.target_price_profit, 3.28571428571)
         self.assertAlmostEqual(trade.to_target_price_ratio, -0.11624745071)
 
 

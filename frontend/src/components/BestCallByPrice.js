@@ -46,7 +46,7 @@ export default function BestCallByPrice() {
             formatter: PriceFormatter,
             sort: true
         }, {
-            dataField: "gain",
+            dataField: "target_price_profit",
             text: "Profit at Target",
             formatter: (cell, row, rowIndex, extraData) => (
                 ProfitFormatter(cell)
@@ -98,7 +98,7 @@ export default function BestCallByPrice() {
         },
     ];
     const defaultSorted = [{
-        dataField: "gain",
+        dataField: "target_price_profit",
         order: "desc"
     }];
 

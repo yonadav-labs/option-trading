@@ -93,7 +93,7 @@ class Trade:
         self.break_even_price = self.get_break_even_price()  # Could be None.
         self.to_break_even_ratio = self.get_to_break_even_ratio()  # Could be None.
 
-        self.gain = self.get_gain()
+        self.target_price_profit = self.target_price_profit()
 
         self.to_strike = self.get_to_strike()
         self.to_strike_ratio = self.get_to_strike_ratio()
@@ -102,7 +102,7 @@ class Trade:
         return self.target_price / self.contract.stock_price - 1.0
 
     # To be implemented in sub-class.
-    def get_gain(self):
+    def target_price_profit(self):
         pass
 
     # Returns None if both ask and bid are missing.
@@ -150,7 +150,7 @@ class BuyCall(Trade):
     def __init__(self, contract, target_price, use_as_premium):
         super().__init__('buy_call', contract, target_price, use_as_premium)
 
-    def get_gain(self):
+    def target_price_profit(self):
         if self.break_even_price is None or self.estimated_premium is None:
             return None
         return max(-1.0, (self.target_price - self.break_even_price) / self.estimated_premium)
@@ -160,7 +160,7 @@ class BuyPut(Trade):
     def __init__(self, contract, target_price, use_as_premium):
         super().__init__('buy_put', contract, target_price, use_as_premium)
 
-    def get_gain(self):
+    def target_price_profit(self):
         if self.break_even_price is None or self.estimated_premium is None:
             return None
         return max(-1.0, (self.break_even_price - self.target_price) / self.estimated_premium)
@@ -175,7 +175,7 @@ class SellCoveredCall(Trade):
         self.premium_gain = self.get_premium_gain()
 
     # TODO: to implement.
-    def get_gain(self):
+    def target_price_profit(self):
         return None
 
     def get_gain_cap(self):
@@ -199,7 +199,7 @@ class SellCashSecuredPut(Trade):
         self.cash_required = self.contract.strike * 100.0
 
     # TODO: to implement.
-    def get_gain(self):
+    def target_price_profit(self):
         return None
 
     def get_premium_gain(self):

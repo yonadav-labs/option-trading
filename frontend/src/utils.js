@@ -40,10 +40,10 @@ export function PriceWithPercentageFormatter(price_num, percentage_num) {
     return (<span>{PriceFormatter(price_num)}<small>({PercentageFormatter(percentage_num)})</small></span>);
 };
 
-export function ProfitFormatter(gain) {
+export function ProfitFormatter(profit) {
     return (
         <span>
-            {gain > 0 ? '+' : '-'}{PercentageFormatter(Math.abs(gain))}
+            {profit > 0 ? '+' : '-'}{PercentageFormatter(Math.abs(profit))}
         </span>
     );
 };

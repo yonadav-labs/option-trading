@@ -37,14 +37,13 @@ class TradeSerializer(serializers.Serializer):
 
     target_price = serializers.FloatField(min_value=0.0)
     to_target_price_ratio = serializers.FloatField()
+    target_price_profit = serializers.FloatField(allow_null=True)
 
     break_even_price = serializers.FloatField(min_value=0.0, allow_null=True)
     to_break_even_ratio = serializers.FloatField(allow_null=True)
 
     to_strike = serializers.FloatField()
     to_strike_ratio = serializers.FloatField()
-
-    gain = serializers.FloatField(allow_null=True)
 
 
 class BuyCallSerializer(TradeSerializer):
