@@ -116,15 +116,15 @@ class CallTradesTestCase(TestCase):
         sell_call = SellCoveredCall(call_contract, 10.0, 'estimated')
         self.assertEqual(sell_call.to_strike, -132.0)
         self.assertAlmostEqual(sell_call.to_strike_ratio, -0.31428571428)
-        self.assertAlmostEqual(sell_call.gain_cap, 0.07071428571)
-        self.assertAlmostEqual(sell_call.premium_gain, 0.07071428571)  # premium_gain is capped by gain_cap.
+        self.assertAlmostEqual(sell_call.profit_cap, 0.07071428571)
+        self.assertAlmostEqual(sell_call.premium_profit, 0.07071428571)  # premium_profit is capped by profit_cap.
 
         call_contract = OptionContract(True, self.yahoo_input2, self.stock_price)
         sell_call2 = SellCoveredCall(call_contract, 10.0, 'estimated')
         self.assertEqual(sell_call2.to_strike, 25.0)
         self.assertAlmostEqual(sell_call2.to_strike_ratio, 0.05952380952)
-        self.assertAlmostEqual(sell_call2.gain_cap, 0.24130952381)
-        self.assertAlmostEqual(sell_call2.premium_gain, 0.18178571428)
+        self.assertAlmostEqual(sell_call2.profit_cap, 0.24130952381)
+        self.assertAlmostEqual(sell_call2.premium_profit, 0.18178571428)
 
     def test_use_as_premium(self):
         yahoo_input = dict(self.yahoo_input)

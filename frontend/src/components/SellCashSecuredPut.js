@@ -58,7 +58,7 @@ export default function SellCashSecuredPut() {
             formatter: PriceFormatter,
             sort: true
         }, {
-            dataField: "premium_gain",
+            dataField: "premium_profit",
             text: "Premium Profit",
             formatter: (cell, row, rowIndex, extraData) => (
                 ProfitFormatter(cell)

@@ -58,14 +58,14 @@ export default function SellCoveredCall() {
             formatter: PriceFormatter,
             sort: true
         }, {
-            dataField: "premium_gain",
+            dataField: "premium_profit",
             text: "Premium Profit",
             formatter: (cell, row, rowIndex, extraData) => (
                 ProfitFormatter(cell, row)
             ),
             sort: true
         }, {
-            dataField: "gain_cap",
+            dataField: "profit_cap",
             text: "Profit Ceiling",
             formatter: (cell, row, rowIndex, extraData) => (
                 ProfitFormatter(cell, row)

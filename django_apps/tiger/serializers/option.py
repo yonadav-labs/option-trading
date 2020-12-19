@@ -55,10 +55,10 @@ class BuyPutSerializer(TradeSerializer):
 
 
 class SellCoveredCallSerializer(TradeSerializer):
-    gain_cap = serializers.FloatField(allow_null=True)
-    premium_gain = serializers.FloatField(allow_null=True)
+    profit_cap = serializers.FloatField(allow_null=True)
+    premium_profit = serializers.FloatField(allow_null=True)
 
 
 class SellCashSecuredPutSerializer(TradeSerializer):
-    premium_gain = serializers.FloatField(allow_null=True)
+    premium_profit = serializers.FloatField(allow_null=True)
     cash_required = serializers.FloatField(allow_null=True, min_value=0.0)

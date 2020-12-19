@@ -171,23 +171,23 @@ class SellCoveredCall(Trade):
     def __init__(self, contract, target_price, use_as_premium):
         super().__init__('sell_covered_call', contract, target_price, use_as_premium)
 
-        self.gain_cap = self.get_gain_cap()
-        self.premium_gain = self.get_premium_gain()
+        self.profit_cap = self.get_profit_cap()
+        self.premium_profit = self.get_premium_profit()
 
     # TODO: to implement.
     def target_price_profit(self):
         return None
 
-    def get_gain_cap(self):
+    def get_profit_cap(self):
         if self.estimated_premium is None:
             return None
         return (self.contract.strike + self.estimated_premium - self.contract.stock_price) \
                / self.contract.stock_price
 
-    def get_premium_gain(self):
-        if self.estimated_premium is None or self.get_gain_cap() is None:
+    def get_premium_profit(self):
+        if self.estimated_premium is None or self.get_profit_cap() is None:
             return None
-        return min(self.estimated_premium / self.contract.stock_price, self.get_gain_cap())
+        return min(self.estimated_premium / self.contract.stock_price, self.get_profit_cap())
 
 
 # TODO: refactor into multiple legs.
@@ -195,14 +195,14 @@ class SellCashSecuredPut(Trade):
     def __init__(self, contract, target_price, use_as_premium):
         super().__init__('sell_cash_secured', contract, target_price, use_as_premium)
 
-        self.premium_gain = self.get_premium_gain()
+        self.premium_profit = self.get_premium_profit()
         self.cash_required = self.contract.strike * 100.0
 
     # TODO: to implement.
     def target_price_profit(self):
         return None
 
-    def get_premium_gain(self):
+    def get_premium_profit(self):
         if self.estimated_premium is None:
             return None
         return self.estimated_premium / self.contract.stock_price
