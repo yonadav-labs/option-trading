@@ -3,23 +3,6 @@ import math
 from tiger.utils import days_from_timestamp
 
 
-# Expect input ratio to be already -1.0.
-def get_daily_ratio(ratio, days_till_expiration):
-    if ratio is None:
-        return None
-    return math.pow(ratio + 1.0, 1.0 / days_till_expiration) - 1.0
-
-
-# Expect input ratio to be already -1.0.
-def get_annualized_ratio(ratio, days_till_expiration):
-    if ratio is None:
-        return None
-    # gain_annualized would overflow if too large
-    if get_daily_ratio(ratio, days_till_expiration) > 0.1:
-        return None
-    return math.pow(ratio + 1.0, 365.0 / days_till_expiration) - 1.0
-
-
 class OptionContract:
     def __init__(self, is_call, data_dict, current_stock_price):
         if 'contractSymbol' in data_dict:
@@ -106,35 +89,21 @@ class Trade:
 
         self.target_stock_price = target_stock_price
         self.to_target_price_ratio = self.get_to_target_price_ratio()
-        self.to_target_price_ratio_annualized = self.get_to_target_price_ratio_annualized()
 
         self.break_even_price = self.get_break_even_price()  # Could be None.
         self.to_break_even_ratio = self.get_to_break_even_ratio()  # Could be None.
-        self.to_break_even_ratio_annualized = self.get_to_break_even_ratio_annualized()  # Could be None.
 
         self.gain = self.get_gain()
-        self.gain_daily = self.get_gain_daily()
-        self.gain_annualized = self.get_gain_annualized()
 
         self.to_strike = self.get_to_strike()
         self.to_strike_ratio = self.get_to_strike_ratio()
-        self.to_strike_ratio_annualized = self.get_to_strike_ratio_annualized()
 
     def get_to_target_price_ratio(self):
         return self.target_stock_price / self.contract.current_stock_price - 1.0
 
-    def get_to_target_price_ratio_annualized(self):
-        return get_annualized_ratio(self.get_to_target_price_ratio(), self.contract.days_till_expiration)
-
     # To be implemented in sub-class.
     def get_gain(self):
         pass
-
-    def get_gain_daily(self):
-        return get_daily_ratio(self.get_gain(), self.contract.days_till_expiration)
-
-    def get_gain_annualized(self):
-        return get_annualized_ratio(self.get_gain(), self.contract.days_till_expiration)
 
     # Returns None if both ask and bid are missing.
     def get_estimated_premium(self):
@@ -169,21 +138,12 @@ class Trade:
             return None
         return (self.get_break_even_price() - self.contract.current_stock_price) / self.contract.current_stock_price
 
-    def get_to_break_even_ratio_annualized(self):
-        if self.get_break_even_price() is None:
-            return None
-        return math.pow(self.get_break_even_price() / self.contract.current_stock_price,
-                        365.0 / self.contract.days_till_expiration) - 1.0
-
     def get_to_strike(self):
         """Positive when current_stock_price is below strike."""
         return self.contract.strike - self.contract.current_stock_price
 
     def get_to_strike_ratio(self):
         return self.get_to_strike() / self.contract.current_stock_price
-
-    def get_to_strike_ratio_annualized(self):
-        return get_annualized_ratio(self.get_to_strike_ratio(), self.contract.days_till_expiration)
 
 
 class BuyCall(Trade):
@@ -212,9 +172,7 @@ class SellCoveredCall(Trade):
         super().__init__('sell_covered_call', contract, target_stock_price, use_as_premium)
 
         self.gain_cap = self.get_gain_cap()
-        self.gain_cap_annualized = self.get_gain_cap_annualized()
         self.premium_gain = self.get_premium_gain()
-        self.premium_gain_annualized = self.get_premium_gain_annualized()
 
     # TODO: to implement.
     def get_gain(self):
@@ -226,16 +184,10 @@ class SellCoveredCall(Trade):
         return (self.contract.strike + self.estimated_premium - self.contract.current_stock_price) \
                / self.contract.current_stock_price
 
-    def get_gain_cap_annualized(self):
-        return get_annualized_ratio(self.get_gain_cap(), self.contract.days_till_expiration)
-
     def get_premium_gain(self):
         if self.estimated_premium is None or self.get_gain_cap() is None:
             return None
         return min(self.estimated_premium / self.contract.current_stock_price, self.get_gain_cap())
-
-    def get_premium_gain_annualized(self):
-        return get_annualized_ratio(self.get_premium_gain(), self.contract.days_till_expiration)
 
 
 # TODO: refactor into multiple legs.
@@ -244,7 +196,6 @@ class SellCashSecuredPut(Trade):
         super().__init__('sell_cash_secured', contract, target_stock_price, use_as_premium)
 
         self.premium_gain = self.get_premium_gain()
-        self.premium_gain_annualized = self.get_premium_gain_annualized()
         self.cash_required = self.contract.strike * 100.0
 
     # TODO: to implement.
@@ -255,8 +206,5 @@ class SellCashSecuredPut(Trade):
         if self.estimated_premium is None:
             return None
         return self.estimated_premium / self.contract.current_stock_price
-
-    def get_premium_gain_annualized(self):
-        return get_annualized_ratio(self.get_premium_gain(), self.contract.days_till_expiration)
 
 # TODO: add a sell everything now and hold cash trade.

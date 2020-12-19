@@ -6,8 +6,8 @@ import BootstrapTable from 'react-bootstrap-table-next';
 import paginationFactory from 'react-bootstrap-table2-paginator';
 import Axios from 'axios';
 import getApiUrl, {
-    PriceFormatter, SymbolWithExpFormatter, ExpandContractRow, InTheMoneyRowStyle, InTheMoneySign, onInTheMoneyFilterChange,
-    onLastTradedFilterChange, DailyProfitFormatter, PriceMovementFormatter
+    PriceFormatter, ExpDayFormatter, ExpandContractRow, InTheMoneyRowStyle, InTheMoneySign, onInTheMoneyFilterChange,
+    onLastTradedFilterChange, ProfitFormatter, PriceMovementFormatter
 } from '../utils';
 import filterFactory, { multiSelectFilter, numberFilter } from 'react-bootstrap-table2-filter';
 import TickerTypeahead from '../components/TickerTypeahead';
@@ -34,10 +34,10 @@ export default function BestCallByPrice() {
     };
     const result_table_columns = [
         {
-            dataField: "to_strike_ratio_annualized",
+            dataField: "to_strike_ratio",
             text: "Strike price",
             formatter: (cell, row, rowIndex, extraData) => (
-                PriceMovementFormatter(cell, row.to_strike_ratio, row.contract.strike)
+                PriceMovementFormatter(cell, row.contract.strike)
             ),
             sort: true
         }, {
@@ -46,31 +46,31 @@ export default function BestCallByPrice() {
             formatter: PriceFormatter,
             sort: true
         }, {
-            dataField: "gain_daily",
+            dataField: "gain",
             text: "Profit at Target",
             formatter: (cell, row, rowIndex, extraData) => (
-                DailyProfitFormatter(cell, row.gain)
+                ProfitFormatter(cell)
             ),
             sort: true
         },
         {
-            dataField: "to_break_even_ratio_annualized",
+            dataField: "to_break_even_ratio",
             text: "Break Even Price",
             formatter: (cell, row, rowIndex, extraData) => (
-                PriceMovementFormatter(cell, row.to_break_even_ratio, row.break_even_price)
+                PriceMovementFormatter(cell, row.break_even_price)
             ),
             sort: true
         }, {
-            dataField: "to_target_price_ratio_annualized",
+            dataField: "to_target_price_ratio",
             text: "Target Price",
             formatter: (cell, row, rowIndex, extraData) => (
-                PriceMovementFormatter(cell, row.to_target_price_ratio, row.target_stock_price)
+                PriceMovementFormatter(cell, row.target_stock_price)
             ),
         }, {
-            dataField: "expiration",
+            dataField: "contract.expiration",
             text: "Symbol / Expiration",
             formatter: (cell, row, rowIndex, extraData) => (
-                SymbolWithExpFormatter(cell, row.contract.days_till_expiration, row.contract.contract_symbol)
+                ExpDayFormatter(cell, row.contract.days_till_expiration)
             )
         }, {
             dataField: 'contract.in_the_money',
@@ -98,7 +98,7 @@ export default function BestCallByPrice() {
         },
     ];
     const defaultSorted = [{
-        dataField: "gain_daily",
+        dataField: "gain",
         order: "desc"
     }];
 

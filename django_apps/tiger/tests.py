@@ -64,16 +64,11 @@ class CallTradesTestCase(TestCase):
         self.assertAlmostEqual(buy_call.estimated_premium, 161.7)
         self.assertAlmostEqual(buy_call.target_stock_price, 600.0)
         self.assertAlmostEqual(buy_call.to_target_price_ratio, 0.42857142857)
-        self.assertAlmostEqual(buy_call.to_target_price_ratio_annualized, 0.94959631065)
         self.assertAlmostEqual(buy_call.break_even_price, 449.7)
         self.assertAlmostEqual(buy_call.to_break_even_ratio, 0.07071428571)
-        self.assertAlmostEqual(buy_call.to_break_even_ratio_annualized, 0.13643051577)
         self.assertAlmostEqual(buy_call.to_strike, -132.0)
         self.assertAlmostEqual(buy_call.to_strike_ratio, -0.31428571428)
-        self.assertAlmostEqual(buy_call.to_strike_ratio_annualized, -0.50649259097)
         self.assertAlmostEqual(buy_call.gain, 0.9294990723562)
-        self.assertAlmostEqual(buy_call.gain_daily, 0.00337625301)
-        self.assertAlmostEqual(buy_call.gain_annualized, 2.42210783034)
         self.assertAlmostEqual(buy_call.to_target_price_ratio, 0.42857142857143)
 
     @mock.patch('django.utils.timezone.now')
@@ -123,18 +118,14 @@ class CallTradesTestCase(TestCase):
         self.assertEqual(sell_call.to_strike, -132.0)
         self.assertAlmostEqual(sell_call.to_strike_ratio, -0.31428571428)
         self.assertAlmostEqual(sell_call.gain_cap, 0.07071428571)
-        self.assertAlmostEqual(sell_call.gain_cap_annualized, 0.13643051577)
         self.assertAlmostEqual(sell_call.premium_gain, 0.07071428571)  # premium_gain is capped by gain_cap.
-        self.assertAlmostEqual(sell_call.premium_gain_annualized, 0.13643051577)
 
         call_contract = OptionContract(True, self.yahoo_input2, self.current_stock_price)
         sell_call2 = SellCoveredCall(call_contract, 10.0, 'estimated')
         self.assertEqual(sell_call2.to_strike, 25.0)
         self.assertAlmostEqual(sell_call2.to_strike_ratio, 0.05952380952)
         self.assertAlmostEqual(sell_call2.gain_cap, 0.24130952381)
-        self.assertAlmostEqual(sell_call2.gain_cap_annualized, 0.49873298736)
         self.assertAlmostEqual(sell_call2.premium_gain, 0.18178571428)
-        self.assertAlmostEqual(sell_call2.premium_gain_annualized, 0.3670287040215)
 
     def test_use_as_premium(self):
         yahoo_input = dict(self.yahoo_input)
@@ -185,11 +176,9 @@ class PutTradesTestCase(TestCase):
         self.assertAlmostEqual(trade.estimated_premium, 0.7)
         self.assertAlmostEqual(trade.break_even_price, 67.3)
         self.assertAlmostEqual(trade.to_break_even_ratio, -0.08497620666)
-        self.assertAlmostEqual(trade.to_break_even_ratio_annualized, -0.15314444614)
         self.assertAlmostEqual(trade.cash_required, 6800.0)
         self.assertAlmostEqual(trade.to_strike, -5.55)
         self.assertAlmostEqual(trade.to_strike_ratio, -0.07545887151)
-        self.assertAlmostEqual(trade.to_strike_ratio_annualized, -0.13658238907)
 
     @mock.patch('django.utils.timezone.now')
     def test_buy_put(self, mock_now):
@@ -209,16 +198,11 @@ class PutTradesTestCase(TestCase):
         self.assertAlmostEqual(trade.estimated_premium, 0.7)
         self.assertAlmostEqual(trade.break_even_price, 67.3)
         self.assertAlmostEqual(trade.to_break_even_ratio, -0.08497620666)
-        self.assertAlmostEqual(trade.to_break_even_ratio_annualized, -0.15314444614)
         self.assertAlmostEqual(trade.to_strike, -5.55)
         self.assertAlmostEqual(trade.to_strike_ratio, -0.07545887151)
-        self.assertAlmostEqual(trade.to_strike_ratio_annualized, -0.13658238907)
         # Test gains
         self.assertAlmostEqual(trade.gain, 3.28571428571)
-        self.assertAlmostEqual(trade.gain_daily, 0.00749092913)
-        self.assertAlmostEqual(trade.gain_annualized, 14.2411526253)
         self.assertAlmostEqual(trade.to_target_price_ratio, -0.11624745071)
-        self.assertAlmostEqual(trade.to_target_price_ratio_annualized, -0.20650893415)
 
 
 class TdTestCase(TestCase):

@@ -4,9 +4,9 @@ import TickerTypeahead from '../components/TickerTypeahead';
 import TickerSummary from '../components/TickerSummary.js';
 import Axios from 'axios';
 import getApiUrl, {
-    PriceFormatter, SymbolWithExpFormatter, ExpandContractRow, InTheMoneyRowStyle,
+    PriceFormatter, ExpDayFormatter, ExpandContractRow, InTheMoneyRowStyle,
     InTheMoneySign, onInTheMoneyFilterChange, onLastTradedFilterChange,
-    AnnualProfitFormatter, PriceMovementFormatter
+    ProfitFormatter, PriceMovementFormatter
 } from '../utils';
 import Button from 'react-bootstrap/Button';
 import Alert from 'react-bootstrap/Alert';
@@ -46,10 +46,10 @@ export default function SellCoveredCall() {
     };
     const result_table_columns = [
         {
-            dataField: "to_strike_ratio_annualized",
+            dataField: "to_strike_ratio",
             text: "Strike price",
             formatter: (cell, row, rowIndex, extraData) => (
-                PriceMovementFormatter(cell, row.to_strike_ratio, row.contract.strike)
+                PriceMovementFormatter(cell, row.contract.strike)
             ),
             sort: true,
         }, {
@@ -58,24 +58,24 @@ export default function SellCoveredCall() {
             formatter: PriceFormatter,
             sort: true
         }, {
-            dataField: "premium_gain_annualized",
+            dataField: "premium_gain",
             text: "Premium Profit",
             formatter: (cell, row, rowIndex, extraData) => (
-                AnnualProfitFormatter(cell, row.premium_gain, row)
+                ProfitFormatter(cell, row)
             ),
             sort: true
         }, {
-            dataField: "gain_cap_annualized",
+            dataField: "gain_cap",
             text: "Profit Ceiling",
             formatter: (cell, row, rowIndex, extraData) => (
-                AnnualProfitFormatter(cell, row.gain_cap, row)
+                ProfitFormatter(cell, row)
             ),
             sort: true
         }, {
             dataField: "contract.expiration",
-            text: "Symbol / Expiration",
+            text: "Expiration",
             formatter: (cell, row, rowIndex, extraData) => (
-                SymbolWithExpFormatter(cell, row.contract.days_till_expiration, row.contract.contract_symbol)
+                ExpDayFormatter(cell, row.contract.days_till_expiration)
             )
         }, {
             dataField: 'contract.in_the_money',
@@ -103,7 +103,7 @@ export default function SellCoveredCall() {
         },
     ];
     const defaultSorted = [{
-        dataField: "to_strike_ratio_annualized",
+        dataField: "to_strike_ratio",
         order: "asc"
     }];
 

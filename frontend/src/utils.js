@@ -40,41 +40,20 @@ export function PriceWithPercentageFormatter(price_num, percentage_num) {
     return (<span>{PriceFormatter(price_num)}<small>({PercentageFormatter(percentage_num)})</small></span>);
 };
 
-export function DailyProfitFormatter(gain_daily, gain) {
+export function ProfitFormatter(gain) {
     return (
         <span>
             {gain > 0 ? '+' : '-'}{PercentageFormatter(Math.abs(gain))}
-            <small><br />{gain_daily > 0 ? '+' : '-'}{PercentageFormatter(Math.abs(gain_daily), 3)} daily</small>
         </span>
     );
 };
 
-export function AnnualProfitFormatter(premium_gain_annualized, premium_gain) {
-    return (
-        <span>
-            {premium_gain > 0 ? '+' : '-'}{PercentageFormatter(Math.abs(premium_gain))}
-            <small><br />{premium_gain_annualized > 0 ? '+' : '-'}{PercentageFormatter(Math.abs(premium_gain_annualized))} APR</small>
-        </span >
-    );
-};
-
-export function PriceMovementFormatter(annualized_ratio, ratio, price) {
+export function PriceMovementFormatter(ratio, price) {
     return (
         <span>
             {PriceFormatter(price)}<small>({ratio > 0 ? '+' : '-'}{PercentageFormatter(Math.abs(ratio))})</small>
-            <small><br />{ratio > 0 ? '+' : '-'}
-                {PercentageFormatter(Math.abs(annualized_ratio))} annually</small>
         </span >
     );
-};
-
-
-
-export function PercentageWithAnnualizedFormatter(num, annualized_num) {
-    if (annualized_num == null) {
-        return (<span>{PercentageFormatter(num)}</span>)
-    }
-    return (<span>{PercentageFormatter(num)}<small><br />{PercentageFormatter(annualized_num)} APR</small></span>)
 };
 
 export function TimestampDateFormatter(ts) {
@@ -89,10 +68,9 @@ export function TimestampTimeFormatter(ts) {
     return (<span>{exp_date} {exp_time} EST</span>);
 };
 
-export function SymbolWithExpFormatter(ts, days_till_expiration, contract_symbol) {
+export function ExpDayFormatter(ts, days_till_expiration) {
     return (
         <span>
-            <small>{contract_symbol}</small><br />
             <small>Expire on {TimestampDateFormatter(ts)} ({days_till_expiration} days)</small>
         </span>
     );
