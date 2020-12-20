@@ -4,9 +4,9 @@ from rest_framework.response import Response
 from rest_framework.exceptions import APIException
 
 from tiger.serializers import TickerSerializer, SellCoveredCallSerializer, \
-    SellCashSecuredPutSerializer, BuyCallSerializer, BuyPutSerializer, TradeSerializer
+    SellCashSecuredPutSerializer, LongCallSerializer, LongPutSerializer, OptionLegSerializer
 from tiger.models import Ticker
-from tiger.classes import BuyCall, SellCoveredCall, BuyPut, SellCashSecuredPut, OptionContract
+from tiger.classes import LongCall, CoveredCall, LongPut, CashSecuredPut, OptionContract
 
 
 def get_valid_contracts(ticker, request, all_expiration_timestamps, get_calls=True):
@@ -56,7 +56,7 @@ def sell_covered_calls(request, ticker_symbol):
     for calls_per_exp in get_valid_contracts(ticker, request, all_expiration_timestamps):
         for contract in calls_per_exp:
             # TODO: fix this 10.0.
-            all_calls.append(SellCoveredCall(contract, 10.0, use_as_premium))
+            all_calls.append(CoveredCall(contract, 10.0, use_as_premium))
     return Response({'all_calls': SellCoveredCallSerializer(all_calls, many=True).data})
 
 
@@ -73,7 +73,7 @@ def sell_cash_secured_puts(request, ticker_symbol):
     for puts_per_exp in get_valid_contracts(ticker, request, all_expiration_timestamps, get_calls=False):
         for contract in puts_per_exp:
             # TODO: fix this 10.0.
-            all_puts.append(SellCashSecuredPut(contract, 10.0, use_as_premium))
+            all_puts.append(CashSecuredPut(contract, 10.0, use_as_premium))
     return Response({'all_puts': SellCashSecuredPutSerializer(all_puts, many=True).data})
 
 
@@ -99,14 +99,14 @@ def get_best_trades(request, ticker_symbol):
         for call in calls_per_exp:
             # all_trades.append(SellCoveredCall(call, target_price, use_as_premium))
             if target_price > stock_price:
-                all_trades.append(BuyCall(call, target_price, use_as_premium))
+                all_trades.append(LongCall(call, target_price, use_as_premium))
 
     for puts_per_exp in get_valid_contracts(ticker, request, all_expiration_timestamps, get_calls=False):
         for put in puts_per_exp:
             # all_trades.append(SellCashSecuredPut(put, target_price, use_as_premium))
             if target_price < stock_price:
-                all_trades.append(BuyPut(put, target_price, use_as_premium))
+                all_trades.append(LongPut(put, target_price, use_as_premium))
 
     all_trades = list(
         filter(lambda trade: trade.target_price_profit is not None and trade.target_price_profit > 0.0, all_trades))
-    return Response({'trades': TradeSerializer(all_trades, many=True).data})
+    return Response({'trades': OptionLegSerializer(all_trades, many=True).data})

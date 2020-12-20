@@ -30,8 +30,8 @@ class OptionContractSerializer(serializers.Serializer):
     stock_price = serializers.FloatField(min_value=0.0)
 
 
-class TradeSerializer(serializers.Serializer):
-    name = serializers.CharField(max_length=50)
+class OptionLegSerializer(serializers.Serializer):
+    is_long = serializers.CharField(max_length=50)
     contract = OptionContractSerializer()
     estimated_premium = serializers.FloatField(min_value=0.0, allow_null=True)
 
@@ -46,19 +46,19 @@ class TradeSerializer(serializers.Serializer):
     to_strike_ratio = serializers.FloatField()
 
 
-class BuyCallSerializer(TradeSerializer):
+class LongCallSerializer(OptionLegSerializer):
     pass
 
 
-class BuyPutSerializer(TradeSerializer):
+class LongPutSerializer(OptionLegSerializer):
     pass
 
 
-class SellCoveredCallSerializer(TradeSerializer):
+class SellCoveredCallSerializer(OptionLegSerializer):
     profit_cap = serializers.FloatField(allow_null=True)
     premium_profit = serializers.FloatField(allow_null=True)
 
 
-class SellCashSecuredPutSerializer(TradeSerializer):
+class SellCashSecuredPutSerializer(OptionLegSerializer):
     premium_profit = serializers.FloatField(allow_null=True)
     cash_required = serializers.FloatField(allow_null=True, min_value=0.0)
