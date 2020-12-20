@@ -1,5 +1,7 @@
 from abc import ABC, abstractmethod
 
+from .security import Cash
+
 
 class Leg(ABC):
     def __init__(self, is_long, units, cash=None, stock=None, contract=None):
@@ -7,6 +9,7 @@ class Leg(ABC):
             raise ValueError('Leg must have exactly 1 security.')
         self.is_long = is_long  # True means "long"/"buy", False means "short"/"sell".
         self.units = units
+        self.cash = cash
         self.stock = stock
         self.contract = contract
         self.cost = self.get_cost()
@@ -16,23 +19,23 @@ class Leg(ABC):
         pass
 
     @abstractmethod
-    def get_income_at_target_price(self, stock_price):
+    def get_value_at_target_price(self, target_price):
         pass
 
     def get_profit_at_target_price(self, target_price):
-        return self.get_income_at_target_price(target_price) - self.get_cost()
+        return self.get_value_at_target_price(target_price) - self.get_cost()
 
 
 # Represent units US dollar. Currently only long.
 class CashLeg(Leg):
     def __init__(self, units):
-        super().__init__(True, units, cash=1)
+        super().__init__(True, units, cash=Cash())
 
     def get_cost(self):
-        return self.units
+        return self.cash.get_cost() * self.units
 
-    def get_income_at_target_price(self, stock_price):
-        return self.units
+    def get_value_at_target_price(self, target_price):
+        return self.cash.get_cost() * self.units
 
 
 # Represent `units` shares of stock. Currently only long.
@@ -41,10 +44,10 @@ class StockLeg(Leg):
         super().__init__(True, units, stock=stock)
 
     def get_cost(self):
-        return self.stock.stock_price * self.units
+        return self.stock.get_cost() * self.units
 
-    def get_income_at_target_price(self, target_price):
-        return target_price * self.units
+    def get_value_at_target_price(self, target_price):
+        return self.stock.get_value_at_target_price(target_price) * self.units
 
 
 # Represent `units` contract of option.
@@ -52,12 +55,8 @@ class OptionLeg(Leg):
     def __init__(self, is_long, units, contract):
         super().__init__(is_long, units, contract=contract)
 
-    # TODO: 100 can be obtained from contract_size. Fix this.
     def get_cost(self):
-        return self.contract.premium * (100 if self.is_long else -100) * self.units
+        return self.contract.get_cost() * (self.units if self.is_long else -self.units)
 
-    def get_income_at_target_price(self, target_price):
-        if self.contract.is_call:
-            return max(0, target_price - self.contract.strike) * (100 if self.is_long else -100) * self.units
-        else:
-            return max(0, self.contract.strike - target_price) * (100 if self.is_long else -100) * self.units
+    def get_value_at_target_price(self, target_price):
+        return self.contract.get_value_at_target_price(target_price) * (self.units if self.is_long else -self.units)

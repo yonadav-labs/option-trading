@@ -1,9 +1,38 @@
+from abc import ABC, abstractmethod
+
 from tiger.utils import days_from_timestamp
 
 
-class Stock:
+class Security(ABC):
+    @abstractmethod
+    def get_cost(self):
+        pass
+
+    @abstractmethod
+    def get_value_at_target_price(self, target_price):
+        pass
+
+    def get_profit_at_target_price(self, target_price):
+        return self.get_value_at_target_price(target_price) - self.get_cost()
+
+
+class Cash(Security):
+    def get_cost(self):
+        return 1.0
+
+    def get_value_at_target_price(self, target_price):
+        return 1.0
+
+
+class Stock(Security):
     def __init__(self, stock_price):
         self.stock_price = stock_price
+
+    def get_cost(self):
+        return self.stock_price
+
+    def get_value_at_target_price(self, target_price):
+        return target_price
 
 
 class OptionContract:
@@ -80,6 +109,16 @@ class OptionContract:
         self.to_strike_ratio = self.get_to_strike_ratio()
         self.use_as_premium = use_as_premium if use_as_premium in ('bid', 'ask', 'estimated') else 'estimated'
         self.premium = self.get_premium()  # Could be None.
+
+    # TODO: 100 can be obtained from contract_size. Fix this.
+    def get_cost(self):
+        return self.premium * 100
+
+    def get_value_at_target_price(self, target_price):
+        if self.is_call:
+            return max(0, target_price - self.strike) * 100
+        else:
+            return max(0, self.strike - target_price) * 100
 
     def get_to_strike(self):
         """Positive when stock_price is below strike."""
