@@ -23,6 +23,7 @@ let minVolumeFilter;
 let minOpenInterestFilter;
 let minDeltaFilter;
 let maxDeltaFilter;
+let minLeverageFilter;
 
 export default function SellCoveredCall() {
     const [selectedTicker, setSelectedTicker] = useState([]);
@@ -82,7 +83,7 @@ export default function SellCoveredCall() {
             dataField: "leverage",
             text: "Leverage",
             formatter: (cell, row, rowIndex, extraData) => (
-                PercentageFormatter(cell)
+                (<span>{PercentageFormatter(cell)}<br /><small>(after break even)</small></span>)
             ),
             sort: true
         }, {
@@ -192,6 +193,16 @@ export default function SellCoveredCall() {
                     maxDeltaFilter = filter;
                 }
             })
+        }, {
+            dataField: "min_leverage",
+            text: "min_leverage",
+            style: { 'display': 'none' },
+            headerStyle: { 'display': 'none' },
+            filter: numberFilter({
+                getFilter: (filter) => {
+                    minLeverageFilter = filter;
+                }
+            })
         },
     ];
     const defaultSorted = [{
@@ -243,6 +254,14 @@ export default function SellCoveredCall() {
         });
     };
 
+    function onMinLeverageFilterChange(event, minLeverageFilter) {
+        const { value } = event.target;
+        minLeverageFilter({
+            number: value,
+            comparator: Comparator.GE
+        });
+    };
+
     const handleSubmit = (event) => {
         event.preventDefault();
         event.stopPropagation();
@@ -285,6 +304,7 @@ export default function SellCoveredCall() {
                 theArray[index].min_volume = theArray[index].volume;
                 theArray[index].min_delta = theArray[index].delta;
                 theArray[index].max_delta = theArray[index].delta;
+                theArray[index].min_leverage = theArray[index].leverage;
             });
             setContracts(contracts);
             setModalActive(false);
@@ -454,6 +474,24 @@ export default function SellCoveredCall() {
                                                     <option key="0.4" value="0.4">0.4 to 0.6</option>
                                                     <option key="0.6" value="0.6">0.6 to 0.8</option>
                                                     <option key="0.8" value="0.8">0.8 to 1.0</option>
+                                                </Form.Control>
+                                            </Form.Group>
+                                        </Form>
+                                    </div>
+                                    <div className="col-sm-2">
+                                        <Form>
+                                            <Form.Group>
+                                                <Form.Label className="font-weight-bold">Min leverage:</Form.Label>
+                                                <Form.Control name="delta" as="select" defaultValue="0"
+                                                    onChange={(e) => onMinLeverageFilterChange(e, minLeverageFilter)}>
+                                                    <option key="1" value="1">All</option>
+                                                    <option key="1.5" value="1.5">1.5X</option>
+                                                    <option key="2" value="2">2X</option>
+                                                    <option key="5" value="5">5X</option>
+                                                    <option key="10" value="10">10X</option>
+                                                    <option key="20" value="20">20X</option>
+                                                    <option key="50" value="50">50X</option>
+                                                    <option key="100" value="100">100X</option>
                                                 </Form.Control>
                                             </Form.Group>
                                         </Form>

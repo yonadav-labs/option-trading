@@ -82,9 +82,9 @@ export function ExpandContractRow() {
         renderer: row => (
             <div>
                 <div className="row">
-                    <div className="col-sm-3"><b>Last price:</b> {PriceFormatter(row.last_price)}</div>
                     <div className="col-sm-3"><b>Bid:</b> {PriceFormatter(row.bid)}</div>
                     <div className="col-sm-3"><b>Ask:</b> {PriceFormatter(row.ask)}</div>
+                    <div className="col-sm-3"><b>Last price:</b> {PriceFormatter(row.last_price)}</div>
                     <div className="col-sm-3"><b>Change:</b> {NumberRoundFormatter(row.change)}</div>
                 </div>
                 <div className="row">
