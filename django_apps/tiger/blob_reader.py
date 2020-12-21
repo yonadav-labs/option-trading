@@ -51,7 +51,10 @@ def get_call_puts(response, is_yahoo, use_as_premium, expiration_timestamp=None)
             for strike_str, contracts in blob.items():
                 row = contracts[0]
                 if expiration_timestamp == row.get('expirationDate'):
-                    call_contracts.append(OptionContract(True, row, stock_price, use_as_premium))
+                    try:
+                        call_contracts.append(OptionContract(True, row, stock_price, use_as_premium))
+                    except ValueError:
+                        pass
                 else:
                     break
         put_contracts = []
@@ -59,7 +62,10 @@ def get_call_puts(response, is_yahoo, use_as_premium, expiration_timestamp=None)
             for strike_str, contracts in blob.items():
                 row = contracts[0]
                 if expiration_timestamp == row.get('expirationDate'):
-                    put_contracts.append(OptionContract(False, row, stock_price, use_as_premium))
+                    try:
+                        put_contracts.append(OptionContract(False, row, stock_price, use_as_premium))
+                    except ValueError:
+                        pass
                 else:
                     break
         return call_contracts, put_contracts

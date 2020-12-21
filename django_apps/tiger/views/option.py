@@ -1,9 +1,10 @@
+import itertools
 from django.shortcuts import get_object_or_404
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.exceptions import APIException
 
-from tiger.serializers import TickerSerializer, TradeSerializer
+from tiger.serializers import TickerSerializer, OptionContractSerializer, TradeSerializer
 from tiger.models import Ticker
 from tiger.classes import LongCall, CoveredCall, LongPut, CashSecuredPut, OptionContract, Stock
 
@@ -42,7 +43,7 @@ def ticker(request, ticker_symbol, format=None):
 
 
 @api_view(['GET'])
-def sell_covered_calls(request, ticker_symbol):
+def contracts(request, ticker_symbol):
     ticker = get_object_or_404(Ticker, symbol=ticker_symbol.upper(), status="unspecified")
     # Check if option is available for this ticker.
     all_expiration_timestamps = ticker.get_expiration_timestamps()
@@ -50,30 +51,10 @@ def sell_covered_calls(request, ticker_symbol):
         raise APIException('No contracts found.')
     use_as_premium = request.query_params.get('use_as_premium', 'estimated')
 
-    stock_price = ticker.get_quote().get('regularMarketPrice')
-    stock = Stock(stock_price)
-    all_calls = []
-    for calls_per_exp in get_valid_contracts(ticker, request, use_as_premium, all_expiration_timestamps)[0]:
-        for contract in calls_per_exp:
-            all_calls.append(CoveredCall(stock_price, stock, contract))
-    return Response({'all_calls': TradeSerializer(all_calls, many=True).data})
-
-
-@api_view(['GET'])
-def sell_cash_secured_puts(request, ticker_symbol):
-    ticker = get_object_or_404(Ticker, symbol=ticker_symbol.upper(), status="unspecified")
-    # Check if option is available for this ticker.
-    all_expiration_timestamps = ticker.get_expiration_timestamps()
-    if all_expiration_timestamps is None:
-        raise APIException('No contracts found.')
-    use_as_premium = request.query_params.get('use_as_premium', 'estimated')
-
-    stock_price = ticker.get_quote().get('regularMarketPrice')
-    all_puts = []
-    for puts_per_exp in get_valid_contracts(ticker, request, use_as_premium, all_expiration_timestamps)[1]:
-        for contract in puts_per_exp:
-            all_puts.append(CashSecuredPut(stock_price, contract))
-    return Response({'all_puts': TradeSerializer(all_puts, many=True).data})
+    call_contract_lists, put_contract_list = get_valid_contracts(ticker, request, use_as_premium,
+                                                                 all_expiration_timestamps)
+    contracts = list(itertools.chain(*call_contract_lists)) + list(itertools.chain(*put_contract_list))
+    return Response({'contracts': OptionContractSerializer(contracts, many=True).data})
 
 
 @api_view(['GET'])

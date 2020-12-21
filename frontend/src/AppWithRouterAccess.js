@@ -7,8 +7,7 @@ import getOktaConfig from "./oktaConfig";
 import Home from './pages/Home';
 import Header from './components/header'
 import Footer from './components/footer'
-import SellCoveredCall from './components/SellCoveredCall'
-import SellCashSecuredPut from './components/SellCashSecuredPut'
+import Screener from './components/Screener'
 import Disclaimer from './components/disclaimer';
 import BestCallByPrice from './components/BestCallByPrice';
 import BuyPutByPrice from './components/BuyPutByPrice';
@@ -33,9 +32,8 @@ export default withRouter(class AppWithRouterAccess extends Component {
                         <Switch>
                             <Route path='/' exact={true} component={Home} />
                             <Route path='/buy-call' exact={true} component={BestCallByPrice} />
-                            <Route path='/sell-covered-call' exact={true} component={SellCoveredCall} />
+                            <Route path='/screener' exact={true} component={Screener} />
                             <Route path='/buy-put' exact={true} component={BuyPutByPrice} />
-                            <Route path='/sell-cash-secured-put' exact={true} component={SellCashSecuredPut} />
                             <SecureRoute path='/profile' component={Profile} />
                             <Route path='/subscribe' component={Subscribe} />
                             <Route path="/disclaimer" component={Disclaimer}></Route>

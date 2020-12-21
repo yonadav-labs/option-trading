@@ -109,6 +109,9 @@ class OptionContract:
         self.to_strike_ratio = self.get_to_strike_ratio()
         self.use_as_premium = use_as_premium if use_as_premium in ('bid', 'ask', 'estimated') else 'estimated'
         self.premium = self.get_premium()  # Could be None.
+        self.break_even_price = self.get_break_even_price()
+        self.to_break_even_ratio = self.get_to_break_even_ratio()
+        self.leverage = self.stock_price / self.premium
 
     # TODO: 100 can be obtained from contract_size. Fix this.
     def get_cost(self):
@@ -148,3 +151,12 @@ class OptionContract:
 
     def __repr__(self):
         return self.__str__()
+
+    def get_break_even_price(self):
+        if self.is_call:
+            return self.strike + self.premium
+        else:
+            return self.strike - self.premium
+
+    def get_to_break_even_ratio(self):
+        return self.get_break_even_price() / self.stock_price - 1.0

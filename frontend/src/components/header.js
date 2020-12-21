@@ -62,9 +62,8 @@ function Header() {
                 <Navbar.Collapse id="responsive-navbar-nav">
                     <Nav className="mr-auto">
                         <Nav.Link as={Link} to="/buy-call">Buy call</Nav.Link>
-                        <Nav.Link as={Link} to="/sell-covered-call">Sell covered call</Nav.Link>
+                        <Nav.Link as={Link} to="/screener">Option screener</Nav.Link>
                         <Nav.Link as={Link} to="/buy-put">Buy put</Nav.Link>
-                        <Nav.Link as={Link} to="/sell-cash-secured-put">Sell cash secured put</Nav.Link>
                     </Nav>
                     {authState.isAuthenticated ?
                         <Nav>

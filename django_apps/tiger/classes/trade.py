@@ -39,13 +39,9 @@ class Trade(ABC):
         return self.get_target_price_profit() / self.get_cost()
 
     def get_to_target_price_ratio(self):
-        if self.target_price is None:
-            return None
         return self.target_price / self.stock_price - 1.0
 
     def get_to_break_even_ratio(self):
-        if self.get_break_even_price() is None:
-            return None
         return (self.get_break_even_price() - self.stock_price) / self.stock_price
 
 
