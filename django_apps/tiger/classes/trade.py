@@ -4,11 +4,12 @@ from .leg import CashLeg, StockLeg, OptionLeg
 
 
 class Trade(ABC):
-    def __init__(self, stock_price, target_price=None):
+    def __init__(self, type, stock_price, target_price=None):
         '''
         :param stock_price: current stock price.
         :param target_price: target stock price in the future. Optional.
         '''
+        self.type = type
         self.stock_price = stock_price
         self.target_price = target_price
 
@@ -50,7 +51,7 @@ class Trade(ABC):
 
 class LongCall(Trade):
     def __init__(self, stock_price, call_contract, target_price=None):
-        super().__init__(stock_price, target_price)
+        super().__init__('long_call', stock_price, target_price)
         self.long_call_leg = OptionLeg(True, 1, call_contract)
         self.init_basic_derived()
 
@@ -66,7 +67,7 @@ class LongCall(Trade):
 
 class LongPut(Trade):
     def __init__(self, stock_price, put_contract, target_price=None):
-        super().__init__(stock_price, target_price)
+        super().__init__('long_put', stock_price, target_price)
         self.long_put_leg = OptionLeg(True, 1, put_contract)
         self.init_basic_derived()
 
@@ -82,7 +83,7 @@ class LongPut(Trade):
 
 class CoveredCall(Trade):
     def __init__(self, stock_price, stock, call_contract, target_price=None):
-        super().__init__(stock_price, target_price)
+        super().__init__('covered_call', stock_price, target_price)
 
         self.long_stock_leg = StockLeg(100, stock)
         self.short_call_leg = OptionLeg(False, 1, call_contract)
@@ -121,7 +122,7 @@ class CoveredCall(Trade):
 
 class CashSecuredPut(Trade):
     def __init__(self, stock_price, put_contract, target_price=None):
-        super().__init__(stock_price, target_price)
+        super().__init__('cash_secured_put', stock_price, target_price)
 
         self.short_put_leg = OptionLeg(False, 1, put_contract)
         self.long_cash_leg = CashLeg(100 * self.short_put_leg.contract.strike)
