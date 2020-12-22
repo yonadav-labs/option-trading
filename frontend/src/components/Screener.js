@@ -115,7 +115,8 @@ export default function SellCoveredCall() {
                         <small>{row.days_till_expiration} days</small>
                     </span>
                 )
-            )
+            ),
+            sort: true
         }, {
             dataField: "delta",
             text: "Delta",
@@ -213,6 +214,9 @@ export default function SellCoveredCall() {
         },
     ];
     const defaultSorted = [{
+        dataField: "expiration",
+        order: "asc"
+    }, {
         dataField: "is_call",
         order: "asc"
     }, {
@@ -301,7 +305,7 @@ export default function SellCoveredCall() {
     const getContracts = async (selectedExpirationTimestamps) => {
         try {
             let url = `${API_URL}/tickers/${selectedTicker[0].symbol}/contracts/?`;
-            selectedExpirationTimestamps.map((timestamp) => { url += `expiration_timestamps=${timestamp}` });
+            selectedExpirationTimestamps.map((timestamp) => { url += `expiration_timestamps=${timestamp}&` });
             setModalActive(true);
             const response = await Axios.get(url);
             let contracts = response.data.contracts;
