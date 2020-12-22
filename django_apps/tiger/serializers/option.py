@@ -51,7 +51,8 @@ class OptionContractSerializer(serializers.Serializer):
     premium = serializers.FloatField(min_value=0.0, allow_null=True)
     break_even_price = serializers.FloatField(min_value=0.0)
     to_break_even_ratio = serializers.FloatField()
-    leverage = serializers.FloatField()
+    leverage = serializers.FloatField(min_value=0.0)
+    seller_roi = serializers.FloatField(min_value=0.0)
 
 
 class LegSerializer(serializers.Serializer):

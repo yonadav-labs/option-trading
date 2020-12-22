@@ -81,9 +81,16 @@ export default function SellCoveredCall() {
             sort: true
         }, {
             dataField: "leverage",
-            text: "Leverage",
+            text: "Buyer leverage",
             formatter: (cell, row, rowIndex, extraData) => (
-                (<span>{PercentageFormatter(cell)}<br /><small>(after break even)</small></span>)
+                (<span>{PercentageFormatter(cell)}<br /><small>If {row.is_call ? 'above' : 'below'} {PriceFormatter(row.strike)}</small></span>)
+            ),
+            sort: true
+        }, {
+            dataField: "seller_roi",
+            text: "Seller ROI",
+            formatter: (cell, row, rowIndex, extraData) => (
+                (<span>{PercentageFormatter(cell)}<br /><small>If {row.is_call ? 'below' : 'above'} {PriceFormatter(row.strike)}</small></span>)
             ),
             sort: true
         }, {
@@ -92,8 +99,8 @@ export default function SellCoveredCall() {
             formatter: (cell, row, rowIndex, extraData) => (
                 (
                     <span>
-                        <small>Volume: {NumberRoundFormatter(cell, row)}<br />
-                        Open: {NumberRoundFormatter(row.open_interest, row)}</small>
+                        Volume: {NumberRoundFormatter(cell, row)}<br />
+                        <small>Open: {NumberRoundFormatter(row.open_interest, row)}</small>
                     </span>
                 )
             ),
@@ -104,8 +111,8 @@ export default function SellCoveredCall() {
             formatter: (cell, row, rowIndex, extraData) => (
                 (
                     <span>
-                        <small>{TimestampDateFormatter(cell)} <br />
-                        ({row.days_till_expiration} days)</small>
+                        {TimestampDateFormatter(cell)} <br />
+                        <small>{row.days_till_expiration} days</small>
                     </span>
                 )
             )
@@ -481,7 +488,7 @@ export default function SellCoveredCall() {
                                     <div className="col-sm-2">
                                         <Form>
                                             <Form.Group>
-                                                <Form.Label className="font-weight-bold">Min leverage:</Form.Label>
+                                                <Form.Label className="font-weight-bold">Min buyer leverage:</Form.Label>
                                                 <Form.Control name="delta" as="select" defaultValue="0"
                                                     onChange={(e) => onMinLeverageFilterChange(e, minLeverageFilter)}>
                                                     <option key="1" value="1">All</option>
