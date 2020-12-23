@@ -53,6 +53,19 @@ export default function SellCoveredCall() {
             formatter: (cell, row, rowIndex, extraData) => (
                 cell ? 'Call' : 'Put'
             ),
+            sort: true
+        }, {
+            dataField: "expiration",
+            text: "Expiration",
+            formatter: (cell, row, rowIndex, extraData) => (
+                (
+                    <span>
+                        {TimestampDateFormatter(cell)} <br />
+                        <small>{row.days_till_expiration} days</small>
+                    </span>
+                )
+            ),
+            sort: true
         }, {
             dataField: "to_strike_ratio",
             text: "Strike",
@@ -101,18 +114,6 @@ export default function SellCoveredCall() {
                     <span>
                         Volume: {NumberRoundFormatter(cell, row)}<br />
                         <small>Open: {NumberRoundFormatter(row.open_interest, row)}</small>
-                    </span>
-                )
-            ),
-            sort: true
-        }, {
-            dataField: "expiration",
-            text: "Expiration",
-            formatter: (cell, row, rowIndex, extraData) => (
-                (
-                    <span>
-                        {TimestampDateFormatter(cell)} <br />
-                        <small>{row.days_till_expiration} days</small>
                     </span>
                 )
             ),
@@ -508,24 +509,28 @@ export default function SellCoveredCall() {
                                         </Form>
                                     </div>
                                 </div>
-                                <BootstrapTable
-                                    classes="table-responsive"
-                                    bootstrap4={true}
-                                    keyField="contract_symbol"
-                                    data={contracts}
-                                    columns={result_table_columns}
-                                    pagination={paginationFactory({
-                                        sizePerPage: 20,
-                                        hidePageListOnlyOnePage: true
-                                    })}
-                                    noDataIndication="No Data"
-                                    bordered={false}
-                                    // overlay={overlayFactory({ spinner: true })} // does not work with filter.
-                                    expandRow={ExpandContractRow()}
-                                    rowStyle={InTheMoneyRowStyle}
-                                    filter={filterFactory()}
-                                    defaultSorted={defaultSorted}
-                                />
+                                <div className="row">
+                                    <div className="col">
+                                        <BootstrapTable
+                                            classes="table-responsive"
+                                            bootstrap4={true}
+                                            keyField="contract_symbol"
+                                            data={contracts}
+                                            columns={result_table_columns}
+                                            pagination={paginationFactory({
+                                                sizePerPage: 20,
+                                                hidePageListOnlyOnePage: true
+                                            })}
+                                            noDataIndication="No Data"
+                                            bordered={false}
+                                            // overlay={overlayFactory({ spinner: true })} // does not work with filter.
+                                            expandRow={ExpandContractRow()}
+                                            rowStyle={InTheMoneyRowStyle}
+                                            filter={filterFactory()}
+                                            defaultSorted={defaultSorted}
+                                        />
+                                    </div>
+                                </div>
                             </div>
                             :
                             null
