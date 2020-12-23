@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 
 from .leg import CashLeg, StockLeg, OptionLeg
+from tiger.utils import days_from_timestamp
 
 
 class Trade(ABC):
@@ -17,6 +18,9 @@ class Trade(ABC):
         self.break_even_price = self.get_break_even_price()  # Could be None.
         self.to_break_even_ratio = self.get_to_break_even_ratio()  # Could be None.
         self.cost = self.get_cost()
+        self.expiration = self.get_expiration()
+        self.days_till_expiration = days_from_timestamp(self.expiration)
+        self.last_trade_date = self.get_last_trade_date()
 
         if self.target_price is not None:
             self.to_target_price_ratio = self.get_to_target_price_ratio()
@@ -33,6 +37,14 @@ class Trade(ABC):
 
     @abstractmethod
     def get_target_price_profit(self):
+        pass
+
+    @abstractmethod
+    def get_expiration(self):
+        pass
+
+    @abstractmethod
+    def get_last_trade_date(self):
         pass
 
     def get_target_price_profit_ratio(self):
@@ -60,6 +72,12 @@ class LongCall(Trade):
     def get_target_price_profit(self):
         return self.long_call_leg.get_profit_at_target_price(self.target_price)
 
+    def get_expiration(self):
+        return self.long_call_leg.contract.expiration
+
+    def get_last_trade_date(self):
+        return self.long_call_leg.contract.last_trade_date
+
 
 class LongPut(Trade):
     def __init__(self, stock_price, put_contract, target_price=None):
@@ -75,6 +93,12 @@ class LongPut(Trade):
 
     def get_target_price_profit(self):
         return self.long_put_leg.get_profit_at_target_price(self.target_price)
+
+    def get_expiration(self):
+        return self.long_put_leg.contract.expiration
+
+    def get_last_trade_date(self):
+        return self.long_put_leg.contract.last_trade_date
 
 
 class CoveredCall(Trade):
@@ -115,6 +139,12 @@ class CoveredCall(Trade):
     def get_premium_profit_ratio(self):
         return self.premium_profit / self.cost
 
+    def get_expiration(self):
+        return self.short_call_leg.contract.expiration
+
+    def get_last_trade_date(self):
+        return self.short_call_leg.contract.last_trade_date
+
 
 class CashSecuredPut(Trade):
     def __init__(self, stock_price, put_contract, target_price=None):
@@ -143,5 +173,11 @@ class CashSecuredPut(Trade):
 
     def get_premium_profit_ratio(self):
         return self.premium_profit / self.cost
+
+    def get_expiration(self):
+        return self.short_put_leg.contract.expiration
+
+    def get_last_trade_date(self):
+        return self.short_put_leg.contract.last_trade_date
 
 # TODO: add a sell everything now and hold cash trade.

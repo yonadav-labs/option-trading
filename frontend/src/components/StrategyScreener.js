@@ -6,15 +6,16 @@ import BootstrapTable from 'react-bootstrap-table-next';
 import paginationFactory from 'react-bootstrap-table2-paginator';
 import Axios from 'axios';
 import getApiUrl, {
-    PriceFormatter, ExpDayFormatter, ExpandContractRow, InTheMoneyRowStyle, InTheMoneySign, onInTheMoneyFilterChange,
-    onLastTradedFilterChange, ProfitFormatter, PriceMovementFormatter
+    PriceFormatter, TimestampDateFormatter, onLastTradedFilterChange, ProfitFormatter,
+    PriceMovementFormatter, NumberRoundFormatter, PercentageFormatter,
+    TimestampTimeFormatter
 } from '../utils';
 import filterFactory, { multiSelectFilter, numberFilter } from 'react-bootstrap-table2-filter';
+import { BsArrowsExpand, BsArrowsCollapse } from 'react-icons/bs';
 import TickerTypeahead from './TickerTypeahead';
 import TickerSummary from './TickerSummary.js';
 import ModalSpinner from './ModalSpinner';
 
-let inTheMoneyFilter;
 let lastTradedFilter;
 
 export default function BestCallByPrice() {
@@ -28,66 +29,82 @@ export default function BestCallByPrice() {
     const [useAsPremium, setUseAsPremium] = useState('estimated');
     const [modalActive, setModalActive] = useState(false);
 
-    const selectOptions = {
-        true: 'ITM',
-        false: 'OTM'
-    };
     const result_table_columns = [
         {
-            dataField: "to_strike_ratio",
-            text: "Strike price",
-            formatter: (cell, row, rowIndex, extraData) => (
-                PriceMovementFormatter(cell, row.contract.strike)
-            ),
+            dataField: "type",
+            text: "Strategy",
+            formatter: (cell, row, rowIndex, extraData) => {
+                switch (cell) {
+                    case ("long_call"):
+                        return "Long call"
+                    case ("covered_call"):
+                        return "Covered call"
+                    case ("long_put"):
+                        return "Long put"
+                    case ("cash_secured_put"):
+                        return "Cash secured put"
+                }
+            },
             sort: true
         }, {
-            dataField: "estimated_premium",
-            text: "Premium",
-            formatter: PriceFormatter,
-            sort: true
-        }, {
-            dataField: "target_price_profit",
-            text: "Profit at Target",
-            formatter: (cell, row, rowIndex, extraData) => (
-                ProfitFormatter(cell)
-            ),
-            sort: true
-        },
-        {
             dataField: "to_break_even_ratio",
-            text: "Break Even Price",
+            text: "Break even",
             formatter: (cell, row, rowIndex, extraData) => (
                 PriceMovementFormatter(cell, row.break_even_price)
             ),
             sort: true
         }, {
             dataField: "to_target_price_ratio",
-            text: "Target Price",
+            text: "Target price",
             formatter: (cell, row, rowIndex, extraData) => (
                 PriceMovementFormatter(cell, row.target_price)
             ),
         }, {
-            dataField: "contract.expiration",
-            text: "Symbol / Expiration",
+            dataField: "target_price_profit_ratio",
+            text: "Profit at target",
             formatter: (cell, row, rowIndex, extraData) => (
-                ExpDayFormatter(cell, row.contract.days_till_expiration)
-            )
+                (
+                    <span>
+                        {ProfitFormatter(cell)} <br />
+                        <small>{cell > 0 ? '+' : '-'}{PriceFormatter(Math.abs(row.target_price_profit))} per position</small>
+                    </span>
+                )
+            ),
+            sort: true
         }, {
-            dataField: 'contract.in_the_money',
-            text: 'In the money',
-            // hidden: true, getFilter() won't be called if hidden is true.
-            style: { 'display': 'none' },
-            headerStyle: { 'display': 'none' },
-            formatter: cell => selectOptions[cell],
-            filter: multiSelectFilter({
-                options: selectOptions,
-                getFilter: (filter) => {
-                    inTheMoneyFilter = filter;
-                }
-            })
+            dataField: "cost",
+            text: "Position cost",
+            formatter: (cell, row, rowIndex, extraData) => (
+                PriceFormatter(cell)
+            ),
+            sort: true
         }, {
-            dataField: 'contract.last_trade_date',
-            text: 'last_trade_date',
+            dataField: "expiration",
+            text: "Expiration",
+            formatter: (cell, row, rowIndex, extraData) => (
+                (
+                    <span>
+                        {TimestampDateFormatter(cell)} <br />
+                        <small>{row.days_till_expiration} days</small>
+                    </span>
+                )
+            ),
+            sort: true
+        }, {
+            dataField: 'last_trade_date',
+            text: 'Last traded',
+            formatter: (cell, row, rowIndex, extraData) => {
+                if (cell == 0) return (<span>N/A</span>);
+                const exp_date = new Date(cell * 1000).toLocaleDateString('en-US', { 'timeZone': 'EST' })
+                const exp_time = new Date(cell * 1000).toLocaleTimeString('en-US', { 'timeZone': 'EST', hour: '2-digit', minute: '2-digit' })
+                return (<span>{exp_date} <br /><small>{exp_time} EST</small></span>);
+            },
+            sort: true
+        },
+        // Below fields are hidden and used for filtering only.
+        {
+            dataField: 'last_trade_date2',
+            text: 'last_trade_date2',
             style: { 'display': 'none' },
             headerStyle: { 'display': 'none' },
             filter: numberFilter({
@@ -98,7 +115,7 @@ export default function BestCallByPrice() {
         },
     ];
     const defaultSorted = [{
-        dataField: "target_price_profit",
+        dataField: "target_price_profit_ratio",
         order: "desc"
     }];
 
@@ -144,6 +161,11 @@ export default function BestCallByPrice() {
             url += `use_as_premium=${useAsPremium}`
             setModalActive(true);
             const response = await Axios.get(url);
+            let trades = response.data.trades;
+            trades.forEach(function (part, index, theArray) {
+                theArray[index].type2 = theArray[index].type;
+                theArray[index].last_trade_date2 = theArray[index].last_trade_date;
+            });
             setBestCalls(response.data.trades);
             setModalActive(false);
         } catch (error) {
@@ -152,10 +174,81 @@ export default function BestCallByPrice() {
         }
     };
 
+    function StrategyInstructions(row) {
+        switch (row.type) {
+            case ("long_call"):
+                return (
+                    <span>
+                        1. Buy call option: {row.long_call_leg.contract.contract_symbol}
+                    </span>
+                );
+            case ("covered_call"):
+                return (
+                    <span>
+                        1. Buy 100 shares of {basicInfo.symbol} at {PriceFormatter(basicInfo.regularMarketPrice)}.<br />
+                        2. Sell 1 strike {PriceFormatter(row.short_call_leg.contract.strike)}
+                        {TimestampDateFormatter(row.short_call_leg.contract.expiration)} call for {PriceFormatter(row.short_call_leg.contract.premium)}.
+                    </span>
+                );
+            case ("long_put"):
+                return "Long put";
+            case ("cash_secured_put"):
+                return "Cash secured put";
+        }
+    }
+
+    function ExpandTradeRow() {
+        return {
+            renderer: row => (
+                <div>
+                    <div className="row">
+                        <div className="col-sm-3"><b>Bid:</b> {PriceFormatter(row.bid)}</div>
+                        <div className="col-sm-3"><b>Ask:</b> {PriceFormatter(row.ask)}</div>
+                        <div className="col-sm-3"><b>Last price:</b> {PriceFormatter(row.last_price)}</div>
+                        <div className="col-sm-3"><b>Change:</b> {NumberRoundFormatter(row.change)}</div>
+                    </div>
+                    <div className="row">
+                        <div className="col-sm-3"><b>% Change:</b> {NumberRoundFormatter(row.percent_change)}%</div>
+                        <div className="col-sm-3"><b>Volume:</b> {NumberRoundFormatter(row.volume)}</div>
+                        <div className="col-sm-3"><b>Open interest:</b> {NumberRoundFormatter(row.open_interest)}</div>
+                        <div className="col-sm-3"><b>Implied volatility:</b> {PercentageFormatter(row.implied_volatility)}</div>
+                    </div>
+                    <div className="row">
+                        <div className="col-sm-3"><b>Contract size:</b> {row.contract_size}</div>
+                        <div className="col-sm-3"><b>In the money:</b> {row.in_the_money ? 'Yes' : 'No'}</div>
+                        <div className="col-sm-6"><b>Last traded:</b> {TimestampTimeFormatter(row.last_trade_date)}</div>
+                    </div>
+                    <div className="row">
+                        <div className="col-sm-3"><b>Gamma:</b> {NumberRoundFormatter(row.gamma)}</div>
+                        <div className="col-sm-3"><b>Theta:</b> {NumberRoundFormatter(row.theta)}</div>
+                        <div className="col-sm-3"><b>Vega:</b> {NumberRoundFormatter(row.vega)}</div>
+                        <div className="col-sm-3"><b>Rho:</b> {NumberRoundFormatter(row.rho)}</div>
+                    </div>
+                    <div className="row">
+                        {StrategyInstructions(row)}
+                    </div>
+                </div>
+            ),
+            showExpandColumn: true,
+            expandHeaderColumnRenderer: ({ isAnyExpands }) => {
+                if (isAnyExpands) {
+                    return (<BsArrowsCollapse style={{ "cursor": "pointer" }} />);
+                }
+                return (<BsArrowsExpand style={{ "cursor": "pointer" }} />);
+            },
+            expandColumnRenderer: ({ expanded }) => {
+                if (expanded) {
+                    return (<BsArrowsCollapse style={{ "cursor": "pointer" }} />);
+                }
+                return (<BsArrowsExpand style={{ "cursor": "pointer" }} />);
+            }
+        }
+    }
+
     return (
         <div id="content" className="container" style={{ "marginTop": "4rem" }}>
             <ModalSpinner active={modalActive}></ModalSpinner>
-            <h1 className="text-center">Buy call</h1>
+            <h1 className="text-center">Strategy Screener</h1>
             <Form>
                 <Form.Group>
                     <Form.Label className="requiredField"><h5>Enter ticker symbol:</h5></Form.Label>
@@ -234,19 +327,6 @@ export default function BestCallByPrice() {
                                     <div className="col-sm-3">
                                         <Form>
                                             <Form.Group>
-                                                <Form.Label className="font-weight-bold">Filter by strike:</Form.Label>
-                                                <Form.Control name="tradeoff" as="select" defaultValue={0}
-                                                    onChange={(e) => onInTheMoneyFilterChange(e, inTheMoneyFilter)}>
-                                                    <option key="all" value="all">All</option>
-                                                    <option key="itm" value="itm">In the money</option>
-                                                    <option key="otm" value="otm">Out of the money</option>
-                                                </Form.Control>
-                                            </Form.Group>
-                                        </Form>
-                                    </div>
-                                    <div className="col-sm-3">
-                                        <Form>
-                                            <Form.Group>
                                                 <Form.Label className="font-weight-bold">Filter by last traded:</Form.Label>
                                                 <Form.Control name="tradeoff" as="select" defaultValue={0}
                                                     onChange={(e) => onLastTradedFilterChange(e, lastTradedFilter)}>
@@ -265,9 +345,6 @@ export default function BestCallByPrice() {
                                     </div>
                                     <div className="col-sm-4">
                                     </div>
-                                    <div className="col-sm-2">
-                                        {InTheMoneySign()}
-                                    </div>
                                 </div>
 
                                 <BootstrapTable
@@ -282,8 +359,7 @@ export default function BestCallByPrice() {
                                     })}
                                     noDataIndication="No Data"
                                     bordered={false}
-                                    expandRow={ExpandContractRow()}
-                                    rowStyle={InTheMoneyRowStyle}
+                                    expandRow={ExpandTradeRow()}
                                     filter={filterFactory()}
                                     defaultSorted={defaultSorted}
                                 /></div>

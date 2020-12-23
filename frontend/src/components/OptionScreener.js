@@ -87,7 +87,7 @@ export default function SellCoveredCall() {
             sort: true
         }, {
             dataField: "to_break_even_ratio",
-            text: "Break Even",
+            text: "Break even",
             formatter: (cell, row, rowIndex, extraData) => (
                 PriceMovementFormatter(cell, row.break_even_price)
             ),
@@ -329,7 +329,7 @@ export default function SellCoveredCall() {
     return (
         <div id="content" className="container" style={{ "marginTop": "4rem" }}>
             <ModalSpinner active={modalActive}></ModalSpinner>
-            <h1 className="text-center">Option screener</h1>
+            <h1 className="text-center">Option Screener</h1>
             <Form>
                 <Form.Group>
                     <Form.Label className="requiredField"><h5>Enter ticker symbol:</h5></Form.Label>

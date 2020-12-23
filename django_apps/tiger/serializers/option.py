@@ -70,6 +70,9 @@ class TradeSerializer(serializers.Serializer):
     break_even_price = serializers.FloatField(min_value=0.0, allow_null=True)
     to_break_even_ratio = serializers.FloatField(allow_null=True)
     cost = serializers.FloatField()
+    expiration = serializers.IntegerField(min_value=0)
+    days_till_expiration = serializers.IntegerField(min_value=0)
+    last_trade_date = serializers.IntegerField(min_value=0)
 
     target_price = serializers.FloatField(allow_null=True, min_value=0.0)
     to_target_price_ratio = serializers.FloatField(allow_null=True)
