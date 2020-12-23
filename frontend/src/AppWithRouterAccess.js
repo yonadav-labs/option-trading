@@ -7,10 +7,9 @@ import getOktaConfig from "./oktaConfig";
 import Home from './pages/Home';
 import Header from './components/header'
 import Footer from './components/footer'
-import Screener from './components/Screener'
+import OptionScreener from './components/OptionScreener'
 import Disclaimer from './components/disclaimer';
-import BestCallByPrice from './components/BestCallByPrice';
-import BuyPutByPrice from './components/BuyPutByPrice';
+import StrategyScreener from './components/StrategyScreener';
 import Subscribe from './pages/Subscribe';
 
 export default withRouter(class AppWithRouterAccess extends Component {
@@ -31,9 +30,8 @@ export default withRouter(class AppWithRouterAccess extends Component {
                     <main role="main" className="mb-2">
                         <Switch>
                             <Route path='/' exact={true} component={Home} />
-                            <Route path='/buy-call' exact={true} component={BestCallByPrice} />
-                            <Route path='/screener' exact={true} component={Screener} />
-                            <Route path='/buy-put' exact={true} component={BuyPutByPrice} />
+                            <Route path='/option-screener' exact={true} component={OptionScreener} />
+                            <Route path='/strategy-screener' exact={true} component={StrategyScreener} />
                             <SecureRoute path='/profile' component={Profile} />
                             <Route path='/subscribe' component={Subscribe} />
                             <Route path="/disclaimer" component={Disclaimer}></Route>

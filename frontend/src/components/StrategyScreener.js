@@ -17,13 +17,13 @@ import ModalSpinner from './ModalSpinner';
 let inTheMoneyFilter;
 let lastTradedFilter;
 
-export default function BuyPutByPrice() {
+export default function BestCallByPrice() {
     const [selectedTicker, setSelectedTicker] = useState([]);
     const [expirationTimestamps, setExpirationTimestamps] = useState([]);
     const [basicInfo, setbasicInfo] = useState({});
     const API_URL = getApiUrl();
     const [showTimestampAlert, setShowTimestampAlert] = useState(false);
-    const [bestPuts, setBestPuts] = useState([]);
+    const [bestCalls, setBestCalls] = useState([]);
     const [selectedExpirationTimestamps, setSelectedExpirationTimestamps] = useState([]);
     const [useAsPremium, setUseAsPremium] = useState('estimated');
     const [modalActive, setModalActive] = useState(false);
@@ -116,7 +116,7 @@ export default function BuyPutByPrice() {
         }
 
         if (form.checkValidity() !== false && selectedExpirationTimestamps.length > 0) {
-            getBestPuts(formDataObj.target_price, selectedExpirationTimestamps);
+            getBestCalls(formDataObj.target_price, selectedExpirationTimestamps);
         }
     };
 
@@ -137,14 +137,14 @@ export default function BuyPutByPrice() {
         setUseAsPremium(value);
     };
 
-    const getBestPuts = async (targetPrice, selectedExpirationTimestamps) => {
+    const getBestCalls = async (targetPrice, selectedExpirationTimestamps) => {
         try {
             let url = `${API_URL}/tickers/${selectedTicker[0].symbol}/trades/?target_price=${targetPrice}&`;
             selectedExpirationTimestamps.map((timestamp) => { url += `expiration_timestamps=${timestamp}&` });
             url += `use_as_premium=${useAsPremium}`
             setModalActive(true);
             const response = await Axios.get(url);
-            setBestPuts(response.data.trades);
+            setBestCalls(response.data.trades);
             setModalActive(false);
         } catch (error) {
             console.error(error);
@@ -155,7 +155,7 @@ export default function BuyPutByPrice() {
     return (
         <div id="content" className="container" style={{ "marginTop": "4rem" }}>
             <ModalSpinner active={modalActive}></ModalSpinner>
-            <h1 className="text-center">Buy put</h1>
+            <h1 className="text-center">Buy call</h1>
             <Form>
                 <Form.Group>
                     <Form.Label className="requiredField"><h5>Enter ticker symbol:</h5></Form.Label>
@@ -226,7 +226,7 @@ export default function BuyPutByPrice() {
                             </div>
                         </Form>
                         <br />
-                        {bestPuts.length > 0 ?
+                        {bestCalls.length > 0 ?
                             <div>
                                 <h5>Results</h5>
                                 <hr />
@@ -274,7 +274,7 @@ export default function BuyPutByPrice() {
                                     classes="table-responsive"
                                     bootstrap4={true}
                                     keyField="contract_symbol"
-                                    data={bestPuts}
+                                    data={bestCalls}
                                     columns={result_table_columns}
                                     pagination={paginationFactory({
                                         sizePerPage: 20,
