@@ -99,7 +99,10 @@ export function ExpandContractRow() {
                     <div className="col-sm-6"><b>Last traded:</b> {TimestampTimeFormatter(row.last_trade_date)}</div>
                 </div>
                 <div className="row">
-
+                    <div className="col-sm-3"><b>Gamma:</b> {NumberRoundFormatter(row.gamma)}</div>
+                    <div className="col-sm-3"><b>Theta:</b> {NumberRoundFormatter(row.theta)}</div>
+                    <div className="col-sm-3"><b>Vega:</b> {NumberRoundFormatter(row.vega)}</div>
+                    <div className="col-sm-3"><b>Rho:</b> {NumberRoundFormatter(row.rho)}</div>
                 </div>
             </div>
         ),
