@@ -61,10 +61,8 @@ function Header() {
                 <Navbar.Toggle aria-controls="responsive-navbar-nav" />
                 <Navbar.Collapse id="responsive-navbar-nav">
                     <Nav className="mr-auto">
-                        <Nav.Link as={Link} to="/buy-call">Buy call</Nav.Link>
-                        <Nav.Link as={Link} to="/sell-covered-call">Sell covered call</Nav.Link>
-                        <Nav.Link as={Link} to="/buy-put">Buy put</Nav.Link>
-                        <Nav.Link as={Link} to="/sell-cash-secured-put">Sell cash secured put</Nav.Link>
+                        <Nav.Link as={Link} to="/option-screener">Option Screener</Nav.Link>
+                        <Nav.Link as={Link} to="/strategy-screener">Strategy Screener</Nav.Link>
                     </Nav>
                     {authState.isAuthenticated ?
                         <Nav>

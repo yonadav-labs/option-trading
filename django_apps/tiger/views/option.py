@@ -1,25 +1,24 @@
+import itertools
 from django.shortcuts import get_object_or_404
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.exceptions import APIException
 
-from tiger.serializers import TickerSerializer, SellCoveredCallSerializer, \
-    SellCashSecuredPutSerializer, BuyCallSerializer, BuyPutSerializer, TradeSerializer
+from tiger.serializers import TickerSerializer, OptionContractSerializer, TradeSerializer
 from tiger.models import Ticker
-from tiger.classes import BuyCall, SellCoveredCall, BuyPut, SellCashSecuredPut, OptionContract
+from tiger.classes import LongCall, CoveredCall, LongPut, CashSecuredPut, OptionContract, Stock
 
 
-def get_valid_contracts(ticker, request, all_expiration_timestamps, get_calls=True):
+def get_valid_contracts(ticker, request, use_as_premium, all_expiration_timestamps):
     input_expiration_timestamps = set([int(ts) for ts in request.query_params.getlist('expiration_timestamps') if
                                        int(ts) in all_expiration_timestamps])
-    valid_contracts = []
+    call_lists = []
+    put_lists = []
     for ts in input_expiration_timestamps:
-        calls, puts = ticker.get_call_puts(ts)
-        if get_calls:
-            valid_contracts.append(calls)
-        else:
-            valid_contracts.append(puts)
-    return valid_contracts
+        calls, puts = ticker.get_call_puts(use_as_premium, ts)
+        call_lists.append(calls)
+        put_lists.append(puts)
+    return call_lists, put_lists
 
 
 @api_view(['GET'])
@@ -44,7 +43,7 @@ def ticker(request, ticker_symbol, format=None):
 
 
 @api_view(['GET'])
-def sell_covered_calls(request, ticker_symbol):
+def contracts(request, ticker_symbol):
     ticker = get_object_or_404(Ticker, symbol=ticker_symbol.upper(), status="unspecified")
     # Check if option is available for this ticker.
     all_expiration_timestamps = ticker.get_expiration_timestamps()
@@ -52,29 +51,10 @@ def sell_covered_calls(request, ticker_symbol):
         raise APIException('No contracts found.')
     use_as_premium = request.query_params.get('use_as_premium', 'estimated')
 
-    all_calls = []
-    for calls_per_exp in get_valid_contracts(ticker, request, all_expiration_timestamps):
-        for contract in calls_per_exp:
-            # TODO: fix this 10.0.
-            all_calls.append(SellCoveredCall(contract, 10.0, use_as_premium))
-    return Response({'all_calls': SellCoveredCallSerializer(all_calls, many=True).data})
-
-
-@api_view(['GET'])
-def sell_cash_secured_puts(request, ticker_symbol):
-    ticker = get_object_or_404(Ticker, symbol=ticker_symbol.upper(), status="unspecified")
-    # Check if option is available for this ticker.
-    all_expiration_timestamps = ticker.get_expiration_timestamps()
-    if all_expiration_timestamps is None:
-        raise APIException('No contracts found.')
-    use_as_premium = request.query_params.get('use_as_premium', 'estimated')
-
-    all_puts = []
-    for puts_per_exp in get_valid_contracts(ticker, request, all_expiration_timestamps, get_calls=False):
-        for contract in puts_per_exp:
-            # TODO: fix this 10.0.
-            all_puts.append(SellCashSecuredPut(contract, 10.0, use_as_premium))
-    return Response({'all_puts': SellCashSecuredPutSerializer(all_puts, many=True).data})
+    call_contract_lists, put_contract_list = get_valid_contracts(ticker, request, use_as_premium,
+                                                                 all_expiration_timestamps)
+    contracts = list(itertools.chain(*call_contract_lists)) + list(itertools.chain(*put_contract_list))
+    return Response({'contracts': OptionContractSerializer(contracts, many=True).data})
 
 
 @api_view(['GET'])
@@ -92,21 +72,22 @@ def get_best_trades(request, ticker_symbol):
         raise APIException('Invalid query parameters.')
 
     stock_price = ticker.get_quote().get('regularMarketPrice')
+    stock = Stock(stock_price)
 
     all_trades = []
-
-    for calls_per_exp in get_valid_contracts(ticker, request, all_expiration_timestamps):
+    call_contract_lists, put_contract_list = get_valid_contracts(ticker, request, use_as_premium,
+                                                                 all_expiration_timestamps)
+    for calls_per_exp in call_contract_lists:
         for call in calls_per_exp:
-            # all_trades.append(SellCoveredCall(call, target_price, use_as_premium))
-            if target_price > stock_price:
-                all_trades.append(BuyCall(call, target_price, use_as_premium))
+            all_trades.append(LongCall(stock_price, call, target_price))
+            all_trades.append(CoveredCall(stock_price, stock, call, target_price=target_price))
 
-    for puts_per_exp in get_valid_contracts(ticker, request, all_expiration_timestamps, get_calls=False):
+    for puts_per_exp in put_contract_list:
         for put in puts_per_exp:
-            # all_trades.append(SellCashSecuredPut(put, target_price, use_as_premium))
-            if target_price < stock_price:
-                all_trades.append(BuyPut(put, target_price, use_as_premium))
+            all_trades.append(LongPut(stock_price, put, target_price))
+            all_trades.append(CashSecuredPut(stock_price, put, target_price))
 
     all_trades = list(
         filter(lambda trade: trade.target_price_profit is not None and trade.target_price_profit > 0.0, all_trades))
+    sorted(all_trades, key=lambda trade: -trade.target_price_profit_ratio)
     return Response({'trades': TradeSerializer(all_trades, many=True).data})

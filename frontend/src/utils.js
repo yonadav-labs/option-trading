@@ -1,4 +1,5 @@
 import React from 'react';
+import Card from 'react-bootstrap/Card';
 import NumberFormat from 'react-number-format';
 import { BsArrowsExpand, BsArrowsCollapse } from 'react-icons/bs';
 import { Comparator } from 'react-bootstrap-table2-filter';
@@ -51,7 +52,8 @@ export function ProfitFormatter(profit) {
 export function PriceMovementFormatter(ratio, price) {
     return (
         <span>
-            {PriceFormatter(price)}<small>({ratio > 0 ? '+' : '-'}{PercentageFormatter(Math.abs(ratio))})</small>
+            {PriceFormatter(price)}<br />
+            <small>{ratio > 0 ? '+' : '-'}{PercentageFormatter(Math.abs(ratio))}</small>
         </span >
     );
 };
@@ -76,31 +78,45 @@ export function ExpDayFormatter(ts, days_till_expiration) {
     );
 };
 
+export function ContractDetails(row) {
+    return (
+        <div>
+            <div className="row">
+                <div className="col-sm-3">Last: {PriceFormatter(row.last_price)}</div>
+                <div className="col-sm-3">Change: {PriceFormatter(row.change)} ({NumberRoundFormatter(row.percent_change)}%)</div>
+                <div className="col-sm-3">Bid: {PriceFormatter(row.bid)} X {NumberRoundFormatter(row.bid_size)}</div>
+                <div className="col-sm-3">Ask: {PriceFormatter(row.ask)} X {NumberRoundFormatter(row.ask_size)}</div>
+            </div>
+            <div className="row">
+                <div className="col-sm-3">Range: {PriceFormatter(row.low_price)} - {PriceFormatter(row.high_price)}</div>
+                <div className="col-sm-6">Last traded: {TimestampTimeFormatter(row.last_trade_date)}</div>
+            </div>
+            <div className="row">
+                <div className="col-sm-3">Implied volatility: {PercentageFormatter(row.implied_volatility)}</div>
+                <div className="col-sm-3">Theoretical value: {PriceFormatter(row.theoretical_option_value)}</div>
+                <div className="col-sm-3">Time value: {PriceFormatter(row.time_value)}</div>
+            </div>
+            <div className="row">
+                <div className="col-sm-3">Delta: {NumberRoundFormatter(row.delta)}</div>
+                <div className="col-sm-3">Gamma: {NumberRoundFormatter(row.gamma)}</div>
+                <div className="col-sm-3">Theta: {NumberRoundFormatter(row.theta)}</div>
+                <div className="col-sm-3">Vega: {NumberRoundFormatter(row.vega)}</div>
+            </div>
+        </div>
+    );
+}
+
 export function ExpandContractRow() {
     return {
-        renderer: row => (
-            <div>
-                <div className="row">
-                    <div className="col-sm-3"><b>Last price:</b> {PriceFormatter(row.contract.last_price)}</div>
-                    <div className="col-sm-3"><b>Bid:</b> {PriceFormatter(row.contract.bid)}</div>
-                    <div className="col-sm-3"><b>Ask:</b> {PriceFormatter(row.contract.ask)}</div>
-                    <div className="col-sm-3"><b>Change:</b> {NumberRoundFormatter(row.contract.change)}</div>
-                </div>
-                <div className="row">
-                    <div className="col-sm-3"><b>% Change:</b> {NumberRoundFormatter(row.contract.percent_change)}%</div>
-                    <div className="col-sm-3"><b>Volume:</b> {NumberRoundFormatter(row.contract.volume)}</div>
-                    <div className="col-sm-3"><b>Open interest:</b> {NumberRoundFormatter(row.contract.open_interest)}</div>
-                    <div className="col-sm-3"><b>Implied volatility:</b> {PercentageFormatter(row.contract.implied_volatility)}</div>
-                </div>
-                <div className="row">
-                    <div className="col-sm-3"><b>Contract size:</b> {row.contract.contract_size}</div>
-                    <div className="col-sm-3"><b>In the money:</b> {row.contract.in_the_money ? 'Yes' : 'No'}</div>
-                    <div className="col-sm-6"><b>Last traded:</b> {TimestampTimeFormatter(row.contract.last_trade_date)}</div>
-                </div>
-                <div className="row">
-
-                </div>
-            </div>
+        renderer: (row) => (
+            <Card>
+                <Card.Body>
+                    <Card.Title>Details</Card.Title>
+                    <Card.Text>
+                        {ContractDetails(row)}
+                    </Card.Text>
+                </Card.Body>
+            </Card>
         ),
         showExpandColumn: true,
         expandHeaderColumnRenderer: ({ isAnyExpands }) => {
@@ -120,7 +136,7 @@ export function ExpandContractRow() {
 
 export function InTheMoneyRowStyle(row, rowIndex) {
     const style = {};
-    if (row.contract.in_the_money) {
+    if (row.in_the_money) {
         style.backgroundColor = '#e0f0ff';
     }
     return style;

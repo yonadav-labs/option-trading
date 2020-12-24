@@ -31,7 +31,7 @@ def get_expiration_timestamps(response, is_yahoo):
         return timestamps
 
 
-def get_call_puts(response, is_yahoo, expiration_timestamp=None):
+def get_call_puts(response, is_yahoo, use_as_premium, expiration_timestamp=None):
     if is_yahoo:
         if not is_valid_option_response(response):
             return None, None
@@ -40,18 +40,21 @@ def get_call_puts(response, is_yahoo, expiration_timestamp=None):
             return None, None
         options = result.get('options')[0]
 
-        latest_price = get_quote(response, True).get('regularMarketPrice')
-        call_contracts = [OptionContract(True, row, latest_price) for row in options.get('calls', [])]
-        put_contracts = [OptionContract(False, row, latest_price) for row in options.get('puts', [])]
+        stock_price = get_quote(response, True).get('regularMarketPrice')
+        call_contracts = [OptionContract(True, row, stock_price, use_as_premium) for row in options.get('calls', [])]
+        put_contracts = [OptionContract(False, row, stock_price, use_as_premium) for row in options.get('puts', [])]
         return call_contracts, put_contracts
     else:
-        latest_price = get_quote(response, False).get('last')
+        stock_price = get_quote(response, False).get('last')
         call_contracts = []
         for date_str, blob in response.get('callExpDateMap').items():
             for strike_str, contracts in blob.items():
                 row = contracts[0]
                 if expiration_timestamp == row.get('expirationDate'):
-                    call_contracts.append(OptionContract(True, row, latest_price))
+                    try:
+                        call_contracts.append(OptionContract(True, row, stock_price, use_as_premium))
+                    except ValueError:
+                        pass
                 else:
                     break
         put_contracts = []
@@ -59,7 +62,10 @@ def get_call_puts(response, is_yahoo, expiration_timestamp=None):
             for strike_str, contracts in blob.items():
                 row = contracts[0]
                 if expiration_timestamp == row.get('expirationDate'):
-                    put_contracts.append(OptionContract(False, row, latest_price))
+                    try:
+                        put_contracts.append(OptionContract(False, row, stock_price, use_as_premium))
+                    except ValueError:
+                        pass
                 else:
                     break
         return call_contracts, put_contracts

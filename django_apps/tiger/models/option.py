@@ -36,9 +36,9 @@ class Ticker(BaseModel):
         response = self.get_request_cache(settings.USE_YAHOO)
         return get_expiration_timestamps(response, settings.USE_YAHOO)
 
-    def get_call_puts(self, expiration_timestamp):
+    def get_call_puts(self, use_as_premium, expiration_timestamp):
         response = self.get_request_cache(settings.USE_YAHOO, expiration_timestamp)
-        return get_call_puts(response, settings.USE_YAHOO, expiration_timestamp)
+        return get_call_puts(response, settings.USE_YAHOO, use_as_premium, expiration_timestamp)
 
 
 class ExternalRequestCacheManager(models.Manager):
