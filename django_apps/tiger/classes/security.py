@@ -70,7 +70,10 @@ class OptionContract:
             self.change = data_dict.get('netChange')
             self.contract_size = data_dict.get('multiplier')  # 100, different from 'REGULAR' of yahoo
             self.currency = None
-            self.implied_volatility = data_dict.get('volatility') / 100.0
+            if data_dict.get('volatility') is not None:
+                self.implied_volatility = data_dict.get('volatility') / 100.0
+            else:
+                self.implied_volatility = None
             self.in_the_money = data_dict.get('inTheMoney')
             self.last_price = data_dict.get('last')
             self.last_trade_date = int(data_dict.get('tradeTimeInLong') / 1000)
