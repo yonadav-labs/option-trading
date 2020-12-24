@@ -24,7 +24,7 @@ export default function BestCallByPrice() {
     const [basicInfo, setbasicInfo] = useState({});
     const API_URL = getApiUrl();
     const [showTimestampAlert, setShowTimestampAlert] = useState(false);
-    const [bestCalls, setBestCalls] = useState([]);
+    const [bestStrategies, setBestStrategies] = useState([]);
     const [selectedExpirationTimestamps, setSelectedExpirationTimestamps] = useState([]);
     const [useAsPremium, setUseAsPremium] = useState('estimated');
     const [modalActive, setModalActive] = useState(false);
@@ -158,7 +158,6 @@ export default function BestCallByPrice() {
         try {
             let url = `${API_URL}/tickers/${selectedTicker[0].symbol}/trades/?target_price=${targetPrice}&`;
             selectedExpirationTimestamps.map((timestamp) => { url += `expiration_timestamps=${timestamp}&` });
-            url += `use_as_premium=${useAsPremium}`
             setModalActive(true);
             const response = await Axios.get(url);
             let trades = response.data.trades;
@@ -166,7 +165,7 @@ export default function BestCallByPrice() {
                 theArray[index].type2 = theArray[index].type;
                 theArray[index].last_trade_date2 = theArray[index].last_trade_date;
             });
-            setBestCalls(response.data.trades);
+            setBestStrategies(trades);
             setModalActive(false);
         } catch (error) {
             console.error(error);
@@ -319,7 +318,7 @@ export default function BestCallByPrice() {
                             </div>
                         </Form>
                         <br />
-                        {bestCalls.length > 0 ?
+                        {bestStrategies.length > 0 ?
                             <div>
                                 <h5>Results</h5>
                                 <hr />
@@ -346,23 +345,27 @@ export default function BestCallByPrice() {
                                     <div className="col-sm-4">
                                     </div>
                                 </div>
-
-                                <BootstrapTable
-                                    classes="table-responsive"
-                                    bootstrap4={true}
-                                    keyField="contract_symbol"
-                                    data={bestCalls}
-                                    columns={result_table_columns}
-                                    pagination={paginationFactory({
-                                        sizePerPage: 20,
-                                        hidePageListOnlyOnePage: true
-                                    })}
-                                    noDataIndication="No Data"
-                                    bordered={false}
-                                    expandRow={ExpandTradeRow()}
-                                    filter={filterFactory()}
-                                    defaultSorted={defaultSorted}
-                                /></div>
+                                <div className="row">
+                                    <div className="col">
+                                        <BootstrapTable
+                                            classes="table-responsive"
+                                            bootstrap4={true}
+                                            keyField="contract_symbol"
+                                            data={bestStrategies}
+                                            columns={result_table_columns}
+                                            pagination={paginationFactory({
+                                                sizePerPage: 20,
+                                                hidePageListOnlyOnePage: true
+                                            })}
+                                            noDataIndication="No Data"
+                                            bordered={false}
+                                            expandRow={ExpandTradeRow()}
+                                            filter={filterFactory()}
+                                            defaultSorted={defaultSorted}
+                                        />
+                                    </div>
+                                </div>
+                            </div>
                             :
                             null
                         }

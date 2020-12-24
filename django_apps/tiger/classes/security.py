@@ -70,8 +70,7 @@ class OptionContract:
             self.change = data_dict.get('netChange')
             self.contract_size = data_dict.get('multiplier')  # 100, different from 'REGULAR' of yahoo
             self.currency = None
-            self.implied_volatility = data_dict.get('volatility') / 100.0 if data_dict.get(
-                'volatility') is not None else None
+            self.implied_volatility = data_dict.get('volatility') / 100.0
             self.in_the_money = data_dict.get('inTheMoney')
             self.last_price = data_dict.get('last')
             self.last_trade_date = int(data_dict.get('tradeTimeInLong') / 1000)
@@ -84,6 +83,7 @@ class OptionContract:
             self.high_price = data_dict.get('highPrice')
             self.low_price = data_dict.get('lowPrice')
             self.open_price = data_dict.get('openPrice')
+            self.close_price = data_dict.get('closePrice')
             self.time_value = data_dict.get('timeValue')
             self.bid_size = data_dict.get('bidSize')
             self.ask_size = data_dict.get('askSize')
@@ -92,10 +92,12 @@ class OptionContract:
             self.theta = data_dict.get('theta')
             self.vega = data_dict.get('vega')
             self.rho = data_dict.get('rho')
+            self.theoretical_volatility = data_dict.get('theoreticalVolatility') / 100.0
+            self.theoretical_option_value = data_dict.get('theoreticalOptionValue')
+            self.quote_time = int(data_dict.get('quoteTimeInLong') / 1000)
             '''
             TD data not used.
-            "daysToExpiration":, "closePrice", "tradeDate", "quoteTimeInLong",
-            "theoreticalOptionValue", "theoreticalVolatility", "optionDeliverablesList",
+            "daysToExpiration", "tradeDate", "optionDeliverablesList",
             "expirationType", "lastTradingDay", "settlementType", "deliverableNote",
             "isIndexOption", "markChange", "markPercentChange", "mini", "nonStandard"
             '''

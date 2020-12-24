@@ -35,6 +35,7 @@ class OptionContractSerializer(serializers.Serializer):
     high_price = serializers.FloatField(allow_null=True, min_value=0.0)
     low_price = serializers.FloatField(allow_null=True, min_value=0.0)
     open_price = serializers.FloatField(allow_null=True, min_value=0.0)
+    close_price = serializers.FloatField(allow_null=True, min_value=0.0)
     time_value = serializers.FloatField(allow_null=True, min_value=0.0)
     bid_size = serializers.IntegerField(allow_null=True, min_value=0)
     ask_size = serializers.IntegerField(allow_null=True, min_value=0)
@@ -43,6 +44,9 @@ class OptionContractSerializer(serializers.Serializer):
     theta = serializers.FloatField(allow_null=True)
     vega = serializers.FloatField(allow_null=True)
     rho = serializers.FloatField(allow_null=True)
+    theoretical_volatility = serializers.FloatField(allow_null=True)
+    theoretical_option_value = serializers.FloatField(allow_null=True)
+    quote_time = serializers.IntegerField(min_value=0)
 
     stock_price = serializers.FloatField(min_value=0.0)
     to_strike = serializers.FloatField()

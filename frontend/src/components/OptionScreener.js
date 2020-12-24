@@ -108,15 +108,7 @@ export default function SellCoveredCall() {
             sort: true
         }, {
             dataField: "volume",
-            text: "Liquidity",
-            formatter: (cell, row, rowIndex, extraData) => (
-                (
-                    <span>
-                        Volume: {NumberRoundFormatter(cell, row)}<br />
-                        <small>Open: {NumberRoundFormatter(row.open_interest, row)}</small>
-                    </span>
-                )
-            ),
+            text: "Volume",
             sort: true
         }, {
             dataField: "delta",
