@@ -42,6 +42,29 @@ export default function Subscribe() {
                 console.error(err);
             });
     };
+    const cancelSubscription = () => {
+        const { accessToken } = authState;
+        fetch(`${API_URL}/subscription/cancel`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${accessToken}`,
+            }
+        })
+            .then((response) => {
+                if (!response.ok) {
+                    return Promise.reject();
+                }
+                return response.json();
+            })
+            .then((data) => {
+                console.log(data);
+            })
+            .catch((err) => {
+                /* eslint-disable no-console */
+                console.error(err);
+            });
+    }
 
     return (
         <div>
@@ -54,6 +77,7 @@ export default function Subscribe() {
                 onError={paypalOnError}
                 onCancel={paypalOnError}
             />
+            <button onClick={cancelSubscription}>cancel</button>
         </div>
     );
 }

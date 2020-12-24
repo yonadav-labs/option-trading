@@ -11,6 +11,7 @@ restful_urlpatterns = [
          name='sell_cash_secured_puts'),
     path('api/tickers/<str:ticker_symbol>/trades/', views.get_best_trades, name='get_best_trades'),
     path('api/subscription/update', views.update_subscription),
+    path('api/subscription/cancel', views.cancel_subscription),
     path('api/api-auth/', include('rest_framework.urls', namespace='rest_framework')),
 ]
 restful_urlpatterns = format_suffix_patterns(restful_urlpatterns)
