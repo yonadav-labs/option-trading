@@ -18,6 +18,7 @@ import TickerSummary from './TickerSummary.js';
 import ModalSpinner from './ModalSpinner';
 
 let lastTradedFilter;
+let strategyFilter;
 
 export default function BestCallByPrice() {
     const [selectedTicker, setSelectedTicker] = useState([]);
@@ -35,21 +36,25 @@ export default function BestCallByPrice() {
             dataField: "type",
             text: "Strategy",
             formatter: (cell, row, rowIndex, extraData) => {
-                switch (cell) {
-                    case ("long_call"):
-                        return (
-                            <span>
-                                Long call <br />
-                                <small>{TimestampDateFormatter(row.expiration)}</small>
-                            </span>
-                        )
-                    case ("covered_call"):
-                        return "Covered call"
-                    case ("long_put"):
-                        return "Long put"
-                    case ("cash_secured_put"):
-                        return "Cash secured put"
+                function getText(cell) {
+                    switch (cell) {
+                        case ("long_call"):
+                            return "Long call";
+                        case ("covered_call"):
+                            return "Covered call"
+                        case ("long_put"):
+                            return "Long put"
+                        case ("cash_secured_put"):
+                            return "Cash secured put"
+                    }
                 }
+
+                return (
+                    <span>
+                        {getText(cell)} <br />
+                        <small>{TimestampDateFormatter(row.expiration)}</small>
+                    </span>
+                );
             },
             sort: true
         }, {
@@ -112,12 +117,33 @@ export default function BestCallByPrice() {
                     lastTradedFilter = filter;
                 }
             })
+        }, {
+            dataField: "type2",
+            text: "type2",
+            style: { 'display': 'none' },
+            headerStyle: { 'display': 'none' },
+            filter: multiSelectFilter({
+                options: { 'long_call': 'long_call', 'covered_call': 'covered_call', 'long_put': 'long_put', 'cash_secured_put': 'cash_secured_put' },
+                defaultValue: ['long_call', 'covered_call', 'long_put', 'cash_secured_put'],
+                getFilter: (filter) => {
+                    strategyFilter = filter;
+                }
+            })
         },
     ];
     const defaultSorted = [{
         dataField: "target_price_profit_ratio",
         order: "desc"
     }];
+
+    function onStrategyFilterChange(event, strategyFilter) {
+        const { value } = event.target;
+        if (value == 'all') {
+            strategyFilter(['long_call', 'covered_call', 'long_put', 'cash_secured_put']);
+        } else {
+            strategyFilter([value]);
+        }
+    };
 
     const handleSubmit = (event) => {
         event.preventDefault();
@@ -133,7 +159,7 @@ export default function BestCallByPrice() {
         }
 
         if (form.checkValidity() !== false && selectedExpirationTimestamps.length > 0) {
-            getBestCalls(formDataObj.target_price, selectedExpirationTimestamps);
+            getBestStrategies(formDataObj.target_price, selectedExpirationTimestamps);
         }
     };
 
@@ -154,7 +180,7 @@ export default function BestCallByPrice() {
         setUseAsPremium(value);
     };
 
-    const getBestCalls = async (targetPrice, selectedExpirationTimestamps) => {
+    const getBestStrategies = async (targetPrice, selectedExpirationTimestamps) => {
         try {
             let url = `${API_URL}/tickers/${selectedTicker[0].symbol}/trades/?target_price=${targetPrice}&`;
             selectedExpirationTimestamps.map((timestamp) => { url += `expiration_timestamps=${timestamp}&` });
@@ -350,6 +376,21 @@ export default function BestCallByPrice() {
                                                             </option>
                                                         );
                                                     })}
+                                                </Form.Control>
+                                            </Form.Group>
+                                        </Form>
+                                    </div>
+                                    <div className="col-sm-3">
+                                        <Form>
+                                            <Form.Group>
+                                                <Form.Label className="font-weight-bold">Strategy:</Form.Label>
+                                                <Form.Control name="strategy" as="select" defaultValue="all"
+                                                    onChange={(e) => onStrategyFilterChange(e, strategyFilter)}>
+                                                    <option key="all" value="all">All</option>
+                                                    <option key="long_call" value="long_call">Long call</option>
+                                                    <option key="covered_call" value="covered_call">Covered call</option>
+                                                    <option key="long_put" value="long_put">Long put</option>
+                                                    <option key="cash_secured_put" value="cash_secured_put">Cash secured put</option>
                                                 </Form.Control>
                                             </Form.Group>
                                         </Form>
