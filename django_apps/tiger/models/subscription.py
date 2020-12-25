@@ -1,13 +1,14 @@
-from .base import BaseModel
-from django.db import models
-from .user import User
-import requests
-from django.conf import settings
-from tiger.utils import get_now
-from datetime import timedelta
 import base64
-import os
 import json
+import requests
+
+from datetime import timedelta
+from django.conf import settings
+from django.db import models
+
+from .base import BaseModel
+from .user import User
+from tiger.utils import get_now
 
 
 class Subscription(BaseModel):
@@ -26,7 +27,7 @@ class Subscription(BaseModel):
 
     def get_paypal_headers(self):
         encoded = base64.b64encode(
-            bytes(f'{os.environ["PAYPAL_CLIENT_ID"]}:{os.environ["PAYPAL_SECRET"]}', 'UTF-8'))
+            bytes(f'{settings.PAYPAL_CLIENT_ID}:{settings.PAYPAL_SECRET}', 'UTF-8'))
         return {
             "Content-Type": "application/json",
             "Authorization": f"Basic {encoded.decode('ascii')}"
@@ -38,7 +39,7 @@ class Subscription(BaseModel):
             # call paypal api get subscription status
             try:
                 response = requests.get(
-                    f'https://api-m.sandbox.paypal.com/v1/billing/subscriptions/{self.paypal_subscription_id}',
+                    f'{settings.PAYPAL_ENDPOINT}/v1/billing/subscriptions/{self.paypal_subscription_id}',
                     headers=self.get_paypal_headers())
                 response.raise_for_status()
                 if response.status_code == 200:
@@ -54,7 +55,7 @@ class Subscription(BaseModel):
         data = {"reason": reason}
         try:
             response = requests.post(
-                f'https://api-m.sandbox.paypal.com/v1/billing/subscriptions/{self.paypal_subscription_id}/cancel',
+                f'{settings.PAYPAL_ENDPOINT}/v1/billing/subscriptions/{self.paypal_subscription_id}/cancel',
                 data=json.dumps(data), headers=self.get_paypal_headers())
             response.raise_for_status()
             if response.status_code == 204:
