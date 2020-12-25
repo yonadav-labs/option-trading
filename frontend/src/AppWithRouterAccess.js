@@ -10,7 +10,6 @@ import Footer from './components/footer'
 import OptionScreener from './components/OptionScreener'
 import Disclaimer from './components/disclaimer';
 import StrategyScreener from './components/StrategyScreener';
-import Subscribe from './pages/Subscribe';
 
 export default withRouter(class AppWithRouterAccess extends Component {
     constructor(props) {
@@ -33,7 +32,6 @@ export default withRouter(class AppWithRouterAccess extends Component {
                             <Route path='/option-screener' exact={true} component={OptionScreener} />
                             <Route path='/strategy-screener' exact={true} component={StrategyScreener} />
                             <SecureRoute path='/profile' component={Profile} />
-                            <Route path='/subscribe' component={Subscribe} />
                             <Route path="/disclaimer" component={Disclaimer}></Route>
                             <Route path='/signin' component={Login} />
                             <Route path='/signin/register' component={Login} />

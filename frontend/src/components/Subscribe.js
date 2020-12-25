@@ -1,11 +1,13 @@
 import React from 'react';
-import PayPalBtn from '../components/PayPalBtn';
+import PayPalBtn from './PayPalBtn';
 import getApiUrl from '../utils';
 import { useOktaAuth } from '@okta/okta-react';
+import { useHistory } from 'react-router-dom';
 
 export default function Subscribe() {
     const { authState, authService } = useOktaAuth();
     const API_URL = getApiUrl();
+    const history = useHistory();
 
     const paypalSubscribe = (data, actions) => {
         return actions.subscription.create({
@@ -35,36 +37,14 @@ export default function Subscribe() {
                 return response.json();
             })
             .then((data) => {
-                console.log(data);
+                // console.log(data);
+                history.go(0);
             })
             .catch((err) => {
                 /* eslint-disable no-console */
                 console.error(err);
             });
     };
-    const cancelSubscription = () => {
-        const { accessToken } = authState;
-        fetch(`${API_URL}/subscription/cancel`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                Authorization: `Bearer ${accessToken}`,
-            }
-        })
-            .then((response) => {
-                if (!response.ok) {
-                    return Promise.reject();
-                }
-                return response.json();
-            })
-            .then((data) => {
-                console.log(data);
-            })
-            .catch((err) => {
-                /* eslint-disable no-console */
-                console.error(err);
-            });
-    }
 
     return (
         <div>
@@ -77,7 +57,6 @@ export default function Subscribe() {
                 onError={paypalOnError}
                 onCancel={paypalOnError}
             />
-            <button onClick={cancelSubscription}>cancel</button>
         </div>
     );
 }

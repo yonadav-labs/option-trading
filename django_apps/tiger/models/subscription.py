@@ -7,6 +7,7 @@ from tiger.utils import get_now
 from datetime import timedelta
 import base64
 import os
+import json
 
 class Subscription(BaseModel):
     paypal_subscription_id = models.CharField(max_length=200, unique=True)
@@ -22,7 +23,7 @@ class Subscription(BaseModel):
             encoded = base64.b64encode(bytes(f"{os.environ['PAYPAL_CLIENT_ID']}:{os.environ['PAYPAL_SECRET']}", "UTF-8"))
             headers = {
                 "Content-Type": "application/json",
-                "Authorization": f"Basic asdf"
+                "Authorization": f"Basic {encoded.decode('ascii')}"
             }
             try:
                 response = requests.get(f"https://api-m.sandbox.paypal.com/v1/billing/subscriptions/{self.paypal_subscription_id}", headers=headers)
@@ -35,15 +36,16 @@ class Subscription(BaseModel):
                 raise e
         return self.status
 
-    def cancel(self):
+    def cancel(self, reason):
         # make api call to cancel subscription
         encoded = base64.b64encode(bytes(f"{os.environ['PAYPAL_CLIENT_ID']}:{os.environ['PAYPAL_SECRET']}", "UTF-8"))
         headers = {
             "Content-Type": "application/json",
-            "Authorization": f"Basic {encoded.decode('ascii')}"
+            "Authorization": f"Basic {encoded.decode('ascii')}",
         }
+        data = {"reason": reason}
         try:
-            response = requests.get(f"https://api-m.sandbox.paypal.com/v1/billing/subscriptions/{self.paypal_subscription_id}/cancel", headers=headers)
+            response = requests.post(f"https://api-m.sandbox.paypal.com/v1/billing/subscriptions/{self.paypal_subscription_id}/cancel", data=json.dumps(data), headers=headers)
             response.raise_for_status()
             if response.status_code == 204:
                 self.status = "INACTIVE"
