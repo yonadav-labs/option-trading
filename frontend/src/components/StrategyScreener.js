@@ -16,6 +16,7 @@ import { BsArrowsExpand, BsArrowsCollapse } from 'react-icons/bs';
 import TickerTypeahead from './TickerTypeahead';
 import TickerSummary from './TickerSummary.js';
 import ModalSpinner from './ModalSpinner';
+import Select from "react-select";
 
 let lastTradedFilter;
 let strategyFilter;
@@ -152,25 +153,9 @@ export default function BestCallByPrice() {
         const formData = new FormData(event.target);
         const formDataObj = Object.fromEntries(formData.entries());
 
-        if (selectedExpirationTimestamps.length > 0) {
-            setShowTimestampAlert(false);
-        } else {
-            setShowTimestampAlert(true);
-        }
-
-        if (form.checkValidity() !== false && selectedExpirationTimestamps.length > 0) {
+        setShowTimestampAlert(selectedExpirationTimestamps == null);
+        if (form.checkValidity() !== false && selectedExpirationTimestamps != null) {
             getBestStrategies(formDataObj.target_price, selectedExpirationTimestamps);
-        }
-    };
-
-    const handleInputChange = (event) => {
-        const target = event.target;
-        var value = target.value;
-
-        if (target.checked) {
-            setSelectedExpirationTimestamps(selectedExpirationTimestamps.concat([value]));
-        } else {
-            setSelectedExpirationTimestamps(selectedExpirationTimestamps.filter(item => item !== value));
         }
     };
 
@@ -183,7 +168,7 @@ export default function BestCallByPrice() {
     const getBestStrategies = async (targetPrice, selectedExpirationTimestamps) => {
         try {
             let url = `${API_URL}/tickers/${selectedTicker[0].symbol}/trades/?target_price=${targetPrice}&`;
-            selectedExpirationTimestamps.map((timestamp) => { url += `expiration_timestamps=${timestamp}&` });
+            selectedExpirationTimestamps.map((timestamp) => { url += `expiration_timestamps=${timestamp.value}&` });
             setModalActive(true);
             const response = await Axios.get(url);
             let trades = response.data.trades;
@@ -282,13 +267,21 @@ export default function BestCallByPrice() {
         }
     }
 
+    const expirationTimestampsOptions = [];
+    expirationTimestamps.map((timestamp, index) => {
+        // Yahoo's timestamp * 1000 = TD's timestamp.
+        const date = new Date(timestamp < 9999999999 ? timestamp * 1000 : timestamp)
+            .toLocaleDateString('en-US', { 'timeZone': 'EST' });
+        expirationTimestampsOptions.push({ value: timestamp, label: date });
+    })
+
     return (
         <div id="content" className="container" style={{ "marginTop": "4rem" }}>
             <ModalSpinner active={modalActive}></ModalSpinner>
             <h1 className="text-center">Strategy Screener</h1>
             <Form>
                 <Form.Group>
-                    <Form.Label className="requiredField"><h5>Enter ticker symbol:</h5></Form.Label>
+                    <Form.Label className="requiredField"><h4>Enter ticker symbol:</h4></Form.Label>
                     <TickerTypeahead
                         setSelectedTicker={setSelectedTicker}
                         setExpirationTimestamps={setExpirationTimestamps}
@@ -301,39 +294,37 @@ export default function BestCallByPrice() {
                 <div>
                     <TickerSummary basicInfo={basicInfo} />
                     <div>
-                        <h5>Configurations</h5>
+                        <h4>Configurations</h4>
                         <hr />
                         <Form onSubmit={handleSubmit}>
                             <Form.Group>
-                                <Form.Label className="font-weight-bold">Target price on expiration date (USD):</Form.Label>
+                                <Form.Label className="font-weight-bold">Target price on expiration date (USD)*:</Form.Label>
                                 <Form.Control name="target_price" as="input" type="number" placeholder="100.0" min="0.0" max="10000.0" step="0.01" required />
                             </Form.Group>
                             <Form.Group>
-                                {showTimestampAlert ?
-                                    <Alert variant="warning">
-                                        Please select at least one expiration date.
-                                </Alert>
-                                    :
-                                    null
-                                }
-                                <Form.Label className="font-weight-bold">Expiration dates:</Form.Label>
+                                <Form.Label className="font-weight-bold">Expiration Dates:*:</Form.Label>
                                 <div className="row">
-                                    {expirationTimestamps.map((timestamp, index) => {
-                                        // Yahoo's timestamp * 1000 = TD's timestamp.
-                                        const date = new Date(timestamp < 9999999999 ? timestamp * 1000 : timestamp)
-                                            .toLocaleDateString('en-US', { 'timeZone': 'GMT' });
-                                        return (
-                                            <div className="col-sm-3" key={index}>
-                                                <Form.Check
-                                                    value={timestamp}
-                                                    name={`expiration_date_${timestamp}`}
-                                                    type="checkbox"
-                                                    id={`checkbox-${timestamp}`}
-                                                    label={date}
-                                                    onChange={handleInputChange}
-                                                />
-                                            </div>);
-                                    })}
+                                    <div className="col-sm-12">
+                                        <Select
+                                            defaultValue={selectedExpirationTimestamps}
+                                            isMulti
+                                            isClearable
+                                            onChange={setSelectedExpirationTimestamps}
+                                            options={expirationTimestampsOptions}
+                                            className="basic-multi-select"
+                                            classNamePrefix="select"
+                                        />
+                                    </div>
+                                </div>
+                                <div className="row">
+                                    <div className="col-sm-12">
+                                        {showTimestampAlert ?
+                                            <Alert variant="warning">
+                                                Please select at least one expiration date.
+                                        </Alert>
+                                            : null
+                                        }
+                                    </div>
                                 </div>
                             </Form.Group>
                             <div className="row">
@@ -358,7 +349,7 @@ export default function BestCallByPrice() {
                         <br />
                         {bestStrategies.length > 0 ?
                             <div>
-                                <h5>Results</h5>
+                                <h4>Results</h4>
                                 <hr />
                                 <div className="row">
                                     <div className="col-sm-3">
@@ -427,6 +418,6 @@ export default function BestCallByPrice() {
                 :
                 null
             }
-        </div>
+        </div >
     );
 }

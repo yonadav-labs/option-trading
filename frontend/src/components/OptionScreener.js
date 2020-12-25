@@ -15,6 +15,7 @@ import paginationFactory from 'react-bootstrap-table2-paginator';
 import filterFactory, { multiSelectFilter, numberFilter } from 'react-bootstrap-table2-filter';
 import ModalSpinner from './ModalSpinner';
 import { Comparator } from 'react-bootstrap-table2-filter';
+import Select from "react-select";
 
 let putCallFilter;
 let inTheMoneyFilter;
@@ -273,32 +274,16 @@ export default function SellCoveredCall() {
         const formData = new FormData(event.target);
         const formDataObj = Object.fromEntries(formData.entries());
 
-        if (selectedExpirationTimestamps.length > 0) {
-            setShowTimestampAlert(false);
-        } else {
-            setShowTimestampAlert(true);
-        }
-
-        if (form.checkValidity() !== false && selectedExpirationTimestamps.length > 0) {
+        setShowTimestampAlert(selectedExpirationTimestamps == null);
+        if (form.checkValidity() !== false && selectedExpirationTimestamps != null) {
             getContracts(selectedExpirationTimestamps);
-        }
-    };
-
-    const handleInputChange = (event) => {
-        const target = event.target;
-        var value = target.value;
-
-        if (target.checked) {
-            setSelectedExpirationTimestamps(selectedExpirationTimestamps.concat([value]));
-        } else {
-            setSelectedExpirationTimestamps(selectedExpirationTimestamps.filter(item => item !== value));
         }
     };
 
     const getContracts = async (selectedExpirationTimestamps) => {
         try {
             let url = `${API_URL}/tickers/${selectedTicker[0].symbol}/contracts/?`;
-            selectedExpirationTimestamps.map((timestamp) => { url += `expiration_timestamps=${timestamp}&` });
+            selectedExpirationTimestamps.map((timestamp) => { url += `expiration_timestamps=${timestamp.value}&` });
             setModalActive(true);
             const response = await Axios.get(url);
             let contracts = response.data.contracts;
@@ -318,13 +303,21 @@ export default function SellCoveredCall() {
         }
     };
 
+    const expirationTimestampsOptions = [];
+    expirationTimestamps.map((timestamp, index) => {
+        // Yahoo's timestamp * 1000 = TD's timestamp.
+        const date = new Date(timestamp < 9999999999 ? timestamp * 1000 : timestamp)
+            .toLocaleDateString('en-US', { 'timeZone': 'EST' });
+        expirationTimestampsOptions.push({ value: timestamp, label: date });
+    })
+
     return (
         <div id="content" className="container" style={{ "marginTop": "4rem" }}>
             <ModalSpinner active={modalActive}></ModalSpinner>
             <h1 className="text-center">Option Screener</h1>
             <Form>
                 <Form.Group>
-                    <Form.Label className="requiredField"><h5>Enter ticker symbol:</h5></Form.Label>
+                    <Form.Label className="requiredField"><h4>Enter ticker symbol:</h4></Form.Label>
                     <TickerTypeahead
                         setSelectedTicker={setSelectedTicker}
                         setExpirationTimestamps={setExpirationTimestamps}
@@ -340,31 +333,29 @@ export default function SellCoveredCall() {
                     <div>
                         <Form onSubmit={handleSubmit}>
                             <Form.Group>
-                                {showTimestampAlert ?
-                                    <Alert variant="warning">
-                                        Please select at least one expiration date.
-                                </Alert>
-                                    :
-                                    null
-                                }
-                                <Form.Label className="font-weight-bold">Expiration Dates:</Form.Label>
+                                <h4>Expiration Dates:</h4>
                                 <div className="row">
-                                    {expirationTimestamps.map((timestamp, index) => {
-                                        // Yahoo's timestamp * 1000 = TD's timestamp.
-                                        const date = new Date(timestamp < 9999999999 ? timestamp * 1000 : timestamp)
-                                            .toLocaleDateString('en-US', { 'timeZone': 'GMT' });
-                                        return (
-                                            <div className="col-sm-3" key={index}>
-                                                <Form.Check
-                                                    value={timestamp}
-                                                    name={`expiration_date_${timestamp}`}
-                                                    type="checkbox"
-                                                    id={`checkbox-${timestamp}`}
-                                                    label={date}
-                                                    onChange={handleInputChange}
-                                                />
-                                            </div>);
-                                    })}
+                                    <div className="col-sm-12">
+                                        <Select
+                                            defaultValue={selectedExpirationTimestamps}
+                                            isMulti
+                                            isClearable
+                                            onChange={setSelectedExpirationTimestamps}
+                                            options={expirationTimestampsOptions}
+                                            className="basic-multi-select"
+                                            classNamePrefix="select"
+                                        />
+                                    </div>
+                                </div>
+                                <div className="row">
+                                    <div className="col-sm-12">
+                                        {showTimestampAlert ?
+                                            <Alert variant="warning">
+                                                Please select at least one expiration date.
+                                        </Alert>
+                                            : null
+                                        }
+                                    </div>
                                 </div>
                             </Form.Group>
                             <div class="row">
@@ -376,7 +367,7 @@ export default function SellCoveredCall() {
                         <br />
                         {contracts.length > 0 ?
                             <div>
-                                <h5>Filters</h5>
+                                <h4>Filters</h4>
                                 <hr />
                                 <div className="row">
                                     <div className="col-sm-2">
