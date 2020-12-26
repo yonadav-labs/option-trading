@@ -1,9 +1,9 @@
 import { PayPalButton } from "react-paypal-button-v2";
 import React from 'react';
+import { getPaypalClientId } from '../utils';
 
 export default function PayPalBtn(props) {
     const { amount, currency, createSubscription, onApprove, catchError, onError, onCancel } = props;
-    const paypalKey = "AYBME3nnHQTrhS8teRe0ezxdHve057IVYf7B_Mkrwp7RFTJ-txheBCqQvqWZZkievIYvPA9uyFzmmffl"
     return (
         // TODO: add venmo.
         <PayPalButton
@@ -14,10 +14,7 @@ export default function PayPalBtn(props) {
             onError={(err) => onError(err)}
             catchError={(err) => catchError(err)}
             onCancel={(err) => onCancel(err)}
-            options={{
-                clientId: paypalKey,
-                vault: true
-            }}
+            options={{ clientId: getPaypalClientId(), vault: true }}
             style={{
                 shape: 'rect',
                 color: 'gold',

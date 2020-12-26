@@ -3,6 +3,7 @@ import PayPalBtn from './PayPalBtn';
 import getApiUrl from '../utils';
 import { useOktaAuth } from '@okta/okta-react';
 import { useHistory } from 'react-router-dom';
+import { getPaypalPlanId } from '../utils';
 
 export default function Subscribe() {
     const { authState, authService } = useOktaAuth();
@@ -10,9 +11,7 @@ export default function Subscribe() {
     const history = useHistory();
 
     const paypalSubscribe = (data, actions) => {
-        return actions.subscription.create({
-            'plan_id': "P-5LY74814PT738460SL7IBPJY",
-        });
+        return actions.subscription.create({ 'plan_id': getPaypalPlanId() });
     };
     const paypalOnError = (err) => {
         console.log("Error");
