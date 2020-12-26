@@ -16,6 +16,7 @@ import filterFactory, { multiSelectFilter, numberFilter } from 'react-bootstrap-
 import ModalSpinner from './ModalSpinner';
 import { Comparator } from 'react-bootstrap-table2-filter';
 import Select from "react-select";
+import SingleChoiceFilter from "./filters/SingleChoiceFilter"
 
 let putCallFilter;
 let inTheMoneyFilter;
@@ -218,17 +219,6 @@ export default function SellCoveredCall() {
         order: "asc"
     }];
 
-    function onPutCallChange(event, putCallFilter) {
-        const { value } = event.target;
-        if (value == 'all') {
-            putCallFilter([true, false]);
-        } else if (value == 'put') {
-            putCallFilter([false]);
-        } else if (value == 'call') {
-            putCallFilter([true]);
-        }
-    };
-
     function onVolumeFilterChange(event, volumeFilter) {
         const { value } = event.target;
         volumeFilter({
@@ -374,12 +364,7 @@ export default function SellCoveredCall() {
                                         <Form>
                                             <Form.Group>
                                                 <Form.Label className="font-weight-bold">Put or call:</Form.Label>
-                                                <Form.Control name="tradeoff" as="select" defaultValue={0}
-                                                    onChange={(e) => onPutCallChange(e, putCallFilter)}>
-                                                    <option key="all" value="all">All</option>
-                                                    <option key="put" value="put">Put</option>
-                                                    <option key="call" value="call">Call</option>
-                                                </Form.Control>
+                                                <SingleChoiceFilter choiceLabelMap={{ false: 'Put', true: 'Call' }} tableFilter={putCallFilter} />
                                             </Form.Group>
                                         </Form>
                                     </div>
