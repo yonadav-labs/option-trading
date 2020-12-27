@@ -60,7 +60,7 @@ function StrikeRangeSliderFilter(props) {
             defaultValue={[minStrike, maxStrike]}
             marks={marks}
             tipFormatter={value => (
-                <div style={{ minWidth: '80px' }}>{PriceFormatter(value)} ({getMoneyness(value)})</div>
+                <div style={{ minWidth: '120px' }}>{PriceFormatter(value)} ({getMoneyness(value)})</div>
             )}
             onAfterChange={onRangeChange}
         />
