@@ -17,6 +17,7 @@ import ModalSpinner from './ModalSpinner';
 import { Comparator } from 'react-bootstrap-table2-filter';
 import Select from "react-select";
 import SingleChoiceFilter from "./filters/SingleChoiceFilter"
+import StrikeRangeSliderFilter from "./filters/StrikeRangeSliderFilter"
 
 let putCallFilter;
 let inTheMoneyFilter;
@@ -26,6 +27,8 @@ let minOpenInterestFilter;
 let minDeltaFilter;
 let maxDeltaFilter;
 let minLeverageFilter;
+let minStrikeFilter;
+let maxStrikeFilter;
 
 export default function SellCoveredCall() {
     const [selectedTicker, setSelectedTicker] = useState([]);
@@ -35,6 +38,7 @@ export default function SellCoveredCall() {
     const [contracts, setContracts] = useState([]);
     const [selectedExpirationTimestamps, setSelectedExpirationTimestamps] = useState([]);
     const [modalActive, setModalActive] = useState(false);
+    const [strikePrices, setStrikePrices] = useState([]);
 
     const resetStates = () => {
         setSelectedTicker([]);
@@ -206,6 +210,26 @@ export default function SellCoveredCall() {
                     minLeverageFilter = filter;
                 }
             })
+        }, {
+            dataField: "min_strike",
+            text: "min_strike",
+            style: { 'display': 'none' },
+            headerStyle: { 'display': 'none' },
+            filter: numberFilter({
+                getFilter: (filter) => {
+                    minStrikeFilter = filter;
+                }
+            })
+        }, {
+            dataField: "max_strike",
+            text: "max_strike",
+            style: { 'display': 'none' },
+            headerStyle: { 'display': 'none' },
+            filter: numberFilter({
+                getFilter: (filter) => {
+                    maxStrikeFilter = filter;
+                }
+            })
         },
     ];
     const defaultSorted = [{
@@ -277,6 +301,7 @@ export default function SellCoveredCall() {
             setModalActive(true);
             const response = await Axios.get(url);
             let contracts = response.data.contracts;
+            let strikes = [];
             contracts.forEach(function (part, index, theArray) {
                 // Duplicate fields for table filtering.
                 theArray[index].is_call_dup = theArray[index].is_call;
@@ -284,8 +309,12 @@ export default function SellCoveredCall() {
                 theArray[index].min_delta = theArray[index].delta;
                 theArray[index].max_delta = theArray[index].delta;
                 theArray[index].min_leverage = theArray[index].leverage;
+                theArray[index].min_strike = theArray[index].strike;
+                theArray[index].max_strike = theArray[index].strike;
+                strikes.push(part.strike);
             });
             setContracts(contracts);
+            setStrikePrices(strikes);
             setModalActive(false);
         } catch (error) {
             console.error(error);
@@ -360,7 +389,7 @@ export default function SellCoveredCall() {
                                 <h4>Filters</h4>
                                 <hr />
                                 <div className="row">
-                                    <div className="col-sm-2">
+                                    <div className="col-sm-3">
                                         <Form>
                                             <Form.Group>
                                                 <Form.Label className="font-weight-bold">Put or call:</Form.Label>
@@ -368,20 +397,20 @@ export default function SellCoveredCall() {
                                             </Form.Group>
                                         </Form>
                                     </div>
-                                    <div className="col-sm-2">
+                                    <div className="col-sm-3">
                                         <Form>
                                             <Form.Group>
-                                                <Form.Label className="font-weight-bold">Strike:</Form.Label>
-                                                <Form.Control name="tradeoff" as="select" defaultValue={0}
-                                                    onChange={(e) => onInTheMoneyFilterChange(e, inTheMoneyFilter)}>
-                                                    <option key="all" value="all">All</option>
-                                                    <option key="itm" value="itm">In the money</option>
-                                                    <option key="otm" value="otm">Out of the money</option>
-                                                </Form.Control>
+                                                <Form.Label className="font-weight-bold">Strike price:</Form.Label>
+                                                <StrikeRangeSliderFilter
+                                                    atmPrice={basicInfo.regularMarketPrice}
+                                                    strikePrices={strikePrices}
+                                                    minStrikeFilter={minStrikeFilter}
+                                                    maxStrikeFilter={maxStrikeFilter}
+                                                />
                                             </Form.Group>
                                         </Form>
                                     </div>
-                                    <div className="col-sm-2">
+                                    <div className="col-sm-3">
                                         <Form>
                                             <Form.Group>
                                                 <Form.Label className="font-weight-bold">Min volume:</Form.Label>
@@ -397,7 +426,7 @@ export default function SellCoveredCall() {
                                             </Form.Group>
                                         </Form>
                                     </div>
-                                    <div className="col-sm-2">
+                                    <div className="col-sm-3">
                                         <Form>
                                             <Form.Group>
                                                 <Form.Label className="font-weight-bold">Min open interest:</Form.Label>
@@ -413,7 +442,9 @@ export default function SellCoveredCall() {
                                             </Form.Group>
                                         </Form>
                                     </div>
-                                    <div className="col-sm-2">
+                                </div>
+                                <div class="row">
+                                    <div className="col-sm-3">
                                         <Form>
                                             <Form.Group>
                                                 <Form.Label className="font-weight-bold">Last traded:</Form.Label>
@@ -432,12 +463,7 @@ export default function SellCoveredCall() {
                                             </Form.Group>
                                         </Form>
                                     </div>
-                                    <div className="col-sm-2">
-                                        {InTheMoneySign()}
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div className="col-sm-2">
+                                    <div className="col-sm-3">
                                         <Form>
                                             <Form.Group>
                                                 <Form.Label className="font-weight-bold">Delta:</Form.Label>
@@ -458,7 +484,7 @@ export default function SellCoveredCall() {
                                             </Form.Group>
                                         </Form>
                                     </div>
-                                    <div className="col-sm-2">
+                                    <div className="col-sm-3">
                                         <Form>
                                             <Form.Group>
                                                 <Form.Label className="font-weight-bold">Min buyer leverage:</Form.Label>
@@ -475,6 +501,9 @@ export default function SellCoveredCall() {
                                                 </Form.Control>
                                             </Form.Group>
                                         </Form>
+                                    </div>
+                                    <div className="col-sm-3">
+                                        {InTheMoneySign()}
                                     </div>
                                 </div>
                                 <div className="row">

@@ -13,6 +13,7 @@
     "env-cmd": "^10.1.0",
     "history": "^5.0.0",
     "node-sass": "^4.14.1",
+    "rc-slider": "^9.7.1",
     "react": "^17.0.0",
     "react-bootstrap": "^1.4.0",
     "react-bootstrap-range-slider": "^2.0.2",
