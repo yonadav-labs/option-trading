@@ -276,7 +276,7 @@ export default function BestCallByPrice() {
     })
 
     return (
-        <div id="content" className="container" style={{ "marginTop": "4rem" }}>
+        <div id="content" className="container min-vh-100" style={{ "marginTop": "4rem" }}>
             <ModalSpinner active={modalActive}></ModalSpinner>
             <h1 className="text-center">Strategy Screener</h1>
             <Form>
@@ -342,7 +342,7 @@ export default function BestCallByPrice() {
                             </div>
                             <div class="row">
                                 <div className="col">
-                                    <Button type="submit" className="btn btn-dark">Analyze</Button>
+                                    <Button type="submit" className="btn btn-primary">Analyze</Button>
                                 </div>
                             </div>
                         </Form>

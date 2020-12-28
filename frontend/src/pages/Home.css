@@ -43,3 +43,10 @@
         line-height: 1.4;
     }
 }
+
+.home-background {
+  background-image: url('../svg/Hero-Right-D.svg'), url('../svg/Hero-Left-D.svg');
+  background-position: right top, left center;
+  background-repeat: no-repeat, no-repeat;
+  background-size: 50vw, 50vw;
+}

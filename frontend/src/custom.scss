@@ -3,15 +3,15 @@
 @import url(https://fonts.googleapis.com/css?family=Yantramanav:200,300,400,700);
 $headings-font-family:Yantramanav;
 
-$primary:#F2F3F4;
-$secondary:#c9c9c9;
-$success:#37bd74;
-$danger:#e8286b;
-$info:#7ebcfa;
-$warning:#ff9b37;
-$light:#eef0f2;
-$dark:#3c4055;
-$body-bg:#efefef;
+$primary:#FF8F2B;
+$secondary:#FFD338;
+$success:#28A745;
+$danger:#DC3545;
+$info:#2F80ED;
+$warning:#9B51E0;
+$light:#FAFAFA;
+$dark:#333333;
+$body-bg:#FAFAFA;
 $enable-gradients:false;
 $enable-rounded:false;
 // $border-width:0; Commented out because it's removing result table's border.
@@ -22,7 +22,7 @@ $btn-border-radius:0;
 
 hr {
     opacity: 0.3;
-    border:1px solid #FFFFFF;
+    border: 1px solid #FFFFFF;
 }
 
 .page-link {
@@ -31,4 +31,13 @@ hr {
 
 .page-item.active .page-link {
     color: #3c4055;
+}
+
+.btn-primary {
+    color: $light;
+}
+
+.btn-secondary {
+    background-color: $light;
+    border-color: $primary;
 }

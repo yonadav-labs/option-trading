@@ -3,54 +3,54 @@ import { Link } from "react-router-dom"
 
 function Footer(props) {
     return (
-        <div className={`container-fluid bg-secondary ${props.class}`} >
+        <div className={`container-fluid ${props.class}`} style={{ background: '#2A2A2A' }} >
             {/* <hr className="featurette-divider-last" /> */}
             <footer className="featurette-divider-last">
                 <div className="row pt-5">
                     <div className="col-4">
-                        <p className="text-muted">
-                            Helping everyday investors learn and invest in options the right way.
-                        </p>
-                        <p className="text-muted">
+                        <h3 className="text-light">
+                            Never get lost in the option chain again.
+                        </h3>
+                        <p className="text-light">
                             Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer fermentum, lacus vel gravida varius, nisi odio lacinia felis, in vehicula velit sapien vitae dolor.
                         </p>
                     </div>
                     <div className="col-2">
-                        <p className="text-muted">
+                        <h3 className="text-light">
                             Learn
-                        </p>
-                        <p className="text-muted">
+                        </h3>
+                        <p className="text-light">
                             Product
                         </p>
-                        <p className="text-muted">
+                        <p className="text-light">
                             Solutions
                         </p>
-                        <p className="text-muted">
+                        <p className="text-light">
                             Pricing
                         </p>
                     </div>
                     <div className="col-2">
-                        <p className="text-muted">
+                        <h3 className="text-light">
                             Company
-                        </p>
-                        <p className="text-muted">
+                        </h3>
+                        <p className="text-light">
                             About
                         </p>
-                        <p className="text-muted">
+                        <p className="text-light">
                             Contact
                         </p>
-                        <p className="text-muted">
+                        <p className="text-light">
                             Support
                         </p>
                     </div>
                     <div className="col-4">
-                        <p className="text-muted">
+                        <h3 className="text-light">
                             Stay up to date
-                        </p>
-                        <p className="text-muted">
+                        </h3>
+                        <p className="text-light">
                             Sign up to our newsletter to get notified about any and all brand updates and exclusive information.
                         </p>
-                        <p className="text-muted">
+                        <p className="text-light">
                             PUT EMAIL INPUT HERE
                         </p>
                     </div>

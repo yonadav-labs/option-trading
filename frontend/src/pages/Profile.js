@@ -24,7 +24,7 @@ const Profile = () => {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${accessToken}`,
       },
-      body: JSON.stringify({ 'reason': reason.current.value !== "" ? reason.current.value : "User cancelled with no reason" })
+      body: JSON.stringify({ 'reason': reason.current.value !== "" ? "Reason: " + reason.current.value : "User cancelled with no reason" })
     })
       .then((response) => {
         if (!response.ok) {
@@ -116,6 +116,7 @@ const Profile = () => {
           <Modal.Title>Cancel Subscription</Modal.Title>
         </Modal.Header>
         <Modal.Body>
+          <p>We are sorry to see you go. If you don't mind, we would appreciate if you could enter your reason for cancelling and/or any feedback you'd like to give us.</p>
           <Form>
             <Form.Group controlId="cancelSubscription.ReasonTextarea">
               <Form.Label>Reason</Form.Label>

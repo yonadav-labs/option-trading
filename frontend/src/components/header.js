@@ -56,23 +56,27 @@ function Header() {
     return (
         <header>
             <Navbar collapseOnSelect expand="lg">
-                <Image src="/logo192.png" style={{ 'height': '1.5rem', 'paddingRight': '0.2rem' }} />
-                <Navbar.Brand as={Link} to="/" className="font-weight-bold">Tigerstance</Navbar.Brand>
+                <Navbar.Brand as={Link} to="/" className="font-weight-bold">
+                    <Image src="/logo192.png" style={{ 'height': '1.5rem', 'paddingRight': '0.2rem' }} />
+                    Tigerstance
+                </Navbar.Brand>
                 <Navbar.Toggle aria-controls="responsive-navbar-nav" />
                 <Navbar.Collapse id="responsive-navbar-nav">
-                    <Nav className="mr-auto">
-                        <Nav.Link as={Link} to="/option-screener">Option Screener</Nav.Link>
-                        <Nav.Link as={Link} to="/strategy-screener">Strategy Screener</Nav.Link>
+                    <Nav className="mr-auto justify-content-center" style={{ flex: 1}}>
+                        <Nav.Link className="text-dark" as={Link} to="/option-screener">Option Screener</Nav.Link>
+                        <Nav.Link className="text-dark" as={Link} to="/strategy-screener">Strategy Screener</Nav.Link>
+                        <Nav.Link className="text-dark" href="#">Pricing</Nav.Link>
+                        <Nav.Link className="text-dark" href="#">Support</Nav.Link>
                     </Nav>
                     {authState.isAuthenticated ?
                         <Nav>
-                            <Nav.Link as={Link} to="/profile">Profile</Nav.Link>
-                            <Nav.Link href="#" onClick={logout}>Logout</Nav.Link>
+                            <Nav.Link className="text-dark" as={Link} to="/profile">Profile</Nav.Link>
+                            <Nav.Link className="text-dark" href="#" onClick={logout}>Logout</Nav.Link>
                         </Nav>
                         :
                         <Nav>
-                            <Nav.Link href="/signin">Login</Nav.Link>
-                            <Nav.Link href="/signin/register">Sign Up</Nav.Link>
+                            <Nav.Link className="text-dark" href="/signin">Log In</Nav.Link>
+                            <Nav.Link className="btn-primary text-light" href="/signin/register">Sign Up, It’s Free</Nav.Link>
                         </Nav>
                     }
                 </Navbar.Collapse>

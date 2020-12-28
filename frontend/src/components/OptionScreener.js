@@ -331,7 +331,7 @@ export default function SellCoveredCall() {
     })
 
     return (
-        <div id="content" className="container" style={{ "marginTop": "4rem" }}>
+        <div id="content" className="container min-vh-100" style={{ "marginTop": "4rem" }}>
             <ModalSpinner active={modalActive}></ModalSpinner>
             <h1 className="text-center">Option Screener</h1>
             <Form>
@@ -379,7 +379,7 @@ export default function SellCoveredCall() {
                             </Form.Group>
                             <div class="row">
                                 <div className="col">
-                                    <Button type="submit" className="btn btn-dark">Get option chain</Button>
+                                    <Button type="submit" className="btn btn-primary">Get option chain</Button>
                                 </div>
                             </div>
                         </Form>

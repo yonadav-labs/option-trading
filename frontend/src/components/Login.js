@@ -55,7 +55,7 @@ export default function Login() {
     }, [])
 
     return (
-        <div>
+        <div className="min-vh-100">
             <div id="sign-in-widget" />
         </div>
     );
