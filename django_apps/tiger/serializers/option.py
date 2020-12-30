@@ -60,7 +60,7 @@ class OptionContractSerializer(serializers.Serializer):
 
 
 class LegSerializer(serializers.Serializer):
-    type = serializers.CharField(max_length=50)
+    name = serializers.CharField(max_length=50)
     is_long = serializers.BooleanField()
     units = serializers.IntegerField(min_value=0)
     stock = StockSerializer(allow_null=True)
@@ -83,12 +83,7 @@ class TradeSerializer(serializers.Serializer):
     target_price_profit = serializers.FloatField(allow_null=True)
     target_price_profit_ratio = serializers.FloatField(allow_null=True)
 
-    long_cash_leg = LegSerializer(allow_null=True)
-    long_stock_leg = LegSerializer(allow_null=True)
-    long_call_leg = LegSerializer(allow_null=True)
-    short_call_leg = LegSerializer(allow_null=True)
-    long_put_leg = LegSerializer(allow_null=True)
-    short_put_leg = LegSerializer(allow_null=True)
+    legs = LegSerializer(required=True, many=True)
 
     profit_cap = serializers.FloatField(allow_null=True)  # CoveredCall only
     profit_cap_ratio = serializers.FloatField(allow_null=True)  # CoveredCall only

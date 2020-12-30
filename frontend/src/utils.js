@@ -179,3 +179,13 @@ export function onLastTradedFilterChange(event, lastTradedFilter) {
         comparator: Comparator.GT
     });
 };
+
+export function getLegByName(trade, name) {
+    let return_leg = null;
+    trade.legs.forEach(function (leg) {
+        if (leg.name == name) {
+            return_leg = leg;
+        }
+    });
+    return return_leg;
+};

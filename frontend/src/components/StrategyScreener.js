@@ -9,7 +9,7 @@ import Axios from 'axios';
 import getApiUrl, {
     PriceFormatter, TimestampDateFormatter, onLastTradedFilterChange, ProfitFormatter,
     PriceMovementFormatter, NumberRoundFormatter, PercentageFormatter,
-    TimestampTimeFormatter, ContractDetails
+    TimestampTimeFormatter, ContractDetails, getLegByName
 } from '../utils';
 import filterFactory, { multiSelectFilter, numberFilter } from 'react-bootstrap-table2-filter';
 import { BsArrowsExpand, BsArrowsCollapse } from 'react-icons/bs';
@@ -187,29 +187,31 @@ export default function BestCallByPrice() {
     function StrategyInstructions(row) {
         switch (row.type) {
             case ("long_call"):
+                const long_call_leg = getLegByName(row, 'long_call_leg');
                 return (
                     <Card>
                         <Card.Body>
                             <Card.Title>
-                                Buy 1 {basicInfo.symbol} strike {PriceFormatter(row.long_call_leg.contract.strike)} {
-                                    TimestampDateFormatter(row.expiration)} call at {PriceFormatter(row.long_call_leg.contract.premium)}.
+                                Buy 1 {basicInfo.symbol} strike {PriceFormatter(long_call_leg.contract.strike)} {
+                                    TimestampDateFormatter(row.expiration)} call at {PriceFormatter(long_call_leg.contract.premium)}.
                             </Card.Title>
                             <Card.Text>
-                                {ContractDetails(row.long_call_leg.contract)}
+                                {ContractDetails(long_call_leg.contract)}
                             </Card.Text>
                         </Card.Body>
                     </Card>
                 );
             case ("covered_call"):
+                const short_call_leg = getLegByName(row, 'short_call_leg');
                 return (
                     <Card>
                         <Card.Body>
                             <Card.Title>
-                                Sell 1 {basicInfo.symbol} strike {PriceFormatter(row.short_call_leg.contract.strike)} {
-                                    TimestampDateFormatter(row.expiration)} call at {PriceFormatter(row.short_call_leg.contract.premium)}.
+                                Sell 1 {basicInfo.symbol} strike {PriceFormatter(short_call_leg.contract.strike)} {
+                                    TimestampDateFormatter(row.expiration)} call at {PriceFormatter(short_call_leg.contract.premium)}.
                                 </Card.Title>
                             <Card.Text>
-                                {ContractDetails(row.short_call_leg.contract)}
+                                {ContractDetails(short_call_leg.contract)}
                             </Card.Text>
                             <Card.Title>Buy 100 shares of {basicInfo.symbol} at {
                                 PriceFormatter(basicInfo.regularMarketPrice)} and hold as collateral.</Card.Title>
@@ -217,31 +219,34 @@ export default function BestCallByPrice() {
                     </Card>
                 );
             case ("long_put"):
+                const long_put_leg = getLegByName(row, 'long_put_leg');
                 return (
                     <Card>
                         <Card.Body>
                             <Card.Title>
-                                Buy 1 {basicInfo.symbol} strike {PriceFormatter(row.long_put_leg.contract.strike)} {
-                                    TimestampDateFormatter(row.expiration)} put at {PriceFormatter(row.long_put_leg.contract.premium)}.
+                                Buy 1 {basicInfo.symbol} strike {PriceFormatter(long_put_leg.contract.strike)} {
+                                    TimestampDateFormatter(row.expiration)} put at {PriceFormatter(long_put_leg.contract.premium)}.
                             </Card.Title>
                             <Card.Text>
-                                {ContractDetails(row.long_put_leg.contract)}
+                                {ContractDetails(long_put_leg.contract)}
                             </Card.Text>
                         </Card.Body>
                     </Card>
                 );
             case ("cash_secured_put"):
+                const short_put_leg = getLegByName(row, 'short_put_leg');
+                const long_cash_leg = getLegByName(row, 'long_cash_leg');
                 return (
                     <Card>
                         <Card.Body>
                             <Card.Title>
-                                Sell 1 {basicInfo.symbol} strike {PriceFormatter(row.short_put_leg.contract.strike)} {
-                                    TimestampDateFormatter(row.expiration)} call at {PriceFormatter(row.short_put_leg.contract.premium)}.
+                                Sell 1 {basicInfo.symbol} strike {PriceFormatter(short_put_leg.contract.strike)} {
+                                    TimestampDateFormatter(row.expiration)} call at {PriceFormatter(short_put_leg.contract.premium)}.
                                 </Card.Title>
                             <Card.Text>
-                                {ContractDetails(row.short_put_leg.contract)}
+                                {ContractDetails(short_put_leg.contract)}
                             </Card.Text>
-                            <Card.Title>Keep {PriceFormatter(row.long_cash_leg.units)} cash aside as collateral.</Card.Title>
+                            <Card.Title>Keep {PriceFormatter(long_cash_leg.units)} cash aside as collateral.</Card.Title>
                         </Card.Body>
                     </Card>
                 );
