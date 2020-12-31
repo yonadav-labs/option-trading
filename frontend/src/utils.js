@@ -63,7 +63,7 @@ export function PriceMovementFormatter(ratio, price) {
     return (
         <span>
             {PriceFormatter(price)}<br />
-            <small>{ratio > 0 ? '+' : '-'}{PercentageFormatter(Math.abs(ratio))}</small>
+            <small>{ratio >= 0 ? '+' : '-'}{PercentageFormatter(Math.abs(ratio))}</small>
         </span >
     );
 };
