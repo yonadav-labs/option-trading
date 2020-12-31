@@ -111,9 +111,9 @@ export default function BestCallByPrice() {
             text: 'Last traded',
             formatter: (cell, row, rowIndex, extraData) => {
                 if (cell == 0) return (<span>N/A</span>);
-                const exp_date = new Date(cell * 1000).toLocaleDateString('en-US', { 'timeZone': 'EST' })
-                const exp_time = new Date(cell * 1000).toLocaleTimeString('en-US', { 'timeZone': 'EST', hour: '2-digit', minute: '2-digit' })
-                return (<span>{exp_date} <br /><small>{exp_time} EST</small></span>);
+                const exp_date = new Date(cell * 1000).toLocaleDateString('en-US')
+                const exp_time = new Date(cell * 1000).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })
+                return (<span>{exp_date} <br /><small>{exp_time}</small></span>);
             },
             sort: true
         },
@@ -286,7 +286,7 @@ export default function BestCallByPrice() {
     expirationTimestamps.map((timestamp, index) => {
         // Yahoo's timestamp * 1000 = TD's timestamp.
         const date = new Date(timestamp < 9999999999 ? timestamp * 1000 : timestamp)
-            .toLocaleDateString('en-US', { 'timeZone': 'EST' });
+            .toLocaleDateString('en-US');
         expirationTimestampsOptions.push({ value: timestamp, label: date });
     })
 

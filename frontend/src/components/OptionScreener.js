@@ -326,7 +326,7 @@ export default function SellCoveredCall() {
     expirationTimestamps.map((timestamp, index) => {
         // Yahoo's timestamp * 1000 = TD's timestamp.
         const date = new Date(timestamp < 9999999999 ? timestamp * 1000 : timestamp)
-            .toLocaleDateString('en-US', { 'timeZone': 'EST' });
+            .toLocaleDateString('en-US');
         expirationTimestampsOptions.push({ value: timestamp, label: date });
     })
 

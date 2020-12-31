@@ -69,15 +69,15 @@ export function PriceMovementFormatter(ratio, price) {
 };
 
 export function TimestampDateFormatter(ts) {
-    const exp_date = new Date(ts * 1000).toLocaleDateString('en-US', { 'timeZone': 'EST' })
+    const exp_date = new Date(ts * 1000).toLocaleDateString('en-US')
     return (<span>{exp_date}</span>);
 };
 
 export function TimestampTimeFormatter(ts) {
     if (ts == 0) return (<span>N/A</span>);
-    const exp_date = new Date(ts * 1000).toLocaleDateString('en-US', { 'timeZone': 'EST' })
-    const exp_time = new Date(ts * 1000).toLocaleTimeString('en-US', { 'timeZone': 'EST', hour: '2-digit', minute: '2-digit' })
-    return (<span>{exp_date} {exp_time} EST</span>);
+    const exp_date = new Date(ts * 1000).toLocaleDateString('en-US')
+    const exp_time = new Date(ts * 1000).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })
+    return (<span>{exp_date} {exp_time}</span>);
 };
 
 export function ExpDayFormatter(ts, days_till_expiration) {
