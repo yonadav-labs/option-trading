@@ -31,10 +31,18 @@
     height: 32rem;
 }
 
-/* Adjust footer  */
+/* Adjustments  */
+.navbar {
+  padding: 1rem 3rem;
+}
+
 .featurette-divider-last .col-md-4, .col-md-2 {
   padding-left: 5%;
   padding-right: 5%;
+}
+
+.signup-sm {
+  margin-left: .8rem;
 }
 
 
@@ -52,7 +60,7 @@
 
 .home-background {
   background-image: url('../svg/Hero-Right-D.svg'), url('../svg/Hero-Left-D.svg');
-  background-position: right top, left center;
+  background-position: right top, left 5%;
   background-repeat: no-repeat, no-repeat;
   background-size: 50vw, 50vw;
 }
