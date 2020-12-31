@@ -35,8 +35,9 @@ def fetch_ticker_details():
                 expiration_timestamps = get_expiration_timestamps(response, True)
                 if not expiration_timestamps:
                     ticker.status = 'disabled'
-                quote = get_quote(response, True)
-                ticker.full_name = quote.get('longName', quote.get('shortName', ''))
+                else:
+                    quote = get_quote(response, True)
+                    ticker.full_name = quote.get('longName', quote.get('shortName', ''))
                 ticker.save()
                 print(ticker)
                 break;

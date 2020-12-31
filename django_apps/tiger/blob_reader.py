@@ -19,7 +19,7 @@ def get_quote(response, is_yahoo):
 
 def get_expiration_timestamps(response, is_yahoo):
     if is_yahoo:
-        if not is_valid_option_response(response):
+        if not is_valid_option_response(response) or not response.get('optionChain').get('result'):
             return None
         return response.get('optionChain').get('result')[0].get('expirationDates', [])
     else:
