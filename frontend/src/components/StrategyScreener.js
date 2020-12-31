@@ -32,6 +32,16 @@ export default function BestCallByPrice() {
     const [useAsPremium, setUseAsPremium] = useState('estimated');
     const [modalActive, setModalActive] = useState(false);
 
+    const resetStates = () => {
+        setSelectedTicker([]);
+        setExpirationTimestamps([]);
+        setbasicInfo({});
+        setShowTimestampAlert(false);
+        setBestStrategies([]);
+        setSelectedExpirationTimestamps([]);
+        setModalActive(false);
+    }
+
     const result_table_columns = [
         {
             dataField: "type",
@@ -291,6 +301,7 @@ export default function BestCallByPrice() {
                         setSelectedTicker={setSelectedTicker}
                         setExpirationTimestamps={setExpirationTimestamps}
                         setbasicInfo={setbasicInfo}
+                        resetStates={resetStates}
                         setModalActive={setModalActive}
                     />
                 </Form.Group>
