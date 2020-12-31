@@ -241,7 +241,7 @@ export default function BestCallByPrice() {
                         <Card.Body>
                             <Card.Title>
                                 Sell 1 {basicInfo.symbol} strike {PriceFormatter(short_put_leg.contract.strike)} {
-                                    TimestampDateFormatter(row.expiration)} call at {PriceFormatter(short_put_leg.contract.premium)}.
+                                    TimestampDateFormatter(row.expiration)} put at {PriceFormatter(short_put_leg.contract.premium)}.
                                 </Card.Title>
                             <Card.Text>
                                 {ContractDetails(short_put_leg.contract)}
