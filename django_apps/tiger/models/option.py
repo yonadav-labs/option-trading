@@ -19,7 +19,7 @@ class Ticker(BaseModel):
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="unspecified")
 
     def __str__(self):
-        return str(self.symbol)
+        return '{} - {} - {}'.format(self.symbol, self.full_name, self.status)
 
     def get_request_cache(self, is_yahoo, expiration_timestamp=None):
         url = get_yahoo_option_url(self.symbol.upper(), expiration_timestamp) if is_yahoo else get_td_option_url(
