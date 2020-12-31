@@ -35,7 +35,7 @@ class Stock(Security):
         return target_price
 
 
-class OptionContract:
+class OptionContract(Security):
     def __init__(self, is_call, data_dict, stock_price, use_as_premium='estimated'):
         if 'contractSymbol' in data_dict:
             # Yahoo.
