@@ -7,7 +7,7 @@ function Footer(props) {
             {/* <hr className="featurette-divider-last" /> */}
             <footer className="featurette-divider-last">
                 <div className="row pt-5">
-                    <div className="col-4">
+                    <div className="col-md-4 col-12">
                         <h3 className="text-light">
                             Never get lost in the option chain again.
                         </h3>
@@ -15,7 +15,7 @@ function Footer(props) {
                             Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer fermentum, lacus vel gravida varius, nisi odio lacinia felis, in vehicula velit sapien vitae dolor.
                         </p>
                     </div>
-                    <div className="col-2">
+                    <div className="col-md-2 col-6">
                         <h3 className="text-light">
                             Learn
                         </h3>
@@ -29,7 +29,7 @@ function Footer(props) {
                             Pricing
                         </p>
                     </div>
-                    <div className="col-2">
+                    <div className="col-md-2 col-6">
                         <h3 className="text-light">
                             Company
                         </h3>
@@ -43,7 +43,7 @@ function Footer(props) {
                             Support
                         </p>
                     </div>
-                    <div className="col-4">
+                    <div className="col-md-4 col-12">
                         <h3 className="text-light">
                             Stay up to date
                         </h3>

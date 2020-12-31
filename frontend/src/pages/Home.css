@@ -31,6 +31,12 @@
     height: 32rem;
 }
 
+/* Adjust footer  */
+.featurette-divider-last .col-md-4, .col-md-2 {
+  padding-left: 5%;
+  padding-right: 5%;
+}
+
 
 /* RESPONSIVE CSS
   -------------------------------------------------- */
