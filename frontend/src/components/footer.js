@@ -6,7 +6,7 @@ function Footer(props) {
         <div className={`container-fluid ${props.class}`} style={{ background: '#2A2A2A' }} >
             {/* <hr className="featurette-divider-last" /> */}
             <footer className="featurette-divider-last">
-                <div className="row pt-5">
+                <div className="row">
                     <div className="col-md-4 col-12">
                         <h3 className="text-light">
                             Never get lost in the option chain again.

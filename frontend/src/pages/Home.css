@@ -31,14 +31,25 @@
     height: 32rem;
 }
 
+
+.home-background {
+  background-image: url('../svg/Hero-Right-D.svg'), url('../svg/Hero-Left-D.svg');
+  background-position: right top, left 5%;
+  background-repeat: no-repeat, no-repeat;
+  background-size: 50vw, 50vw;
+}
+
 /* Adjustments  */
 .navbar {
   padding: 1rem 3rem;
 }
 
+.featurette-divider-last {
+  padding:0 3rem;
+}
 .featurette-divider-last .col-md-4, .col-md-2 {
-  padding-left: 5%;
-  padding-right: 5%;
+  padding-top: 3rem;
+  padding-right: 3rem;
 }
 
 .signup-sm {
@@ -46,10 +57,13 @@
 }
 
 .center-buttons .btn {
-  width: 200px;
-  margin: 5px 10px!important;
+  width: 12rem;
+  margin: .5rem 1rem !important;
 }
 
+.find-title {
+  margin-bottom: 3rem;
+}
 
 /* RESPONSIVE CSS
   -------------------------------------------------- */
@@ -63,9 +77,10 @@
     }
 }
 
-.home-background {
-  background-image: url('../svg/Hero-Right-D.svg'), url('../svg/Hero-Left-D.svg');
-  background-position: right top, left 5%;
-  background-repeat: no-repeat, no-repeat;
-  background-size: 50vw, 50vw;
+@media only screen and (max-width: 990px) {
+  .signup-sm {
+    margin-left: 0;
+    width: 156px;
+    text-align: center;
+  }
 }

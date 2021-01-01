@@ -86,7 +86,7 @@ export default function Home() {
                 <div className="row p-5 min-vh-100">
                     <div className="col-lg-12 text-center my-auto">
                         <h4 className="text-primary">How it Works</h4>
-                        <h1>Find the right contract just for you</h1>
+                        <h1 className="find-title">Find the right contract just for you</h1>
                     </div>
                     <div className="col-lg-5 mb-3">
                         <img className="img-fluid mx-auto d-block" src="data:image/gif;base64,R0lGODlhAQABAIAAAHd3dwAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" width="400" height="400" />
