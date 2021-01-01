@@ -39,7 +39,7 @@ def ticker(request, ticker_symbol, format=None):
         expiration_timestamps = ticker.get_expiration_timestamps()
         if expiration_timestamps is None:
             return Response(status=500)
-        return Response({'quote': ticker.get_quote(), 'expiration_timestamps': expiration_timestamps})
+        return Response({'quote': ticker.get_quote()[0], 'expiration_timestamps': expiration_timestamps})
 
 
 @api_view(['GET'])
