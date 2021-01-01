@@ -8,6 +8,7 @@ restful_urlpatterns = [
     path('api/user', views.user_detail),
     path('api/tickers/<str:ticker_symbol>/contracts/', views.contracts, name='contracts'),
     path('api/tickers/<str:ticker_symbol>/trades/', views.get_best_trades, name='get_best_trades'),
+    path('api/trade_snapshot/<int:pk>/', views.trade_snapshot_detail, name='trade_snapshot_detail'),
     path('api/subscription/update', views.update_subscription),
     path('api/subscription/cancel', views.cancel_subscription),
     path('api/api-auth/', include('rest_framework.urls', namespace='rest_framework')),

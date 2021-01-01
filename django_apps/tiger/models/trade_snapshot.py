@@ -17,9 +17,6 @@ class SecuritySnapshot(BaseModel):
 class StockSnapshot(SecuritySnapshot):
     ticker = models.ForeignKey(Ticker, on_delete=models.CASCADE)
 
-    class Meta:
-        unique_together = ['ticker', 'external_cache']
-
     def __str__(self):
         return "({}) {}-{}".format(self.id, self.ticker.symbol, self.external_cache.id)
 
@@ -29,9 +26,7 @@ class OptionContractSnapshot(SecuritySnapshot):
     is_call = models.BooleanField()
     strike = models.FloatField()
     expiration_timestamp = models.PositiveIntegerField()
-
-    class Meta:
-        unique_together = ['ticker', 'is_call', 'strike', 'expiration_timestamp', 'external_cache']
+    premium = models.FloatField(null=True, blank=True)
 
     def __str__(self):
         return "({}) {}-{}-${}-{}".format(self.id, self.ticker.symbol, 'CALL' if self.is_call else 'PUT', self.strike,
@@ -42,16 +37,13 @@ class LegSnapshot(BaseModel):
     is_long = models.BooleanField()
     units = models.PositiveIntegerField()
     # Only one of cash, stock, and contract should be not NULL.
-    cash = models.PositiveIntegerField(null=True, blank=True)
-    stock = models.ForeignKey(StockSnapshot, null=True, blank=True, on_delete=models.SET_NULL)
-    contract = models.ForeignKey(OptionContractSnapshot, null=True, blank=True, on_delete=models.SET_NULL)
-
-    class Meta:
-        unique_together = ['is_long', 'units', 'cash', 'stock', 'contract']
+    cash_snapshot = models.PositiveIntegerField(null=True, blank=True)
+    stock_snapshot = models.ForeignKey(StockSnapshot, null=True, blank=True, on_delete=models.SET_NULL)
+    contract_snapshot = models.ForeignKey(OptionContractSnapshot, null=True, blank=True, on_delete=models.SET_NULL)
 
     def __str__(self):
-        return "({}) {}-{}{}{}".format(self.id, 'LONG' if self.is_long else 'SHORT', self.cash, self.stock,
-                                       self.contract)
+        return "({}) {}-{}{}{}".format(self.id, 'LONG' if self.is_long else 'SHORT', self.cash_snapshot,
+                                       self.stock_snapshot, self.contract_snapshot)
 
 
 class TradeSnapshot(BaseModel):
@@ -63,8 +55,8 @@ class TradeSnapshot(BaseModel):
         ("cash_secured_put", "Cash secured put"),
     )
     type = models.CharField(max_length=100, choices=TRADE_TYPE_CHOICES, default="unspecified")
-    stock = models.ForeignKey(StockSnapshot, on_delete=models.CASCADE)  # Snapshot of underlying asset.
-    legs = models.ManyToManyField(LegSnapshot)
+    stock_snapshot = models.ForeignKey(StockSnapshot, on_delete=models.CASCADE)  # Snapshot of underlying asset.
+    leg_snapshots = models.ManyToManyField(LegSnapshot)
 
     creator = models.ForeignKey(User, on_delete=models.CASCADE, related_name='trades')
     is_public = models.BooleanField(default=False)  # If non-creator can view this trade.

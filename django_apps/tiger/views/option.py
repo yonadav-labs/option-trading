@@ -4,8 +4,8 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.exceptions import APIException
 
-from tiger.serializers import TickerSerializer, OptionContractSerializer, TradeSerializer
-from tiger.models import Ticker
+from tiger.serializers import TickerSerializer, OptionContractSerializer, TradeSerializer, TradeSnapshotSerializer
+from tiger.models import Ticker, TradeSnapshot
 from tiger.classes import LongCall, CoveredCall, LongPut, CashSecuredPut, OptionContract, Stock
 
 
@@ -92,3 +92,24 @@ def get_best_trades(request, ticker_symbol):
         filter(lambda trade: trade.target_price_profit is not None and trade.target_price_profit > 0.0, all_trades))
     sorted(all_trades, key=lambda trade: -trade.target_price_profit_ratio)
     return Response({'trades': TradeSerializer(all_trades, many=True).data})
+
+
+@api_view(['GET'])
+def trade_snapshot_detail(request, pk):
+    trade_snapshot = get_object_or_404(TradeSnapshot, pk=pk)
+
+    if request.method == 'GET':
+        trade_snapshot_serializer = TradeSnapshotSerializer(trade_snapshot)
+        return Response(trade_snapshot_serializer.data)
+
+    # elif request.method == 'PUT':
+    #     data = JSONParser().parse(request)
+    #     serializer = SnippetSerializer(snippet, data=data)
+    #     if serializer.is_valid():
+    #         serializer.save()
+    #         return JsonResponse(serializer.data)
+    #     return JsonResponse(serializer.errors, status=400)
+    #
+    # elif request.method == 'DELETE':
+    #     snippet.delete()
+    #     return HttpResponse(status=204)
