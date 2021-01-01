@@ -1,6 +1,7 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
-from .models import User, Ticker, ExternalRequestCache, Subscription, StockSnapshot, OptionContractSnapshot, Leg, Trade
+from .models import User, Ticker, ExternalRequestCache, Subscription, StockSnapshot, OptionContractSnapshot, \
+    LegSnapshot, TradeSnapshot
 
 DEFAULT_FIELDS = ['created_time', 'last_updated_time']
 
@@ -34,13 +35,13 @@ class OptionContractSnapshotAdmin(admin.ModelAdmin):
     search_fields = ['id', 'ticker__symbol']
 
 
-class LegAdmin(admin.ModelAdmin):
+class LegSnapshotAdmin(admin.ModelAdmin):
     list_display = ['id', 'is_long', 'units', 'cash', 'stock', 'contract', ] + DEFAULT_FIELDS
     list_filter = ['is_long']
     search_fields = ['id']
 
 
-class TradeAdmin(admin.ModelAdmin):
+class TradeSnapshotAdmin(admin.ModelAdmin):
     list_display = ['id', 'type', 'stock', 'creator', 'is_public', ] + DEFAULT_FIELDS
     list_filter = ['type', 'is_public']
     search_fields = ['id', 'type', 'creator__id', 'is_public']
@@ -52,5 +53,5 @@ admin.site.register(ExternalRequestCache, ExternalRequestCacheAdmin)
 admin.site.register(Subscription, SubscriptionAdmin)
 admin.site.register(StockSnapshot, StockSnapshotAdmin)
 admin.site.register(OptionContractSnapshot, OptionContractSnapshotAdmin)
-admin.site.register(Leg, LegAdmin)
-admin.site.register(Trade, TradeAdmin)
+admin.site.register(LegSnapshot, LegSnapshotAdmin)
+admin.site.register(TradeSnapshot, TradeSnapshotAdmin)

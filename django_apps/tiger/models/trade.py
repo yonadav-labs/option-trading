@@ -31,7 +31,7 @@ class OptionContractSnapshot(SecuritySnapshot):
         unique_together = ['ticker', 'is_call', 'strike', 'expiration_timestamp', 'external_cache']
 
 
-class Leg(BaseModel):
+class LegSnapshot(BaseModel):
     is_long = models.BooleanField()
     units = models.PositiveIntegerField()
     # Only one of cash, stock, and contract should be not NULL.
@@ -43,7 +43,7 @@ class Leg(BaseModel):
         unique_together = ['is_long', 'units', 'cash', 'stock', 'contract']
 
 
-class Trade(BaseModel):
+class TradeSnapshot(BaseModel):
     TRADE_TYPE_CHOICES = (
         ("unspecified", "Unspecified"),
         ("long_call", "Long call"),
@@ -53,7 +53,7 @@ class Trade(BaseModel):
     )
     type = models.CharField(max_length=100, choices=TRADE_TYPE_CHOICES, default="unspecified")
     stock = models.ForeignKey(StockSnapshot, on_delete=models.CASCADE)  # Snapshot of underlying asset.
-    legs = models.ManyToManyField(Leg)
+    legs = models.ManyToManyField(LegSnapshot)
 
     creator = models.ForeignKey(User, on_delete=models.CASCADE, related_name='trades')
     is_public = models.BooleanField(default=False)  # If non-creator can view this trade.
