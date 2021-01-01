@@ -78,9 +78,25 @@
 }
 
 @media only screen and (max-width: 990px) {
+  h1 {
+    font-size: 2.3rem;
+  }
+
+  h2 {
+    font-size: 1.7rem;
+  }
+
+  h3 {
+    font-size: 1.5rem;
+  }
+
+  p{
+    font-size: 1rem;
+  }
   .signup-sm {
     margin-left: 0;
     width: 156px;
     text-align: center;
   }
+  
 }
