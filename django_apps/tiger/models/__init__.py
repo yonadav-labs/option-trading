@@ -4,3 +4,4 @@ from .ticker import *
 from .user import *
 from .watchlist import *
 from .subscription import *
+from .trade import *

@@ -35,3 +35,6 @@ class ExternalRequestCache(BaseModel):
     @property
     def short_response_blob(self):
         return self.response_blob[:100]
+
+    def __str__(self):
+        return self.request_url
