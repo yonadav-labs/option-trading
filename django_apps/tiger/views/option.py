@@ -71,8 +71,9 @@ def get_best_trades(request, ticker_symbol):
     except Exception:
         raise APIException('Invalid query parameters.')
 
-    stock_price = ticker.get_quote().get('regularMarketPrice')
-    stock = Stock(stock_price)
+    quote, cache_id = ticker.get_quote()
+    stock_price = quote.get('regularMarketPrice')
+    stock = Stock(stock_price, cache_id)
 
     all_trades = []
     call_contract_lists, put_contract_list = get_valid_contracts(ticker, request, use_as_premium,

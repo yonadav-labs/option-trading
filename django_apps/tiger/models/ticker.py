@@ -24,17 +24,17 @@ class Ticker(BaseModel):
         url = get_yahoo_option_url(self.symbol.upper(), expiration_timestamp) if is_yahoo else get_td_option_url(
             self.symbol.upper())
         request_cache = ExternalRequestCache.objects.get_or_fetch_external_api(url)
-        return json.loads(request_cache.response_blob)
+        return json.loads(request_cache.response_blob), request_cache.id
 
     # TODO: change to use TD.
     def get_quote(self):
-        response = self.get_request_cache(True)
-        return get_quote(response, True)
+        response, cache_id = self.get_request_cache(True)
+        return get_quote(response, True), cache_id
 
     def get_expiration_timestamps(self):
-        response = self.get_request_cache(settings.USE_YAHOO)
+        response, cache_id = self.get_request_cache(settings.USE_YAHOO)
         return get_expiration_timestamps(response, settings.USE_YAHOO)
 
     def get_call_puts(self, use_as_premium, expiration_timestamp):
-        response = self.get_request_cache(settings.USE_YAHOO, expiration_timestamp)
-        return get_call_puts(response, settings.USE_YAHOO, use_as_premium, expiration_timestamp)
+        response, cache_id = self.get_request_cache(settings.USE_YAHOO, expiration_timestamp)
+        return get_call_puts(response, settings.USE_YAHOO, use_as_premium, expiration_timestamp, cache_id)
