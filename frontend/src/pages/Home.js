@@ -43,8 +43,10 @@ export default function Home() {
                     <div className="col-lg-12 text-center my-auto">
                         <h1>We do the math, so you don't have to.</h1>
                         <p>Understand option contracts in one glance.</p>
-                        <a class="btn btn-lg btn-primary mr-3" href="signin/register" role="button">Sign Up, It’s Free</a>
-                        <a class="btn btn-lg btn-secondary ml-3" href="#" role="button">Our Product</a>
+                        <div className="center-buttons">
+                            <a class="btn btn-lg btn-primary mr-3" href="signin/register" role="button">Sign Up, It’s Free</a>
+                            <a class="btn btn-lg btn-secondary ml-3" href="#" role="button">Our Product</a>
+                        </div>
                     </div>
                 </div>
 

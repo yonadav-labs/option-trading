@@ -45,6 +45,11 @@
   margin-left: .8rem;
 }
 
+.center-buttons .btn {
+  width: 200px;
+  margin: 5px 10px!important;
+}
+
 
 /* RESPONSIVE CSS
   -------------------------------------------------- */
