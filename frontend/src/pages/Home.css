@@ -65,6 +65,16 @@
   margin-bottom: 3rem;
 }
 
+h1, h2{
+  font-family: halyard-display, sans-serif;
+  font-style: normal;
+  font-weight: 600;
+}
+
+h2 {
+  font-weight: 400;
+}
+
 /* RESPONSIVE CSS
   -------------------------------------------------- */
 

@@ -53,7 +53,7 @@ export default function Home() {
                 <div className="row p-5 min-vh-100">
                     <div className="col-lg-12 text-center my-auto">
                         <h4 className="text-primary">Our Mission</h4>
-                        <h1>Tigerstance, an AI-empowered option pricing software that provides a one-stop solution for everyday investors.</h1>
+                        <h2>Tigerstance, an AI-empowered option pricing software that provides a one-stop solution for everyday investors.</h2>
                     </div>
                     <div className="col-lg-3 text-center">
                         <img className="rounded-circle mb-4" src="data:image/gif;base64,R0lGODlhAQABAIAAAHd3dwAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" width="100" height="100" />
