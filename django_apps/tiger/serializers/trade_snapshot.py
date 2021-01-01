@@ -1,58 +1,77 @@
-from tiger.models import User, ExternalRequestCache, Ticker, StockSnapshot, OptionContractSnapshot, LegSnapshot, \
-    TradeSnapshot
+from django.db import transaction
 from rest_framework import serializers
 
+from tiger.models import User, ExternalRequestCache, Ticker, StockSnapshot, OptionContractSnapshot, LegSnapshot, \
+    TradeSnapshot
 
-class CreatorSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = User
-        fields = ('id',)
-
-
-class TickerSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Ticker
-        fields = ('id',)
-
-
-class ExternalRequestCache(serializers.ModelSerializer):
-    class Meta:
-        model = ExternalRequestCache
-        fields = ('id',)
+'''
+The following serializer is for write-only!
+'''
 
 
 class StockSnapshotSerializer(serializers.ModelSerializer):
-    ticker = TickerSerializer()
-    external_cache = ExternalRequestCache()
+    ticker_id = serializers.IntegerField()
+    external_cache_id = serializers.IntegerField()
 
     class Meta:
         model = StockSnapshot
-        fields = ('id', 'ticker', 'external_cache')
+        fields = ('ticker_id', 'external_cache_id')
 
 
 class OptionContractSnapshotSerializer(serializers.ModelSerializer):
-    ticker = TickerSerializer()
-    external_cache = ExternalRequestCache()
+    ticker_id = serializers.IntegerField()
+    external_cache_id = serializers.IntegerField()
 
     class Meta:
         model = OptionContractSnapshot
-        fields = ('id', 'ticker', 'is_call', 'strike', 'expiration_timestamp', 'premium', 'external_cache')
+        fields = ('ticker_id', 'is_call', 'strike', 'expiration_timestamp', 'premium', 'external_cache_id')
 
 
 class LegSnapshotSerializer(serializers.ModelSerializer):
-    contract_snapshot = OptionContractSnapshotSerializer()
+    stock_snapshot = StockSnapshotSerializer(allow_null=True)
+    contract_snapshot = OptionContractSnapshotSerializer(allow_null=True)
 
     class Meta:
         model = LegSnapshot
-        fields = ('id', 'is_long', 'units', 'cash_snapshot', 'stock_snapshot', 'contract_snapshot')
+        fields = ('is_long', 'units', 'cash_snapshot', 'stock_snapshot', 'contract_snapshot')
 
 
+def get_subdict_by_fields(adict, keys):
+    return dict((k, adict[k]) for k in keys if k in adict)
+
+
+# TODO: add validators.
 class TradeSnapshotSerializer(serializers.ModelSerializer):
-    creator = CreatorSerializer()
+    creator_id = serializers.IntegerField()
     stock_snapshot = StockSnapshotSerializer()
     leg_snapshots = LegSnapshotSerializer(many=True)
 
+    @transaction.atomic
+    def create(self, validated_trade_snapshot):
+        leg_snapshots = []
+        for leg_snapshot_data in validated_trade_snapshot.get('leg_snapshots'):
+            leg_snapshot_model_data = get_subdict_by_fields(leg_snapshot_data, ['is_long', 'units'])
+            if leg_snapshot_data.get('contract_snapshot'):
+                contract_snapshot = OptionContractSnapshot.objects.create(**leg_snapshot_data.get('contract_snapshot'))
+                leg_snapshot_model_data['contract_snapshot'] = contract_snapshot
+            elif leg_snapshot_data.get('stock_snapshot'):
+                stock_snapshot = StockSnapshot.objects.create(**leg_snapshot_data.get('stock_snapshot'))
+                leg_snapshot_model_data['stock_snapshot'] = stock_snapshot
+            elif leg_snapshot_data.get('cash_snapshot'):
+                leg_snapshot_model_data['cash_snapshot'] = leg_snapshot_data.get('cash_snapshot')
+            leg_snapshots.append(LegSnapshot.objects.create(**leg_snapshot_model_data))
+
+        # Trade attributes
+        stock_snapshot = StockSnapshot.objects.create(**validated_trade_snapshot.get('stock_snapshot'))
+        trade_snapshot_data = get_subdict_by_fields(validated_trade_snapshot, ['type', 'is_public', 'creator_id'])
+        trade_snapshot_data['stock_snapshot'] = stock_snapshot
+        new_trade_snapshot = TradeSnapshot.objects.create(**trade_snapshot_data)
+        for leg_snapshot in leg_snapshots:
+            new_trade_snapshot.leg_snapshots.add(leg_snapshot)
+        new_trade_snapshot.save()
+        return new_trade_snapshot
+
     class Meta:
         model = TradeSnapshot
-        fields = ('id', 'type', 'stock_snapshot', 'leg_snapshots', 'creator', 'is_public')
+        fields = ('type', 'stock_snapshot', 'leg_snapshots', 'is_public', 'creator_id')
         depth = 2

@@ -1,8 +1,10 @@
 import itertools
 from django.shortcuts import get_object_or_404
-from rest_framework.decorators import api_view
+from rest_framework import status
+from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework.exceptions import APIException
+from rest_framework.permissions import IsAuthenticated
 
 from tiger.serializers import TickerSerializer, OptionContractSerializer, TradeSerializer, TradeSnapshotSerializer
 from tiger.models import Ticker, TradeSnapshot
@@ -102,14 +104,14 @@ def trade_snapshot_detail(request, pk):
         trade_snapshot_serializer = TradeSnapshotSerializer(trade_snapshot)
         return Response(trade_snapshot_serializer.data)
 
-    # elif request.method == 'PUT':
-    #     data = JSONParser().parse(request)
-    #     serializer = SnippetSerializer(snippet, data=data)
-    #     if serializer.is_valid():
-    #         serializer.save()
-    #         return JsonResponse(serializer.data)
-    #     return JsonResponse(serializer.errors, status=400)
-    #
-    # elif request.method == 'DELETE':
-    #     snippet.delete()
-    #     return HttpResponse(status=204)
+
+@api_view(['POST'])
+# @permission_classes([IsAuthenticated])
+def trade_snapshots(request):
+    if request.method == 'POST':
+        trade_snapshot_serializer = TradeSnapshotSerializer(data=request.data)
+        trade_snapshot_serializer.creator_id = request.user.id
+        if trade_snapshot_serializer.is_valid():
+            trade_snapshot_serializer.save()
+            return Response(trade_snapshot_serializer.data, status=status.HTTP_201_CREATED)
+        return Response(trade_snapshot_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
