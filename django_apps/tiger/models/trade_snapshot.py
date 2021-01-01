@@ -20,6 +20,9 @@ class StockSnapshot(SecuritySnapshot):
     class Meta:
         unique_together = ['ticker', 'external_cache']
 
+    def __str__(self):
+        return "({}) {}-{}".format(self.id, self.ticker.symbol, self.external_cache.id)
+
 
 class OptionContractSnapshot(SecuritySnapshot):
     ticker = models.ForeignKey(Ticker, on_delete=models.CASCADE)
@@ -29,6 +32,10 @@ class OptionContractSnapshot(SecuritySnapshot):
 
     class Meta:
         unique_together = ['ticker', 'is_call', 'strike', 'expiration_timestamp', 'external_cache']
+
+    def __str__(self):
+        return "({}) {}-{}-${}-{}".format(self.id, self.ticker.symbol, 'CALL' if self.is_call else 'PUT', self.strike,
+                                          self.expiration_timestamp)
 
 
 class LegSnapshot(BaseModel):
@@ -41,6 +48,10 @@ class LegSnapshot(BaseModel):
 
     class Meta:
         unique_together = ['is_long', 'units', 'cash', 'stock', 'contract']
+
+    def __str__(self):
+        return "({}) {}-{}{}{}".format(self.id, 'LONG' if self.is_long else 'SHORT', self.cash, self.stock,
+                                       self.contract)
 
 
 class TradeSnapshot(BaseModel):

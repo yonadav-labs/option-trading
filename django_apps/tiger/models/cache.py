@@ -37,4 +37,4 @@ class ExternalRequestCache(BaseModel):
         return self.response_blob[:100]
 
     def __str__(self):
-        return self.request_url
+        return "({}) {}".format(self.id, self.request_url)
