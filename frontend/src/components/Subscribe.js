@@ -11,7 +11,12 @@ export default function Subscribe() {
     const history = useHistory();
 
     const paypalSubscribe = (data, actions) => {
-        return actions.subscription.create({ 'plan_id': getPaypalPlanId() });
+        return actions.subscription.create({
+            'plan_id': getPaypalPlanId(),
+            application_context: {
+                shipping_preference: 'NO_SHIPPING'
+            }
+        });
     };
     const paypalOnError = (err) => {
         console.log("Error");
