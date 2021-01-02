@@ -12,10 +12,10 @@ function Footer(props) {
                             Never get lost in the option chain again.
                         </h3>
                         <p className="text-light">
-                            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer fermentum, lacus vel gravida varius, nisi odio lacinia felis, in vehicula velit sapien vitae dolor.
+                            Contact us at contact@tigerstance.com or through this <a href="https://forms.gle/qEqcKb1mtG8PJUWq6" target="_blank">google form</a>.
                         </p>
                     </div>
-                    <div className="col-md-2 col-6">
+                    {/* <div className="col-md-2 col-6">
                         <h3 className="text-light">
                             Learn
                         </h3>
@@ -53,7 +53,7 @@ function Footer(props) {
                         <p className="text-light">
                             PUT EMAIL INPUT HERE
                         </p>
-                    </div>
+                    </div> */}
                 </div>
                 <hr />
                 <div className="row">
