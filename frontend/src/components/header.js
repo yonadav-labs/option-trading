@@ -24,7 +24,7 @@ function Header() {
 
     useEffect(() => {
         if (!authState.isAuthenticated) {
-            // When user isn't authenticated, forget any user info
+            // When user isn't authenticated, forget any user info.
             setUser(null);
         } else {
             const { accessToken } = authState;
