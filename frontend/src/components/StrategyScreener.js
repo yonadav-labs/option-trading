@@ -182,10 +182,12 @@ export default function BestCallByPrice() {
             setModalActive(true);
             const response = await Axios.get(url);
             let trades = response.data.trades;
-            trades.forEach(function (part, index, theArray) {
-                theArray[index].type2 = theArray[index].type;
-                theArray[index].last_trade_date2 = theArray[index].last_trade_date;
-            });
+            trades.map((val, index) => {
+                val.type2 = val.type;
+                val.last_trade_date2 = val.last_trade_date;
+                val.id = index;
+                return val;
+            })
             setBestStrategies(trades);
             setModalActive(false);
         } catch (error) {
@@ -263,22 +265,20 @@ export default function BestCallByPrice() {
         }
     }
 
-    function ExpandTradeRow() {
-        return {
-            renderer: StrategyInstructions,
-            showExpandColumn: true,
-            expandHeaderColumnRenderer: ({ isAnyExpands }) => {
-                if (isAnyExpands) {
-                    return (<BsArrowsCollapse style={{ "cursor": "pointer" }} />);
-                }
-                return (<BsArrowsExpand style={{ "cursor": "pointer" }} />);
-            },
-            expandColumnRenderer: ({ expanded }) => {
-                if (expanded) {
-                    return (<BsArrowsCollapse style={{ "cursor": "pointer" }} />);
-                }
-                return (<BsArrowsExpand style={{ "cursor": "pointer" }} />);
+    const ExpandTradeRow = {
+        renderer: StrategyInstructions,
+        showExpandColumn: true,
+        expandHeaderColumnRenderer: ({ isAnyExpands }) => {
+            if (isAnyExpands) {
+                return (<BsArrowsCollapse style={{ "cursor": "pointer" }} />);
             }
+            return (<BsArrowsExpand style={{ "cursor": "pointer" }} />);
+        },
+        expandColumnRenderer: ({ expanded }) => {
+            if (expanded) {
+                return (<BsArrowsCollapse style={{ "cursor": "pointer" }} />);
+            }
+            return (<BsArrowsExpand style={{ "cursor": "pointer" }} />);
         }
     }
 
@@ -410,7 +410,7 @@ export default function BestCallByPrice() {
                                         <BootstrapTable
                                             classes="table-responsive"
                                             bootstrap4={true}
-                                            keyField="contract_symbol"
+                                            keyField="id"
                                             data={bestStrategies}
                                             columns={result_table_columns}
                                             pagination={paginationFactory({
@@ -419,7 +419,7 @@ export default function BestCallByPrice() {
                                             })}
                                             noDataIndication="No Data"
                                             bordered={false}
-                                            expandRow={ExpandTradeRow()}
+                                            expandRow={ExpandTradeRow}
                                             filter={filterFactory()}
                                             defaultSorted={defaultSorted}
                                         />
