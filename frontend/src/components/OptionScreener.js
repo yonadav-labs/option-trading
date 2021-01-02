@@ -521,7 +521,7 @@ export default function SellCoveredCall() {
                                             noDataIndication="No Data"
                                             bordered={false}
                                             // overlay={overlayFactory({ spinner: true })} // does not work with filter.
-                                            expandRow={ExpandContractRow()}
+                                            expandRow={ExpandContractRow}
                                             rowStyle={InTheMoneyRowStyle}
                                             filter={filterFactory()}
                                             defaultSorted={defaultSorted}

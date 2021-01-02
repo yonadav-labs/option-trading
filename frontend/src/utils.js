@@ -116,31 +116,29 @@ export function ContractDetails(row) {
     );
 }
 
-export function ExpandContractRow() {
-    return {
-        renderer: (row) => (
-            <Card>
-                <Card.Body>
-                    <Card.Title>Details</Card.Title>
-                    <Card.Text>
-                        {ContractDetails(row)}
-                    </Card.Text>
-                </Card.Body>
-            </Card>
-        ),
-        showExpandColumn: true,
-        expandHeaderColumnRenderer: ({ isAnyExpands }) => {
-            if (isAnyExpands) {
-                return (<BsArrowsCollapse style={{ "cursor": "pointer" }} />);
-            }
-            return (<BsArrowsExpand style={{ "cursor": "pointer" }} />);
-        },
-        expandColumnRenderer: ({ expanded }) => {
-            if (expanded) {
-                return (<BsArrowsCollapse style={{ "cursor": "pointer" }} />);
-            }
-            return (<BsArrowsExpand style={{ "cursor": "pointer" }} />);
+export const ExpandContractRow = {
+    renderer: (row) => (
+        <Card>
+            <Card.Body>
+                <Card.Title>Details</Card.Title>
+                <Card.Text>
+                    {ContractDetails(row)}
+                </Card.Text>
+            </Card.Body>
+        </Card>
+    ),
+    showExpandColumn: true,
+    expandHeaderColumnRenderer: ({ isAnyExpands }) => {
+        if (isAnyExpands) {
+            return (<BsArrowsCollapse style={{ "cursor": "pointer" }} />);
         }
+        return (<BsArrowsExpand style={{ "cursor": "pointer" }} />);
+    },
+    expandColumnRenderer: ({ expanded }) => {
+        if (expanded) {
+            return (<BsArrowsCollapse style={{ "cursor": "pointer" }} />);
+        }
+        return (<BsArrowsExpand style={{ "cursor": "pointer" }} />);
     }
 }
 
