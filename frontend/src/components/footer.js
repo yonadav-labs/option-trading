@@ -74,7 +74,7 @@ function Footer(props) {
                 </div>
                 <div className="row pb-5">
                     <div className="col">
-                        <small className="d-block text-muted">Copyright &copy; 2020 tigerstance.com. All Rights Reserved.</small>
+                        <small className="d-block text-muted">Copyright &copy; 2020-2021 tigerstance.com. All Rights Reserved.</small>
                     </div>
                 </div>
             </footer>

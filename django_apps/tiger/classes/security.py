@@ -124,8 +124,6 @@ class OptionContract(Security):
         self.premium = self.get_premium()  # Could be None.
         self.break_even_price = self.get_break_even_price()
         self.to_break_even_ratio = self.get_to_break_even_ratio()
-        self.leverage = self.strike / self.premium
-        self.seller_roi = self.premium / self.strike
 
     # TODO: 100 can be obtained from contract_size. Fix this.
     def get_cost(self):

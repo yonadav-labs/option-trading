@@ -26,7 +26,6 @@ let minVolumeFilter;
 let minOpenInterestFilter;
 let minDeltaFilter;
 let maxDeltaFilter;
-let minLeverageFilter;
 let minStrikeFilter;
 let maxStrikeFilter;
 
@@ -96,20 +95,6 @@ export default function SellCoveredCall() {
             text: "Break even",
             formatter: (cell, row, rowIndex, extraData) => (
                 PriceMovementFormatter(cell, row.break_even_price)
-            ),
-            sort: true
-        }, {
-            dataField: "leverage",
-            text: "Buyer leverage",
-            formatter: (cell, row, rowIndex, extraData) => (
-                (<span>{PercentageFormatter(cell)}<br /><small>If {row.is_call ? 'above' : 'below'} {PriceFormatter(row.strike)}</small></span>)
-            ),
-            sort: true
-        }, {
-            dataField: "seller_roi",
-            text: "Seller ROI",
-            formatter: (cell, row, rowIndex, extraData) => (
-                (<span>{PercentageFormatter(cell)}<br /><small>If {row.is_call ? 'below' : 'above'} {PriceFormatter(row.strike)}</small></span>)
             ),
             sort: true
         }, {
@@ -201,16 +186,6 @@ export default function SellCoveredCall() {
                 }
             })
         }, {
-            dataField: "min_leverage",
-            text: "min_leverage",
-            style: { 'display': 'none' },
-            headerStyle: { 'display': 'none' },
-            filter: numberFilter({
-                getFilter: (filter) => {
-                    minLeverageFilter = filter;
-                }
-            })
-        }, {
             dataField: "min_strike",
             text: "min_strike",
             style: { 'display': 'none' },
@@ -273,14 +248,6 @@ export default function SellCoveredCall() {
         });
     };
 
-    function onMinLeverageFilterChange(event, minLeverageFilter) {
-        const { value } = event.target;
-        minLeverageFilter({
-            number: value,
-            comparator: Comparator.GE
-        });
-    };
-
     const handleSubmit = (event) => {
         event.preventDefault();
         event.stopPropagation();
@@ -308,7 +275,6 @@ export default function SellCoveredCall() {
                 theArray[index].min_volume = theArray[index].volume;
                 theArray[index].min_delta = theArray[index].delta;
                 theArray[index].max_delta = theArray[index].delta;
-                theArray[index].min_leverage = theArray[index].leverage;
                 theArray[index].min_strike = theArray[index].strike;
                 theArray[index].max_strike = theArray[index].strike;
                 strikes.push(part.strike);
@@ -485,22 +451,6 @@ export default function SellCoveredCall() {
                                         </Form>
                                     </div>
                                     <div className="col-sm-3">
-                                        <Form>
-                                            <Form.Group>
-                                                <Form.Label className="font-weight-bold">Min buyer leverage:</Form.Label>
-                                                <Form.Control name="delta" as="select" defaultValue="0"
-                                                    onChange={(e) => onMinLeverageFilterChange(e, minLeverageFilter)}>
-                                                    <option key="1" value="1">All</option>
-                                                    <option key="1.5" value="1.5">1.5X</option>
-                                                    <option key="2" value="2">2X</option>
-                                                    <option key="5" value="5">5X</option>
-                                                    <option key="10" value="10">10X</option>
-                                                    <option key="20" value="20">20X</option>
-                                                    <option key="50" value="50">50X</option>
-                                                    <option key="100" value="100">100X</option>
-                                                </Form.Control>
-                                            </Form.Group>
-                                        </Form>
                                     </div>
                                     <div className="col-sm-3">
                                         {InTheMoneySign()}
