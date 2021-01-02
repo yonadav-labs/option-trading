@@ -28,13 +28,13 @@ class Ticker(BaseModel):
 
     # TODO: change to use TD.
     def get_quote(self):
-        response, cache_id = self.get_request_cache(True)
-        return get_quote(response, True), cache_id
+        response, external_cache_id = self.get_request_cache(True)
+        return get_quote(response, True), external_cache_id
 
     def get_expiration_timestamps(self):
-        response, cache_id = self.get_request_cache(settings.USE_YAHOO)
+        response, _ = self.get_request_cache(settings.USE_YAHOO)
         return get_expiration_timestamps(response, settings.USE_YAHOO)
 
     def get_call_puts(self, use_as_premium, expiration_timestamp):
-        response, cache_id = self.get_request_cache(settings.USE_YAHOO, expiration_timestamp)
-        return get_call_puts(response, settings.USE_YAHOO, use_as_premium, expiration_timestamp, cache_id)
+        response, external_cache_id = self.get_request_cache(settings.USE_YAHOO, expiration_timestamp)
+        return get_call_puts(response, settings.USE_YAHOO, use_as_premium, expiration_timestamp, external_cache_id)

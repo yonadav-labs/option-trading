@@ -4,8 +4,8 @@ from tiger.utils import days_from_timestamp
 
 
 class Security(ABC):
-    def __init__(self, cache_id):
-        self.cache_id = cache_id
+    def __init__(self, external_cache_id):
+        self.external_cache_id = external_cache_id
 
     @abstractmethod
     def get_cost(self):
@@ -31,8 +31,8 @@ class Cash(Security):
 
 
 class Stock(Security):
-    def __init__(self, stock_price, cache_id=None):
-        super().__init__(cache_id)
+    def __init__(self, stock_price, external_cache_id=None):
+        super().__init__(external_cache_id)
         self.stock_price = stock_price
 
     def get_cost(self):
@@ -43,8 +43,8 @@ class Stock(Security):
 
 
 class OptionContract(Security):
-    def __init__(self, is_call, data_dict, stock_price, use_as_premium='estimated', cache_id=None):
-        super().__init__(cache_id)
+    def __init__(self, is_call, data_dict, stock_price, use_as_premium='estimated', external_cache_id=None):
+        super().__init__(external_cache_id)
         if 'contractSymbol' in data_dict:
             # Yahoo.
             self.is_call = is_call  # There are only 2 types of options: "call" and "put".

@@ -31,7 +31,7 @@ def get_expiration_timestamps(response, is_yahoo):
         return timestamps
 
 
-def get_call_puts(response, is_yahoo, use_as_premium, expiration_timestamp=None, cache_id=None):
+def get_call_puts(response, is_yahoo, use_as_premium, expiration_timestamp=None, external_cache_id=None):
     if is_yahoo:
         if not is_valid_option_response(response):
             return None, None
@@ -41,9 +41,9 @@ def get_call_puts(response, is_yahoo, use_as_premium, expiration_timestamp=None,
         options = result.get('options')[0]
 
         stock_price = get_quote(response, True).get('regularMarketPrice')
-        call_contracts = [OptionContract(True, row, stock_price, use_as_premium, cache_id) for row in
+        call_contracts = [OptionContract(True, row, stock_price, use_as_premium, external_cache_id) for row in
                           options.get('calls', [])]
-        put_contracts = [OptionContract(False, row, stock_price, use_as_premium, cache_id) for row in
+        put_contracts = [OptionContract(False, row, stock_price, use_as_premium, external_cache_id) for row in
                          options.get('puts', [])]
         return call_contracts, put_contracts
     else:
@@ -54,7 +54,7 @@ def get_call_puts(response, is_yahoo, use_as_premium, expiration_timestamp=None,
                 row = contracts[0]
                 if expiration_timestamp == row.get('expirationDate'):
                     try:
-                        call_contracts.append(OptionContract(True, row, stock_price, use_as_premium, cache_id))
+                        call_contracts.append(OptionContract(True, row, stock_price, use_as_premium, external_cache_id))
                     except ValueError:
                         pass
                 else:
@@ -65,7 +65,7 @@ def get_call_puts(response, is_yahoo, use_as_premium, expiration_timestamp=None,
                 row = contracts[0]
                 if expiration_timestamp == row.get('expirationDate'):
                     try:
-                        put_contracts.append(OptionContract(False, row, stock_price, use_as_premium, cache_id))
+                        put_contracts.append(OptionContract(False, row, stock_price, use_as_premium, external_cache_id))
                     except ValueError:
                         pass
                 else:

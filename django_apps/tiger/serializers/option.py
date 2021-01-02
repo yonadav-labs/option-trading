@@ -9,12 +9,12 @@ class TickerSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class StockSerializer(serializers.Serializer):
-    cache_id = serializers.IntegerField(allow_null=True)
+    external_cache_id = serializers.IntegerField(allow_null=True)
     stock_price = serializers.FloatField(min_value=0.0)
 
 
 class OptionContractSerializer(serializers.Serializer):
-    cache_id = serializers.IntegerField(allow_null=True)
+    external_cache_id = serializers.IntegerField(allow_null=True)
     is_call = serializers.BooleanField(allow_null=False)
     ask = serializers.FloatField(min_value=0.0, allow_null=True)
     bid = serializers.FloatField(min_value=0.0, allow_null=True)
