@@ -7,9 +7,9 @@ import getOktaConfig from "./oktaConfig";
 import Home from './pages/Home';
 import Header from './components/header'
 import Footer from './components/footer'
-import OptionScreener from './components/OptionScreener'
+import OptionScreener from './pages/OptionScreener'
 import Disclaimer from './components/disclaimer';
-import StrategyScreener from './components/StrategyScreener';
+import StrategyScreener from './pages/StrategyScreener';
 
 export default withRouter(class AppWithRouterAccess extends Component {
     constructor(props) {

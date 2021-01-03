@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import Form from 'react-bootstrap/Form'
-import TickerTypeahead from './TickerTypeahead';
-import TickerSummary from './TickerSummary.js';
+import TickerTypeahead from '../components/TickerTypeahead';
+import TickerSummary from '../components/TickerSummary.js';
 import Axios from 'axios';
 import getApiUrl, {
     PriceFormatter, TimestampDateFormatter, ExpandContractRow, InTheMoneyRowStyle,
@@ -13,11 +13,11 @@ import Alert from 'react-bootstrap/Alert';
 import BootstrapTable from 'react-bootstrap-table-next';
 import paginationFactory from 'react-bootstrap-table2-paginator';
 import filterFactory, { multiSelectFilter, numberFilter } from 'react-bootstrap-table2-filter';
-import ModalSpinner from './ModalSpinner';
+import ModalSpinner from '../components/ModalSpinner';
 import { Comparator } from 'react-bootstrap-table2-filter';
 import Select from "react-select";
-import SingleChoiceFilter from "./filters/SingleChoiceFilter"
-import StrikeRangeSliderFilter from "./filters/StrikeRangeSliderFilter"
+import SingleChoiceFilter from "../components/filters/SingleChoiceFilter"
+import StrikeRangeSliderFilter from "../components/filters/StrikeRangeSliderFilter"
 
 let putCallFilter;
 let inTheMoneyFilter;

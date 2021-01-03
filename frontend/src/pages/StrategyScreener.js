@@ -13,9 +13,9 @@ import getApiUrl, {
 } from '../utils';
 import filterFactory, { multiSelectFilter, numberFilter } from 'react-bootstrap-table2-filter';
 import { BsArrowsExpand, BsArrowsCollapse } from 'react-icons/bs';
-import TickerTypeahead from './TickerTypeahead';
-import TickerSummary from './TickerSummary.js';
-import ModalSpinner from './ModalSpinner';
+import TickerTypeahead from '../components/TickerTypeahead';
+import TickerSummary from '../components/TickerSummary.js';
+import ModalSpinner from '../components/ModalSpinner';
 import Select from "react-select";
 
 let lastTradedFilter;
