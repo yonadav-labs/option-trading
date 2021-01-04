@@ -5,13 +5,13 @@ from tiger.utils import days_from_timestamp
 
 
 class Trade(ABC):
-    def __init__(self, type, stock_price, target_price=None):
+    def __init__(self, type, stock, target_price=None):
         '''
-        :param stock_price: current stock price.
+        :param stock: current state of underlying stock.
         :param target_price: target stock price in the future. Optional.
         '''
         self.type = type
-        self.stock_price = stock_price
+        self.stock = stock
         self.target_price = target_price
         self.legs = []
 
@@ -58,15 +58,15 @@ class Trade(ABC):
         return self.get_target_price_profit() / self.get_cost()
 
     def get_to_target_price_ratio(self):
-        return self.target_price / self.stock_price - 1.0
+        return self.target_price / self.stock.stock_price - 1.0
 
     def get_to_break_even_ratio(self):
-        return (self.get_break_even_price() - self.stock_price) / self.stock_price
+        return (self.get_break_even_price() - self.stock.stock_price) / self.stock.stock_price
 
 
 class LongCall(Trade):
-    def __init__(self, stock_price, call_contract, target_price=None):
-        super().__init__('long_call', stock_price, target_price)
+    def __init__(self, stock, call_contract, target_price=None):
+        super().__init__('long_call', stock, target_price)
         self.legs.append(OptionLeg('long_call_leg', True, 1, call_contract))
         self.init_basic_derived()
 
@@ -91,8 +91,8 @@ class LongCall(Trade):
 
 
 class LongPut(Trade):
-    def __init__(self, stock_price, put_contract, target_price=None):
-        super().__init__('long_put', stock_price, target_price)
+    def __init__(self, stock, put_contract, target_price=None):
+        super().__init__('long_put', stock, target_price)
         self.legs.append(OptionLeg('long_put_leg', True, 1, put_contract))
         self.init_basic_derived()
 
@@ -117,8 +117,8 @@ class LongPut(Trade):
 
 
 class CoveredCall(Trade):
-    def __init__(self, stock_price, stock, call_contract, target_price=None):
-        super().__init__('covered_call', stock_price, target_price)
+    def __init__(self, stock, call_contract, target_price=None):
+        super().__init__('covered_call', stock, target_price)
         self.legs.append(StockLeg('long_stock_leg', 100, stock))
         self.legs.append(OptionLeg('short_call_leg', False, 1, call_contract))
         self.init_basic_derived()
@@ -140,7 +140,7 @@ class CoveredCall(Trade):
         return self.long_stock_leg.cost + self.short_call_leg.cost
 
     def get_break_even_price(self):
-        return self.stock_price - self.short_call_leg.contract.premium
+        return self.stock.stock_price - self.short_call_leg.contract.premium
 
     def get_target_price_profit(self):
         return self.long_stock_leg.get_profit_at_target_price(self.target_price) + \
@@ -169,8 +169,8 @@ class CoveredCall(Trade):
 
 
 class CashSecuredPut(Trade):
-    def __init__(self, stock_price, put_contract, target_price=None):
-        super().__init__('cash_secured_put', stock_price, target_price)
+    def __init__(self, stock, put_contract, target_price=None):
+        super().__init__('cash_secured_put', stock, target_price)
         self.legs.append(OptionLeg('short_put_leg', False, 1, put_contract))
         self.legs.append(CashLeg(100 * self.short_put_leg.contract.strike))
         self.init_basic_derived()

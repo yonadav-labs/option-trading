@@ -28,8 +28,8 @@ class OptionContractSnapshotSerializer(serializers.ModelSerializer):
 
 
 class LegSnapshotSerializer(serializers.ModelSerializer):
-    stock_snapshot = StockSnapshotSerializer(allow_null=True)
-    contract_snapshot = OptionContractSnapshotSerializer(allow_null=True)
+    stock_snapshot = StockSnapshotSerializer(required=False)
+    contract_snapshot = OptionContractSnapshotSerializer(required=False)
 
     class Meta:
         model = LegSnapshot

@@ -10,6 +10,7 @@ import Footer from './components/footer'
 import OptionScreener from './pages/OptionScreener'
 import Disclaimer from './components/disclaimer';
 import StrategyScreener from './pages/StrategyScreener';
+import SingleTrade from './pages/SingleTrade';
 
 export default withRouter(class AppWithRouterAccess extends Component {
     constructor(props) {
@@ -31,6 +32,7 @@ export default withRouter(class AppWithRouterAccess extends Component {
                             <Route path='/' exact={true} component={Home} />
                             <Route path='/option-screener' exact={true} component={OptionScreener} />
                             <Route path='/strategy-screener' exact={true} component={StrategyScreener} />
+                            <Route path='/t/:tradeId' exact={true} component={SingleTrade} />
                             <SecureRoute path='/profile' component={Profile} />
                             <Route path="/disclaimer" component={Disclaimer}></Route>
                             <Route path='/signin' component={Login} />

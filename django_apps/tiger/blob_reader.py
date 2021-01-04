@@ -31,7 +31,7 @@ def get_expiration_timestamps(response, is_yahoo):
         return timestamps
 
 
-def get_call_puts(response, is_yahoo, use_as_premium, expiration_timestamp=None, external_cache_id=None):
+def get_call_puts(ticker_id, response, is_yahoo, use_as_premium, expiration_timestamp=None, external_cache_id=None):
     if is_yahoo:
         if not is_valid_option_response(response):
             return None, None
@@ -41,9 +41,11 @@ def get_call_puts(response, is_yahoo, use_as_premium, expiration_timestamp=None,
         options = result.get('options')[0]
 
         stock_price = get_quote(response, True).get('regularMarketPrice')
-        call_contracts = [OptionContract(True, row, stock_price, use_as_premium, external_cache_id) for row in
+        call_contracts = [OptionContract(ticker_id, True, row, stock_price, use_as_premium, external_cache_id) for row
+                          in
                           options.get('calls', [])]
-        put_contracts = [OptionContract(False, row, stock_price, use_as_premium, external_cache_id) for row in
+        put_contracts = [OptionContract(ticker_id, False, row, stock_price, use_as_premium, external_cache_id) for row
+                         in
                          options.get('puts', [])]
         return call_contracts, put_contracts
     else:
@@ -54,7 +56,8 @@ def get_call_puts(response, is_yahoo, use_as_premium, expiration_timestamp=None,
                 row = contracts[0]
                 if expiration_timestamp == row.get('expirationDate'):
                     try:
-                        call_contracts.append(OptionContract(True, row, stock_price, use_as_premium, external_cache_id))
+                        call_contracts.append(
+                            OptionContract(ticker_id, True, row, stock_price, use_as_premium, external_cache_id))
                     except ValueError:
                         pass
                 else:
@@ -65,45 +68,10 @@ def get_call_puts(response, is_yahoo, use_as_premium, expiration_timestamp=None,
                 row = contracts[0]
                 if expiration_timestamp == row.get('expirationDate'):
                     try:
-                        put_contracts.append(OptionContract(False, row, stock_price, use_as_premium, external_cache_id))
+                        put_contracts.append(
+                            OptionContract(ticker_id, False, row, stock_price, use_as_premium, external_cache_id))
                     except ValueError:
                         pass
                 else:
                     break
         return call_contracts, put_contracts
-
-
-if __name__ == "__main__":
-    import os
-    import sys
-    import django
-
-    sys.path.append("/usr/src/app/")
-    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'django_apps.settings')
-    django.setup()
-
-    import json
-    from tiger.fetcher import fetch_external_api, get_yahoo_option_url, get_td_option_url
-
-    request_url = get_yahoo_option_url('QQQE')
-    response_str = fetch_external_api(request_url)
-    response = json.loads(response_str)
-    print(get_expiration_timestamps(response, True))
-    print()
-    print(get_quote(response, True))
-    print()
-    print(get_call_puts(response, True)[0])
-    print()
-    print(get_call_puts(response, True)[1])
-    print('\n\n=======================================\n\n')
-
-    request_url = get_td_option_url('QQQE')
-    response_str = fetch_external_api(request_url)
-    response = json.loads(response_str)
-    print(get_expiration_timestamps(response, False))
-    print()
-    print(get_quote(response, False))
-    print()
-    print(get_call_puts(response, False, 1608325200000)[0])
-    print()
-    print(get_call_puts(response, False, 1608325200000)[1])

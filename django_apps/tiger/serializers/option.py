@@ -1,5 +1,10 @@
+from django.db import transaction
 from tiger.models import Ticker
 from rest_framework import serializers
+
+'''
+The following serializer is for display-only!
+'''
 
 
 class TickerSerializer(serializers.HyperlinkedModelSerializer):
@@ -9,11 +14,13 @@ class TickerSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class StockSerializer(serializers.Serializer):
+    ticker_id = serializers.IntegerField()
     external_cache_id = serializers.IntegerField(allow_null=True)
     stock_price = serializers.FloatField(min_value=0.0)
 
 
 class OptionContractSerializer(serializers.Serializer):
+    ticker_id = serializers.IntegerField()
     external_cache_id = serializers.IntegerField(allow_null=True)
     is_call = serializers.BooleanField(allow_null=False)
     ask = serializers.FloatField(min_value=0.0, allow_null=True)
@@ -69,8 +76,9 @@ class LegSerializer(serializers.Serializer):
 
 
 class TradeSerializer(serializers.Serializer):
+    id = serializers.IntegerField(required=False)
     type = serializers.CharField(max_length=50)
-    stock_price = serializers.FloatField(min_value=0.0)
+    stock = StockSerializer()  # The underlying.
     break_even_price = serializers.FloatField(min_value=0.0, allow_null=True)
     to_break_even_ratio = serializers.FloatField(allow_null=True)
     cost = serializers.FloatField()

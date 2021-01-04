@@ -74,21 +74,21 @@ def get_best_trades(request, ticker_symbol):
         raise APIException('Invalid query parameters.')
 
     quote, external_cache_id = ticker.get_quote()
-    stock_price = quote.get('regularMarketPrice')
-    stock = Stock(stock_price, external_cache_id)
+    stock_price = quote.get('regularMarketPrice')  # This is from Yahoo.
+    stock = Stock(ticker.id, stock_price, external_cache_id)
 
     all_trades = []
     call_contract_lists, put_contract_list = get_valid_contracts(ticker, request, use_as_premium,
                                                                  all_expiration_timestamps)
     for calls_per_exp in call_contract_lists:
         for call in calls_per_exp:
-            all_trades.append(LongCall(stock_price, call, target_price))
-            all_trades.append(CoveredCall(stock_price, stock, call, target_price=target_price))
+            all_trades.append(LongCall(stock, call, target_price))
+            all_trades.append(CoveredCall(stock, call, target_price=target_price))
 
     for puts_per_exp in put_contract_list:
         for put in puts_per_exp:
-            all_trades.append(LongPut(stock_price, put, target_price))
-            all_trades.append(CashSecuredPut(stock_price, put, target_price))
+            all_trades.append(LongPut(stock, put, target_price))
+            all_trades.append(CashSecuredPut(stock, put, target_price))
 
     all_trades = list(
         filter(lambda trade: trade.target_price_profit is not None and trade.target_price_profit > 0.0, all_trades))
@@ -106,12 +106,12 @@ def trade_snapshot_detail(request, pk):
 
 
 @api_view(['POST'])
-# @permission_classes([IsAuthenticated])
+@permission_classes([IsAuthenticated])
 def trade_snapshots(request):
     if request.method == 'POST':
+        request.data['creator_id'] = request.user.id
         trade_snapshot_serializer = TradeSnapshotSerializer(data=request.data)
-        trade_snapshot_serializer.creator_id = request.user.id
         if trade_snapshot_serializer.is_valid():
-            trade_snapshot_serializer.save()
-            return Response(trade_snapshot_serializer.data, status=status.HTTP_201_CREATED)
+            trade_snapshot = trade_snapshot_serializer.save()
+            return Response({'id': trade_snapshot.id}, status=status.HTTP_201_CREATED)
         return Response(trade_snapshot_serializer.errors, status=status.HTTP_400_BAD_REQUEST)

@@ -104,7 +104,7 @@ const Profile = () => {
           <Subscribe></Subscribe>
         </Modal.Body>
       </Modal>
-      
+
       <Modal
         show={showCancelSubscriptionModal}
         onHide={() => setShowCancelSubscriptionModal(false)}

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import Form from 'react-bootstrap/Form'
+import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import Alert from 'react-bootstrap/Alert';
 import Card from 'react-bootstrap/Card';
@@ -16,6 +16,7 @@ import { BsArrowsExpand, BsArrowsCollapse } from 'react-icons/bs';
 import TickerTypeahead from '../components/TickerTypeahead';
 import TickerSummary from '../components/TickerSummary.js';
 import ModalSpinner from '../components/ModalSpinner';
+import ShareTradeBtn from '../components/ShareTradeBtn.js';
 import Select from "react-select";
 
 let lastTradedFilter;
@@ -114,6 +115,17 @@ export default function BestCallByPrice() {
                 const exp_date = new Date(cell * 1000).toLocaleDateString('en-US')
                 const exp_time = new Date(cell * 1000).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })
                 return (<span>{exp_date} <br /><small>{exp_time}</small></span>);
+            },
+            sort: true
+        },
+        {
+            dataField: 'id',
+            text: 'Actions',
+            // Still under construction.
+            style: { 'display': 'none' },
+            headerStyle: { 'display': 'none' },
+            formatter: (cell, row, rowIndex, extraData) => {
+                return (<ShareTradeBtn trade={row} setModalActive={setModalActive} />);
             },
             sort: true
         },
@@ -356,7 +368,7 @@ export default function BestCallByPrice() {
                                     </Form.Group>
                                 </div>
                             </div>
-                            <div class="row">
+                            <div className="row">
                                 <div className="col">
                                     <Button type="submit" className="btn btn-primary">Analyze</Button>
                                 </div>

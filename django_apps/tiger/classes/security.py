@@ -31,8 +31,9 @@ class Cash(Security):
 
 
 class Stock(Security):
-    def __init__(self, stock_price, external_cache_id=None):
+    def __init__(self, ticker_id, stock_price, external_cache_id=None):
         super().__init__(external_cache_id)
+        self.ticker_id = ticker_id
         self.stock_price = stock_price
 
     def get_cost(self):
@@ -43,7 +44,7 @@ class Stock(Security):
 
 
 class OptionContract(Security):
-    def __init__(self, is_call, data_dict, stock_price, use_as_premium='estimated', external_cache_id=None):
+    def __init__(self, ticker_id, is_call, data_dict, stock_price, use_as_premium='estimated', external_cache_id=None):
         super().__init__(external_cache_id)
         if 'contractSymbol' in data_dict:
             # Yahoo.
@@ -114,6 +115,7 @@ class OptionContract(Security):
             '''
 
         # Non-contract data.
+        self.ticker_id = ticker_id
         self.stock_price = stock_price
         self.days_till_expiration = days_from_timestamp(self.expiration)
 
