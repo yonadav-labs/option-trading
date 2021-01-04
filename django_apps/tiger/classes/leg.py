@@ -13,10 +13,10 @@ class Leg(ABC):
         self.cash = cash
         self.stock = stock
         self.contract = contract
-        self.cost = self.get_cost()
 
+    @property
     @abstractmethod
-    def get_cost(self):
+    def cost(self):
         pass
 
     @abstractmethod
@@ -24,7 +24,7 @@ class Leg(ABC):
         pass
 
     def get_profit_at_target_price(self, target_price):
-        return self.get_value_at_target_price(target_price) - self.get_cost()
+        return self.get_value_at_target_price(target_price) - self.cost
 
 
 # Represent units US dollar. Currently only long.
@@ -32,11 +32,12 @@ class CashLeg(Leg):
     def __init__(self, units):
         super().__init__('long_cash_leg', True, units, cash=Cash())
 
-    def get_cost(self):
-        return self.cash.get_cost() * self.units
+    @property
+    def cost(self):
+        return self.cash.cost * self.units
 
     def get_value_at_target_price(self, target_price):
-        return self.cash.get_cost() * self.units
+        return self.cash.cost * self.units
 
 
 # Represent `units` shares of stock. Currently only long.
@@ -44,8 +45,9 @@ class StockLeg(Leg):
     def __init__(self, name, units, stock):
         super().__init__(name, True, units, stock=stock)
 
-    def get_cost(self):
-        return self.stock.get_cost() * self.units
+    @property
+    def cost(self):
+        return self.stock.cost * self.units
 
     def get_value_at_target_price(self, target_price):
         return self.stock.get_value_at_target_price(target_price) * self.units
@@ -56,8 +58,9 @@ class OptionLeg(Leg):
     def __init__(self, name, is_long, units, contract):
         super().__init__(name, is_long, units, contract=contract)
 
-    def get_cost(self):
-        return self.contract.get_cost() * (self.units if self.is_long else -self.units)
+    @property
+    def cost(self):
+        return self.contract.cost * (self.units if self.is_long else -self.units)
 
     def get_value_at_target_price(self, target_price):
         return self.contract.get_value_at_target_price(target_price) * (self.units if self.is_long else -self.units)
