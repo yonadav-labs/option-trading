@@ -37,7 +37,7 @@ export default function ShareTradeBtn(props) {
                     external_cache_id: leg.stock.external_cache_id,
                 };
             } else {
-                legSnapshot.cash_snapshot = 1;
+                legSnapshot.cash_snapshot = true;
             }
             tradeSnapshot.leg_snapshots.push(legSnapshot);
         })
