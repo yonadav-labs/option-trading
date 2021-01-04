@@ -7,8 +7,9 @@ class Security(ABC):
     def __init__(self, external_cache_id):
         self.external_cache_id = external_cache_id
 
+    @property
     @abstractmethod
-    def get_cost(self):
+    def cost(self):
         pass
 
     @abstractmethod
@@ -16,14 +17,15 @@ class Security(ABC):
         pass
 
     def get_profit_at_target_price(self, target_price):
-        return self.get_value_at_target_price(target_price) - self.get_cost()
+        return self.get_value_at_target_price(target_price) - self.cost
 
 
 class Cash(Security):
     def __init__(self):
         super().__init__(None)
 
-    def get_cost(self):
+    @property
+    def cost(self):
         return 1.0
 
     def get_value_at_target_price(self, target_price):
@@ -36,7 +38,8 @@ class Stock(Security):
         self.ticker_id = ticker_id
         self.stock_price = stock_price
 
-    def get_cost(self):
+    @property
+    def cost(self):
         return self.stock_price
 
     def get_value_at_target_price(self, target_price):
@@ -118,33 +121,21 @@ class OptionContract(Security):
         self.ticker_id = ticker_id
         self.stock_price = stock_price
         self.days_till_expiration = days_from_timestamp(self.expiration)
-
-        # Derived
-        self.to_strike = self.get_to_strike()
-        self.to_strike_ratio = self.get_to_strike_ratio()
         self.use_as_premium = use_as_premium if use_as_premium in ('bid', 'ask', 'estimated') else 'estimated'
-        self.premium = self.get_premium()  # Could be None.
-        self.break_even_price = self.get_break_even_price()
-        self.to_break_even_ratio = self.get_to_break_even_ratio()
+        # Validation.
+        self.premium
 
-    # TODO: 100 can be obtained from contract_size. Fix this.
-    def get_cost(self):
-        return self.premium * 100
-
-    def get_value_at_target_price(self, target_price):
-        if self.is_call:
-            return max(0, target_price - self.strike) * 100
-        else:
-            return max(0, self.strike - target_price) * 100
-
-    def get_to_strike(self):
+    @property
+    def to_strike(self):
         """Positive when stock_price is below strike."""
         return self.strike - self.stock_price
 
-    def get_to_strike_ratio(self):
-        return self.get_to_strike() / self.stock_price
+    @property
+    def to_strike_ratio(self):
+        return self.to_strike / self.stock_price
 
-    def get_premium(self):
+    @property
+    def premium(self):
         if self.use_as_premium == 'estimated':
             if self.bid and self.ask:
                 return (self.ask + self.bid) / 2.0
@@ -160,17 +151,30 @@ class OptionContract(Security):
             return self.ask
         raise ValueError('missing bid ask last_price')
 
-    def __str__(self):
-        return self.contract_symbol
-
-    def __repr__(self):
-        return self.__str__()
-
-    def get_break_even_price(self):
+    @property
+    def break_even_price(self):
         if self.is_call:
             return self.strike + self.premium
         else:
             return self.strike - self.premium
 
-    def get_to_break_even_ratio(self):
-        return self.get_break_even_price() / self.stock_price - 1.0
+    @property
+    def to_break_even_ratio(self):
+        return self.break_even_price / self.stock_price - 1.0
+
+    # TODO: 100 can be obtained from contract_size. Fix this.
+    @property
+    def cost(self):
+        return self.premium * 100
+
+    def get_value_at_target_price(self, target_price):
+        if self.is_call:
+            return max(0, target_price - self.strike) * 100
+        else:
+            return max(0, self.strike - target_price) * 100
+
+    def __str__(self):
+        return self.contract_symbol
+
+    def __repr__(self):
+        return self.__str__()
