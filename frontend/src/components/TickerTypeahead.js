@@ -1,13 +1,15 @@
 import React, { useEffect, useState, useRef } from 'react';
+import { useHistory } from "react-router-dom";
 import { Typeahead } from 'react-bootstrap-typeahead';
 import Axios from 'axios';
 import getApiUrl from '../utils'
 
 
-export default function TickerTypeahead({ setSelectedTicker, setExpirationTimestamps, setbasicInfo, /*optional*/resetStates, setModalActive }) {
+export default function TickerTypeahead({ setSelectedTicker, setExpirationTimestamps, setbasicInfo, /*optional*/resetStates, setModalActive, urlTicker}) {
     const API_URL = getApiUrl();
     const [allTickers, setAllTickers] = useState([]);
     const inputEl = useRef(null);
+    let history = useHistory();
 
     const loadTickers = async () => {
         try {
@@ -34,6 +36,7 @@ export default function TickerTypeahead({ setSelectedTicker, setExpirationTimest
             setbasicInfo(response.data.quote)
             setSelectedTicker(selected);
             setModalActive(false);
+            history.push(`/option-screener/${selected[0].symbol}`);
         } catch (error) {
             console.error(error);
             setModalActive(false);

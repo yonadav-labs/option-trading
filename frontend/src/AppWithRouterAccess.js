@@ -31,6 +31,7 @@ export default withRouter(class AppWithRouterAccess extends Component {
                         <Switch>
                             <Route path='/' exact={true} component={Home} />
                             <Route path='/option-screener' exact={true} component={OptionScreener} />
+                            <Route path="/option-screener/:ticker" component={OptionScreener} />
                             <Route path='/strategy-screener' exact={true} component={StrategyScreener} />
                             <Route path='/t/:tradeId' exact={true} component={SingleTrade} />
                             <SecureRoute path='/profile' component={Profile} />
