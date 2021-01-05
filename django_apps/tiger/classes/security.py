@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 
 from tiger.utils import days_from_timestamp
+import tiger.blob_reader as blob_reader
 
 
 class Security(ABC):
@@ -37,6 +38,17 @@ class Stock(Security):
         super().__init__(external_cache_id)
         self.ticker_id = ticker_id
         self.stock_price = stock_price
+
+    @classmethod
+    def from_snapshot(cls, stock_snapshot):
+        cache = stock_snapshot.external_cache
+        if 'yahoo' in cache.request_url:
+            stock_price = blob_reader.get_quote(cache.json_response, True).get(
+                'regularMarketPrice')
+        else:
+            stock_price = blob_reader.get_quote(cache.json_response, False).get(
+                'last')
+        return cls(stock_snapshot.ticker_id, stock_price, stock_snapshot.external_cache_id)
 
     @property
     def cost(self):

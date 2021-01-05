@@ -1,3 +1,5 @@
+import json
+
 from datetime import timedelta
 from django.conf import settings
 from django.db import models
@@ -35,6 +37,10 @@ class ExternalRequestCache(BaseModel):
     @property
     def short_response_blob(self):
         return self.response_blob[:100]
+
+    @property
+    def json_response(self):
+        return json.loads(self.response_blob)
 
     def __str__(self):
         return "({}) {}".format(self.id, self.request_url)

@@ -4,6 +4,7 @@ from django.utils.timezone import make_aware, get_default_timezone
 from unittest import mock
 
 from tiger.classes import Stock, OptionContract, LongCall, CoveredCall, LongPut, CashSecuredPut, OptionLeg
+from tiger.models import ExternalRequestCache, Ticker, StockSnapshot
 
 MOCK_NOW_TIMESTAMP = 1609664400  # 01/03/2021
 
@@ -312,3 +313,29 @@ class TdTestCase(TestCase):
 
         # Test derived methods.
         self.assertEqual(contract.days_till_expiration, 195)
+
+
+class LoadFromSnapshotTestCase(TestCase):
+    def setUp(self):
+        self.ticker = Ticker.objects.create(symbol='QQQE')
+        self.external_cache = ExternalRequestCache.objects.create(
+            request_url='https://query1.finance.yahoo.com/v7/finance/options/QQQE',
+            response_blob='{"optionChain":{"result":[{"underlyingSymbol":"QQQE","expirationDates":[1610668800,1613692800,1616112000,1623974400],"strikes":[65.0,68.0,69.0,70.0,71.0,72.0,73.0,74.0,75.0,76.0,77.0,78.0],"hasMiniOptions":false,"quote":{"language":"en-US","region":"US","quoteType":"ETF","quoteSourceName":"Delayed Quote","triggerable":true,"currency":"USD","fiftyTwoWeekLowChange":34.01,"fiftyTwoWeekLowChangePercent":0.84749556,"fiftyTwoWeekRange":"40.13 - 75.52","fiftyTwoWeekHighChange":-1.3799973,"fiftyTwoWeekHighChangePercent":-0.01827327,"fiftyTwoWeekLow":40.13,"fiftyTwoWeekHigh":75.52,"ytdReturn":15.27,"trailingThreeMonthReturns":0.74,"trailingThreeMonthNavReturns":0.69,"fiftyDayAverage":72.69875,"fiftyDayAverageChange":1.441246,"fiftyDayAverageChangePercent":0.019824907,"twoHundredDayAverage":65.8727,"twoHundredDayAverageChange":8.267296,"twoHundredDayAverageChangePercent":0.12550412,"sourceInterval":15,"exchangeDataDelayedBy":0,"tradeable":false,"marketState":"POST","firstTradeDateMilliseconds":1332336600000,"priceHint":2,"regularMarketChange":-1.0200043,"regularMarketChangePercent":-1.3571105,"regularMarketTime":1609794000,"regularMarketPrice":74.14,"regularMarketDayHigh":75.52,"regularMarketDayRange":"73.25 - 75.52","regularMarketDayLow":73.25,"regularMarketVolume":58589,"regularMarketPreviousClose":75.16,"bid":72.65,"ask":74.54,"bidSize":10,"askSize":10,"fullExchangeName":"NYSEArca","regularMarketOpen":75.52,"averageDailyVolume3Month":45200,"averageDailyVolume10Day":41900,"exchange":"PCX","shortName":"Direxion NASDAQ-100 Equal Weigh","longName":"Direxion NASDAQ-100 Equal Weighted Index Shares","messageBoardId":"finmb_182590799","exchangeTimezoneName":"America/New_York","exchangeTimezoneShortName":"EST","gmtOffSetMilliseconds":-18000000,"market":"us_market","esgPopulated":false,"symbol":"QQQE"}}]}}')
+        self.stock_snapshot = StockSnapshot.objects.create(ticker=self.ticker, external_cache=self.external_cache)
+
+        self.external_cache_td = ExternalRequestCache.objects.create(
+            request_url='https://api.tdameritrade.com/v1/marketdata/chains?apikey=132&contractType=ALL&includeQuotes=TRUE&strategy=SINGLE&symbol=QQQE&fromDate=2020-12-01',
+            response_blob='{"symbol":"QQQE","status":"SUCCESS","underlying":{"symbol":"QQQE","description":"Direxion NASDAQ-100 Equal Weighted Index Shares","change":-1.02,"percentChange":-1.36,"close":75.16,"quoteTime":1609795061364,"tradeTime":1609799740021,"bid":72.65,"ask":74.54,"last":74.13,"mark":74.13,"markChange":-1.02,"markPercentChange":-1.36,"bidSize":2100,"askSize":2000,"highPrice":75.52,"lowPrice":73.25,"openPrice":75.52,"totalVolume":58590,"exchangeName":"PAC","fiftyTwoWeekHigh":75.52,"fiftyTwoWeekLow":40.13,"delayed":true}}'
+        )
+        self.stock_snapshot_td = StockSnapshot.objects.create(ticker=self.ticker, external_cache=self.external_cache_td)
+
+    def testLoadStockFromSnapshot(self):
+        stock = Stock.from_snapshot(self.stock_snapshot)
+        self.assertEqual(stock.ticker_id, self.ticker.id)
+        self.assertEqual(stock.external_cache_id, self.external_cache.id)
+        self.assertEqual(stock.stock_price, 74.14)
+
+        stock_td = Stock.from_snapshot(self.stock_snapshot_td)
+        self.assertEqual(stock_td.ticker_id, self.ticker.id)
+        self.assertEqual(stock_td.external_cache_id, self.external_cache_td.id)
+        self.assertEqual(stock_td.stock_price, 74.13)
