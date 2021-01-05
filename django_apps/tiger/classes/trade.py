@@ -5,15 +5,17 @@ from tiger.utils import days_from_timestamp
 
 
 class Trade(ABC):
-    def __init__(self, type, stock, target_price=None):
+    def __init__(self, type, stock, legs, target_price=None):
         '''
+        :param type: type of trade.
         :param stock: current state of underlying stock.
+        :param legs: all legs of this trade.
         :param target_price: target stock price in the future. Optional.
         '''
         self.type = type
         self.stock = stock
+        self.legs = legs
         self.target_price = target_price
-        self.legs = []
 
     def get_leg(self, name):
         for leg in self.legs:
@@ -101,8 +103,8 @@ class Trade(ABC):
 
 class LongCall(Trade):
     def __init__(self, stock, call_contract, target_price=None):
-        super().__init__('long_call', stock, target_price)
-        self.legs.append(OptionLeg('long_call_leg', True, 1, call_contract))
+        legs = [OptionLeg('long_call_leg', True, 1, call_contract)]
+        super().__init__('long_call', stock, legs, target_price)
 
     @property
     def break_even_price(self):
@@ -111,8 +113,8 @@ class LongCall(Trade):
 
 class LongPut(Trade):
     def __init__(self, stock, put_contract, target_price=None):
-        super().__init__('long_put', stock, target_price)
-        self.legs.append(OptionLeg('long_put_leg', True, 1, put_contract))
+        legs = [OptionLeg('long_put_leg', True, 1, put_contract)]
+        super().__init__('long_put', stock, legs, target_price)
 
     @property
     def break_even_price(self):
@@ -121,9 +123,8 @@ class LongPut(Trade):
 
 class CoveredCall(Trade):
     def __init__(self, stock, call_contract, target_price=None):
-        super().__init__('covered_call', stock, target_price)
-        self.legs.append(StockLeg('long_stock_leg', 100, stock))
-        self.legs.append(OptionLeg('short_call_leg', False, 1, call_contract))
+        legs = [StockLeg('long_stock_leg', 100, stock), OptionLeg('short_call_leg', False, 1, call_contract)]
+        super().__init__('covered_call', stock, legs, target_price)
 
     @property
     def break_even_price(self):
@@ -140,9 +141,9 @@ class CoveredCall(Trade):
 
 class CashSecuredPut(Trade):
     def __init__(self, stock, put_contract, target_price=None):
-        super().__init__('cash_secured_put', stock, target_price)
-        self.legs.append(OptionLeg('short_put_leg', False, 1, put_contract))
-        self.legs.append(CashLeg(100 * self.get_leg('short_put_leg').contract.strike))
+        legs = [OptionLeg('short_put_leg', False, 1, put_contract),
+                CashLeg(100 * put_contract.strike)]
+        super().__init__('cash_secured_put', stock, legs, target_price)
 
     @property
     def break_even_price(self):
