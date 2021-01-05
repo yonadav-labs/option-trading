@@ -30,6 +30,7 @@ let maxDeltaFilter;
 let minStrikeFilter;
 let maxStrikeFilter;
 
+// https://stackoverflow.com/questions/40161516/how-do-you-programmatically-update-query-params-in-react-router
 function useQuery() {
     return new URLSearchParams(useLocation().search);
 }
