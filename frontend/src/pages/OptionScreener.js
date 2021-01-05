@@ -29,7 +29,7 @@ let maxDeltaFilter;
 let minStrikeFilter;
 let maxStrikeFilter;
 
-export default function SellCoveredCall({match}) {
+export default function SellCoveredCall() {
     const [selectedTicker, setSelectedTicker] = useState([]);
     const [expirationTimestamps, setExpirationTimestamps] = useState([]);
     const [basicInfo, setbasicInfo] = useState({});
@@ -38,10 +38,6 @@ export default function SellCoveredCall({match}) {
     const [selectedExpirationTimestamps, setSelectedExpirationTimestamps] = useState([]);
     const [modalActive, setModalActive] = useState(false);
     const [strikePrices, setStrikePrices] = useState([]);
-    
-    // url params
-    const {params: { ticker } } = match;
-    console.log(ticker)
 
     const resetStates = () => {
         setSelectedTicker([]);
@@ -211,7 +207,6 @@ export default function SellCoveredCall({match}) {
             })
         },
     ];
-    
     const defaultSorted = [{
         dataField: "expiration",
         order: "asc"
@@ -301,26 +296,6 @@ export default function SellCoveredCall({match}) {
         expirationTimestampsOptions.push({ value: timestamp, label: date });
     })
 
-    const loadExpirationDates = async (selected) => {
-        try {
-            setModalActive(true);
-            const response = await Axios.get(`${API_URL}/tickers/${selected}`);
-            setExpirationTimestamps(response.data.expiration_timestamps);
-            setbasicInfo(response.data.quote)
-            setSelectedTicker(selected);
-            setModalActive(false);
-        } catch (error) {
-            console.error(error);
-            setModalActive(false);
-        }
-    };
-
-    useEffect(() => {
-        if (ticker) {
-            loadExpirationDates(ticker.toUpperCase());
-        }
-    }, []);
-
     return (
         <div id="content" className="container min-vh-100" style={{ "marginTop": "4rem" }}>
             <ModalSpinner active={modalActive}></ModalSpinner>
@@ -329,12 +304,12 @@ export default function SellCoveredCall({match}) {
                 <Form.Group>
                     <Form.Label className="requiredField"><h4>Enter ticker symbol:</h4></Form.Label>
                     <TickerTypeahead
+                        selectedTicker={selectedTicker}
                         setSelectedTicker={setSelectedTicker}
                         setExpirationTimestamps={setExpirationTimestamps}
                         setbasicInfo={setbasicInfo}
                         resetStates={resetStates}
                         setModalActive={setModalActive}
-                        urlTicker={ticker}
                     />
                 </Form.Group>
             </Form>

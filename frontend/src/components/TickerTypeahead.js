@@ -1,15 +1,16 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { useHistory } from "react-router-dom";
+import { useParams, useHistory } from "react-router-dom";
 import { Typeahead } from 'react-bootstrap-typeahead';
 import Axios from 'axios';
 import getApiUrl from '../utils'
 
 
-export default function TickerTypeahead({ setSelectedTicker, setExpirationTimestamps, setbasicInfo, /*optional*/resetStates, setModalActive, urlTicker}) {
+export default function TickerTypeahead({ selectedTicker, setSelectedTicker, setExpirationTimestamps, setbasicInfo, /*optional*/resetStates, setModalActive }) {
+    let { ticker } = useParams();
+    let history = useHistory();
     const API_URL = getApiUrl();
     const [allTickers, setAllTickers] = useState([]);
     const inputEl = useRef(null);
-    let history = useHistory();
 
     const loadTickers = async () => {
         try {
@@ -44,6 +45,7 @@ export default function TickerTypeahead({ setSelectedTicker, setExpirationTimest
     };
 
     const onTickerSelectionChange = (selected) => {
+        console.log(selected)
         if (resetStates) {
             resetStates([]);
         }
@@ -53,6 +55,9 @@ export default function TickerTypeahead({ setSelectedTicker, setExpirationTimest
 
     useEffect(() => {
         loadTickers();
+        if (ticker) {
+            onTickerSelectionChange([{display_label: ticker.toUpperCase(), full_name: "", symbol: ticker.toUpperCase()}]);
+        };
     }, []);
 
     return (
@@ -63,6 +68,7 @@ export default function TickerTypeahead({ setSelectedTicker, setExpirationTimest
             labelKey="display_label"
             options={allTickers}
             placeholder="TSLA, APPL, GOOG..."
+            selected={selectedTicker}
             onChange={onTickerSelectionChange}
             filterBy={(option, props) => {
                 const uppercase_text = props.text.toUpperCase();
@@ -71,4 +77,4 @@ export default function TickerTypeahead({ setSelectedTicker, setExpirationTimest
             ref={inputEl}
         />
     );
-}
+};
