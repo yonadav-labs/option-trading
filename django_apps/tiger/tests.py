@@ -3,8 +3,8 @@ from django.test import TestCase
 from django.utils.timezone import make_aware, get_default_timezone
 from unittest import mock
 
-from tiger.classes import Stock, OptionContract, LongCall, CoveredCall, LongPut, CashSecuredPut, OptionLeg
-from tiger.models import ExternalRequestCache, Ticker, StockSnapshot, OptionContractSnapshot
+from tiger.classes import Stock, OptionContract, LongCall, CoveredCall, LongPut, CashSecuredPut, Leg, OptionLeg
+from tiger.models import ExternalRequestCache, Ticker, StockSnapshot, OptionContractSnapshot, LegSnapshot, TradeSnapshot
 
 MOCK_NOW_TIMESTAMP = 1609664400  # 01/03/2021
 
@@ -354,3 +354,28 @@ class LoadFromSnapshotTestCase(TestCase):
         self.assertEqual(contract_td.premium, 0.25)
         self.assertEqual(contract_td.expiration, 1610744400)
         self.assertEqual(contract_td.ask, 0.25)
+
+    def testLoadStockLegFromSnapshot(self):
+        stock_snapshot = StockSnapshot.objects.create(ticker=self.ticker, external_cache=self.external_cache)
+        stock_leg_snapshot = LegSnapshot.objects.create(name='long_cash_leg', is_long=True, units=1,
+                                                        stock_snapshot=stock_snapshot)
+        stock_leg = Leg.from_snapshot(stock_leg_snapshot)
+        self.assertEqual(stock_leg.name, 'long_cash_leg')
+        self.assertEqual(stock_leg.is_long, True)
+        self.assertEqual(stock_leg.units, 1)
+        self.assertEqual(stock_leg.stock.ticker_id, self.ticker.id)
+        self.assertEqual(stock_leg.stock.stock_price, 74.14)
+
+    def testLoadContractLegFromSnapshot(self):
+        contract_snapshot_td = OptionContractSnapshot.objects.create(ticker=self.ticker, is_call=False, strike=66.0,
+                                                                     expiration_timestamp=1610744400, premium=0.0,
+                                                                     external_cache=self.external_cache_td)
+        contract_leg_snapshot = LegSnapshot.objects.create(name='long_put_leg', is_long=True, units=2,
+                                                           contract_snapshot=contract_snapshot_td)
+        contract_leg = Leg.from_snapshot(contract_leg_snapshot)
+        self.assertEqual(contract_leg.name, 'long_put_leg')
+        self.assertEqual(contract_leg.is_long, True)
+        self.assertEqual(contract_leg.units, 2)
+        self.assertEqual(contract_leg.contract.stock_price, 74.13)
+        self.assertEqual(contract_leg.contract.is_call, False)
+        self.assertEqual(contract_leg.contract.premium, 0.25)
