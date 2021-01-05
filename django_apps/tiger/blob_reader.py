@@ -75,3 +75,26 @@ def get_call_puts(ticker_id, response, is_yahoo, use_as_premium, expiration_time
                 else:
                     break
         return call_contracts, put_contracts
+
+
+def get_contract(response, is_yahoo, is_call, strike, expiration_timestamp):
+    if is_yahoo:
+        if not is_valid_option_response(response):
+            return None
+        result = response.get('optionChain').get('result')[0]
+        if 'options' not in result or len(result.get('options', [])) == 0:
+            return None
+        options = result.get('options')[0]
+
+        for row in options.get('calls' if is_call else 'puts', []):
+            if row.get('strike') == strike and expiration == expiration_timestamp:
+                return row
+        return None
+    else:
+        for date_str, blob in response.get('callExpDateMap' if is_call else 'putExpDateMap').items():
+            for strike_str, contracts in blob.items():
+                contract = contracts[0]
+                if contract.get('expirationDate') / 1000 == expiration_timestamp and contract.get(
+                        'strikePrice') == strike:
+                    return contract
+        return None

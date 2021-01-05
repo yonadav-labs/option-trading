@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 
 from tiger.utils import days_from_timestamp
+import tiger.blob_reader as blob_reader
 
 
 class Security(ABC):
@@ -37,6 +38,17 @@ class Stock(Security):
         super().__init__(external_cache_id)
         self.ticker_id = ticker_id
         self.stock_price = stock_price
+
+    @classmethod
+    def from_snapshot(cls, stock_snapshot):
+        cache = stock_snapshot.external_cache
+        if 'yahoo' in cache.request_url:
+            stock_price = blob_reader.get_quote(cache.json_response, True).get(
+                'regularMarketPrice')
+        else:
+            stock_price = blob_reader.get_quote(cache.json_response, False).get(
+                'last')
+        return cls(stock_snapshot.ticker_id, stock_price, stock_snapshot.external_cache_id)
 
     @property
     def cost(self):
@@ -124,6 +136,23 @@ class OptionContract(Security):
         self.use_as_premium = use_as_premium if use_as_premium in ('bid', 'ask', 'estimated') else 'estimated'
         # Validation.
         self.premium
+
+    @classmethod
+    def from_snapshot(cls, contract_snapshot):
+        cache = contract_snapshot.external_cache
+        if 'yahoo' in cache.request_url:
+            stock_price = blob_reader.get_quote(cache.json_response, True).get(
+                'regularMarketPrice')
+            contract_data = blob_reader.get_contract(cache.json_response, True, contract_snapshot.is_call,
+                                                     contract_snapshot.strike, contract_snapshot.expiration_timestamp)
+        else:
+            stock_price = blob_reader.get_quote(cache.json_response, False).get(
+                'last')
+            contract_data = blob_reader.get_contract(cache.json_response, False, contract_snapshot.is_call,
+                                                     contract_snapshot.strike, contract_snapshot.expiration_timestamp)
+        # TODO: set customizable premium
+        return cls(contract_snapshot.ticker_id, contract_snapshot.is_call, contract_data, stock_price,
+                   use_as_premium='estimated', external_cache_id=cache.id)
 
     @property
     def to_strike(self):
