@@ -53,14 +53,14 @@ class Trade(ABC):
             return None
 
     @property
-    @abstractmethod
-    def break_even_price(self):
-        pass
-
-    @property
-    @abstractmethod
     def target_price_profit(self):
-        pass
+        if self.target_price is None:
+            return None
+
+        profit_sum = 0.0
+        for leg in self.legs:
+            profit_sum += leg.get_profit_at_target_price(self.target_price)
+        return profit_sum
 
     @property
     def target_price_profit_ratio(self):
@@ -80,6 +80,11 @@ class Trade(ABC):
     def days_till_expiration(self):
         return days_from_timestamp(self.expiration)
 
+    @property
+    @abstractmethod
+    def break_even_price(self):
+        pass
+
 
 class LongCall(Trade):
     def __init__(self, stock, call_contract, target_price=None):
@@ -94,12 +99,6 @@ class LongCall(Trade):
     def break_even_price(self):
         return self.long_call_leg.contract.strike + self.long_call_leg.contract.premium
 
-    @property
-    def target_price_profit(self):
-        if self.target_price is None:
-            return None
-        return self.long_call_leg.get_profit_at_target_price(self.target_price)
-
 
 class LongPut(Trade):
     def __init__(self, stock, put_contract, target_price=None):
@@ -113,12 +112,6 @@ class LongPut(Trade):
     @property
     def break_even_price(self):
         return self.long_put_leg.contract.strike - self.long_put_leg.contract.premium
-
-    @property
-    def target_price_profit(self):
-        if self.target_price is None:
-            return None
-        return self.long_put_leg.get_profit_at_target_price(self.target_price)
 
 
 class CoveredCall(Trade):
@@ -143,13 +136,6 @@ class CoveredCall(Trade):
     @property
     def break_even_price(self):
         return self.stock.stock_price - self.short_call_leg.contract.premium
-
-    @property
-    def target_price_profit(self):
-        if self.target_price is None:
-            return None
-        return self.long_stock_leg.get_profit_at_target_price(self.target_price) + \
-               self.short_call_leg.get_profit_at_target_price(self.target_price)
 
     # TODO: implement this for all other trades and filter on them.
     def get_profit_cap(self):
@@ -189,13 +175,6 @@ class CashSecuredPut(Trade):
     @property
     def break_even_price(self):
         return self.short_put_leg.contract.strike - self.short_put_leg.contract.premium
-
-    @property
-    def target_price_profit(self):
-        if self.target_price is None:
-            return None
-        return self.long_cash_leg.get_profit_at_target_price(self.target_price) + \
-               self.short_put_leg.get_profit_at_target_price(self.target_price)
 
     def get_premium_profit(self):
         return -self.short_put_leg.cost
