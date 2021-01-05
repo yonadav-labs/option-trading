@@ -34,10 +34,11 @@ class OptionContractSnapshot(SecuritySnapshot):
 
 
 class LegSnapshot(BaseModel):
+    name = models.CharField(max_length=100, null=True, blank=True)
     is_long = models.BooleanField()
     units = models.PositiveIntegerField()
     # Only one of cash, stock, and contract should be not NULL.
-    cash_snapshot = models.PositiveIntegerField(null=True, blank=True)
+    cash_snapshot = models.BooleanField(null=True, blank=True)
     stock_snapshot = models.ForeignKey(StockSnapshot, null=True, blank=True, on_delete=models.SET_NULL)
     contract_snapshot = models.ForeignKey(OptionContractSnapshot, null=True, blank=True, on_delete=models.SET_NULL)
 

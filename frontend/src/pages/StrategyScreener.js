@@ -18,6 +18,7 @@ import TickerSummary from '../components/TickerSummary.js';
 import ModalSpinner from '../components/ModalSpinner';
 import ShareTradeBtn from '../components/ShareTradeBtn.js';
 import Select from "react-select";
+import { useOktaAuth } from '@okta/okta-react';
 
 let lastTradedFilter;
 let strategyFilter;
@@ -32,6 +33,7 @@ export default function BestCallByPrice() {
     const [selectedExpirationTimestamps, setSelectedExpirationTimestamps] = useState([]);
     const [useAsPremium, setUseAsPremium] = useState('estimated');
     const [modalActive, setModalActive] = useState(false);
+    const { authState, authService } = useOktaAuth();
 
     const resetStates = () => {
         setSelectedTicker([]);
@@ -122,8 +124,8 @@ export default function BestCallByPrice() {
             dataField: 'id',
             text: 'Actions',
             // Still under construction.
-            style: { 'display': 'none' },
-            headerStyle: { 'display': 'none' },
+            style: authState.isAuthenticated ? {} : { 'display': 'none' },
+            headerStyle: authState.isAuthenticated ? {} : { 'display': 'none' },
             formatter: (cell, row, rowIndex, extraData) => {
                 return (<ShareTradeBtn trade={row} setModalActive={setModalActive} />);
             },

@@ -58,12 +58,13 @@ class OptionContractSerializer(serializers.Serializer):
     quote_time = serializers.IntegerField(min_value=0)
 
     stock_price = serializers.FloatField(min_value=0.0)
-    to_strike = serializers.FloatField()
-    to_strike_ratio = serializers.FloatField()
     use_as_premium = serializers.CharField(max_length=20)
-    premium = serializers.FloatField(min_value=0.0, allow_null=True)
-    break_even_price = serializers.FloatField(min_value=0.0)
-    to_break_even_ratio = serializers.FloatField()
+
+    to_strike = serializers.ReadOnlyField()
+    to_strike_ratio = serializers.ReadOnlyField()
+    premium = serializers.ReadOnlyField()
+    break_even_price = serializers.ReadOnlyField()
+    to_break_even_ratio = serializers.ReadOnlyField()
 
 
 class LegSerializer(serializers.Serializer):
@@ -72,29 +73,31 @@ class LegSerializer(serializers.Serializer):
     units = serializers.IntegerField(min_value=0)
     stock = StockSerializer(allow_null=True)
     contract = OptionContractSerializer(allow_null=True)
-    cost = serializers.FloatField()
+    cost = serializers.ReadOnlyField()
 
 
 class TradeSerializer(serializers.Serializer):
     id = serializers.IntegerField(required=False)
     type = serializers.CharField(max_length=50)
     stock = StockSerializer()  # The underlying.
-    break_even_price = serializers.FloatField(min_value=0.0, allow_null=True)
-    to_break_even_ratio = serializers.FloatField(allow_null=True)
-    cost = serializers.FloatField()
-    expiration = serializers.IntegerField(min_value=0)
-    days_till_expiration = serializers.IntegerField(min_value=0)
-    last_trade_date = serializers.IntegerField(min_value=0)
+    break_even_price = serializers.ReadOnlyField()
+    to_break_even_ratio = serializers.ReadOnlyField()
+    cost = serializers.ReadOnlyField()
+    expiration = serializers.ReadOnlyField()
+    days_till_expiration = serializers.ReadOnlyField()
+    last_trade_date = serializers.ReadOnlyField()
 
     target_price = serializers.FloatField(allow_null=True, min_value=0.0)
-    to_target_price_ratio = serializers.FloatField(allow_null=True)
-    target_price_profit = serializers.FloatField(allow_null=True)
-    target_price_profit_ratio = serializers.FloatField(allow_null=True)
+    to_target_price_ratio = serializers.ReadOnlyField()
+    target_price_profit = serializers.ReadOnlyField()
+    target_price_profit_ratio = serializers.ReadOnlyField()
 
     legs = LegSerializer(required=True, many=True)
 
-    profit_cap = serializers.FloatField(allow_null=True)  # CoveredCall only
-    profit_cap_ratio = serializers.FloatField(allow_null=True)  # CoveredCall only
-    premium_profit = serializers.FloatField(allow_null=True)  # CoveredCall, CashSecuredPut only
-    premium_profit_ratio = serializers.FloatField(allow_null=True)  # CoveredCall, CashSecuredPut only
-    cash_required = serializers.FloatField(allow_null=True, min_value=0.0)  # CashSecuredPut only
+    profit_cap = serializers.ReadOnlyField()
+    profit_cap_ratio = serializers.ReadOnlyField()
+
+    # TODO: re-consider those metrics.
+    # premium_profit = serializers.FloatField(allow_null=True)  # CoveredCall, CashSecuredPut only
+    # premium_profit_ratio = serializers.ReadOnlyField()  # CoveredCall, CashSecuredPut only
+    # cash_required = serializers.FloatField(allow_null=True, min_value=0.0)  # CashSecuredPut only
