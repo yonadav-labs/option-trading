@@ -94,8 +94,10 @@ class TradeSerializer(serializers.Serializer):
 
     legs = LegSerializer(required=True, many=True)
 
-    profit_cap = serializers.FloatField(allow_null=True)  # CoveredCall only
-    profit_cap_ratio = serializers.FloatField(allow_null=True)  # CoveredCall only
-    premium_profit = serializers.FloatField(allow_null=True)  # CoveredCall, CashSecuredPut only
-    premium_profit_ratio = serializers.FloatField(allow_null=True)  # CoveredCall, CashSecuredPut only
-    cash_required = serializers.FloatField(allow_null=True, min_value=0.0)  # CashSecuredPut only
+    profit_cap = serializers.ReadOnlyField()
+    profit_cap_ratio = serializers.ReadOnlyField()
+
+    # TODO: re-consider those metrics.
+    # premium_profit = serializers.FloatField(allow_null=True)  # CoveredCall, CashSecuredPut only
+    # premium_profit_ratio = serializers.ReadOnlyField()  # CoveredCall, CashSecuredPut only
+    # cash_required = serializers.FloatField(allow_null=True, min_value=0.0)  # CashSecuredPut only

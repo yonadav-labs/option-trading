@@ -5,46 +5,64 @@ from tiger.utils import days_from_timestamp
 
 
 class Trade(ABC):
-    def __init__(self, type, stock, target_price=None):
+    def __init__(self, type, stock, legs, target_price=None):
         '''
+        :param type: type of trade.
         :param stock: current state of underlying stock.
+        :param legs: all legs of this trade.
         :param target_price: target stock price in the future. Optional.
         '''
         self.type = type
         self.stock = stock
+        self.legs = legs
         self.target_price = target_price
-        self.legs = []
 
-    def get_leg_by_name(self, name):
+    def get_leg(self, name):
         for leg in self.legs:
             if leg.name == name:
                 return leg
         return None
 
     @property
-    @abstractmethod
     def cost(self):
-        pass
+        cost_sum = 0.0
+        for leg in self.legs:
+            cost_sum += leg.cost
+        return cost_sum
 
     @property
-    @abstractmethod
-    def break_even_price(self):
-        pass
-
-    @property
-    @abstractmethod
     def expiration(self):
-        pass
+        '''
+        If there is multiple contract legs, return the earliest expiration.
+        :return: expiration timestamp
+        '''
+        expirations = [leg.contract.expiration for leg in self.legs if leg.contract]
+        if expirations:
+            return min(expirations)
+        else:
+            return None
 
     @property
-    @abstractmethod
     def last_trade_date(self):
-        pass
+        '''
+        If there is multiple contract legs, return the earliest last_trade_date.
+        :return: last_trade_date timestamp
+        '''
+        last_trade_dates = [leg.contract.last_trade_date for leg in self.legs if leg.contract]
+        if last_trade_dates:
+            return min(last_trade_dates)
+        else:
+            return None
 
     @property
-    @abstractmethod
     def target_price_profit(self):
-        pass
+        if self.target_price is None:
+            return None
+
+        profit_sum = 0.0
+        for leg in self.legs:
+            profit_sum += leg.get_profit_at_target_price(self.target_price)
+        return profit_sum
 
     @property
     def target_price_profit_ratio(self):
@@ -64,175 +82,75 @@ class Trade(ABC):
     def days_till_expiration(self):
         return days_from_timestamp(self.expiration)
 
+    @property
+    @abstractmethod
+    def break_even_price(self):
+        pass
+
+    @property
+    def profit_cap(self):
+        '''
+        :return: None means no cap.
+        '''
+        return None
+
+    @property
+    def profit_cap_ratio(self):
+        if self.profit_cap is None:
+            return None
+        return self.profit_cap / self.cost
+
 
 class LongCall(Trade):
     def __init__(self, stock, call_contract, target_price=None):
-        super().__init__('long_call', stock, target_price)
-        self.legs.append(OptionLeg('long_call_leg', True, 1, call_contract))
-
-    @property
-    def long_call_leg(self):
-        return self.get_leg_by_name('long_call_leg')
-
-    @property
-    def cost(self):
-        return self.long_call_leg.cost
+        legs = [OptionLeg('long_call_leg', True, 1, call_contract)]
+        super().__init__('long_call', stock, legs, target_price)
 
     @property
     def break_even_price(self):
-        return self.long_call_leg.contract.strike + self.long_call_leg.contract.premium
-
-    @property
-    def target_price_profit(self):
-        if self.target_price is None:
-            return None
-        return self.long_call_leg.get_profit_at_target_price(self.target_price)
-
-    @property
-    def expiration(self):
-        return self.long_call_leg.contract.expiration
-
-    @property
-    def last_trade_date(self):
-        return self.long_call_leg.contract.last_trade_date
+        return self.get_leg('long_call_leg').contract.strike + self.get_leg('long_call_leg').contract.premium
 
 
 class LongPut(Trade):
     def __init__(self, stock, put_contract, target_price=None):
-        super().__init__('long_put', stock, target_price)
-        self.legs.append(OptionLeg('long_put_leg', True, 1, put_contract))
-
-    @property
-    def long_put_leg(self):
-        return self.get_leg_by_name('long_put_leg')
-
-    @property
-    def cost(self):
-        return self.long_put_leg.cost
+        legs = [OptionLeg('long_put_leg', True, 1, put_contract)]
+        super().__init__('long_put', stock, legs, target_price)
 
     @property
     def break_even_price(self):
-        return self.long_put_leg.contract.strike - self.long_put_leg.contract.premium
-
-    @property
-    def target_price_profit(self):
-        if self.target_price is None:
-            return None
-        return self.long_put_leg.get_profit_at_target_price(self.target_price)
-
-    @property
-    def expiration(self):
-        return self.long_put_leg.contract.expiration
-
-    @property
-    def last_trade_date(self):
-        return self.long_put_leg.contract.last_trade_date
+        return self.get_leg('long_put_leg').contract.strike - self.get_leg('long_put_leg').contract.premium
 
 
 class CoveredCall(Trade):
     def __init__(self, stock, call_contract, target_price=None):
-        super().__init__('covered_call', stock, target_price)
-        self.legs.append(StockLeg('long_stock_leg', 100, stock))
-        self.legs.append(OptionLeg('short_call_leg', False, 1, call_contract))
-        # Covered call specific metrics:
-        self.profit_cap = self.get_profit_cap()
-        self.profit_cap_ratio = self.get_profit_cap_ratio()
-        self.premium_profit = self.get_premium_profit()
-        self.premium_profit_ratio = self.get_premium_profit_ratio()
-
-    @property
-    def long_stock_leg(self):
-        return self.get_leg_by_name('long_stock_leg')
-
-    @property
-    def short_call_leg(self):
-        return self.get_leg_by_name('short_call_leg')
-
-    @property
-    def cost(self):
-        return self.long_stock_leg.cost + self.short_call_leg.cost
+        legs = [StockLeg('long_stock_leg', 100, stock), OptionLeg('short_call_leg', False, 1, call_contract)]
+        super().__init__('covered_call', stock, legs, target_price)
 
     @property
     def break_even_price(self):
-        return self.stock.stock_price - self.short_call_leg.contract.premium
+        return self.stock.stock_price - self.get_leg('short_call_leg').contract.premium
 
     @property
-    def target_price_profit(self):
-        if self.target_price is None:
-            return None
-        return self.long_stock_leg.get_profit_at_target_price(self.target_price) + \
-               self.short_call_leg.get_profit_at_target_price(self.target_price)
-
-    # TODO: implement this for all other trades and filter on them.
-    def get_profit_cap(self):
-        profit_cap_price = self.short_call_leg.contract.strike + self.short_call_leg.contract.premium
-        profit = self.long_stock_leg.get_profit_at_target_price(profit_cap_price) + \
-                 self.short_call_leg.get_profit_at_target_price(profit_cap_price)
+    def profit_cap(self):
+        profit_cap_price = self.get_leg('short_call_leg').contract.strike + self.get_leg(
+            'short_call_leg').contract.premium
+        profit = self.get_leg('long_stock_leg').get_profit_at_target_price(profit_cap_price) + \
+                 self.get_leg('short_call_leg').get_profit_at_target_price(profit_cap_price)
         return profit
-
-    def get_profit_cap_ratio(self):
-        return self.profit_cap / self.cost
-
-    def get_premium_profit(self):
-        return min(-self.short_call_leg.cost, self.get_profit_cap())
-
-    def get_premium_profit_ratio(self):
-        return self.premium_profit / self.cost
-
-    @property
-    def expiration(self):
-        return self.short_call_leg.contract.expiration
-
-    @property
-    def last_trade_date(self):
-        return self.short_call_leg.contract.last_trade_date
 
 
 class CashSecuredPut(Trade):
     def __init__(self, stock, put_contract, target_price=None):
-        super().__init__('cash_secured_put', stock, target_price)
-        self.legs.append(OptionLeg('short_put_leg', False, 1, put_contract))
-        self.legs.append(CashLeg(100 * self.short_put_leg.contract.strike))
-        # Cash secured put specific metrics:
-        self.premium_profit = self.get_premium_profit()
-        self.premium_profit_ratio = self.get_premium_profit_ratio()
-        self.cash_required = self.long_cash_leg.cost
-
-    @property
-    def short_put_leg(self):
-        return self.get_leg_by_name('short_put_leg')
-
-    @property
-    def long_cash_leg(self):
-        return self.get_leg_by_name('long_cash_leg')
-
-    @property
-    def cost(self):
-        return self.long_cash_leg.cost + self.short_put_leg.cost
+        legs = [OptionLeg('short_put_leg', False, 1, put_contract),
+                CashLeg(100 * put_contract.strike)]
+        super().__init__('cash_secured_put', stock, legs, target_price)
 
     @property
     def break_even_price(self):
-        return self.short_put_leg.contract.strike - self.short_put_leg.contract.premium
+        return self.get_leg('short_put_leg').contract.strike - self.get_leg('short_put_leg').contract.premium
 
     @property
-    def target_price_profit(self):
-        if self.target_price is None:
-            return None
-        return self.long_cash_leg.get_profit_at_target_price(self.target_price) + \
-               self.short_put_leg.get_profit_at_target_price(self.target_price)
-
-    def get_premium_profit(self):
-        return -self.short_put_leg.cost
-
-    def get_premium_profit_ratio(self):
-        return self.premium_profit / self.cost
-
-    @property
-    def expiration(self):
-        return self.short_put_leg.contract.expiration
-
-    @property
-    def last_trade_date(self):
-        return self.short_put_leg.contract.last_trade_date
+    def profit_cap(self):
+        return -self.get_leg('short_put_leg').cost
 
 # TODO: add a sell everything now and hold cash trade.

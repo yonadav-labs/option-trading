@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from .security import Cash
+from .security import Cash, Stock, OptionContract
 
 
 class Leg(ABC):
@@ -13,6 +13,17 @@ class Leg(ABC):
         self.cash = cash
         self.stock = stock
         self.contract = contract
+
+    @classmethod
+    def from_snapshot(cls, leg_snapshot):
+        if leg_snapshot.cash_snapshot:
+            return CashLeg(leg_snapshot.units)
+        elif leg_snapshot.stock_snapshot:
+            stock = Stock.from_snapshot(leg_snapshot.stock_snapshot)
+            return StockLeg(leg_snapshot.name, leg_snapshot.units, stock)
+        elif leg_snapshot.contract_snapshot:
+            contract = OptionContract.from_snapshot(leg_snapshot.contract_snapshot)
+            return OptionLeg(leg_snapshot.name, leg_snapshot.is_long, leg_snapshot.units, contract)
 
     @property
     @abstractmethod
