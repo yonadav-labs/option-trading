@@ -132,8 +132,6 @@ class CallTradesTestCase(TestCase):
         self.assertAlmostEqual(sell_call.break_even_price, 258.3)
         self.assertAlmostEqual(sell_call.profit_cap, 2970)
         self.assertAlmostEqual(sell_call.profit_cap_ratio, 0.11498257839)
-        self.assertAlmostEqual(sell_call.premium_profit, 2970)
-        self.assertAlmostEqual(sell_call.premium_profit_ratio, 0.11498257839)
         self.assertAlmostEqual(sell_call.target_price_profit, 0.0)
 
         call_contract = OptionContract(1, True, self.yahoo_input2, self.stock_price)
@@ -143,8 +141,6 @@ class CallTradesTestCase(TestCase):
         self.assertAlmostEqual(sell_call.break_even_price, 343.65)
         self.assertAlmostEqual(sell_call.profit_cap, 10135)
         self.assertAlmostEqual(sell_call.profit_cap_ratio, 0.29492215917)
-        self.assertAlmostEqual(sell_call.premium_profit, 7635)
-        self.assertAlmostEqual(sell_call.premium_profit_ratio, 0.22217372326)
 
     def test_use_as_premium(self):
         yahoo_input = dict(self.yahoo_input)
@@ -194,9 +190,6 @@ class PutTradesTestCase(TestCase):
         self.assertAlmostEqual(sell_put.cost, 6730.0)
         self.assertAlmostEqual(sell_put.break_even_price, 67.3)
         self.assertAlmostEqual(sell_put.to_break_even_ratio, -0.08497620666)
-        self.assertAlmostEqual(sell_put.cash_required, 6800.0)
-        self.assertAlmostEqual(sell_put.premium_profit, 70)
-        self.assertAlmostEqual(sell_put.premium_profit_ratio, 0.0104011887)
         self.assertAlmostEqual(sell_put.target_price_profit, 0.0)
 
     @mock.patch('django.utils.timezone.now')

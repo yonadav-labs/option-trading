@@ -85,6 +85,19 @@ class Trade(ABC):
     def break_even_price(self):
         pass
 
+    @property
+    def profit_cap(self):
+        '''
+        :return: None means no cap.
+        '''
+        return None
+
+    @property
+    def profit_cap_ratio(self):
+        if self.profit_cap is None:
+            return None
+        return self.profit_cap / self.cost
+
 
 class LongCall(Trade):
     def __init__(self, stock, call_contract, target_price=None):
@@ -111,32 +124,18 @@ class CoveredCall(Trade):
         super().__init__('covered_call', stock, target_price)
         self.legs.append(StockLeg('long_stock_leg', 100, stock))
         self.legs.append(OptionLeg('short_call_leg', False, 1, call_contract))
-        # Covered call specific metrics:
-        self.profit_cap = self.get_profit_cap()
-        self.profit_cap_ratio = self.get_profit_cap_ratio()
-        self.premium_profit = self.get_premium_profit()
-        self.premium_profit_ratio = self.get_premium_profit_ratio()
 
     @property
     def break_even_price(self):
         return self.stock.stock_price - self.get_leg('short_call_leg').contract.premium
 
-    # TODO: implement this for all other trades and filter on them.
-    def get_profit_cap(self):
+    @property
+    def profit_cap(self):
         profit_cap_price = self.get_leg('short_call_leg').contract.strike + self.get_leg(
             'short_call_leg').contract.premium
         profit = self.get_leg('long_stock_leg').get_profit_at_target_price(profit_cap_price) + \
                  self.get_leg('short_call_leg').get_profit_at_target_price(profit_cap_price)
         return profit
-
-    def get_profit_cap_ratio(self):
-        return self.profit_cap / self.cost
-
-    def get_premium_profit(self):
-        return min(-self.get_leg('short_call_leg').cost, self.get_profit_cap())
-
-    def get_premium_profit_ratio(self):
-        return self.premium_profit / self.cost
 
 
 class CashSecuredPut(Trade):
@@ -144,19 +143,13 @@ class CashSecuredPut(Trade):
         super().__init__('cash_secured_put', stock, target_price)
         self.legs.append(OptionLeg('short_put_leg', False, 1, put_contract))
         self.legs.append(CashLeg(100 * self.get_leg('short_put_leg').contract.strike))
-        # Cash secured put specific metrics:
-        self.premium_profit = self.get_premium_profit()
-        self.premium_profit_ratio = self.get_premium_profit_ratio()
-        self.cash_required = self.get_leg('long_cash_leg').cost
 
     @property
     def break_even_price(self):
         return self.get_leg('short_put_leg').contract.strike - self.get_leg('short_put_leg').contract.premium
 
-    def get_premium_profit(self):
+    @property
+    def profit_cap(self):
         return -self.get_leg('short_put_leg').cost
-
-    def get_premium_profit_ratio(self):
-        return self.premium_profit / self.cost
 
 # TODO: add a sell everything now and hold cash trade.
