@@ -327,8 +327,10 @@ export default function SellCoveredCall() {
         setSelectedExpirationTimestamps(timestamps);
         let i = 0
         if (timestamps) {
+            let timestampValues = []
+            timestamps.forEach( t => timestampValues.push(t.value))
             while (i < timestamps.length) {
-               addQuery(`date${i}`, timestamps[i].value)
+               addQuery(`date`, timestampValues.join(','))
                i++
            }
         }

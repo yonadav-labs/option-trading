@@ -66,7 +66,7 @@ export default function TickerTypeahead({ selectedTicker, setSelectedTicker, set
             id="tickerTypeahead"
             labelKey="display_label"
             options={allTickers}
-            placeholder="TSLA, APPL, GOOG..."
+            placeholder="TSLA, AAPL, GOOG..."
             selected={selectedTicker}
             onChange={onTickerSelectionChange}
             filterBy={(option, props) => {
