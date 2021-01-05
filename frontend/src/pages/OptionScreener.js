@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useHistory, useLocation } from "react-router-dom";
 import Form from 'react-bootstrap/Form'
 import TickerTypeahead from '../components/TickerTypeahead';
 import TickerSummary from '../components/TickerSummary.js';
@@ -29,7 +30,15 @@ let maxDeltaFilter;
 let minStrikeFilter;
 let maxStrikeFilter;
 
+function useQuery() {
+    return new URLSearchParams(useLocation().search);
+}
+
 export default function SellCoveredCall() {
+    let history = useHistory()
+    let location = useLocation()
+    let query = useQuery();
+
     const [selectedTicker, setSelectedTicker] = useState([]);
     const [expirationTimestamps, setExpirationTimestamps] = useState([]);
     const [basicInfo, setbasicInfo] = useState({});
@@ -296,6 +305,35 @@ export default function SellCoveredCall() {
         expirationTimestampsOptions.push({ value: timestamp, label: date });
     })
 
+
+    // https://stackoverflow.com/questions/40161516/how-do-you-programmatically-update-query-params-in-react-router
+    const addQuery = (key, value) => {
+        let pathname = location.pathname; 
+        // returns path: '/app/books'
+        let searchParams = new URLSearchParams(location.search); 
+        // returns the existing query string: '?type=fiction&author=fahid'
+        searchParams.set(key, value);
+        history.push({
+                    pathname: pathname,
+                    search: searchParams.toString()
+            });
+    };
+
+    useEffect(() => {
+        console.log(query.get('date0'))
+    }, []);
+
+    const timestampChangeHandler = (timestamps) => {
+        setSelectedExpirationTimestamps(timestamps);
+        let i = 0
+        if (timestamps) {
+            while (i < timestamps.length) {
+               addQuery(`date${i}`, timestamps[i].value)
+               i++
+           }
+        }
+    }
+
     return (
         <div id="content" className="container min-vh-100" style={{ "marginTop": "4rem" }}>
             <ModalSpinner active={modalActive}></ModalSpinner>
@@ -326,7 +364,7 @@ export default function SellCoveredCall() {
                                             defaultValue={selectedExpirationTimestamps}
                                             isMulti
                                             isClearable
-                                            onChange={setSelectedExpirationTimestamps}
+                                            onChange={timestampChangeHandler}
                                             options={expirationTimestampsOptions}
                                             className="basic-multi-select"
                                             classNamePrefix="select"

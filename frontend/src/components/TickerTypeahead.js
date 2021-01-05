@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { useParams, useHistory } from "react-router-dom";
+import { useParams, useHistory} from "react-router-dom";
 import { Typeahead } from 'react-bootstrap-typeahead';
 import Axios from 'axios';
 import getApiUrl from '../utils'
@@ -45,7 +45,6 @@ export default function TickerTypeahead({ selectedTicker, setSelectedTicker, set
     };
 
     const onTickerSelectionChange = (selected) => {
-        console.log(selected)
         if (resetStates) {
             resetStates([]);
         }
