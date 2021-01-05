@@ -30,15 +30,9 @@ let maxDeltaFilter;
 let minStrikeFilter;
 let maxStrikeFilter;
 
-// https://stackoverflow.com/questions/40161516/how-do-you-programmatically-update-query-params-in-react-router
-function useQuery() {
-    return new URLSearchParams(useLocation().search);
-}
-
 export default function SellCoveredCall() {
     let history = useHistory()
     let location = useLocation()
-    let query = useQuery();
 
     const [selectedTicker, setSelectedTicker] = useState([]);
     const [expirationTimestamps, setExpirationTimestamps] = useState([]);
@@ -320,13 +314,8 @@ export default function SellCoveredCall() {
             });
     };
 
-    useEffect(() => {
-        console.log(query.get('date0'))
-    }, []);
-
     const timestampChangeHandler = (timestamps) => {
         setSelectedExpirationTimestamps(timestamps);
-        let i = 0
         if (timestamps) {
             let timestampValues = []
             timestamps.forEach( t => timestampValues.push(t.value))
