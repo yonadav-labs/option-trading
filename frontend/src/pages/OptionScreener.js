@@ -319,10 +319,7 @@ export default function SellCoveredCall() {
         if (timestamps) {
             let timestampValues = []
             timestamps.forEach( t => timestampValues.push(t.value))
-            while (i < timestamps.length) {
-               addQuery(`date`, timestampValues.join(','))
-               i++
-           }
+            addQuery(`date`, timestampValues.join(','))
         }
     }
 
