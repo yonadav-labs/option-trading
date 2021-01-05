@@ -15,7 +15,7 @@ class Trade(ABC):
         self.target_price = target_price
         self.legs = []
 
-    def get_leg_by_name(self, name):
+    def get_leg(self, name):
         for leg in self.legs:
             if leg.name == name:
                 return leg
@@ -92,12 +92,8 @@ class LongCall(Trade):
         self.legs.append(OptionLeg('long_call_leg', True, 1, call_contract))
 
     @property
-    def long_call_leg(self):
-        return self.get_leg_by_name('long_call_leg')
-
-    @property
     def break_even_price(self):
-        return self.long_call_leg.contract.strike + self.long_call_leg.contract.premium
+        return self.get_leg('long_call_leg').contract.strike + self.get_leg('long_call_leg').contract.premium
 
 
 class LongPut(Trade):
@@ -106,12 +102,8 @@ class LongPut(Trade):
         self.legs.append(OptionLeg('long_put_leg', True, 1, put_contract))
 
     @property
-    def long_put_leg(self):
-        return self.get_leg_by_name('long_put_leg')
-
-    @property
     def break_even_price(self):
-        return self.long_put_leg.contract.strike - self.long_put_leg.contract.premium
+        return self.get_leg('long_put_leg').contract.strike - self.get_leg('long_put_leg').contract.premium
 
 
 class CoveredCall(Trade):
@@ -126,29 +118,22 @@ class CoveredCall(Trade):
         self.premium_profit_ratio = self.get_premium_profit_ratio()
 
     @property
-    def long_stock_leg(self):
-        return self.get_leg_by_name('long_stock_leg')
-
-    @property
-    def short_call_leg(self):
-        return self.get_leg_by_name('short_call_leg')
-
-    @property
     def break_even_price(self):
-        return self.stock.stock_price - self.short_call_leg.contract.premium
+        return self.stock.stock_price - self.get_leg('short_call_leg').contract.premium
 
     # TODO: implement this for all other trades and filter on them.
     def get_profit_cap(self):
-        profit_cap_price = self.short_call_leg.contract.strike + self.short_call_leg.contract.premium
-        profit = self.long_stock_leg.get_profit_at_target_price(profit_cap_price) + \
-                 self.short_call_leg.get_profit_at_target_price(profit_cap_price)
+        profit_cap_price = self.get_leg('short_call_leg').contract.strike + self.get_leg(
+            'short_call_leg').contract.premium
+        profit = self.get_leg('long_stock_leg').get_profit_at_target_price(profit_cap_price) + \
+                 self.get_leg('short_call_leg').get_profit_at_target_price(profit_cap_price)
         return profit
 
     def get_profit_cap_ratio(self):
         return self.profit_cap / self.cost
 
     def get_premium_profit(self):
-        return min(-self.short_call_leg.cost, self.get_profit_cap())
+        return min(-self.get_leg('short_call_leg').cost, self.get_profit_cap())
 
     def get_premium_profit_ratio(self):
         return self.premium_profit / self.cost
@@ -158,26 +143,18 @@ class CashSecuredPut(Trade):
     def __init__(self, stock, put_contract, target_price=None):
         super().__init__('cash_secured_put', stock, target_price)
         self.legs.append(OptionLeg('short_put_leg', False, 1, put_contract))
-        self.legs.append(CashLeg(100 * self.short_put_leg.contract.strike))
+        self.legs.append(CashLeg(100 * self.get_leg('short_put_leg').contract.strike))
         # Cash secured put specific metrics:
         self.premium_profit = self.get_premium_profit()
         self.premium_profit_ratio = self.get_premium_profit_ratio()
-        self.cash_required = self.long_cash_leg.cost
-
-    @property
-    def short_put_leg(self):
-        return self.get_leg_by_name('short_put_leg')
-
-    @property
-    def long_cash_leg(self):
-        return self.get_leg_by_name('long_cash_leg')
+        self.cash_required = self.get_leg('long_cash_leg').cost
 
     @property
     def break_even_price(self):
-        return self.short_put_leg.contract.strike - self.short_put_leg.contract.premium
+        return self.get_leg('short_put_leg').contract.strike - self.get_leg('short_put_leg').contract.premium
 
     def get_premium_profit(self):
-        return -self.short_put_leg.cost
+        return -self.get_leg('short_put_leg').cost
 
     def get_premium_profit_ratio(self):
         return self.premium_profit / self.cost
