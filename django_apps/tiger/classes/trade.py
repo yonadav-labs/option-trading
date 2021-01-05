@@ -29,18 +29,32 @@ class Trade(ABC):
         return cost_sum
 
     @property
+    def expiration(self):
+        '''
+        If there is multiple contract legs, return the earliest expiration.
+        :return: expiration timestamp
+        '''
+        expirations = [leg.contract.expiration for leg in self.legs if leg.contract]
+        if expirations:
+            return min(expirations)
+        else:
+            return None
+
+    @property
+    def last_trade_date(self):
+        '''
+        If there is multiple contract legs, return the earliest last_trade_date.
+        :return: last_trade_date timestamp
+        '''
+        last_trade_dates = [leg.contract.last_trade_date for leg in self.legs if leg.contract]
+        if last_trade_dates:
+            return min(last_trade_dates)
+        else:
+            return None
+
+    @property
     @abstractmethod
     def break_even_price(self):
-        pass
-
-    @property
-    @abstractmethod
-    def expiration(self):
-        pass
-
-    @property
-    @abstractmethod
-    def last_trade_date(self):
         pass
 
     @property
@@ -86,14 +100,6 @@ class LongCall(Trade):
             return None
         return self.long_call_leg.get_profit_at_target_price(self.target_price)
 
-    @property
-    def expiration(self):
-        return self.long_call_leg.contract.expiration
-
-    @property
-    def last_trade_date(self):
-        return self.long_call_leg.contract.last_trade_date
-
 
 class LongPut(Trade):
     def __init__(self, stock, put_contract, target_price=None):
@@ -113,14 +119,6 @@ class LongPut(Trade):
         if self.target_price is None:
             return None
         return self.long_put_leg.get_profit_at_target_price(self.target_price)
-
-    @property
-    def expiration(self):
-        return self.long_put_leg.contract.expiration
-
-    @property
-    def last_trade_date(self):
-        return self.long_put_leg.contract.last_trade_date
 
 
 class CoveredCall(Trade):
@@ -169,14 +167,6 @@ class CoveredCall(Trade):
     def get_premium_profit_ratio(self):
         return self.premium_profit / self.cost
 
-    @property
-    def expiration(self):
-        return self.short_call_leg.contract.expiration
-
-    @property
-    def last_trade_date(self):
-        return self.short_call_leg.contract.last_trade_date
-
 
 class CashSecuredPut(Trade):
     def __init__(self, stock, put_contract, target_price=None):
@@ -212,13 +202,5 @@ class CashSecuredPut(Trade):
 
     def get_premium_profit_ratio(self):
         return self.premium_profit / self.cost
-
-    @property
-    def expiration(self):
-        return self.short_put_leg.contract.expiration
-
-    @property
-    def last_trade_date(self):
-        return self.short_put_leg.contract.last_trade_date
 
 # TODO: add a sell everything now and hold cash trade.
