@@ -22,9 +22,11 @@ class Trade(ABC):
         return None
 
     @property
-    @abstractmethod
     def cost(self):
-        pass
+        cost_sum = 0.0
+        for leg in self.legs:
+            cost_sum += leg.cost
+        return cost_sum
 
     @property
     @abstractmethod
@@ -75,10 +77,6 @@ class LongCall(Trade):
         return self.get_leg_by_name('long_call_leg')
 
     @property
-    def cost(self):
-        return self.long_call_leg.cost
-
-    @property
     def break_even_price(self):
         return self.long_call_leg.contract.strike + self.long_call_leg.contract.premium
 
@@ -105,10 +103,6 @@ class LongPut(Trade):
     @property
     def long_put_leg(self):
         return self.get_leg_by_name('long_put_leg')
-
-    @property
-    def cost(self):
-        return self.long_put_leg.cost
 
     @property
     def break_even_price(self):
@@ -147,10 +141,6 @@ class CoveredCall(Trade):
     @property
     def short_call_leg(self):
         return self.get_leg_by_name('short_call_leg')
-
-    @property
-    def cost(self):
-        return self.long_stock_leg.cost + self.short_call_leg.cost
 
     @property
     def break_even_price(self):
@@ -205,10 +195,6 @@ class CashSecuredPut(Trade):
     @property
     def long_cash_leg(self):
         return self.get_leg_by_name('long_cash_leg')
-
-    @property
-    def cost(self):
-        return self.long_cash_leg.cost + self.short_put_leg.cost
 
     @property
     def break_even_price(self):
