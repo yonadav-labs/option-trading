@@ -56,6 +56,7 @@ class CallTradesTestCase(TestCase):
         # Test contract attributes.
         self.assertEqual(call_contract.ask, 163.15)
         self.assertEqual(call_contract.bid, 160.25)
+        self.assertAlmostEqual(call_contract.bid_ask_spread, 2.9)
         self.assertEqual(call_contract.contract_symbol, 'TSLA210716C00288000')
         self.assertEqual(call_contract.expiration, 1626465600)  # 07/16/2021
         self.assertEqual(call_contract.strike, 288.0)

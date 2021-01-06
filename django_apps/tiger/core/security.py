@@ -181,6 +181,12 @@ class OptionContract(Security):
         raise ValueError('missing bid ask last_price')
 
     @property
+    def bid_ask_spread(self):
+        if not self.bid or not self.ask:
+            return None
+        return self.ask - self.bid
+
+    @property
     def break_even_price(self):
         if self.is_call:
             return self.strike + self.premium

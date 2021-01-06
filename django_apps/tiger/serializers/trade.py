@@ -60,6 +60,7 @@ class OptionContractSerializer(serializers.Serializer):
     stock_price = serializers.FloatField(min_value=0.0)
     use_as_premium = serializers.CharField(max_length=20)
 
+    bid_ask_spread = serializers.ReadOnlyField()
     to_strike = serializers.ReadOnlyField()
     to_strike_ratio = serializers.ReadOnlyField()
     premium = serializers.ReadOnlyField()
