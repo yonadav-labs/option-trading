@@ -86,6 +86,8 @@ class Trade:
 
     @property
     def to_target_price_ratio(self):
+        if self.target_price is None:
+            return None
         return self.target_price / self.stock.stock_price - 1.0
 
     @property
