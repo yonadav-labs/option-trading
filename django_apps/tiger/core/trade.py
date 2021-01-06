@@ -44,51 +44,39 @@ class Trade:
             cost_sum += leg.cost
         return cost_sum
 
-    @property
-    def expiration(self):
-        '''
-        If there is multiple contract legs, return the earliest expiration.
-        :return: expiration timestamp
-        '''
-        expirations = [leg.contract.expiration for leg in self.legs if leg.contract]
-        if expirations:
-            return min(expirations)
+    def _get_aggr_contract_attribute(self, attribute_name, use_min):
+        attributes = [getattr(leg.contract, attribute_name) for leg in self.legs if leg.contract]
+        if attributes:
+            if use_min:
+                return min(attributes)
+            else:
+                return max(attributes)
         else:
             return None
 
     @property
-    def last_trade_date(self):
-        '''
-        If there is multiple contract legs, return the earliest last_trade_date.
-        :return: last_trade_date timestamp
-        '''
-        last_trade_dates = [leg.contract.last_trade_date for leg in self.legs if leg.contract]
-        if last_trade_dates:
-            return min(last_trade_dates)
-        else:
-            return None
+    def min_expiration(self):
+        return self._get_aggr_contract_attribute('expiration', use_min=True)
 
     @property
-    def volume(self):
-        '''
-        If there is multiple contract legs, return the lowest volume.
-        '''
-        volumes = [leg.contract.volume for leg in self.legs if leg.contract]
-        if volumes:
-            return min(volumes)
-        else:
-            return None
+    def min_days_till_expiration(self):
+        return self._get_aggr_contract_attribute('days_till_expiration', use_min=True)
 
     @property
-    def open_interest(self):
-        '''
-        If there is multiple contract legs, return the lowest open_interest.
-        '''
-        open_interests = [leg.contract.open_interest for leg in self.legs if leg.contract]
-        if open_interests:
-            return min(open_interests)
-        else:
-            return None
+    def min_last_trade_date(self):
+        return self._get_aggr_contract_attribute('last_trade_date', use_min=True)
+
+    @property
+    def min_volume(self):
+        return self._get_aggr_contract_attribute('volume', use_min=True)
+
+    @property
+    def min_open_interest(self):
+        return self._get_aggr_contract_attribute('open_interest', use_min=True)
+
+    @property
+    def max_bid_ask_spread(self):
+        return self._get_aggr_contract_attribute('bid_ask_spread', use_min=False)
 
     @property
     def target_price_profit(self):
@@ -115,10 +103,6 @@ class Trade:
     @property
     def to_break_even_ratio(self):
         return (self.break_even_price - self.stock.stock_price) / self.stock.stock_price
-
-    @property
-    def days_till_expiration(self):
-        return days_from_timestamp(self.expiration)
 
     @property
     def break_even_price(self):

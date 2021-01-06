@@ -84,9 +84,12 @@ class TradeSerializer(serializers.Serializer):
     break_even_price = serializers.ReadOnlyField()
     to_break_even_ratio = serializers.ReadOnlyField()
     cost = serializers.ReadOnlyField()
-    expiration = serializers.ReadOnlyField()
-    days_till_expiration = serializers.ReadOnlyField()
-    last_trade_date = serializers.ReadOnlyField()
+    min_expiration = serializers.ReadOnlyField()
+    min_days_till_expiration = serializers.ReadOnlyField()
+    min_last_trade_date = serializers.ReadOnlyField()
+    min_open_interest = serializers.ReadOnlyField()
+    min_volume = serializers.ReadOnlyField()
+    max_bid_ask_spread = serializers.ReadOnlyField()
 
     target_price = serializers.FloatField(allow_null=True, min_value=0.0)
     to_target_price_ratio = serializers.ReadOnlyField()
@@ -97,9 +100,6 @@ class TradeSerializer(serializers.Serializer):
 
     profit_cap = serializers.ReadOnlyField()
     profit_cap_ratio = serializers.ReadOnlyField()
-
-    open_interest = serializers.ReadOnlyField()
-    volume = serializers.ReadOnlyField()
 
     # TODO: re-consider those metrics.
     # premium_profit = serializers.FloatField(allow_null=True)  # CoveredCall, CashSecuredPut only

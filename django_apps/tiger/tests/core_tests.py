@@ -141,8 +141,8 @@ class CallTradesTestCase(TestCase):
         self.assertAlmostEqual(sell_call.break_even_price, 343.65)
         self.assertAlmostEqual(sell_call.profit_cap, 10135)
         self.assertAlmostEqual(sell_call.profit_cap_ratio, 0.29492215917)
-        self.assertAlmostEqual(sell_call.volume, 1)
-        self.assertAlmostEqual(sell_call.open_interest, 203)
+        self.assertAlmostEqual(sell_call.min_volume, 1)
+        self.assertAlmostEqual(sell_call.min_open_interest, 203)
 
     def test_use_as_premium(self):
         yahoo_input = dict(self.yahoo_input)
@@ -193,8 +193,8 @@ class PutTradesTestCase(TestCase):
         self.assertAlmostEqual(sell_put.break_even_price, 67.3)
         self.assertAlmostEqual(sell_put.to_break_even_ratio, -0.08497620666)
         self.assertAlmostEqual(sell_put.target_price_profit, 0.0)
-        self.assertAlmostEqual(sell_put.volume, 3)
-        self.assertAlmostEqual(sell_put.open_interest, 10)
+        self.assertAlmostEqual(sell_put.min_volume, 3)
+        self.assertAlmostEqual(sell_put.min_open_interest, 10)
 
     @mock.patch('django.utils.timezone.now')
     def test_buy_put(self, mock_now):
