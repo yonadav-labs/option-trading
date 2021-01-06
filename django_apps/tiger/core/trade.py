@@ -69,6 +69,28 @@ class Trade:
             return None
 
     @property
+    def volume(self):
+        '''
+        If there is multiple contract legs, return the lowest volume.
+        '''
+        volumes = [leg.contract.volume for leg in self.legs if leg.contract]
+        if volumes:
+            return min(volumes)
+        else:
+            return None
+
+    @property
+    def open_interest(self):
+        '''
+        If there is multiple contract legs, return the lowest open_interest.
+        '''
+        open_interests = [leg.contract.open_interest for leg in self.legs if leg.contract]
+        if open_interests:
+            return min(open_interests)
+        else:
+            return None
+
+    @property
     def target_price_profit(self):
         if self.target_price is None:
             return None

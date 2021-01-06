@@ -97,6 +97,9 @@ class TradeSerializer(serializers.Serializer):
     profit_cap = serializers.ReadOnlyField()
     profit_cap_ratio = serializers.ReadOnlyField()
 
+    open_interest = serializers.ReadOnlyField()
+    volume = serializers.ReadOnlyField()
+
     # TODO: re-consider those metrics.
     # premium_profit = serializers.FloatField(allow_null=True)  # CoveredCall, CashSecuredPut only
     # premium_profit_ratio = serializers.ReadOnlyField()  # CoveredCall, CashSecuredPut only
