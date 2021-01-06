@@ -37,7 +37,6 @@ export default function TickerTypeahead({ selectedTicker, setSelectedTicker, set
             setbasicInfo(response.data.quote)
             setSelectedTicker(selected);
             setModalActive(false);
-            history.push(`/option-screener/${selected[0].symbol}`);
         } catch (error) {
             console.error(error);
             setModalActive(false);
@@ -45,6 +44,9 @@ export default function TickerTypeahead({ selectedTicker, setSelectedTicker, set
     };
 
     const onTickerSelectionChange = (selected) => {
+        if (selected.length > 0) {
+            history.push(`/option-screener/${selected[0].symbol}`);
+        }
         if (resetStates) {
             resetStates([]);
         }
