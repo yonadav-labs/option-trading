@@ -6,10 +6,12 @@ import Card from 'react-bootstrap/Card';
 import BootstrapTable from 'react-bootstrap-table-next';
 import paginationFactory from 'react-bootstrap-table2-paginator';
 import Axios from 'axios';
+import Select from "react-select";
+import { useOktaAuth } from '@okta/okta-react';
+
 import getApiUrl, {
     PriceFormatter, TimestampDateFormatter, onLastTradedFilterChange, ProfitFormatter,
-    PriceMovementFormatter, NumberRoundFormatter, PercentageFormatter,
-    TimestampTimeFormatter, ContractDetails, getLegByName
+    PriceMovementFormatter, getLegByName
 } from '../utils';
 import filterFactory, { multiSelectFilter, numberFilter } from 'react-bootstrap-table2-filter';
 import { BsArrowsExpand, BsArrowsCollapse } from 'react-icons/bs';
@@ -17,8 +19,7 @@ import TickerTypeahead from '../components/TickerTypeahead';
 import TickerSummary from '../components/TickerSummary.js';
 import ModalSpinner from '../components/ModalSpinner';
 import ShareTradeBtn from '../components/ShareTradeBtn.js';
-import Select from "react-select";
-import { useOktaAuth } from '@okta/okta-react';
+import ContractDetailsCard from '../components/ContractDetailsCard';
 
 let lastTradedFilter;
 let strategyFilter;
@@ -219,10 +220,10 @@ export default function BestCallByPrice() {
                         <Card.Body>
                             <Card.Title>
                                 Buy 1 {basicInfo.symbol} strike {PriceFormatter(long_call_leg.contract.strike)} {
-                                    TimestampDateFormatter(row.expiration)} call at {PriceFormatter(long_call_leg.contract.premium)}.
+                                    TimestampDateFormatter(long_call_leg.contract.expiration)} call at {PriceFormatter(long_call_leg.contract.premium)}.
                             </Card.Title>
                             <Card.Text>
-                                {ContractDetails(long_call_leg.contract)}
+                                <ContractDetailsCard contract={long_call_leg.contract} hideTitle />
                             </Card.Text>
                         </Card.Body>
                     </Card>
@@ -234,10 +235,10 @@ export default function BestCallByPrice() {
                         <Card.Body>
                             <Card.Title>
                                 Sell 1 {basicInfo.symbol} strike {PriceFormatter(short_call_leg.contract.strike)} {
-                                    TimestampDateFormatter(row.expiration)} call at {PriceFormatter(short_call_leg.contract.premium)}.
+                                    TimestampDateFormatter(short_call_leg.contract.expiration)} call at {PriceFormatter(short_call_leg.contract.premium)}.
                                 </Card.Title>
                             <Card.Text>
-                                {ContractDetails(short_call_leg.contract)}
+                                <ContractDetailsCard contract={short_call_leg.contract} hideTitle />
                             </Card.Text>
                             <Card.Title>Buy 100 shares of {basicInfo.symbol} at {
                                 PriceFormatter(basicInfo.regularMarketPrice)} and hold as collateral.</Card.Title>
@@ -251,10 +252,10 @@ export default function BestCallByPrice() {
                         <Card.Body>
                             <Card.Title>
                                 Buy 1 {basicInfo.symbol} strike {PriceFormatter(long_put_leg.contract.strike)} {
-                                    TimestampDateFormatter(row.expiration)} put at {PriceFormatter(long_put_leg.contract.premium)}.
+                                    TimestampDateFormatter(long_put_leg.contract.expiration)} put at {PriceFormatter(long_put_leg.contract.premium)}.
                             </Card.Title>
                             <Card.Text>
-                                {ContractDetails(long_put_leg.contract)}
+                                <ContractDetailsCard contract={long_put_leg.contract} hideTitle />
                             </Card.Text>
                         </Card.Body>
                     </Card>
@@ -267,10 +268,10 @@ export default function BestCallByPrice() {
                         <Card.Body>
                             <Card.Title>
                                 Sell 1 {basicInfo.symbol} strike {PriceFormatter(short_put_leg.contract.strike)} {
-                                    TimestampDateFormatter(row.expiration)} put at {PriceFormatter(short_put_leg.contract.premium)}.
+                                    TimestampDateFormatter(short_put_leg.contract.expiration)} put at {PriceFormatter(short_put_leg.contract.premium)}.
                                 </Card.Title>
                             <Card.Text>
-                                {ContractDetails(short_put_leg.contract)}
+                                <ContractDetailsCard contract={short_put_leg.contract} hideTitle />
                             </Card.Text>
                             <Card.Title>Keep {PriceFormatter(long_cash_leg.units)} cash aside as collateral.</Card.Title>
                         </Card.Body>

@@ -4,16 +4,17 @@ import TickerTypeahead from '../components/TickerTypeahead';
 import TickerSummary from '../components/TickerSummary.js';
 import Axios from 'axios';
 import getApiUrl, {
-    PriceFormatter, TimestampDateFormatter, ExpandContractRow, InTheMoneyRowStyle,
-    InTheMoneySign, onInTheMoneyFilterChange, onLastTradedFilterChange,
-    PercentageFormatter, PriceMovementFormatter, NumberRoundFormatter
+    PriceFormatter, TimestampDateFormatter, InTheMoneyRowStyle,
+    InTheMoneySign, onLastTradedFilterChange, PriceMovementFormatter, NumberRoundFormatter
 } from '../utils';
 import Button from 'react-bootstrap/Button';
 import Alert from 'react-bootstrap/Alert';
 import BootstrapTable from 'react-bootstrap-table-next';
 import paginationFactory from 'react-bootstrap-table2-paginator';
 import filterFactory, { multiSelectFilter, numberFilter } from 'react-bootstrap-table2-filter';
+import { BsArrowsExpand, BsArrowsCollapse } from 'react-icons/bs';
 import ModalSpinner from '../components/ModalSpinner';
+import ContractDetailsCard from '../components/ContractDetailsCard';
 import { Comparator } from 'react-bootstrap-table2-filter';
 import Select from "react-select";
 import SingleChoiceFilter from "../components/filters/SingleChoiceFilter"
@@ -295,6 +296,25 @@ export default function SellCoveredCall() {
             .toLocaleDateString('en-US');
         expirationTimestampsOptions.push({ value: timestamp, label: date });
     })
+
+    const ExpandContractRow = {
+        renderer: (row) => (
+            <ContractDetailsCard contract={row} />
+        ),
+        showExpandColumn: true,
+        expandHeaderColumnRenderer: ({ isAnyExpands }) => {
+            if (isAnyExpands) {
+                return (<BsArrowsCollapse style={{ "cursor": "pointer" }} />);
+            }
+            return (<BsArrowsExpand style={{ "cursor": "pointer" }} />);
+        },
+        expandColumnRenderer: ({ expanded }) => {
+            if (expanded) {
+                return (<BsArrowsCollapse style={{ "cursor": "pointer" }} />);
+            }
+            return (<BsArrowsExpand style={{ "cursor": "pointer" }} />);
+        }
+    }
 
     return (
         <div id="content" className="container min-vh-100" style={{ "marginTop": "4rem" }}>
