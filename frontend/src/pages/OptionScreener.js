@@ -260,6 +260,13 @@ export default function SellCoveredCall() {
         const formData = new FormData(event.target);
         const formDataObj = Object.fromEntries(formData.entries());
 
+        ///
+        let timestampValues = []
+        selectedExpirationTimestamps.forEach( t => timestampValues.push(t.value))
+        addQuery(`date`, timestampValues.join(','))
+        ///
+
+
         setShowTimestampAlert(selectedExpirationTimestamps == null);
         if (form.checkValidity() !== false && selectedExpirationTimestamps != null) {
             getContracts(selectedExpirationTimestamps);
@@ -315,14 +322,14 @@ export default function SellCoveredCall() {
             });
     };
 
-    const timestampChangeHandler = (timestamps) => {
-        setSelectedExpirationTimestamps(timestamps);
-        if (timestamps) {
-            let timestampValues = []
-            timestamps.forEach( t => timestampValues.push(t.value))
-            addQuery(`date`, timestampValues.join(','))
-        }
-    }
+    // const timestampChangeHandler = (timestamps) => {
+    //     setSelectedExpirationTimestamps(timestamps);
+    //     if (timestamps) {
+    //         let timestampValues = []
+    //         timestamps.forEach( t => timestampValues.push(t.value))
+    //         addQuery(`date`, timestampValues.join(','))
+    //     }
+    // }
 
     useEffect(() => {
         if (location.search) {
@@ -336,9 +343,9 @@ export default function SellCoveredCall() {
             })
             setSelectedExpirationTimestamps(urlSelectedOptions)
             history.push(location.pathname + location.search)
-            if (dateFormRef.current) {
-                dateFormRef.current.dispatchEvent(new Event("submit"))
-            }
+            // if (dateFormRef.current) {
+            //     dateFormRef.current.dispatchEvent(new Event("submit"))
+            // }
         }
     }, [selectedTicker]);
 
@@ -372,7 +379,7 @@ export default function SellCoveredCall() {
                                             defaultValue={selectedExpirationTimestamps}
                                             isMulti
                                             isClearable
-                                            onChange={timestampChangeHandler}
+                                            onChange={setSelectedExpirationTimestamps}
                                             options={expirationTimestampsOptions}
                                             className="basic-multi-select"
                                             classNamePrefix="select"
