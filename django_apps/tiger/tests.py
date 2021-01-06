@@ -3,7 +3,7 @@ from django.test import TestCase
 from django.utils.timezone import make_aware, get_default_timezone
 from unittest import mock
 
-from tiger.classes import Stock, OptionContract, LongCall, CoveredCall, LongPut, CashSecuredPut, Leg, OptionLeg, Trade
+from tiger.core import Stock, OptionContract, LongCall, CoveredCall, LongPut, CashSecuredPut, Leg, OptionLeg, Trade
 from tiger.models import ExternalRequestCache, Ticker, StockSnapshot, OptionContractSnapshot, LegSnapshot, \
     TradeSnapshot, User
 

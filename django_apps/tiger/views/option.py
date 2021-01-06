@@ -8,7 +8,7 @@ from rest_framework.permissions import IsAuthenticated
 
 from tiger.serializers import TickerSerializer, OptionContractSerializer, TradeSerializer, TradeSnapshotSerializer
 from tiger.models import Ticker, TradeSnapshot
-from tiger.classes import LongCall, CoveredCall, LongPut, CashSecuredPut, OptionContract, Stock, Trade
+from tiger.core import LongCall, CoveredCall, LongPut, CashSecuredPut, OptionContract, Stock, Trade
 
 
 def get_valid_contracts(ticker, request, use_as_premium, all_expiration_timestamps):

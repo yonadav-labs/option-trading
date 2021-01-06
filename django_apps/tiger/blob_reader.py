@@ -1,7 +1,7 @@
 import requests
 from requests.adapters import HTTPAdapter
 from django.conf import settings
-from tiger.classes import OptionContract
+from tiger.core import OptionContract
 
 
 def is_valid_option_response(response):
