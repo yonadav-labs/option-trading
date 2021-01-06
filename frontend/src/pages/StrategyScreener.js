@@ -66,7 +66,7 @@ export default function BestCallByPrice() {
                 return (
                     <span>
                         {getText(cell)} <br />
-                        <small>{TimestampDateFormatter(row.expiration)}</small>
+                        <small>{TimestampDateFormatter(row.min_expiration)}</small>
                     </span>
                 );
             },
@@ -110,7 +110,7 @@ export default function BestCallByPrice() {
             ),
             sort: true
         }, {
-            dataField: 'last_trade_date',
+            dataField: 'min_last_trade_date',
             text: 'Last traded',
             formatter: (cell, row, rowIndex, extraData) => {
                 if (cell == 0) return (<span>N/A</span>);
@@ -133,8 +133,8 @@ export default function BestCallByPrice() {
         },
         // Below fields are hidden and used for filtering only.
         {
-            dataField: 'last_trade_date2',
-            text: 'last_trade_date2',
+            dataField: 'min_last_trade_date2',
+            text: 'min_last_trade_date2',
             style: { 'display': 'none' },
             headerStyle: { 'display': 'none' },
             filter: numberFilter({
@@ -198,7 +198,7 @@ export default function BestCallByPrice() {
             let trades = response.data.trades;
             trades.map((val, index) => {
                 val.type2 = val.type;
-                val.last_trade_date2 = val.last_trade_date;
+                val.min_last_trade_date2 = val.min_last_trade_date;
                 val.id = index;
                 return val;
             })

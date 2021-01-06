@@ -81,6 +81,9 @@ class TradeSerializer(serializers.Serializer):
     id = serializers.IntegerField(required=False)
     type = serializers.CharField(max_length=50)
     stock = StockSerializer()  # The underlying.
+    legs = LegSerializer(required=True, many=True)
+    target_price = serializers.FloatField(allow_null=True, min_value=0.0)
+
     break_even_price = serializers.ReadOnlyField()
     to_break_even_ratio = serializers.ReadOnlyField()
     cost = serializers.ReadOnlyField()
@@ -90,14 +93,9 @@ class TradeSerializer(serializers.Serializer):
     min_open_interest = serializers.ReadOnlyField()
     min_volume = serializers.ReadOnlyField()
     max_bid_ask_spread = serializers.ReadOnlyField()
-
-    target_price = serializers.FloatField(allow_null=True, min_value=0.0)
     to_target_price_ratio = serializers.ReadOnlyField()
     target_price_profit = serializers.ReadOnlyField()
     target_price_profit_ratio = serializers.ReadOnlyField()
-
-    legs = LegSerializer(required=True, many=True)
-
     profit_cap = serializers.ReadOnlyField()
     profit_cap_ratio = serializers.ReadOnlyField()
 
