@@ -61,3 +61,6 @@ class TradeSnapshot(BaseModel):
 
     creator = models.ForeignKey(User, on_delete=models.CASCADE, related_name='trades')
     is_public = models.BooleanField(default=False)  # If non-creator can view this trade.
+
+    # Market assumptions.
+    target_price = models.FloatField(null=True, blank=True)

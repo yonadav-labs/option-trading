@@ -73,5 +73,5 @@ class TradeSnapshotSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = TradeSnapshot
-        fields = ('type', 'stock_snapshot', 'leg_snapshots', 'is_public', 'creator_id')
+        fields = ('type', 'stock_snapshot', 'leg_snapshots', 'is_public', 'creator_id', 'target_price')
         depth = 2
