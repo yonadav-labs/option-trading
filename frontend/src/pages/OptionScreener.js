@@ -262,9 +262,9 @@ export default function SellCoveredCall() {
         const formDataObj = Object.fromEntries(formData.entries());
 
         // push dates to url query
-        let timestampValues = []
-        selectedExpirationTimestamps.forEach( t => timestampValues.push(t.value))
-        addQuery(location, history, `date`, timestampValues.join(','))
+        // let timestampValues = []
+        // selectedExpirationTimestamps.forEach( t => timestampValues.push(t.value))
+        // addQuery(location, history, `date`, timestampValues.join(','))
   
         setShowTimestampAlert(selectedExpirationTimestamps == null);
         if (form.checkValidity() !== false && selectedExpirationTimestamps != null) {
