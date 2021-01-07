@@ -13,7 +13,8 @@ export default function LegDetailsCard(props) {
                 <Card.Body>
                     <Card.Title>
                         {position_num ? `Position #${position_num}:` : null}
-                        &nbsp;{leg.is_long ? 'Long' : 'Short'} {leg.units} {getContractName(leg.contract)} {leg.units > 1 ? 'options' : 'option'}.
+                        &nbsp;{leg.is_long ? 'Long' : 'Short'} {leg.units} {getContractName(leg.contract)} {leg.units > 1 ? 'options' : 'option'}
+                        &nbsp;at {PriceFormatter(leg.contract.premium)}.
                     </Card.Title>
                     <Card.Text>
                         <ContractDetailsCard contract={leg.contract} hideTitle={true} />
