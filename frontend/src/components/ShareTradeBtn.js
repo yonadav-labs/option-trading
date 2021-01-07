@@ -15,7 +15,7 @@ export default function ShareTradeBtn(props) {
     function ConvertToTradeSnapshot() {
         let tradeSnapshot = {
             type: trade.type,
-            stock_snapshot: { ticker_id: trade.stock.ticker_id, external_cache_id: trade.stock.external_cache_id },
+            stock_snapshot: { ticker_id: trade.stock.ticker.id, external_cache_id: trade.stock.external_cache_id },
             leg_snapshots: [],
             is_public: true,
             target_price: trade.target_price,
@@ -24,7 +24,7 @@ export default function ShareTradeBtn(props) {
             let legSnapshot = { name: leg.name, is_long: leg.is_long, units: leg.units }
             if (leg.contract) {
                 let contract = {
-                    ticker_id: leg.contract.ticker_id,
+                    ticker_id: leg.contract.ticker.id,
                     external_cache_id: leg.contract.external_cache_id,
                     is_call: leg.contract.is_call,
                     strike: leg.contract.strike,
@@ -34,7 +34,7 @@ export default function ShareTradeBtn(props) {
                 legSnapshot.contract_snapshot = contract;
             } else if (leg.stock) {
                 legSnapshot.stock_snapshot = {
-                    ticker_id: leg.stock.ticker_id,
+                    ticker_id: leg.stock.ticker.id,
                     external_cache_id: leg.stock.external_cache_id,
                 };
             } else {

@@ -2,7 +2,8 @@ import React from 'react';
 import Card from 'react-bootstrap/Card';
 
 import {
-    PriceFormatter, TimestampDateFormatter, PercentageFormatter, TimestampTimeFormatter, NumberRoundFormatter
+    PriceFormatter, TimestampDateFormatter, PercentageFormatter, TimestampTimeFormatter,
+    NumberRoundFormatter, getContractName
 } from '../utils';
 
 export default function ContractDetailsCard(props) {
@@ -15,10 +16,7 @@ export default function ContractDetailsCard(props) {
                     {
                         hideTitle ?
                             null :
-                            <Card.Title>
-                                {TimestampDateFormatter(contract.expiration)}
-                                 Strike {PriceFormatter(contract.strike)} {contract.is_call ? 'Call' : 'Put'}
-                            </Card.Title>
+                            <Card.Title>{getContractName(contract)}</Card.Title>
                     }
                     <Card.Text>
                         <div>

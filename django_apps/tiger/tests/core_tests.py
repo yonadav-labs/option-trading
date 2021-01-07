@@ -4,6 +4,7 @@ from django.utils.timezone import make_aware, get_default_timezone
 from unittest import mock
 
 from tiger.core import Stock, OptionContract, LongCall, CoveredCall, LongPut, CashSecuredPut, Leg, OptionLeg, Trade
+from tiger.models import Ticker
 
 MOCK_NOW_TIMESTAMP = 1609664400  # 01/03/2021
 
@@ -45,7 +46,7 @@ class CallTradesTestCase(TestCase):
             "inTheMoney": False
         }
         self.stock_price = 420.0
-        self.stock = Stock(1, self.stock_price)
+        self.stock = Stock(Ticker(id=1), self.stock_price)
 
     @mock.patch('django.utils.timezone.now')
     def test_initialization(self, mock_now):
@@ -171,7 +172,7 @@ class PutTradesTestCase(TestCase):
         }
 
         self.stock_price = 73.55
-        self.stock = Stock(2, self.stock_price)
+        self.stock = Stock(Ticker(id=2), self.stock_price)
 
     @mock.patch('django.utils.timezone.now')
     def test_sell_put(self, mock_now):

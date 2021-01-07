@@ -75,7 +75,7 @@ def get_best_trades(request, ticker_symbol):
 
     quote, external_cache_id = ticker.get_quote()
     stock_price = quote.get('regularMarketPrice')  # This is from Yahoo.
-    stock = Stock(ticker.id, stock_price, external_cache_id)
+    stock = Stock(ticker, stock_price, external_cache_id)
 
     all_trades = []
     call_contract_lists, put_contract_list = get_valid_contracts(ticker, request, use_as_premium,
