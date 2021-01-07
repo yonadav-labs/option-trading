@@ -37,4 +37,4 @@ class Ticker(BaseModel):
 
     def get_call_puts(self, use_as_premium, expiration_timestamp):
         response, external_cache_id = self.get_request_cache(settings.USE_YAHOO, expiration_timestamp)
-        return get_call_puts(self.id, response, settings.USE_YAHOO, use_as_premium, expiration_timestamp, external_cache_id)
+        return get_call_puts(self, response, settings.USE_YAHOO, use_as_premium, expiration_timestamp, external_cache_id)

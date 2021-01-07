@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from "react-router-dom";
 import Axios from 'axios';
-import getApiUrl from '../utils';
 import { useOktaAuth } from '@okta/okta-react';
+
+import getApiUrl from '../utils';
+import TradeDetailsCard from '../components/TradeDetailsCard';
 
 
 export default function SingleTrade() {
@@ -25,7 +27,7 @@ export default function SingleTrade() {
             const response = await Axios.get(`${API_URL}/trade_snapshots/${tradeId}`, {
                 headers: headers
             });
-            setTrade(response.data);
+            setTrade(response.data.trade_snaphost);
         } catch (error) {
             console.error(error);
         }
@@ -36,10 +38,8 @@ export default function SingleTrade() {
     }, [authState, authService]);
 
     return (
-        <div className="container">
-            <h1>This page is being developed by our engineers... will be available very soon!</h1>
-            <h4>Trade#{tradeId} </h4>
-            {trade ? JSON.stringify(trade) : 'Loading...'}
+        <div id="content" className="container min-vh-100" style={{ "marginTop": "4rem" }}>
+            {trade ? <TradeDetailsCard trade={trade}></TradeDetailsCard> : 'Loading...'}
         </div>
     );
 }

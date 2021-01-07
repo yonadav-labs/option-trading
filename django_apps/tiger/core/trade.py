@@ -1,10 +1,9 @@
-from abc import ABC, abstractmethod
-
-from .leg import CashLeg, StockLeg, OptionLeg
+from .security import Stock
+from .leg import Leg, CashLeg, StockLeg, OptionLeg
 from tiger.utils import days_from_timestamp
 
 
-class Trade(ABC):
+class Trade:
     def __init__(self, type, stock, legs, target_price=None):
         '''
         :param type: type of trade.
@@ -16,6 +15,21 @@ class Trade(ABC):
         self.stock = stock
         self.legs = legs
         self.target_price = target_price
+
+    @classmethod
+    def from_snapshot(cls, trade_snapshot):
+        stock = Stock.from_snapshot(trade_snapshot.stock_snapshot)
+        legs = [Leg.from_snapshot(leg_snapshot) for leg_snapshot in trade_snapshot.leg_snapshots.all()]
+        new_trade = cls(trade_snapshot.type, stock, legs, target_price=trade_snapshot.target_price)
+        if trade_snapshot.type == 'long_call':
+            new_trade.__class__ = LongCall
+        elif trade_snapshot.type == 'long_put':
+            new_trade.__class__ = LongPut
+        elif trade_snapshot.type == 'covered_call':
+            new_trade.__class__ = CoveredCall
+        elif trade_snapshot.type == 'cash_secured_put':
+            new_trade.__class__ = CashSecuredPut
+        return new_trade
 
     def get_leg(self, name):
         for leg in self.legs:
@@ -30,29 +44,39 @@ class Trade(ABC):
             cost_sum += leg.cost
         return cost_sum
 
-    @property
-    def expiration(self):
-        '''
-        If there is multiple contract legs, return the earliest expiration.
-        :return: expiration timestamp
-        '''
-        expirations = [leg.contract.expiration for leg in self.legs if leg.contract]
-        if expirations:
-            return min(expirations)
+    def _get_aggr_contract_attribute(self, attribute_name, use_min):
+        attributes = [getattr(leg.contract, attribute_name) for leg in self.legs if leg.contract]
+        if attributes:
+            if use_min:
+                return min(attributes)
+            else:
+                return max(attributes)
         else:
             return None
 
     @property
-    def last_trade_date(self):
-        '''
-        If there is multiple contract legs, return the earliest last_trade_date.
-        :return: last_trade_date timestamp
-        '''
-        last_trade_dates = [leg.contract.last_trade_date for leg in self.legs if leg.contract]
-        if last_trade_dates:
-            return min(last_trade_dates)
-        else:
-            return None
+    def min_expiration(self):
+        return self._get_aggr_contract_attribute('expiration', use_min=True)
+
+    @property
+    def min_days_till_expiration(self):
+        return self._get_aggr_contract_attribute('days_till_expiration', use_min=True)
+
+    @property
+    def min_last_trade_date(self):
+        return self._get_aggr_contract_attribute('last_trade_date', use_min=True)
+
+    @property
+    def min_volume(self):
+        return self._get_aggr_contract_attribute('volume', use_min=True)
+
+    @property
+    def min_open_interest(self):
+        return self._get_aggr_contract_attribute('open_interest', use_min=True)
+
+    @property
+    def max_bid_ask_spread(self):
+        return self._get_aggr_contract_attribute('bid_ask_spread', use_min=False)
 
     @property
     def target_price_profit(self):
@@ -72,6 +96,8 @@ class Trade(ABC):
 
     @property
     def to_target_price_ratio(self):
+        if self.target_price is None:
+            return None
         return self.target_price / self.stock.stock_price - 1.0
 
     @property
@@ -79,13 +105,8 @@ class Trade(ABC):
         return (self.break_even_price - self.stock.stock_price) / self.stock.stock_price
 
     @property
-    def days_till_expiration(self):
-        return days_from_timestamp(self.expiration)
-
-    @property
-    @abstractmethod
     def break_even_price(self):
-        pass
+        return None
 
     @property
     def profit_cap(self):
@@ -121,6 +142,7 @@ class LongPut(Trade):
         return self.get_leg('long_put_leg').contract.strike - self.get_leg('long_put_leg').contract.premium
 
 
+# TODO: add validation logic (number of stock and contract should match)
 class CoveredCall(Trade):
     def __init__(self, stock, call_contract, target_price=None):
         legs = [StockLeg('long_stock_leg', 100, stock), OptionLeg('short_call_leg', False, 1, call_contract)]
@@ -139,6 +161,7 @@ class CoveredCall(Trade):
         return profit
 
 
+# TODO: add validation logic (amount of cash and put strike should match)
 class CashSecuredPut(Trade):
     def __init__(self, stock, put_contract, target_price=None):
         legs = [OptionLeg('short_put_leg', False, 1, put_contract),

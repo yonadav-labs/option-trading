@@ -8,7 +8,7 @@ from rest_framework.permissions import IsAuthenticated
 
 from tiger.serializers import TickerSerializer, OptionContractSerializer, TradeSerializer, TradeSnapshotSerializer
 from tiger.models import Ticker, TradeSnapshot
-from tiger.classes import LongCall, CoveredCall, LongPut, CashSecuredPut, OptionContract, Stock
+from tiger.core import LongCall, CoveredCall, LongPut, CashSecuredPut, OptionContract, Stock, Trade
 
 
 def get_valid_contracts(ticker, request, use_as_premium, all_expiration_timestamps):
@@ -75,7 +75,7 @@ def get_best_trades(request, ticker_symbol):
 
     quote, external_cache_id = ticker.get_quote()
     stock_price = quote.get('regularMarketPrice')  # This is from Yahoo.
-    stock = Stock(ticker.id, stock_price, external_cache_id)
+    stock = Stock(ticker, stock_price, external_cache_id)
 
     all_trades = []
     call_contract_lists, put_contract_list = get_valid_contracts(ticker, request, use_as_premium,
@@ -101,8 +101,12 @@ def trade_snapshot_detail(request, pk):
     trade_snapshot = get_object_or_404(TradeSnapshot, pk=pk)
 
     if request.method == 'GET':
-        trade_snapshot_serializer = TradeSnapshotSerializer(trade_snapshot)
-        return Response(trade_snapshot_serializer.data)
+        if not trade_snapshot.is_public and trade_snapshot.creator.id != request.user.id:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+        trade = Trade.from_snapshot(trade_snapshot)
+        trade_serializer = TradeSerializer(trade)
+        return Response({'trade_snaphost': trade_serializer.data})
 
 
 @api_view(['POST'])

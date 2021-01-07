@@ -34,9 +34,9 @@ class Cash(Security):
 
 
 class Stock(Security):
-    def __init__(self, ticker_id, stock_price, external_cache_id=None):
+    def __init__(self, ticker, stock_price, external_cache_id=None):
         super().__init__(external_cache_id)
-        self.ticker_id = ticker_id
+        self.ticker = ticker
         self.stock_price = stock_price
 
     @classmethod
@@ -48,7 +48,7 @@ class Stock(Security):
         else:
             stock_price = blob_reader.get_quote(cache.json_response, False).get(
                 'last')
-        return cls(stock_snapshot.ticker_id, stock_price, stock_snapshot.external_cache_id)
+        return cls(stock_snapshot.ticker, stock_price, stock_snapshot.external_cache_id)
 
     @property
     def cost(self):
@@ -59,7 +59,7 @@ class Stock(Security):
 
 
 class OptionContract(Security):
-    def __init__(self, ticker_id, is_call, data_dict, stock_price, use_as_premium='estimated', external_cache_id=None):
+    def __init__(self, ticker, is_call, data_dict, stock_price, use_as_premium='estimated', external_cache_id=None):
         super().__init__(external_cache_id)
         if 'contractSymbol' in data_dict:
             # Yahoo.
@@ -130,7 +130,7 @@ class OptionContract(Security):
             '''
 
         # Non-contract data.
-        self.ticker_id = ticker_id
+        self.ticker = ticker
         self.stock_price = stock_price
         self.days_till_expiration = days_from_timestamp(self.expiration)
         self.use_as_premium = use_as_premium if use_as_premium in ('bid', 'ask', 'estimated') else 'estimated'
@@ -151,7 +151,7 @@ class OptionContract(Security):
             contract_data = blob_reader.get_contract(cache.json_response, False, contract_snapshot.is_call,
                                                      contract_snapshot.strike, contract_snapshot.expiration_timestamp)
         # TODO: set customizable premium
-        return cls(contract_snapshot.ticker_id, contract_snapshot.is_call, contract_data, stock_price,
+        return cls(contract_snapshot.ticker, contract_snapshot.is_call, contract_data, stock_price,
                    use_as_premium='estimated', external_cache_id=cache.id)
 
     @property
@@ -179,6 +179,12 @@ class OptionContract(Security):
         elif self.use_as_premium == 'ask' and self.ask:
             return self.ask
         raise ValueError('missing bid ask last_price')
+
+    @property
+    def bid_ask_spread(self):
+        if not self.bid or not self.ask:
+            return None
+        return self.ask - self.bid
 
     @property
     def break_even_price(self):

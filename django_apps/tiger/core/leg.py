@@ -26,6 +26,10 @@ class Leg(ABC):
             return OptionLeg(leg_snapshot.name, leg_snapshot.is_long, leg_snapshot.units, contract)
 
     @property
+    def is_cash(self):
+        return self.cash is not None
+
+    @property
     @abstractmethod
     def cost(self):
         pass

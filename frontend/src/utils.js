@@ -1,7 +1,5 @@
 import React from 'react';
-import Card from 'react-bootstrap/Card';
 import NumberFormat from 'react-number-format';
-import { BsArrowsExpand, BsArrowsCollapse } from 'react-icons/bs';
 import { Comparator } from 'react-bootstrap-table2-filter';
 
 // Returns the backend API base url.
@@ -88,59 +86,6 @@ export function ExpDayFormatter(ts, days_till_expiration) {
     );
 };
 
-export function ContractDetails(row) {
-    return (
-        <div>
-            <div className="row">
-                <div className="col-sm-3">Last: {PriceFormatter(row.last_price)}</div>
-                <div className="col-sm-3">Change: {PriceFormatter(row.change)} ({NumberRoundFormatter(row.percent_change)}%)</div>
-                <div className="col-sm-3">Bid: {PriceFormatter(row.bid)} X {NumberRoundFormatter(row.bid_size)}</div>
-                <div className="col-sm-3">Ask: {PriceFormatter(row.ask)} X {NumberRoundFormatter(row.ask_size)}</div>
-            </div>
-            <div className="row">
-                <div className="col-sm-3">Range: {PriceFormatter(row.low_price)} - {PriceFormatter(row.high_price)}</div>
-                <div className="col-sm-6">Last traded: {TimestampTimeFormatter(row.last_trade_date)}</div>
-            </div>
-            <div className="row">
-                <div className="col-sm-3">Implied volatility: {PercentageFormatter(row.implied_volatility)}</div>
-                <div className="col-sm-3">Theoretical value: {PriceFormatter(row.theoretical_option_value)}</div>
-                <div className="col-sm-3">Time value: {PriceFormatter(row.time_value)}</div>
-            </div>
-            <div className="row">
-                <div className="col-sm-3">Delta: {NumberRoundFormatter(row.delta)}</div>
-                <div className="col-sm-3">Gamma: {NumberRoundFormatter(row.gamma)}</div>
-                <div className="col-sm-3">Theta: {NumberRoundFormatter(row.theta)}</div>
-                <div className="col-sm-3">Vega: {NumberRoundFormatter(row.vega)}</div>
-            </div>
-        </div>
-    );
-}
-
-export const ExpandContractRow = {
-    renderer: (row) => (
-        <Card>
-            <Card.Body>
-                <Card.Title>Details</Card.Title>
-                <Card.Text>
-                    {ContractDetails(row)}
-                </Card.Text>
-            </Card.Body>
-        </Card>
-    ),
-    showExpandColumn: true,
-    expandHeaderColumnRenderer: ({ isAnyExpands }) => {
-        if (isAnyExpands) {
-            return (<BsArrowsCollapse style={{ "cursor": "pointer" }} />);
-        }
-        return (<BsArrowsExpand style={{ "cursor": "pointer" }} />);
-    },
-    expandColumnRenderer: ({ expanded }) => {
-        if (expanded) {
-            return (<BsArrowsCollapse style={{ "cursor": "pointer" }} />);
-        }
-        return (<BsArrowsExpand style={{ "cursor": "pointer" }} />);
-    }
-}
 
 export function InTheMoneyRowStyle(row, rowIndex) {
     const style = {};
@@ -187,3 +132,25 @@ export function getLegByName(trade, name) {
     });
     return return_leg;
 };
+
+export function getContractName(contract) {
+    return (
+        <span>
+            {contract.ticker.symbol} {TimestampDateFormatter(contract.expiration)}
+            &nbsp;strike {PriceFormatter(contract.strike)} {contract.is_call ? 'call' : 'put'}
+        </span>
+    );
+};
+
+export function getTradeTypeDisplay(type) {
+    switch (type) {
+        case ("long_call"):
+            return "Long call";
+        case ("covered_call"):
+            return "Covered call"
+        case ("long_put"):
+            return "Long put"
+        case ("cash_secured_put"):
+            return "Cash secured put"
+    }
+}
