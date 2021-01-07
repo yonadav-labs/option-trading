@@ -1,16 +1,20 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { useParams, useHistory} from "react-router-dom";
+import { useHistory, useLocation} from "react-router-dom";
 import { Typeahead } from 'react-bootstrap-typeahead';
 import Axios from 'axios';
 import getApiUrl from '../utils'
+import { addQuery } from './querying'
 
 
 export default function TickerTypeahead({ selectedTicker, setSelectedTicker, setExpirationTimestamps, setbasicInfo, /*optional*/resetStates, setModalActive }) {
-    let { ticker } = useParams();
     let history = useHistory();
+    let location = useLocation();
     const API_URL = getApiUrl();
     const [allTickers, setAllTickers] = useState([]);
     const inputEl = useRef(null);
+    const search = location.search;
+    const params = new URLSearchParams(search);
+    const symbol = params.get('symbol');
 
     const loadTickers = async () => {
         try {
@@ -45,7 +49,7 @@ export default function TickerTypeahead({ selectedTicker, setSelectedTicker, set
 
     const onTickerSelectionChange = (selected) => {
         if (selected.length > 0) {
-            history.push(`/option-screener/${selected[0].symbol}`);
+            addQuery(location, history, 'symbol', selected[0].symbol)
         }
         if (resetStates) {
             resetStates([]);
@@ -56,8 +60,8 @@ export default function TickerTypeahead({ selectedTicker, setSelectedTicker, set
 
     useEffect(() => {
         loadTickers();
-        if (ticker) {
-            onTickerSelectionChange([{display_label: ticker.toUpperCase(), full_name: "", symbol: ticker.toUpperCase()}]);
+        if (symbol) {
+            onTickerSelectionChange([{display_label: symbol.toUpperCase(), full_name: "", symbol: symbol.toUpperCase()}]);
         };
     }, []);
 

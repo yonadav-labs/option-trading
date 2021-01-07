@@ -19,6 +19,7 @@ import { Comparator } from 'react-bootstrap-table2-filter';
 import Select from "react-select";
 import SingleChoiceFilter from "../components/filters/SingleChoiceFilter"
 import StrikeRangeSliderFilter from "../components/filters/StrikeRangeSliderFilter"
+import { addQuery } from "../components/querying"
 
 let putCallFilter;
 let inTheMoneyFilter;
@@ -260,13 +261,11 @@ export default function SellCoveredCall() {
         const formData = new FormData(event.target);
         const formDataObj = Object.fromEntries(formData.entries());
 
-        ///
+        // push dates to url query
         let timestampValues = []
         selectedExpirationTimestamps.forEach( t => timestampValues.push(t.value))
-        addQuery(`date`, timestampValues.join(','))
-        ///
-
-
+        addQuery(location, history, `date`, timestampValues.join(','))
+  
         setShowTimestampAlert(selectedExpirationTimestamps == null);
         if (form.checkValidity() !== false && selectedExpirationTimestamps != null) {
             getContracts(selectedExpirationTimestamps);
@@ -308,46 +307,6 @@ export default function SellCoveredCall() {
         expirationTimestampsOptions.push({ value: timestamp, label: date });
     })
 
-
-    // https://stackoverflow.com/questions/40161516/how-do-you-programmatically-update-query-params-in-react-router
-    const addQuery = (key, value) => {
-        let pathname = location.pathname; 
-        // returns path: '/app/books'
-        let searchParams = new URLSearchParams(location.search); 
-        // returns the existing query string: '?type=fiction&author=fahid'
-        searchParams.set(key, value);
-        history.push({
-                    pathname: pathname,
-                    search: searchParams.toString()
-            });
-    };
-
-    // const timestampChangeHandler = (timestamps) => {
-    //     setSelectedExpirationTimestamps(timestamps);
-    //     if (timestamps) {
-    //         let timestampValues = []
-    //         timestamps.forEach( t => timestampValues.push(t.value))
-    //         addQuery(`date`, timestampValues.join(','))
-    //     }
-    // }
-
-    useEffect(() => {
-        if (location.search) {
-            let urlDateValues = location.search.slice(6).split('%2C').map(x => parseInt(x))
-            let urlSelectedOptions = []
-            urlDateValues.map((timestamp, index) => {
-                // Yahoo's timestamp * 1000 = TD's timestamp.
-                const date = new Date(timestamp < 9999999999 ? timestamp * 1000 : timestamp)
-                    .toLocaleDateString('en-US');
-                urlSelectedOptions.push({ value: timestamp, label: date });
-            })
-            setSelectedExpirationTimestamps(urlSelectedOptions)
-            history.push(location.pathname + location.search)
-            // if (dateFormRef.current) {
-            //     dateFormRef.current.dispatchEvent(new Event("submit"))
-            // }
-        }
-    }, [selectedTicker]);
 
     return (
         <div id="content" className="container min-vh-100" style={{ "marginTop": "4rem" }}>
