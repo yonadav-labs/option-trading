@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect} from 'react';
 import { useHistory, useLocation } from "react-router-dom";
 import Form from 'react-bootstrap/Form'
 import TickerTypeahead from '../components/TickerTypeahead';
@@ -34,7 +34,6 @@ let maxStrikeFilter;
 export default function SellCoveredCall() {
     let history = useHistory()
     let location = useLocation()
-    let dateFormRef = useRef();
 
     const [selectedTicker, setSelectedTicker] = useState([]);
     const [expirationTimestamps, setExpirationTimestamps] = useState([]);
@@ -307,7 +306,6 @@ export default function SellCoveredCall() {
         expirationTimestampsOptions.push({ value: timestamp, label: date });
     })
 
-
     return (
         <div id="content" className="container min-vh-100" style={{ "marginTop": "4rem" }}>
             <ModalSpinner active={modalActive}></ModalSpinner>
@@ -329,7 +327,7 @@ export default function SellCoveredCall() {
                 <div>
                     <TickerSummary basicInfo={basicInfo} />
                     <div>
-                        <Form onSubmit={handleSubmit} ref={dateFormRef}>
+                        <Form onSubmit={handleSubmit}>
                             <Form.Group>
                                 <h4>Expiration Dates:</h4>
                                 <div className="row">
