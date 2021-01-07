@@ -39,7 +39,7 @@ export default function SingleTrade() {
         <div className="container">
             <h1>This page is being developed by our engineers... will be available very soon!</h1>
             <h4>Trade#{tradeId} </h4>
-            {trade ? JSON.stringify(trade) : 'Loading...'}
+            {trade ? JSON.stringify(trade, null, 4) : 'Loading...'}
         </div>
     );
 }
