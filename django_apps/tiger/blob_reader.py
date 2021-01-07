@@ -31,7 +31,7 @@ def get_expiration_timestamps(response, is_yahoo):
         return timestamps
 
 
-def get_call_puts(ticker_id, response, is_yahoo, use_as_premium, expiration_timestamp=None, external_cache_id=None):
+def get_call_puts(ticker, response, is_yahoo, use_as_premium, expiration_timestamp=None, external_cache_id=None):
     if is_yahoo:
         if not is_valid_option_response(response):
             return None, None
@@ -41,10 +41,10 @@ def get_call_puts(ticker_id, response, is_yahoo, use_as_premium, expiration_time
         options = result.get('options')[0]
 
         stock_price = get_quote(response, True).get('regularMarketPrice')
-        call_contracts = [OptionContract(ticker_id, True, row, stock_price, use_as_premium, external_cache_id) for row
+        call_contracts = [OptionContract(ticker, True, row, stock_price, use_as_premium, external_cache_id) for row
                           in
                           options.get('calls', [])]
-        put_contracts = [OptionContract(ticker_id, False, row, stock_price, use_as_premium, external_cache_id) for row
+        put_contracts = [OptionContract(ticker, False, row, stock_price, use_as_premium, external_cache_id) for row
                          in
                          options.get('puts', [])]
         return call_contracts, put_contracts
@@ -57,7 +57,7 @@ def get_call_puts(ticker_id, response, is_yahoo, use_as_premium, expiration_time
                 if expiration_timestamp == row.get('expirationDate'):
                     try:
                         call_contracts.append(
-                            OptionContract(ticker_id, True, row, stock_price, use_as_premium, external_cache_id))
+                            OptionContract(ticker, True, row, stock_price, use_as_premium, external_cache_id))
                     except ValueError:
                         pass
                 else:
@@ -69,7 +69,7 @@ def get_call_puts(ticker_id, response, is_yahoo, use_as_premium, expiration_time
                 if expiration_timestamp == row.get('expirationDate'):
                     try:
                         put_contracts.append(
-                            OptionContract(ticker_id, False, row, stock_price, use_as_premium, external_cache_id))
+                            OptionContract(ticker, False, row, stock_price, use_as_premium, external_cache_id))
                     except ValueError:
                         pass
                 else:

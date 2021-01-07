@@ -10,17 +10,17 @@ The following serializer is for display-only!
 class TickerSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Ticker
-        fields = ['symbol', 'full_name', ]
+        fields = ['id', 'symbol', 'full_name', ]
 
 
 class StockSerializer(serializers.Serializer):
-    ticker_id = serializers.IntegerField()
+    ticker = TickerSerializer()
     external_cache_id = serializers.IntegerField(allow_null=True)
     stock_price = serializers.FloatField(min_value=0.0)
 
 
 class OptionContractSerializer(serializers.Serializer):
-    ticker_id = serializers.IntegerField()
+    ticker = TickerSerializer()
     external_cache_id = serializers.IntegerField(allow_null=True)
     is_call = serializers.BooleanField(allow_null=False)
     ask = serializers.FloatField(min_value=0.0, allow_null=True)
@@ -72,6 +72,7 @@ class LegSerializer(serializers.Serializer):
     name = serializers.CharField(max_length=50)
     is_long = serializers.BooleanField()
     units = serializers.IntegerField(min_value=0)
+    cash = serializers.ReadOnlyField(source='is_cash')
     stock = StockSerializer(allow_null=True)
     contract = OptionContractSerializer(allow_null=True)
     cost = serializers.ReadOnlyField()

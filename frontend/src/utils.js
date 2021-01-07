@@ -132,3 +132,25 @@ export function getLegByName(trade, name) {
     });
     return return_leg;
 };
+
+export function getContractName(contract) {
+    return (
+        <span>
+            {contract.ticker.symbol} {TimestampDateFormatter(contract.expiration)}
+            &nbsp;strike {PriceFormatter(contract.strike)} {contract.is_call ? 'call' : 'put'}
+        </span>
+    );
+};
+
+export function getTradeTypeDisplay(type) {
+    switch (type) {
+        case ("long_call"):
+            return "Long call";
+        case ("covered_call"):
+            return "Covered call"
+        case ("long_put"):
+            return "Long put"
+        case ("cash_secured_put"):
+            return "Cash secured put"
+    }
+}

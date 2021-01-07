@@ -24,12 +24,12 @@ class LoadFromSnapshotTestCase(TestCase):
         stock_snapshot_td = StockSnapshot.objects.create(ticker=self.ticker, external_cache=self.external_cache_td)
 
         stock = Stock.from_snapshot(stock_snapshot)
-        self.assertEqual(stock.ticker_id, self.ticker.id)
+        self.assertEqual(stock.ticker, self.ticker)
         self.assertEqual(stock.external_cache_id, self.external_cache.id)
         self.assertEqual(stock.stock_price, 74.14)
 
         stock_td = Stock.from_snapshot(stock_snapshot_td)
-        self.assertEqual(stock_td.ticker_id, self.ticker.id)
+        self.assertEqual(stock_td.ticker, self.ticker)
         self.assertEqual(stock_td.external_cache_id, self.external_cache_td.id)
         self.assertEqual(stock_td.stock_price, 74.13)
 
@@ -38,7 +38,7 @@ class LoadFromSnapshotTestCase(TestCase):
                                                                      expiration_timestamp=1610744400, premium=0.0,
                                                                      external_cache=self.external_cache_td)
         contract_td = OptionContract.from_snapshot(contract_snapshot_td)
-        self.assertEqual(contract_td.ticker_id, self.ticker.id)
+        self.assertEqual(contract_td.ticker, self.ticker)
         self.assertEqual(contract_td.external_cache_id, self.external_cache_td.id)
         self.assertEqual(contract_td.stock_price, 74.13)
         self.assertEqual(contract_td.is_call, False)
@@ -55,7 +55,7 @@ class LoadFromSnapshotTestCase(TestCase):
         self.assertEqual(stock_leg.name, 'long_cash_leg')
         self.assertEqual(stock_leg.is_long, True)
         self.assertEqual(stock_leg.units, 1)
-        self.assertEqual(stock_leg.stock.ticker_id, self.ticker.id)
+        self.assertEqual(stock_leg.stock.ticker, self.ticker)
         self.assertEqual(stock_leg.stock.stock_price, 74.14)
 
     def testLoadContractLegFromSnapshot(self):

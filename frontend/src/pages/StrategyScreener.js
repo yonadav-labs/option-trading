@@ -1,8 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import Alert from 'react-bootstrap/Alert';
-import Card from 'react-bootstrap/Card';
 import BootstrapTable from 'react-bootstrap-table-next';
 import paginationFactory from 'react-bootstrap-table2-paginator';
 import Axios from 'axios';
@@ -11,7 +10,7 @@ import { useOktaAuth } from '@okta/okta-react';
 
 import getApiUrl, {
     PriceFormatter, TimestampDateFormatter, onLastTradedFilterChange, ProfitFormatter,
-    PriceMovementFormatter, getLegByName
+    PriceMovementFormatter, getTradeTypeDisplay
 } from '../utils';
 import filterFactory, { multiSelectFilter, numberFilter } from 'react-bootstrap-table2-filter';
 import { BsArrowsExpand, BsArrowsCollapse } from 'react-icons/bs';
@@ -19,7 +18,7 @@ import TickerTypeahead from '../components/TickerTypeahead';
 import TickerSummary from '../components/TickerSummary.js';
 import ModalSpinner from '../components/ModalSpinner';
 import ShareTradeBtn from '../components/ShareTradeBtn.js';
-import ContractDetailsCard from '../components/ContractDetailsCard';
+import TradeDetailsCard from '../components/TradeDetailsCard';
 
 let lastTradedFilter;
 let strategyFilter;
@@ -51,22 +50,9 @@ export default function BestCallByPrice() {
             dataField: "type",
             text: "Strategy",
             formatter: (cell, row, rowIndex, extraData) => {
-                function getText(cell) {
-                    switch (cell) {
-                        case ("long_call"):
-                            return "Long call";
-                        case ("covered_call"):
-                            return "Covered call"
-                        case ("long_put"):
-                            return "Long put"
-                        case ("cash_secured_put"):
-                            return "Cash secured put"
-                    }
-                }
-
                 return (
                     <span>
-                        {getText(cell)} <br />
+                        {getTradeTypeDisplay(cell)} <br />
                         <small>{TimestampDateFormatter(row.min_expiration)}</small>
                     </span>
                 );
@@ -211,77 +197,10 @@ export default function BestCallByPrice() {
         }
     };
 
-    function StrategyInstructions(row) {
-        switch (row.type) {
-            case ("long_call"):
-                const long_call_leg = getLegByName(row, 'long_call_leg');
-                return (
-                    <Card>
-                        <Card.Body>
-                            <Card.Title>
-                                Buy 1 {basicInfo.symbol} strike {PriceFormatter(long_call_leg.contract.strike)} {
-                                    TimestampDateFormatter(long_call_leg.contract.expiration)} call at {PriceFormatter(long_call_leg.contract.premium)}.
-                            </Card.Title>
-                            <Card.Text>
-                                <ContractDetailsCard contract={long_call_leg.contract} hideTitle />
-                            </Card.Text>
-                        </Card.Body>
-                    </Card>
-                );
-            case ("covered_call"):
-                const short_call_leg = getLegByName(row, 'short_call_leg');
-                return (
-                    <Card>
-                        <Card.Body>
-                            <Card.Title>
-                                Sell 1 {basicInfo.symbol} strike {PriceFormatter(short_call_leg.contract.strike)} {
-                                    TimestampDateFormatter(short_call_leg.contract.expiration)} call at {PriceFormatter(short_call_leg.contract.premium)}.
-                                </Card.Title>
-                            <Card.Text>
-                                <ContractDetailsCard contract={short_call_leg.contract} hideTitle />
-                            </Card.Text>
-                            <Card.Title>Buy 100 shares of {basicInfo.symbol} at {
-                                PriceFormatter(basicInfo.regularMarketPrice)} and hold as collateral.</Card.Title>
-                        </Card.Body>
-                    </Card>
-                );
-            case ("long_put"):
-                const long_put_leg = getLegByName(row, 'long_put_leg');
-                return (
-                    <Card>
-                        <Card.Body>
-                            <Card.Title>
-                                Buy 1 {basicInfo.symbol} strike {PriceFormatter(long_put_leg.contract.strike)} {
-                                    TimestampDateFormatter(long_put_leg.contract.expiration)} put at {PriceFormatter(long_put_leg.contract.premium)}.
-                            </Card.Title>
-                            <Card.Text>
-                                <ContractDetailsCard contract={long_put_leg.contract} hideTitle />
-                            </Card.Text>
-                        </Card.Body>
-                    </Card>
-                );
-            case ("cash_secured_put"):
-                const short_put_leg = getLegByName(row, 'short_put_leg');
-                const long_cash_leg = getLegByName(row, 'long_cash_leg');
-                return (
-                    <Card>
-                        <Card.Body>
-                            <Card.Title>
-                                Sell 1 {basicInfo.symbol} strike {PriceFormatter(short_put_leg.contract.strike)} {
-                                    TimestampDateFormatter(short_put_leg.contract.expiration)} put at {PriceFormatter(short_put_leg.contract.premium)}.
-                                </Card.Title>
-                            <Card.Text>
-                                <ContractDetailsCard contract={short_put_leg.contract} hideTitle />
-                            </Card.Text>
-                            <Card.Title>Keep {PriceFormatter(long_cash_leg.units)} cash aside as collateral.</Card.Title>
-                        </Card.Body>
-                    </Card>
-                );
-        }
-    }
-
     const ExpandTradeRow = {
-        renderer: StrategyInstructions,
+        renderer: (row) => (
+            <TradeDetailsCard trade={row} hideTitle={true} />
+        ),
         showExpandColumn: true,
         expandHeaderColumnRenderer: ({ isAnyExpands }) => {
             if (isAnyExpands) {
