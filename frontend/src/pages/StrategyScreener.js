@@ -6,10 +6,9 @@ import BootstrapTable from 'react-bootstrap-table-next';
 import paginationFactory from 'react-bootstrap-table2-paginator';
 import Axios from 'axios';
 import Select from "react-select";
-import { useOktaAuth } from '@okta/okta-react';
 
 import getApiUrl, {
-    PriceFormatter, TimestampDateFormatter, onLastTradedFilterChange, ProfitFormatter,
+    PriceFormatter, TimestampDateFormatter, onLastTradedFilterChange,
     PriceMovementFormatter, getTradeTypeDisplay
 } from '../utils';
 import filterFactory, { multiSelectFilter, numberFilter } from 'react-bootstrap-table2-filter';
@@ -17,7 +16,6 @@ import { BsArrowsExpand, BsArrowsCollapse } from 'react-icons/bs';
 import TickerTypeahead from '../components/TickerTypeahead';
 import TickerSummary from '../components/TickerSummary.js';
 import ModalSpinner from '../components/ModalSpinner';
-import ShareTradeBtn from '../components/ShareTradeBtn.js';
 import TradeDetailsCard from '../components/TradeDetailsCard';
 
 let lastTradedFilter;
@@ -33,7 +31,6 @@ export default function BestCallByPrice() {
     const [selectedExpirationTimestamps, setSelectedExpirationTimestamps] = useState([]);
     const [useAsPremium, setUseAsPremium] = useState('estimated');
     const [modalActive, setModalActive] = useState(false);
-    const { authState, authService } = useOktaAuth();
 
     const resetStates = () => {
         setSelectedTicker([]);
@@ -59,41 +56,40 @@ export default function BestCallByPrice() {
             },
             sort: true
         }, {
-            dataField: "to_break_even_ratio",
-            text: "Break even",
-            formatter: (cell, row, rowIndex, extraData) => (
-                PriceMovementFormatter(cell, row.break_even_price)
-            ),
-            sort: true
-        }, {
             dataField: "to_target_price_ratio",
             text: "Target price",
             formatter: (cell, row, rowIndex, extraData) => (
                 PriceMovementFormatter(cell, row.target_price)
             ),
         }, {
-            dataField: "target_price_profit_ratio",
-            text: "ROI at target",
+            dataField: "to_break_even_ratio",
+            text: "Breakeven price",
             formatter: (cell, row, rowIndex, extraData) => (
-                (
-                    <span>{ProfitFormatter(cell)}</span>
-                )
+                PriceMovementFormatter(cell, row.break_even_price)
             ),
             sort: true
         }, {
-            dataField: "target_price_profit",
-            text: "Unit profit",
+            dataField: "target_price_profit_ratio",
+            text: "Profit at target",
             formatter: (cell, row, rowIndex, extraData) => (
                 (
-                    <span>{cell > 0 ? '+' : '-'}{PriceFormatter(Math.abs(cell))}</span>
+                    <span>{PriceMovementFormatter(cell, row.target_price_profit)}</span>
                 )
             ),
             sort: true
         }, {
             dataField: "cost",
-            text: "Unit cost",
+            text: "Cost",
             formatter: (cell, row, rowIndex, extraData) => (
                 PriceFormatter(cell)
+            ),
+            sort: true
+        }, {
+            dataField: "profit_cap_ratio",
+            text: "Profit limit",
+            formatter: (cell, row, rowIndex, extraData) => (
+                cell != null ?
+                    (<span>{PriceMovementFormatter(cell, row.profit_cap)}</span>) : (<span>Unlimited</span>)
             ),
             sort: true
         }, {
@@ -104,14 +100,6 @@ export default function BestCallByPrice() {
                 const exp_date = new Date(cell * 1000).toLocaleDateString('en-US')
                 const exp_time = new Date(cell * 1000).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })
                 return (<span>{exp_date} <br /><small>{exp_time}</small></span>);
-            },
-            sort: true
-        },
-        {
-            dataField: 'id',
-            text: 'Actions',
-            formatter: (cell, row, rowIndex, extraData) => {
-                return (<ShareTradeBtn trade={row} setModalActive={setModalActive} />);
             },
             sort: true
         },
@@ -353,6 +341,7 @@ export default function BestCallByPrice() {
                                             expandRow={ExpandTradeRow}
                                             filter={filterFactory()}
                                             defaultSorted={defaultSorted}
+                                            rowStyle={{ "cursor": "pointer" }}
                                         />
                                     </div>
                                 </div>

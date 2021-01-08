@@ -2,16 +2,20 @@ import React from 'react';
 import Card from 'react-bootstrap/Card';
 
 import LegDetailsCard from '../components/LegDetailsCard';
+import ShareTradeBtn from '../components/ShareTradeBtn.js';
 import { getTradeTypeDisplay, PriceFormatter, ProfitFormatter, TimestampDateFormatter } from '../utils';
 
 export default function TradeDetailsCard(props) {
-    const { trade, hideTitle } = props;
+    const { trade, hideTitle, hideShareButton } = props;
 
     return (
         <Card>
-            {hideTitle ? null : <Card.Header>{trade.stock.ticker.symbol} {TimestampDateFormatter(trade.min_expiration)} {getTradeTypeDisplay(trade.type)}</Card.Header>}
+            {hideTitle ? null : <Card.Header>{trade.stock.ticker.symbol} {TimestampDateFormatter(trade.min_expiration)} {getTradeTypeDisplay(trade.type)} strategy</Card.Header>}
             <Card.Body>
-                <Card.Title>Overview</Card.Title>
+                <div className="row">
+                    <div className="col-md-6"><Card.Title>Overview</Card.Title></div>
+                    {hideShareButton ? null : <div className="col-md-6"><span style={{ float: 'right' }}><ShareTradeBtn trade={trade} /></span></div>}
+                </div>
                 <Card.Text>
                     <div className="row">
                         <div className="col-sm-3">Target price: {PriceFormatter(trade.target_price)} ({ProfitFormatter(trade.to_target_price_ratio)})</div>
@@ -39,6 +43,6 @@ export default function TradeDetailsCard(props) {
                     }
                 </Card.Text>
             </Card.Body>
-        </Card>
+        </Card >
     );
 }

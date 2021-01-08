@@ -2,7 +2,7 @@ import React from 'react';
 import Card from 'react-bootstrap/Card';
 
 import {
-    PriceFormatter, TimestampDateFormatter, PercentageFormatter, TimestampTimeFormatter,
+    PriceFormatter, PercentageFormatter, TimestampTimeFormatter,
     NumberRoundFormatter, getContractName
 } from '../utils';
 

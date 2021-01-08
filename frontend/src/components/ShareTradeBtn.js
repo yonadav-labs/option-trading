@@ -7,9 +7,10 @@ import { useOktaAuth } from '@okta/okta-react';
 import getApiUrl from '../utils';
 
 export default function ShareTradeBtn(props) {
-    const { trade, setModalActive } = props;
+    const { trade } = props;
     const { authState, authService } = useOktaAuth();
     const [shareLink, setShareLink] = useState('');
+    const [isLoading, setIsLoading] = useState(false);
     const API_URL = getApiUrl();
 
     function ConvertToTradeSnapshot() {
@@ -49,7 +50,6 @@ export default function ShareTradeBtn(props) {
         try {
             const { accessToken } = authState;
             let url = `${API_URL}/trade_snapshots`;
-            setModalActive(true);
             const response = await Axios.post(url, tradeSnapshot, {
                 headers: {
                     'Content-Type': 'application/json',
@@ -57,16 +57,20 @@ export default function ShareTradeBtn(props) {
                 }
             });
             setShareLink('/t/' + response.data.id);
-            setModalActive(false);
-            // window.open(window.location.origin + '/t/' + response.data.id);
+            setIsLoading(false);
         } catch (error) {
             console.error(error);
-            setModalActive(false);
+            setIsLoading(false);
         }
     }
 
     function ShareTrade(e) {
         e.stopPropagation();
+        if (isLoading) {
+            // Prevent multiple clicks.
+            return;
+        }
+        setIsLoading(true);
         const tradeSnapshot = ConvertToTradeSnapshot();
         SaveTradeSnaphot(tradeSnapshot);
     }
@@ -75,9 +79,13 @@ export default function ShareTradeBtn(props) {
         (
             <div>
                 {authState.isAuthenticated ? shareLink ?
-                    <Link style={{ "cursor": "pointer" }} to={shareLink} onClick={(e) => { e.stopPropagation() }} target="_blank"><FaShare /> Link</Link> :
+                    <span><FaShare /> Share:&nbsp;
+                        <Link style={{ "cursor": "pointer" }} to={shareLink} onClick={(e) => { e.stopPropagation() }} target="_blank">
+                            www.tigerstance.com{shareLink}
+                        </Link>
+                    </span> :
                     <div style={{ "cursor": "pointer" }} onClick={ShareTrade}><FaShare /> Share</div>
-                    : <Link className="btn btn-primary mr-3 text-light" to="/signin">Sign in</Link>
+                    : <Link className="btn btn-primary mr-3 text-light" to="/signin">Sign in to share</Link>
                 }
             </div >
         )

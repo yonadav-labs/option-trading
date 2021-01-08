@@ -88,7 +88,7 @@ export function ExpDayFormatter(ts, days_till_expiration) {
 
 
 export function InTheMoneyRowStyle(row, rowIndex) {
-    const style = {};
+    const style = { "cursor": "pointer" };
     if (row.in_the_money) {
         style.backgroundColor = '#e0f0ff';
     }
