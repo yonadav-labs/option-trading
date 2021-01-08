@@ -12,12 +12,12 @@ export default function ContractDetailsCard(props) {
     return (
         (
             <Card>
+                {
+                    hideTitle ?
+                        null :
+                        <Card.Header>{getContractName(contract)}</Card.Header>
+                }
                 <Card.Body>
-                    {
-                        hideTitle ?
-                            null :
-                            <Card.Title>{getContractName(contract)}</Card.Title>
-                    }
                     <Card.Text>
                         <div>
                             <div className="row">
@@ -40,6 +40,9 @@ export default function ContractDetailsCard(props) {
                                 <div className="col-sm-3">Gamma: {NumberRoundFormatter(contract.gamma)}</div>
                                 <div className="col-sm-3">Theta: {NumberRoundFormatter(contract.theta)}</div>
                                 <div className="col-sm-3">Vega: {NumberRoundFormatter(contract.vega)}</div>
+                            </div>
+                            <div className="row">
+                                <div className="col-sm-3">Quoted at: {TimestampTimeFormatter(contract.quote_time)}</div>
                             </div>
                         </div>
                     </Card.Text>

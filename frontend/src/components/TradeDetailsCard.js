@@ -8,24 +8,25 @@ export default function TradeDetailsCard(props) {
     const { trade, hideTitle } = props;
 
     return (
-
         <Card>
+            {hideTitle ? null : <Card.Header>{trade.stock.ticker.symbol} {TimestampDateFormatter(trade.min_expiration)} {getTradeTypeDisplay(trade.type)}</Card.Header>}
             <Card.Body>
-                {hideTitle ? null : <Card.Title>{trade.stock.ticker.symbol} {TimestampDateFormatter(trade.min_expiration)} {getTradeTypeDisplay(trade.type)}</Card.Title>}
+                <Card.Title>Overview</Card.Title>
                 <Card.Text>
                     <div className="row">
-                        <div className="col-sm-3"><b>Target price: {PriceFormatter(trade.target_price)} ({ProfitFormatter(trade.to_target_price_ratio)})</b></div>
-                        <div className="col-sm-3"><b>Profit at target: {PriceFormatter(trade.target_price_profit)}</b></div>
-                        <div className="col-sm-3"><b>ROI at target: {ProfitFormatter(trade.target_price_profit_ratio)}</b></div>
+                        <div className="col-sm-3">Target price: {PriceFormatter(trade.target_price)} ({ProfitFormatter(trade.to_target_price_ratio)})</div>
+                        <div className="col-sm-3">Profit at target: {PriceFormatter(trade.target_price_profit)}</div>
+                        <div className="col-sm-3">ROI at target: {ProfitFormatter(trade.target_price_profit_ratio)}</div>
                         <div className="col-sm-3"></div>
                     </div>
                     <div className="row">
-                        <div className="col-sm-3"><b>Breakeven: {PriceFormatter(trade.break_even_price)} ({ProfitFormatter(trade.to_break_even_ratio)})</b></div>
-                        <div className="col-sm-3"><b>Cost: {PriceFormatter(trade.cost)}</b></div>
+                        <div className="col-sm-3">Breakeven: {PriceFormatter(trade.break_even_price)} ({ProfitFormatter(trade.to_break_even_ratio)})</div>
+                        <div className="col-sm-3">Cost: {PriceFormatter(trade.cost)}</div>
                         <div className="col-sm-3"></div>
                         <div className="col-sm-3"></div>
                     </div>
-                    <br></br>
+                    <br />
+                    <Card.Title>Details</Card.Title>
                     {
                         trade.legs.map((leg, index) => {
                             return (
