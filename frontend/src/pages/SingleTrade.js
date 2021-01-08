@@ -38,7 +38,7 @@ export default function SingleTrade() {
     }, [authState, authService]);
 
     return (
-        <div className="container">
+        <div id="content" className="container min-vh-100" style={{ "marginTop": "4rem" }}>
             {trade ? <TradeDetailsCard trade={trade}></TradeDetailsCard> : 'Loading...'}
         </div>
     );

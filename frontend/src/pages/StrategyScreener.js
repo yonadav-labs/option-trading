@@ -110,9 +110,6 @@ export default function BestCallByPrice() {
         {
             dataField: 'id',
             text: 'Actions',
-            // Still under construction.
-            style: authState.isAuthenticated ? {} : { 'display': 'none' },
-            headerStyle: authState.isAuthenticated ? {} : { 'display': 'none' },
             formatter: (cell, row, rowIndex, extraData) => {
                 return (<ShareTradeBtn trade={row} setModalActive={setModalActive} />);
             },
