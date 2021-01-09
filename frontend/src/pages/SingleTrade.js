@@ -39,7 +39,7 @@ export default function SingleTrade() {
 
     return (
         <div id="content" className="container min-vh-100" style={{ "marginTop": "4rem" }}>
-            {trade ? <TradeDetailsCard trade={trade}></TradeDetailsCard> : 'Loading...'}
+            {trade ? <TradeDetailsCard trade={trade} hideShareButton={true}></TradeDetailsCard> : 'Loading...'}
         </div>
     );
 }
