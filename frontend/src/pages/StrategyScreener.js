@@ -22,13 +22,13 @@ let lastTradedFilter;
 let strategyFilter;
 
 export default function BestCallByPrice() {
+    const API_URL = getApiUrl();
     const [selectedTicker, setSelectedTicker] = useState([]);
     const [expirationTimestamps, setExpirationTimestamps] = useState([]);
     const [basicInfo, setbasicInfo] = useState({});
-    const API_URL = getApiUrl();
     const [showTimestampAlert, setShowTimestampAlert] = useState(false);
     const [bestStrategies, setBestStrategies] = useState(null);
-    const [selectedExpirationTimestamps, setSelectedExpirationTimestamps] = useState([]);
+    const [selectedExpirationTimestamp, setSelectedExpirationTimestamp] = useState(null);
     const [useAsPremium, setUseAsPremium] = useState('estimated');
     const [modalActive, setModalActive] = useState(false);
     const [targetPrice, setTargetPrice] = useState(null);
@@ -39,8 +39,10 @@ export default function BestCallByPrice() {
         setbasicInfo({});
         setShowTimestampAlert(false);
         setBestStrategies(null);
-        setSelectedExpirationTimestamps([]);
+        setSelectedExpirationTimestamp(null);
+        setUseAsPremium('estimated');
         setModalActive(false);
+        setTargetPrice(null);
     }
 
     const result_table_columns = [
@@ -147,10 +149,10 @@ export default function BestCallByPrice() {
         const formData = new FormData(event.target);
         const formDataObj = Object.fromEntries(formData.entries());
 
-        setShowTimestampAlert(selectedExpirationTimestamps == null);
-        if (form.checkValidity() !== false && selectedExpirationTimestamps != null) {
+        setShowTimestampAlert(selectedExpirationTimestamp == null);
+        if (form.checkValidity() !== false && selectedExpirationTimestamp != null) {
             setTargetPrice(formDataObj.target_price ? formDataObj.target_price : null);
-            getBestStrategies(selectedExpirationTimestamps, formDataObj.target_price, formDataObj.available_cash);
+            getBestStrategies(selectedExpirationTimestamp, formDataObj.target_price, formDataObj.available_cash);
         }
     };
 
@@ -160,10 +162,10 @@ export default function BestCallByPrice() {
         setUseAsPremium(value);
     };
 
-    const getBestStrategies = async (selectedExpirationTimestamps, targetPrice, availableCash) => {
+    const getBestStrategies = async (selectedExpirationTimestamp, targetPrice, availableCash) => {
         try {
             let url = `${API_URL}/tickers/${selectedTicker[0].symbol}/trades/?`;
-            selectedExpirationTimestamps.map((timestamp) => { url += `expiration_timestamps=${timestamp.value}&` });
+            url += `expiration_timestamps=${selectedExpirationTimestamp.value}&`;
             if (targetPrice) {
                 url += `target_price=${targetPrice}&`;
             }
@@ -241,10 +243,9 @@ export default function BestCallByPrice() {
                                 <div className="row">
                                     <div className="col-sm-12">
                                         <Select
-                                            defaultValue={selectedExpirationTimestamps}
-                                            isMulti
+                                            defaultValue={selectedExpirationTimestamp}
                                             isClearable
-                                            onChange={setSelectedExpirationTimestamps}
+                                            onChange={setSelectedExpirationTimestamp}
                                             options={expirationTimestampsOptions}
                                             className="basic-multi-select"
                                             classNamePrefix="select"
@@ -264,7 +265,8 @@ export default function BestCallByPrice() {
                                 </div>
                             </Form.Group>
                             <Form.Group>
-                                <Form.Label>{selectedTicker[0].symbol} share target price on expiration day:</Form.Label>
+                                <Form.Label>{selectedTicker[0].symbol} share target price on {selectedExpirationTimestamp ?
+                                    TimestampDateFormatter(selectedExpirationTimestamp.value / 1000) : "expiration day"}:</Form.Label>
                                 <Form.Control name="target_price" as="input" type="number"
                                     placeholder={"Enter expected share price of " + selectedTicker[0].symbol
                                         + ". For example: " + basicInfo.regularMarketPrice + '.'}
