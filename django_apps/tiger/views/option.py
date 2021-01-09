@@ -68,16 +68,19 @@ def get_best_trades(request, ticker_symbol):
         raise APIException('No contracts found.')
 
     try:
-        target_price = float(request.query_params.get('target_price'))
         use_as_premium = request.query_params.get('use_as_premium', 'estimated')
     except Exception:
         raise APIException('Invalid query parameters.')
+
+    target_price = request.query_params.get('target_price')
+    if target_price is not None:
+        target_price = float(target_price)
 
     quote, external_cache_id = ticker.get_quote()
     stock_price = quote.get('regularMarketPrice')  # This is from Yahoo.
     stock = Stock(ticker, stock_price, external_cache_id)
 
-    all_trades = [LongStock(stock, target_price=target_price)]
+    all_trades = [LongStock(stock, target_price)]
     call_contract_lists, put_contract_list = get_valid_contracts(ticker, request, use_as_premium,
                                                                  all_expiration_timestamps)
     for calls_per_exp in call_contract_lists:
@@ -90,9 +93,10 @@ def get_best_trades(request, ticker_symbol):
             all_trades.append(LongPut(stock, put, target_price))
             all_trades.append(CashSecuredPut(stock, put, target_price))
 
-    all_trades = list(
-        filter(lambda trade: trade.target_price_profit is not None and trade.target_price_profit > 0.0, all_trades))
-    sorted(all_trades, key=lambda trade: -trade.target_price_profit_ratio)
+    if target_price is not None:
+        all_trades = list(
+            filter(lambda trade: trade.target_price_profit > 0.0, all_trades))
+        sorted(all_trades, key=lambda trade: -trade.target_price_profit_ratio)
     return Response({'trades': TradeSerializer(all_trades, many=True).data})
 
 

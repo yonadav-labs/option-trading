@@ -31,6 +31,7 @@ export default function BestCallByPrice() {
     const [selectedExpirationTimestamps, setSelectedExpirationTimestamps] = useState([]);
     const [useAsPremium, setUseAsPremium] = useState('estimated');
     const [modalActive, setModalActive] = useState(false);
+    const [targetPrice, setTargetPrice] = useState(null);
 
     const resetStates = () => {
         setSelectedTicker([]);
@@ -56,25 +57,10 @@ export default function BestCallByPrice() {
             },
             sort: true
         }, {
-            dataField: "to_target_price_ratio",
-            text: "Target price",
-            formatter: (cell, row, rowIndex, extraData) => (
-                PriceMovementFormatter(cell, row.target_price)
-            ),
-        }, {
             dataField: "to_break_even_ratio",
             text: "Breakeven price",
             formatter: (cell, row, rowIndex, extraData) => (
                 PriceMovementFormatter(cell, row.break_even_price)
-            ),
-            sort: true
-        }, {
-            dataField: "target_price_profit_ratio",
-            text: "Profit at target",
-            formatter: (cell, row, rowIndex, extraData) => (
-                (
-                    <span>{PriceMovementFormatter(cell, row.target_price_profit)}</span>
-                )
             ),
             sort: true
         }, {
@@ -91,6 +77,18 @@ export default function BestCallByPrice() {
                 cell != null ?
                     (<span>{PriceMovementFormatter(cell, row.profit_cap)}</span>) : (<span>Unlimited</span>)
             ),
+            sort: true
+        }, {
+            dataField: "target_price_profit_ratio",
+            text: "Profit at target",
+            hidden: targetPrice == null,
+            formatter: (cell, row, rowIndex, extraData) => {
+                if (cell != null) {
+                    return (<span>{PriceMovementFormatter(cell, row.target_price_profit)}</span>);
+                } else {
+                    return (<span></span>);
+                }
+            },
             sort: true
         }, {
             dataField: 'min_last_trade_date',
@@ -151,6 +149,7 @@ export default function BestCallByPrice() {
 
         setShowTimestampAlert(selectedExpirationTimestamps == null);
         if (form.checkValidity() !== false && selectedExpirationTimestamps != null) {
+            setTargetPrice(formDataObj.target_price ? formDataObj.target_price : null);
             getBestStrategies(formDataObj.target_price, selectedExpirationTimestamps);
         }
     };
@@ -163,8 +162,11 @@ export default function BestCallByPrice() {
 
     const getBestStrategies = async (targetPrice, selectedExpirationTimestamps) => {
         try {
-            let url = `${API_URL}/tickers/${selectedTicker[0].symbol}/trades/?target_price=${targetPrice}&`;
+            let url = `${API_URL}/tickers/${selectedTicker[0].symbol}/trades/?`;
             selectedExpirationTimestamps.map((timestamp) => { url += `expiration_timestamps=${timestamp.value}&` });
+            if (targetPrice) {
+                url += `target_price=${targetPrice}&`;
+            }
             setModalActive(true);
             const response = await Axios.get(url);
             let trades = response.data.trades;
@@ -230,14 +232,9 @@ export default function BestCallByPrice() {
                     <TickerSummary basicInfo={basicInfo} />
                     <div>
                         <h4>Configurations</h4>
-                        <hr />
                         <Form onSubmit={handleSubmit}>
                             <Form.Group>
-                                <Form.Label className="font-weight-bold">Target price on expiration date (USD)*:</Form.Label>
-                                <Form.Control name="target_price" as="input" type="number" placeholder="100.0" min="0.0" max="10000.0" step="0.01" required />
-                            </Form.Group>
-                            <Form.Group>
-                                <Form.Label className="font-weight-bold">Expiration Dates:*:</Form.Label>
+                                <Form.Label className="font-weight-bold">Expiration Dates:*</Form.Label>
                                 <div className="row">
                                     <div className="col-sm-12">
                                         <Select
@@ -275,6 +272,10 @@ export default function BestCallByPrice() {
                                     </Form.Group>
                                 </div>
                             </div>
+                            <Form.Group>
+                                <Form.Label className="font-weight-bold">{selectedTicker[0].symbol} share target price on expiration day (USD):</Form.Label>
+                                <Form.Control name="target_price" as="input" type="number" placeholder="100.0" min="0.0" max="10000.0" step="0.01" />
+                            </Form.Group>
                             <div className="row">
                                 <div className="col">
                                     <Button type="submit" className="btn btn-primary">Analyze</Button>
