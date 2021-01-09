@@ -13,7 +13,7 @@ export default function LegDetailsCard(props) {
                 <Card.Header>
                     {position_num ? `Position #${position_num}: ` : null}
                     {leg.is_long ? 'Long' : 'Short'} {leg.units} {getContractName(leg.contract)} {leg.units > 1 ? 'options' : 'option'} at&nbsp;
-                    {PriceFormatter(leg.contract.premium)} per contract.
+                    {PriceFormatter(leg.cost)} per contract.
                 </Card.Header>
                 <ContractDetailsCard contract={leg.contract} hideTitle={true} />
             </Card>

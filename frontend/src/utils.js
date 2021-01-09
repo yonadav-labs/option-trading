@@ -143,13 +143,11 @@ export function getContractName(contract) {
 };
 
 export function getAllTradeTypes(type) {
-    return ['long_stock', 'long_call', 'covered_call', 'long_put', 'cash_secured_put'];
+    return ['long_call', 'covered_call', 'long_put', 'cash_secured_put'];
 }
 
 export function getTradeTypeDisplay(type) {
     switch (type) {
-        case ("long_stock"):
-            return "Long stock";
         case ("long_call"):
             return "Long call";
         case ("covered_call"):

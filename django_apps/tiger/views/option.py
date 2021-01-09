@@ -8,7 +8,7 @@ from rest_framework.permissions import IsAuthenticated
 
 from tiger.serializers import TickerSerializer, OptionContractSerializer, TradeSerializer, TradeSnapshotSerializer
 from tiger.models import Ticker, TradeSnapshot
-from tiger.core import LongCall, CoveredCall, LongPut, CashSecuredPut, OptionContract, Stock, Trade
+from tiger.core import LongCall, CoveredCall, LongPut, CashSecuredPut, OptionContract, Stock, Trade, TradeFactory
 
 
 def get_valid_contracts(ticker, request, use_as_premium, all_expiration_timestamps):
@@ -77,6 +77,10 @@ def get_best_trades(request, ticker_symbol):
     if target_price is not None:
         target_price = float(target_price)
 
+    available_cash = request.query_params.get('available_cash')
+    if available_cash is not None:
+        available_cash = float(available_cash)
+
     quote, external_cache_id = ticker.get_quote()
     stock_price = quote.get('regularMarketPrice')  # This is from Yahoo.
     stock = Stock(ticker, stock_price, external_cache_id)
@@ -86,14 +90,15 @@ def get_best_trades(request, ticker_symbol):
                                                                  all_expiration_timestamps)
     for calls_per_exp in call_contract_lists:
         for call in calls_per_exp:
-            all_trades.append(LongCall(stock, call, target_price))
-            all_trades.append(CoveredCall(stock, call, target_price))
+            all_trades.append(TradeFactory.build_long_call(stock, call, target_price, available_cash))
+            all_trades.append(TradeFactory.build_covered_call(stock, call, target_price, available_cash))
 
     for puts_per_exp in put_contract_list:
         for put in puts_per_exp:
-            all_trades.append(LongPut(stock, put, target_price))
-            all_trades.append(CashSecuredPut(stock, put, target_price))
+            all_trades.append(TradeFactory.build_long_put(stock, put, target_price, available_cash))
+            all_trades.append(TradeFactory.build_cash_secured_put(stock, put, target_price, available_cash))
 
+    all_trades = filter(lambda trade: trade is not None, all_trades)
     if target_price is not None:
         all_trades = list(filter(lambda trade: trade.target_price_profit > 0.0, all_trades))
         sorted(all_trades, key=lambda trade: -trade.target_price_profit_ratio)

@@ -3,7 +3,7 @@ from django.test import TestCase
 from django.utils.timezone import make_aware, get_default_timezone
 from unittest import mock
 
-from tiger.core import Stock, OptionContract, LongCall, CoveredCall, LongPut, CashSecuredPut, Leg, OptionLeg, Trade
+from tiger.core import Stock, OptionContract, Leg, OptionLeg, Trade, TradeFactory
 from tiger.models import Ticker
 
 MOCK_NOW_TIMESTAMP = 1609664400  # 01/03/2021
@@ -53,7 +53,7 @@ class CallTradesTestCase(TestCase):
         mock_now.return_value = make_aware(datetime.fromtimestamp(MOCK_NOW_TIMESTAMP), get_default_timezone())
         target_price = 600.0
         call_contract = OptionContract(1, True, self.yahoo_input, self.stock_price, 'estimated')
-        long_call = LongCall(self.stock, call_contract, target_price)
+        long_call = TradeFactory.build_long_call(self.stock, call_contract, target_price)
         # Test contract attributes.
         self.assertEqual(call_contract.ask, 163.15)
         self.assertEqual(call_contract.bid, 160.25)
@@ -127,7 +127,7 @@ class CallTradesTestCase(TestCase):
         mock_now.return_value = make_aware(datetime.fromtimestamp(MOCK_NOW_TIMESTAMP), get_default_timezone())
 
         call_contract = OptionContract(1, True, self.yahoo_input, self.stock_price)
-        sell_call = CoveredCall(self.stock, call_contract, target_price=258.3)
+        sell_call = TradeFactory.build_covered_call(self.stock, call_contract, target_price=258.3)
         self.assertEqual(call_contract.to_strike, -132.0)
         self.assertAlmostEqual(call_contract.to_strike_ratio, -0.31428571428)
         self.assertAlmostEqual(sell_call.break_even_price, 258.3)
@@ -136,7 +136,7 @@ class CallTradesTestCase(TestCase):
         self.assertAlmostEqual(sell_call.target_price_profit, 0.0)
 
         call_contract = OptionContract(1, True, self.yahoo_input2, self.stock_price)
-        sell_call = CoveredCall(self.stock, call_contract)
+        sell_call = TradeFactory.build_covered_call(self.stock, call_contract)
         self.assertEqual(call_contract.to_strike, 25.0)
         self.assertAlmostEqual(call_contract.to_strike_ratio, 0.05952380952)
         self.assertAlmostEqual(sell_call.break_even_price, 343.65)
@@ -178,7 +178,7 @@ class PutTradesTestCase(TestCase):
     def test_sell_put(self, mock_now):
         mock_now.return_value = make_aware(datetime.fromtimestamp(MOCK_NOW_TIMESTAMP), get_default_timezone())
         put_contract = OptionContract(1, False, self.yahoo_input, self.stock_price)
-        sell_put = CashSecuredPut(self.stock, put_contract, target_price=67.3)
+        sell_put = TradeFactory.build_cash_secured_put(self.stock, put_contract, target_price=67.3)
         # Test attributes.
         self.assertEqual(put_contract.ask, 1.0)
         self.assertEqual(put_contract.bid, 0.4)
@@ -201,7 +201,7 @@ class PutTradesTestCase(TestCase):
     def test_buy_put(self, mock_now):
         mock_now.return_value = make_aware(datetime.fromtimestamp(MOCK_NOW_TIMESTAMP), get_default_timezone())
         put_contract = OptionContract(1, False, self.yahoo_input, self.stock_price)
-        long_put = LongPut(self.stock, put_contract, target_price=65.0)
+        long_put = TradeFactory.build_long_put(self.stock, put_contract, target_price=65.0)
 
         # Test attributes.
         self.assertEqual(put_contract.ask, 1.0)

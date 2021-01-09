@@ -27,7 +27,7 @@ export default function BestCallByPrice() {
     const [basicInfo, setbasicInfo] = useState({});
     const API_URL = getApiUrl();
     const [showTimestampAlert, setShowTimestampAlert] = useState(false);
-    const [bestStrategies, setBestStrategies] = useState([]);
+    const [bestStrategies, setBestStrategies] = useState(null);
     const [selectedExpirationTimestamps, setSelectedExpirationTimestamps] = useState([]);
     const [useAsPremium, setUseAsPremium] = useState('estimated');
     const [modalActive, setModalActive] = useState(false);
@@ -38,7 +38,7 @@ export default function BestCallByPrice() {
         setExpirationTimestamps([]);
         setbasicInfo({});
         setShowTimestampAlert(false);
-        setBestStrategies([]);
+        setBestStrategies(null);
         setSelectedExpirationTimestamps([]);
         setModalActive(false);
     }
@@ -150,7 +150,7 @@ export default function BestCallByPrice() {
         setShowTimestampAlert(selectedExpirationTimestamps == null);
         if (form.checkValidity() !== false && selectedExpirationTimestamps != null) {
             setTargetPrice(formDataObj.target_price ? formDataObj.target_price : null);
-            getBestStrategies(formDataObj.target_price, selectedExpirationTimestamps);
+            getBestStrategies(selectedExpirationTimestamps, formDataObj.target_price, formDataObj.available_cash);
         }
     };
 
@@ -160,12 +160,15 @@ export default function BestCallByPrice() {
         setUseAsPremium(value);
     };
 
-    const getBestStrategies = async (targetPrice, selectedExpirationTimestamps) => {
+    const getBestStrategies = async (selectedExpirationTimestamps, targetPrice, availableCash) => {
         try {
             let url = `${API_URL}/tickers/${selectedTicker[0].symbol}/trades/?`;
             selectedExpirationTimestamps.map((timestamp) => { url += `expiration_timestamps=${timestamp.value}&` });
             if (targetPrice) {
                 url += `target_price=${targetPrice}&`;
+            }
+            if (availableCash) {
+                url += `available_cash=${availableCash}&`;
             }
             setModalActive(true);
             const response = await Axios.get(url);
@@ -234,7 +237,7 @@ export default function BestCallByPrice() {
                         <h4>Configurations</h4>
                         <Form onSubmit={handleSubmit}>
                             <Form.Group>
-                                <Form.Label className="font-weight-bold">Expiration Dates:*</Form.Label>
+                                <Form.Label>Expiration Dates:*</Form.Label>
                                 <div className="row">
                                     <div className="col-sm-12">
                                         <Select
@@ -245,6 +248,7 @@ export default function BestCallByPrice() {
                                             options={expirationTimestampsOptions}
                                             className="basic-multi-select"
                                             classNamePrefix="select"
+                                            placeholder="Select an option expiration date."
                                         />
                                     </div>
                                 </div>
@@ -259,10 +263,22 @@ export default function BestCallByPrice() {
                                     </div>
                                 </div>
                             </Form.Group>
+                            <Form.Group>
+                                <Form.Label>{selectedTicker[0].symbol} share target price on expiration day:</Form.Label>
+                                <Form.Control name="target_price" as="input" type="number"
+                                    placeholder={"Enter expected share price of " + selectedTicker[0].symbol
+                                        + ". For example: " + basicInfo.regularMarketPrice + '.'}
+                                    min="0.0" max="10000.0" step="0.01" />
+                            </Form.Group>
+                            <Form.Group>
+                                <Form.Label>Cash to invest:</Form.Label>
+                                <Form.Control name="available_cash" as="input" type="number"
+                                    placeholder="Enter the amount of cash you plan to invest in this trade." min="0.0" max="100000000.0" step="0.01" />
+                            </Form.Group>
                             <div className="row">
                                 <div className="col-sm-3">
                                     <Form.Group>
-                                        <Form.Label className="font-weight-bold">Premium price options:</Form.Label>
+                                        <Form.Label>Premium price options:</Form.Label>
                                         <Form.Control name="use_as_premium" as="select" defaultValue="estimated"
                                             onChange={handleUseAsPremiumChange}>
                                             <option key="estimated" value="estimated">Use estimated mid price</option>
@@ -272,10 +288,6 @@ export default function BestCallByPrice() {
                                     </Form.Group>
                                 </div>
                             </div>
-                            <Form.Group>
-                                <Form.Label className="font-weight-bold">{selectedTicker[0].symbol} share target price on expiration day (USD):</Form.Label>
-                                <Form.Control name="target_price" as="input" type="number" placeholder="100.0" min="0.0" max="10000.0" step="0.01" />
-                            </Form.Group>
                             <div className="row">
                                 <div className="col">
                                     <Button type="submit" className="btn btn-primary">Analyze</Button>
@@ -283,7 +295,7 @@ export default function BestCallByPrice() {
                             </div>
                         </Form>
                         <br />
-                        {bestStrategies.length > 0 ?
+                        {bestStrategies != null ?
                             <div>
                                 <h4>Results</h4>
                                 <hr />
@@ -338,7 +350,7 @@ export default function BestCallByPrice() {
                                                 sizePerPage: 20,
                                                 hidePageListOnlyOnePage: true
                                             })}
-                                            noDataIndication="No Data"
+                                            noDataIndication="No eligible strategy found."
                                             bordered={false}
                                             expandRow={ExpandTradeRow}
                                             filter={filterFactory()}
