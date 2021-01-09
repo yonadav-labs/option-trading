@@ -123,7 +123,7 @@ class Trade:
             return None
         return self.profit_cap / self.cost
 
-
+# TODO: make this strategy useful.
 class LongStock(Trade):
     def __init__(self, stock, target_price=None):
         legs = [StockLeg('long_stock_leg', 1, stock)]

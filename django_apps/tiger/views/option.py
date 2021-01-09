@@ -8,7 +8,7 @@ from rest_framework.permissions import IsAuthenticated
 
 from tiger.serializers import TickerSerializer, OptionContractSerializer, TradeSerializer, TradeSnapshotSerializer
 from tiger.models import Ticker, TradeSnapshot
-from tiger.core import LongStock, LongCall, CoveredCall, LongPut, CashSecuredPut, OptionContract, Stock, Trade
+from tiger.core import LongCall, CoveredCall, LongPut, CashSecuredPut, OptionContract, Stock, Trade
 
 
 def get_valid_contracts(ticker, request, use_as_premium, all_expiration_timestamps):
@@ -18,8 +18,9 @@ def get_valid_contracts(ticker, request, use_as_premium, all_expiration_timestam
     put_lists = []
     for ts in input_expiration_timestamps:
         calls, puts = ticker.get_call_puts(use_as_premium, ts)
-        call_lists.append(calls)
-        put_lists.append(puts)
+        # filter out inactive contracts.
+        call_lists.append(filter(lambda call: call.last_trade_date, calls))
+        put_lists.append(filter(lambda put: put.last_trade_date, puts))
     return call_lists, put_lists
 
 
@@ -80,7 +81,7 @@ def get_best_trades(request, ticker_symbol):
     stock_price = quote.get('regularMarketPrice')  # This is from Yahoo.
     stock = Stock(ticker, stock_price, external_cache_id)
 
-    all_trades = [LongStock(stock, target_price)]
+    all_trades = []
     call_contract_lists, put_contract_list = get_valid_contracts(ticker, request, use_as_premium,
                                                                  all_expiration_timestamps)
     for calls_per_exp in call_contract_lists:
@@ -94,8 +95,7 @@ def get_best_trades(request, ticker_symbol):
             all_trades.append(CashSecuredPut(stock, put, target_price))
 
     if target_price is not None:
-        all_trades = list(
-            filter(lambda trade: trade.target_price_profit > 0.0, all_trades))
+        all_trades = list(filter(lambda trade: trade.target_price_profit > 0.0, all_trades))
         sorted(all_trades, key=lambda trade: -trade.target_price_profit_ratio)
     return Response({'trades': TradeSerializer(all_trades, many=True).data})
 
