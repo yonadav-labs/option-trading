@@ -21,7 +21,9 @@ class Trade:
         stock = Stock.from_snapshot(trade_snapshot.stock_snapshot)
         legs = [Leg.from_snapshot(leg_snapshot) for leg_snapshot in trade_snapshot.leg_snapshots.all()]
         new_trade = cls(trade_snapshot.type, stock, legs, target_price=trade_snapshot.target_price)
-        if trade_snapshot.type == 'long_call':
+        if trade_snapshot.type == 'long_stock':
+            new_trade.__class__ = LongStock
+        elif trade_snapshot.type == 'long_call':
             new_trade.__class__ = LongCall
         elif trade_snapshot.type == 'long_put':
             new_trade.__class__ = LongPut
@@ -120,6 +122,16 @@ class Trade:
         if self.profit_cap is None:
             return None
         return self.profit_cap / self.cost
+
+
+class LongStock(Trade):
+    def __init__(self, stock, target_price=None):
+        legs = [StockLeg('long_stock_leg', 1, stock)]
+        super().__init__('long_stock', stock, legs, target_price)
+
+    @property
+    def break_even_price(self):
+        return self.stock.stock_price
 
 
 class LongCall(Trade):

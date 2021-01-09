@@ -8,7 +8,7 @@ from rest_framework.permissions import IsAuthenticated
 
 from tiger.serializers import TickerSerializer, OptionContractSerializer, TradeSerializer, TradeSnapshotSerializer
 from tiger.models import Ticker, TradeSnapshot
-from tiger.core import LongCall, CoveredCall, LongPut, CashSecuredPut, OptionContract, Stock, Trade
+from tiger.core import LongStock, LongCall, CoveredCall, LongPut, CashSecuredPut, OptionContract, Stock, Trade
 
 
 def get_valid_contracts(ticker, request, use_as_premium, all_expiration_timestamps):
@@ -77,13 +77,13 @@ def get_best_trades(request, ticker_symbol):
     stock_price = quote.get('regularMarketPrice')  # This is from Yahoo.
     stock = Stock(ticker, stock_price, external_cache_id)
 
-    all_trades = []
+    all_trades = [LongStock(stock, target_price=target_price)]
     call_contract_lists, put_contract_list = get_valid_contracts(ticker, request, use_as_premium,
                                                                  all_expiration_timestamps)
     for calls_per_exp in call_contract_lists:
         for call in calls_per_exp:
             all_trades.append(LongCall(stock, call, target_price))
-            all_trades.append(CoveredCall(stock, call, target_price=target_price))
+            all_trades.append(CoveredCall(stock, call, target_price))
 
     for puts_per_exp in put_contract_list:
         for put in puts_per_exp:

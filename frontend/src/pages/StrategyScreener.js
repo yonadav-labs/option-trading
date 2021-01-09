@@ -9,7 +9,7 @@ import Select from "react-select";
 
 import getApiUrl, {
     PriceFormatter, TimestampDateFormatter, onLastTradedFilterChange,
-    PriceMovementFormatter, getTradeTypeDisplay
+    PriceMovementFormatter, getTradeTypeDisplay, getAllTradeTypes
 } from '../utils';
 import filterFactory, { multiSelectFilter, numberFilter } from 'react-bootstrap-table2-filter';
 import { BsArrowsExpand, BsArrowsCollapse } from 'react-icons/bs';
@@ -120,8 +120,8 @@ export default function BestCallByPrice() {
             style: { 'display': 'none' },
             headerStyle: { 'display': 'none' },
             filter: multiSelectFilter({
-                options: { 'long_call': 'long_call', 'covered_call': 'covered_call', 'long_put': 'long_put', 'cash_secured_put': 'cash_secured_put' },
-                defaultValue: ['long_call', 'covered_call', 'long_put', 'cash_secured_put'],
+                options: getAllTradeTypes(),
+                defaultValue: getAllTradeTypes(),
                 getFilter: (filter) => {
                     strategyFilter = filter;
                 }
@@ -136,7 +136,7 @@ export default function BestCallByPrice() {
     function onStrategyFilterChange(event, strategyFilter) {
         const { value } = event.target;
         if (value == 'all') {
-            strategyFilter(['long_call', 'covered_call', 'long_put', 'cash_secured_put']);
+            strategyFilter(getAllTradeTypes());
         } else {
             strategyFilter([value]);
         }
@@ -313,10 +313,11 @@ export default function BestCallByPrice() {
                                                 <Form.Control name="strategy" as="select" defaultValue="all"
                                                     onChange={(e) => onStrategyFilterChange(e, strategyFilter)}>
                                                     <option key="all" value="all">All</option>
-                                                    <option key="long_call" value="long_call">Long call</option>
-                                                    <option key="covered_call" value="covered_call">Covered call</option>
-                                                    <option key="long_put" value="long_put">Long put</option>
-                                                    <option key="cash_secured_put" value="cash_secured_put">Cash secured put</option>
+                                                    {getAllTradeTypes().map((type, index) => {
+                                                        return (
+                                                            <option key={type} value={type}>{getTradeTypeDisplay(type)}</option>
+                                                        );
+                                                    })}
                                                 </Form.Control>
                                             </Form.Group>
                                         </Form>
