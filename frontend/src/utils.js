@@ -133,15 +133,6 @@ export function getLegByName(trade, name) {
     return return_leg;
 };
 
-export function getContractName(contract) {
-    return (
-        <span>
-            {contract.ticker.symbol} {TimestampDateFormatter(contract.expiration)}
-            &nbsp;strike {PriceFormatter(contract.strike)} {contract.is_call ? 'call' : 'put'}
-        </span>
-    );
-};
-
 export function getAllTradeTypes(type) {
     return ['long_call', 'covered_call', 'long_put', 'cash_secured_put'];
 }

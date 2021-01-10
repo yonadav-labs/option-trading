@@ -109,6 +109,10 @@ class Trade:
         return None
 
     @property
+    def display_name(self):
+        return None
+
+    @property
     def profit_cap(self):
         '''
         :return: None means no cap.
@@ -181,6 +185,10 @@ class LongCall(Trade):
         super().__init__('long_call', stock, legs, target_price)
 
     @property
+    def display_name(self):
+        return self.get_leg('long_call_leg').display_name
+
+    @property
     def break_even_price(self):
         return self.get_leg('long_call_leg').contract.strike + self.get_leg('long_call_leg').contract.premium
 
@@ -189,6 +197,10 @@ class LongPut(Trade):
     def __init__(self, stock, legs, target_price=None):
         # TODO: add validation.
         super().__init__('long_put', stock, legs, target_price)
+
+    @property
+    def display_name(self):
+        return self.get_leg('long_put_leg').display_name
 
     @property
     def break_even_price(self):
@@ -200,6 +212,16 @@ class CoveredCall(Trade):
     def __init__(self, stock, legs, target_price=None):
         # TODO: add validation.
         super().__init__('covered_call', stock, legs, target_price)
+
+    @property
+    def display_name(self):
+        short_call_leg = self.get_leg('short_call_leg')
+        long_stock_leg = self.get_leg('long_stock_leg')
+        return 'Short {} contract{} of {}, covered by {} share{} of {}' \
+            .format(short_call_leg.units, 's' if short_call_leg.units > 1 else '',
+                    short_call_leg.contract.display_name,
+                    long_stock_leg.units, 's' if long_stock_leg.units > 1 else '',
+                    long_stock_leg.stock.display_name)
 
     @property
     def break_even_price(self):
@@ -218,6 +240,14 @@ class CashSecuredPut(Trade):
     def __init__(self, stock, legs, target_price=None):
         # TODO: add validation.
         super().__init__('cash_secured_put', stock, legs, target_price)
+
+    @property
+    def display_name(self):
+        short_put_leg = self.get_leg('short_put_leg')
+        long_cash_leg = self.get_leg('long_cash_leg')
+        return 'Short {} contract{} of {}, covered by ${} cash' \
+            .format(short_put_leg.units, 's' if short_put_leg.units > 1 else '',
+                    short_put_leg.contract.display_name, long_cash_leg.units)
 
     @property
     def break_even_price(self):

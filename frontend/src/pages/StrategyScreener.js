@@ -191,7 +191,7 @@ export default function BestCallByPrice() {
 
     const ExpandTradeRow = {
         renderer: (row) => (
-            <TradeDetailsCard trade={row} hideTitle={true} />
+            <TradeDetailsCard trade={row} />
         ),
         showExpandColumn: true,
         expandHeaderColumnRenderer: ({ isAnyExpands }) => {

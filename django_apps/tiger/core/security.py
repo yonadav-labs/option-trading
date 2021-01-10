@@ -1,12 +1,17 @@
 from abc import ABC, abstractmethod
 
-from tiger.utils import days_from_timestamp
+from tiger.utils import days_from_timestamp, timestamp_to_datetime_with_default_tz
 import tiger.blob_reader as blob_reader
 
 
 class Security(ABC):
     def __init__(self, external_cache_id):
         self.external_cache_id = external_cache_id
+
+    @property
+    @abstractmethod
+    def display_name(self):
+        pass
 
     @property
     @abstractmethod
@@ -24,6 +29,10 @@ class Security(ABC):
 class Cash(Security):
     def __init__(self):
         super().__init__(None)
+
+    @property
+    def display_name(self):
+        return 'cash'
 
     @property
     def cost(self):
@@ -49,6 +58,10 @@ class Stock(Security):
             stock_price = blob_reader.get_quote(cache.json_response, False).get(
                 'last')
         return cls(stock_snapshot.ticker, stock_price, stock_snapshot.external_cache_id)
+
+    @property
+    def display_name(self):
+        return '{} stock'.format(self.ticker.symbol)
 
     @property
     def cost(self):
@@ -153,6 +166,13 @@ class OptionContract(Security):
         # TODO: set customizable premium
         return cls(contract_snapshot.ticker, contract_snapshot.is_call, contract_data, stock_price,
                    use_as_premium='estimated', external_cache_id=cache.id)
+
+    @property
+    def display_name(self):
+        expiration_date_str = timestamp_to_datetime_with_default_tz(self.expiration).strftime("%m/%d/%Y")
+        strike = int(self.strike) if self.strike.is_integer() else self.strike
+        return '{} {} strike ${} {}'.format(self.ticker.symbol, expiration_date_str,
+                                            strike, 'call' if self.is_call else 'put')
 
     @property
     def to_strike(self):

@@ -17,6 +17,7 @@ class StockSerializer(serializers.Serializer):
     ticker = TickerSerializer()
     external_cache_id = serializers.IntegerField(allow_null=True)
     stock_price = serializers.FloatField(min_value=0.0)
+    display_name = serializers.ReadOnlyField()
 
 
 class OptionContractSerializer(serializers.Serializer):
@@ -60,6 +61,7 @@ class OptionContractSerializer(serializers.Serializer):
     stock_price = serializers.FloatField(min_value=0.0)
     use_as_premium = serializers.CharField(max_length=20)
 
+    display_name = serializers.ReadOnlyField()
     bid_ask_spread = serializers.ReadOnlyField()
     to_strike = serializers.ReadOnlyField()
     to_strike_ratio = serializers.ReadOnlyField()
@@ -75,6 +77,7 @@ class LegSerializer(serializers.Serializer):
     cash = serializers.ReadOnlyField(source='is_cash')
     stock = StockSerializer(allow_null=True)
     contract = OptionContractSerializer(allow_null=True)
+    display_name = serializers.ReadOnlyField()
     cost = serializers.ReadOnlyField()
 
 
@@ -87,6 +90,7 @@ class TradeSerializer(serializers.Serializer):
 
     break_even_price = serializers.ReadOnlyField()
     to_break_even_ratio = serializers.ReadOnlyField()
+    display_name = serializers.ReadOnlyField()
     cost = serializers.ReadOnlyField()
     min_expiration = serializers.ReadOnlyField()
     min_days_till_expiration = serializers.ReadOnlyField()
