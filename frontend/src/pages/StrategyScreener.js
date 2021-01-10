@@ -9,7 +9,7 @@ import Select from "react-select";
 
 import getApiUrl, {
     PriceFormatter, TimestampDateFormatter, onLastTradedFilterChange,
-    PriceMovementFormatter, getTradeTypeDisplay, getAllTradeTypes
+    PriceMovementFormatter, getTradeStrike, getTradeTypeDisplay, getAllTradeTypes
 } from '../utils';
 import filterFactory, { multiSelectFilter, numberFilter } from 'react-bootstrap-table2-filter';
 import { BsArrowsExpand, BsArrowsCollapse } from 'react-icons/bs';
@@ -52,8 +52,8 @@ export default function BestCallByPrice() {
             formatter: (cell, row, rowIndex, extraData) => {
                 return (
                     <span>
-                        {getTradeTypeDisplay(cell)} <br />
-                        <small>{TimestampDateFormatter(row.min_expiration)}</small>
+                        {getTradeTypeDisplay(cell)}<br />
+                        <small>Strike ${getTradeStrike(row)}</small>
                     </span>
                 );
             },

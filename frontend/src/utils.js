@@ -149,3 +149,20 @@ export function getTradeTypeDisplay(type) {
             return "Cash secured put"
     }
 }
+
+export function getTradeStrike(row) {
+    switch (row.type) {
+        case ("long_call"):
+            let longCallLeg = getLegByName(row, 'long_call_leg');
+            return longCallLeg.contract.strike;
+        case ("covered_call"):
+            let shortCallLeg = getLegByName(row, 'short_call_leg');
+            return shortCallLeg.contract.strike;
+        case ("long_put"):
+            let longPutLeg = getLegByName(row, 'long_put_leg');
+            return longPutLeg.contract.strike;
+        case ("cash_secured_put"):
+            let shortPutLeg = getLegByName(row, 'short_put_leg');
+            return shortPutLeg.contract.strike;
+    }
+}
