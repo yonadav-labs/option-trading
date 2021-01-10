@@ -3,7 +3,7 @@ import Card from 'react-bootstrap/Card';
 
 import {
     PriceFormatter, PercentageFormatter, TimestampTimeFormatter,
-    NumberRoundFormatter, getContractName
+    NumberRoundFormatter
 } from '../utils';
 
 export default function ContractDetailsCard(props) {
@@ -14,8 +14,7 @@ export default function ContractDetailsCard(props) {
             <Card>
                 {
                     hideTitle ?
-                        null :
-                        <Card.Header>{getContractName(contract)}</Card.Header>
+                        null : <Card.Header>{contract.display_name}</Card.Header>
                 }
                 <Card.Body>
                     <Card.Text>

@@ -57,6 +57,7 @@ function StrikeRangeSliderFilter(props) {
             allowCross={false}
             min={minStrike}
             max={maxStrike}
+            step={0.01}
             defaultValue={[minStrike, maxStrike]}
             marks={marks}
             tipFormatter={value => (

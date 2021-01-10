@@ -8,7 +8,7 @@ from rest_framework.permissions import IsAuthenticated
 
 from tiger.serializers import TickerSerializer, OptionContractSerializer, TradeSerializer, TradeSnapshotSerializer
 from tiger.models import Ticker, TradeSnapshot
-from tiger.core import LongCall, CoveredCall, LongPut, CashSecuredPut, OptionContract, Stock, Trade
+from tiger.core import LongCall, CoveredCall, LongPut, CashSecuredPut, OptionContract, Stock, Trade, TradeFactory
 
 
 def get_valid_contracts(ticker, request, use_as_premium, all_expiration_timestamps):
@@ -18,8 +18,9 @@ def get_valid_contracts(ticker, request, use_as_premium, all_expiration_timestam
     put_lists = []
     for ts in input_expiration_timestamps:
         calls, puts = ticker.get_call_puts(use_as_premium, ts)
-        call_lists.append(calls)
-        put_lists.append(puts)
+        # filter out inactive contracts.
+        call_lists.append(filter(lambda call: call.last_trade_date, calls))
+        put_lists.append(filter(lambda put: put.last_trade_date, puts))
     return call_lists, put_lists
 
 
@@ -68,10 +69,17 @@ def get_best_trades(request, ticker_symbol):
         raise APIException('No contracts found.')
 
     try:
-        target_price = float(request.query_params.get('target_price'))
         use_as_premium = request.query_params.get('use_as_premium', 'estimated')
     except Exception:
         raise APIException('Invalid query parameters.')
+
+    target_price = request.query_params.get('target_price')
+    if target_price is not None:
+        target_price = float(target_price)
+
+    available_cash = request.query_params.get('available_cash')
+    if available_cash is not None:
+        available_cash = float(available_cash)
 
     quote, external_cache_id = ticker.get_quote()
     stock_price = quote.get('regularMarketPrice')  # This is from Yahoo.
@@ -82,17 +90,18 @@ def get_best_trades(request, ticker_symbol):
                                                                  all_expiration_timestamps)
     for calls_per_exp in call_contract_lists:
         for call in calls_per_exp:
-            all_trades.append(LongCall(stock, call, target_price))
-            all_trades.append(CoveredCall(stock, call, target_price=target_price))
+            all_trades.append(TradeFactory.build_long_call(stock, call, target_price, available_cash))
+            all_trades.append(TradeFactory.build_covered_call(stock, call, target_price, available_cash))
 
     for puts_per_exp in put_contract_list:
         for put in puts_per_exp:
-            all_trades.append(LongPut(stock, put, target_price))
-            all_trades.append(CashSecuredPut(stock, put, target_price))
+            all_trades.append(TradeFactory.build_long_put(stock, put, target_price, available_cash))
+            all_trades.append(TradeFactory.build_cash_secured_put(stock, put, target_price, available_cash))
 
-    all_trades = list(
-        filter(lambda trade: trade.target_price_profit is not None and trade.target_price_profit > 0.0, all_trades))
-    sorted(all_trades, key=lambda trade: -trade.target_price_profit_ratio)
+    all_trades = filter(lambda trade: trade is not None, all_trades)
+    if target_price is not None:
+        all_trades = list(filter(lambda trade: trade.target_price_profit > 0.0, all_trades))
+        sorted(all_trades, key=lambda trade: -trade.target_price_profit_ratio)
     return Response({'trades': TradeSerializer(all_trades, many=True).data})
 
 

@@ -488,7 +488,7 @@ export default function SellCoveredCall() {
                                                 sizePerPage: 20,
                                                 hidePageListOnlyOnePage: true
                                             })}
-                                            noDataIndication="No Data"
+                                            noDataIndication="No eligible option contract found."
                                             bordered={false}
                                             // overlay={overlayFactory({ spinner: true })} // does not work with filter.
                                             expandRow={ExpandContractRow}

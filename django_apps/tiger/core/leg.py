@@ -31,6 +31,11 @@ class Leg(ABC):
 
     @property
     @abstractmethod
+    def display_name(self):
+        pass
+
+    @property
+    @abstractmethod
     def cost(self):
         pass
 
@@ -48,6 +53,10 @@ class CashLeg(Leg):
         super().__init__('long_cash_leg', True, units, cash=Cash())
 
     @property
+    def display_name(self):
+        return 'Keep ${} cash'.format(self.units)
+
+    @property
     def cost(self):
         return self.cash.cost * self.units
 
@@ -61,6 +70,11 @@ class StockLeg(Leg):
         super().__init__(name, True, units, stock=stock)
 
     @property
+    def display_name(self):
+        return 'Long {} share{} of {} at ${:.2f} per share'.format(self.units, 's' if self.units > 1 else '',
+                                                                   self.stock.display_name, self.stock.stock_price)
+
+    @property
     def cost(self):
         return self.stock.cost * self.units
 
@@ -72,6 +86,12 @@ class StockLeg(Leg):
 class OptionLeg(Leg):
     def __init__(self, name, is_long, units, contract):
         super().__init__(name, is_long, units, contract=contract)
+
+    @property
+    def display_name(self):
+        return '{} {} contract{} of {} at ${:.2f} per contract' \
+            .format('Long' if self.is_long else 'Short', self.units,
+                    's' if self.units > 1 else '', self.contract.display_name, self.contract.cost)
 
     @property
     def cost(self):
