@@ -82,11 +82,7 @@ class Trade:
     def target_price_profit(self):
         if self.target_price is None:
             return None
-
-        profit_sum = 0.0
-        for leg in self.legs:
-            profit_sum += leg.get_profit_at_target_price(self.target_price)
-        return profit_sum
+        return self.get_profit_at_price(self.target_price)
 
     @property
     def target_price_profit_ratio(self):
@@ -124,6 +120,12 @@ class Trade:
         if self.profit_cap is None:
             return None
         return self.profit_cap / self.cost
+
+    def get_profit_at_price(self, price):
+        profit_sum = 0.0
+        for leg in self.legs:
+            profit_sum += leg.get_profit_at_target_price(price)
+        return profit_sum
 
     def max_out(self, available_cash):
         '''Returns True if succeeded, otherwise False.'''
@@ -166,6 +168,20 @@ class TradeFactory:
         short_put_leg = OptionLeg('short_put_leg', False, 1, put_contract)
         long_cash_leg = CashLeg(100 * put_contract.strike)
         new_trade = CashSecuredPut(stock, [short_put_leg, long_cash_leg], target_price=target_price)
+        if available_cash and not new_trade.max_out(available_cash):
+            return None
+        return new_trade
+
+    @staticmethod
+    def build_bull_call_spread(stock, call_contract_1, call_contract_2, target_price=None, available_cash=None):
+        if call_contract_1.strike == call_contract_2.strike or call_contract_1.expiration != call_contract_2.expiration:
+            return None
+        lower_strike_call, higher_strike_call = (call_contract_1, call_contract_2) \
+            if call_contract_1.strike < call_contract_2.strike else (call_contract_2, call_contract_1)
+
+        long_call_leg = OptionLeg('long_call_leg', True, 1, lower_strike_call)
+        short_call_leg = OptionLeg('short_call_leg', False, 1, higher_strike_call)
+        new_trade = BullCallSpread(stock, [long_call_leg, short_call_leg], target_price=target_price)
         if available_cash and not new_trade.max_out(available_cash):
             return None
         return new_trade
@@ -221,11 +237,8 @@ class CoveredCall(Trade):
 
     @property
     def profit_cap(self):
-        profit_cap_price = self.get_leg('short_call_leg').contract.strike + self.get_leg(
-            'short_call_leg').contract.premium
-        profit = self.get_leg('long_stock_leg').get_profit_at_target_price(profit_cap_price) + \
-                 self.get_leg('short_call_leg').get_profit_at_target_price(profit_cap_price)
-        return profit
+        profit_cap_price = self.get_leg('short_call_leg').contract.strike
+        return self.get_profit_at_price(profit_cap_price)
 
 
 class CashSecuredPut(Trade):
@@ -248,5 +261,27 @@ class CashSecuredPut(Trade):
     @property
     def profit_cap(self):
         return -self.get_leg('short_put_leg').cost
+
+
+# TODO: generalize to vertical call spread, vertical spread...
+class BullCallSpread(Trade):
+    def __init__(self, stock, legs, target_price=None):
+        # TODO: add validation.
+        super().__init__('bull_call_spread', stock, legs, target_price)
+
+    @property
+    def display_name(self):
+        return 'TBD'
+
+    @property
+    def break_even_price(self):
+        return self.get_leg('long_call_leg').contract.strike \
+               + self.get_leg('long_call_leg').contract.premium \
+               - self.get_leg('short_call_leg').contract.premium
+
+    @property
+    def profit_cap(self):
+        profit_cap_price = self.get_leg('short_call_leg').contract.strike
+        return self.get_profit_at_price(profit_cap_price)
 
 # TODO: add a sell everything now and hold cash trade and a long stock trade.
