@@ -1,4 +1,5 @@
 import itertools
+import logging
 from django.shortcuts import get_object_or_404
 from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
@@ -10,6 +11,8 @@ from tiger.serializers import TickerSerializer, OptionContractSerializer, TradeS
 from tiger.models import Ticker, TradeSnapshot
 from tiger.core import LongCall, CoveredCall, LongPut, CashSecuredPut, OptionContract, Stock, Trade, TradeFactory
 
+logger = logging.getLogger('console_info')
+
 
 def get_valid_contracts(ticker, request, use_as_premium, all_expiration_timestamps):
     input_expiration_timestamps = set([int(ts) for ts in request.query_params.getlist('expiration_timestamps') if
@@ -19,8 +22,8 @@ def get_valid_contracts(ticker, request, use_as_premium, all_expiration_timestam
     for ts in input_expiration_timestamps:
         calls, puts = ticker.get_call_puts(use_as_premium, ts)
         # filter out inactive contracts.
-        call_lists.append(filter(lambda call: call.last_trade_date, calls))
-        put_lists.append(filter(lambda put: put.last_trade_date, puts))
+        call_lists.append(list(filter(lambda call: call.last_trade_date, calls)))
+        put_lists.append(list(filter(lambda put: put.last_trade_date, puts)))
     return call_lists, put_lists
 
 
@@ -62,6 +65,7 @@ def contracts(request, ticker_symbol):
 
 @api_view(['GET'])
 def get_best_trades(request, ticker_symbol):
+    logger.info(ticker_symbol.upper())  # demo of logging.
     ticker = get_object_or_404(Ticker, symbol=ticker_symbol.upper(), status="unspecified")
     # Check if option is available for this ticker.
     all_expiration_timestamps = ticker.get_expiration_timestamps()
@@ -92,16 +96,24 @@ def get_best_trades(request, ticker_symbol):
         for call in calls_per_exp:
             all_trades.append(TradeFactory.build_long_call(stock, call, target_price, available_cash))
             all_trades.append(TradeFactory.build_covered_call(stock, call, target_price, available_cash))
+            # TODO: enable bull call spread once we figure out the result size problem.
+            # for call2 in calls_per_exp:
+            #     if call2.strike > call.strike:
+            #         if target_price is not None and call2.strike < target_price:
+            #             # No reason to cap gain below target price.
+            #             continue
+            #         all_trades.append(
+            #             TradeFactory.build_bull_call_spread(stock, call, call2, target_price, available_cash))
 
     for puts_per_exp in put_contract_list:
         for put in puts_per_exp:
             all_trades.append(TradeFactory.build_long_put(stock, put, target_price, available_cash))
             all_trades.append(TradeFactory.build_cash_secured_put(stock, put, target_price, available_cash))
 
-    all_trades = filter(lambda trade: trade is not None, all_trades)
+    all_trades = list(filter(lambda trade: trade is not None, all_trades))
     if target_price is not None:
         all_trades = list(filter(lambda trade: trade.target_price_profit > 0.0, all_trades))
-        sorted(all_trades, key=lambda trade: -trade.target_price_profit_ratio)
+        all_trades = sorted(all_trades, key=lambda trade: -trade.target_price_profit_ratio)
     return Response({'trades': TradeSerializer(all_trades, many=True).data})
 
 

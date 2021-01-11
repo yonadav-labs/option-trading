@@ -9,7 +9,7 @@ import Select from "react-select";
 
 import getApiUrl, {
     PriceFormatter, TimestampDateFormatter, onLastTradedFilterChange,
-    PriceMovementFormatter, getTradeStrike, getTradeTypeDisplay, getAllTradeTypes
+    PriceMovementFormatter, getTradeStrikeStr, getTradeTypeDisplay, getAllTradeTypes
 } from '../utils';
 import filterFactory, { multiSelectFilter, numberFilter } from 'react-bootstrap-table2-filter';
 import { BsArrowsExpand, BsArrowsCollapse } from 'react-icons/bs';
@@ -53,14 +53,14 @@ export default function BestCallByPrice() {
                 return (
                     <span>
                         {getTradeTypeDisplay(cell)}<br />
-                        <small>Strike ${getTradeStrike(row)}</small>
+                        <small>{getTradeStrikeStr(row)}</small>
                     </span>
                 );
             },
             sort: true
         }, {
             dataField: "to_break_even_ratio",
-            text: "Breakeven price",
+            text: "Break-even",
             formatter: (cell, row, rowIndex, extraData) => (
                 PriceMovementFormatter(cell, row.break_even_price)
             ),

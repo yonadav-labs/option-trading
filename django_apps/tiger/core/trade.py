@@ -1,6 +1,6 @@
 from .security import Stock
 from .leg import Leg, CashLeg, StockLeg, OptionLeg
-from tiger.utils import days_from_timestamp
+from tiger.utils import days_from_timestamp, timestamp_to_datetime_with_default_tz
 
 
 class Trade:
@@ -271,7 +271,13 @@ class BullCallSpread(Trade):
 
     @property
     def display_name(self):
-        return 'TBD'
+        long_call_leg = self.get_leg('long_call_leg')
+        short_call_leg = self.get_leg('short_call_leg')
+        expiration_date_str = timestamp_to_datetime_with_default_tz(long_call_leg.contract.expiration) \
+            .strftime("%m/%d/%Y")
+        return '{} {} {} strike ${} - ${} bull call spread for total ${:.2f}' \
+            .format(long_call_leg.units, self.stock.ticker.symbol, expiration_date_str, long_call_leg.contract.strike,
+                    short_call_leg.contract.strike, self.cost)
 
     @property
     def break_even_price(self):
