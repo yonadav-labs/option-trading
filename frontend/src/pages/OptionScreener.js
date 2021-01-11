@@ -33,6 +33,7 @@ let minStrikeFilter;
 let maxStrikeFilter;
 
 export default function SellCoveredCall() {
+    let history = useHistory()
     let location = useLocation()
     const querySymbol = useSearch(location, 'symbol')
 

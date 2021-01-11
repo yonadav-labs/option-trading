@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useHistory, useLocation } from "react-router-dom";
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import Alert from 'react-bootstrap/Alert';
@@ -19,11 +20,17 @@ import TickerSummary from '../components/TickerSummary.js';
 import ModalSpinner from '../components/ModalSpinner';
 import ShareTradeBtn from '../components/ShareTradeBtn.js';
 import TradeDetailsCard from '../components/TradeDetailsCard';
+import { useSearch } from "../components/querying"
+
 
 let lastTradedFilter;
 let strategyFilter;
 
 export default function BestCallByPrice() {
+    let history = useHistory()
+    let location = useLocation()
+    const querySymbol = useSearch(location, 'symbol')
+
     const [selectedTicker, setSelectedTicker] = useState([]);
     const [expirationTimestamps, setExpirationTimestamps] = useState([]);
     const [basicInfo, setbasicInfo] = useState({});
@@ -229,6 +236,8 @@ export default function BestCallByPrice() {
                 <Form.Group>
                     <Form.Label className="requiredField"><h4>Enter ticker symbol:</h4></Form.Label>
                     <TickerTypeahead
+                        querySymbol={querySymbol}
+                        selectedTicker={selectedTicker}
                         setSelectedTicker={setSelectedTicker}
                         setExpirationTimestamps={setExpirationTimestamps}
                         setbasicInfo={setbasicInfo}
