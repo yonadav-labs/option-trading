@@ -20,7 +20,7 @@ import { Comparator } from 'react-bootstrap-table2-filter';
 import Select from "react-select";
 import SingleChoiceFilter from "../components/filters/SingleChoiceFilter"
 import StrikeRangeSliderFilter from "../components/filters/StrikeRangeSliderFilter"
-import { addQuery } from "../components/querying"
+import { useSearch } from "../components/querying"
 
 let putCallFilter;
 let inTheMoneyFilter;
@@ -33,8 +33,8 @@ let minStrikeFilter;
 let maxStrikeFilter;
 
 export default function SellCoveredCall() {
-    let history = useHistory()
     let location = useLocation()
+    const querySymbol = useSearch(location, 'symbol')
 
     const [selectedTicker, setSelectedTicker] = useState([]);
     const [expirationTimestamps, setExpirationTimestamps] = useState([]);
@@ -334,6 +334,7 @@ export default function SellCoveredCall() {
                 <Form.Group>
                     <Form.Label className="requiredField"><h4>Enter ticker symbol:</h4></Form.Label>
                     <TickerTypeahead
+                        querySymbol={querySymbol}
                         selectedTicker={selectedTicker}
                         setSelectedTicker={setSelectedTicker}
                         setExpirationTimestamps={setExpirationTimestamps}

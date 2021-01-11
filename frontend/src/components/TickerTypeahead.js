@@ -6,14 +6,12 @@ import getApiUrl from '../utils'
 import { addQuery } from './querying'
 
 
-export default function TickerTypeahead({ selectedTicker, setSelectedTicker, setExpirationTimestamps, setbasicInfo, /*optional*/resetStates, setModalActive }) {
+export default function TickerTypeahead({querySymbol, selectedTicker, setSelectedTicker, setExpirationTimestamps, setbasicInfo, /*optional*/resetStates, setModalActive }) {
     let history = useHistory();
     let location = useLocation();
     const API_URL = getApiUrl();
     const [allTickers, setAllTickers] = useState([]);
     const inputEl = useRef(null);
-    const params = new URLSearchParams(location.search);
-    const symbol = params.get('symbol');
 
     const loadTickers = async () => {
         try {
@@ -26,7 +24,7 @@ export default function TickerTypeahead({ selectedTicker, setSelectedTicker, set
                     ticker.display_label = ticker.symbol;
                 }
 
-                if (symbol && ticker.symbol === symbol) {
+                if (querySymbol && ticker.symbol === querySymbol) {
                     setSelectedTicker([ticker], onTickerSelectionChange([ticker]));
                 }
 

@@ -23,3 +23,12 @@ export const removeQuery = (location, history, key) => {
              search: searchParams.toString()
        });
    };
+
+export const useQuery = (location) => {
+    return new URLSearchParams(location.search);
+}
+
+export const useSearch = (location, search) => {
+    let query = new URLSearchParams(location.search);
+    return query.get(search)
+}
