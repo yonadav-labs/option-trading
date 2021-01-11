@@ -4,7 +4,7 @@ import Axios from 'axios';
 import { useOktaAuth } from '@okta/okta-react';
 
 import getApiUrl from '../utils';
-import TradeDetailsCard from '../components/TradeDetailsCard';
+import TradeDetailsCard from '../components/cards/TradeDetailsCard';
 
 
 export default function SingleTrade() {

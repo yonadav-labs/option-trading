@@ -16,7 +16,7 @@ import { BsArrowsExpand, BsArrowsCollapse } from 'react-icons/bs';
 import TickerTypeahead from '../components/TickerTypeahead';
 import TickerSummary from '../components/TickerSummary.js';
 import ModalSpinner from '../components/ModalSpinner';
-import TradeDetailsCard from '../components/TradeDetailsCard';
+import TradeDetailsCard from '../components/cards/TradeDetailsCard';
 
 let lastTradedFilter;
 let strategyFilter;

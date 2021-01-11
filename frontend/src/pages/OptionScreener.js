@@ -14,11 +14,12 @@ import paginationFactory from 'react-bootstrap-table2-paginator';
 import filterFactory, { multiSelectFilter, numberFilter } from 'react-bootstrap-table2-filter';
 import { BsArrowsExpand, BsArrowsCollapse } from 'react-icons/bs';
 import ModalSpinner from '../components/ModalSpinner';
-import ContractDetailsCard from '../components/ContractDetailsCard';
+import ContractDetailsCard from '../components/cards/ContractDetailsCard';
 import { Comparator } from 'react-bootstrap-table2-filter';
 import Select from "react-select";
 import SingleChoiceFilter from "../components/filters/SingleChoiceFilter"
 import StrikeRangeSliderFilter from "../components/filters/StrikeRangeSliderFilter"
+import ContractDeck from '../components/ContractDeck';
 
 let putCallFilter;
 let inTheMoneyFilter;
@@ -478,6 +479,7 @@ export default function SellCoveredCall() {
                                 </div>
                                 <div className="row">
                                     <div className="col">
+                                        <ContractDeck contracts={contracts}></ContractDeck>
                                         <BootstrapTable
                                             classes="table-responsive"
                                             bootstrap4={true}

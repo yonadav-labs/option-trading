@@ -1,9 +1,8 @@
 import React from 'react';
 import Card from 'react-bootstrap/Card';
-
-import LegDetailsCard from '../components/LegDetailsCard';
-import ShareTradeBtn from '../components/ShareTradeBtn.js';
-import { PriceFormatter, ProfitFormatter } from '../utils';
+import ShareTradeBtn from '../ShareTradeBtn.js';
+import { PriceFormatter, ProfitFormatter } from '../../utils';
+import LegDetailsCard from './LegDetailsCard.js';
 
 export default function TradeDetailsCard(props) {
     const { trade, hideShareButton } = props;

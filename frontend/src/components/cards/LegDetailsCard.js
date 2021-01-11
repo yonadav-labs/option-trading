@@ -1,11 +1,13 @@
 import React from 'react';
 import Card from 'react-bootstrap/Card';
-import ContractDetailsCard from '../components/ContractDetailsCard';
+import ContractDetailsCard from './ContractDetailsCard';
 
-import { PriceFormatter } from '../utils';
+import { PriceFormatter } from '../../utils';
 
 export default function LegDetailsCard(props) {
     const { leg, position_num } = props;
+
+    console.log(leg, position_num)
 
     if (leg.contract) {
         return (
