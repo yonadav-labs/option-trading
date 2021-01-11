@@ -125,57 +125,49 @@ class Trade:
             return None
         return self.profit_cap / self.cost
 
+    def max_out(self, available_cash):
+        '''Returns True if succeeded, otherwise False.'''
+        # TODO: think of how to deal with net credit position.
+        multiplier = int(available_cash / self.cost)
+        assert multiplier >= 0
+        for leg in self.legs:
+            leg.units *= multiplier
+        return multiplier >= 1
+
 
 class TradeFactory:
     @staticmethod
     def build_long_call(stock, call_contract, target_price=None, available_cash=None):
         long_call_leg = OptionLeg('long_call_leg', True, 1, call_contract)
-        unit_multiplier = int(available_cash / long_call_leg.cost) if available_cash is not None else 1
-        if unit_multiplier < 1:
-            # Insufficient fund.
-            return None
-
-        long_call_leg.units *= unit_multiplier
         new_trade = LongCall(stock, [long_call_leg], target_price=target_price)
+        if available_cash and not new_trade.max_out(available_cash):
+            return None
         return new_trade
 
     @staticmethod
     def build_long_put(stock, put_contract, target_price=None, available_cash=None):
         long_put_leg = OptionLeg('long_put_leg', True, 1, put_contract)
-        unit_multiplier = int(available_cash / long_put_leg.cost) if available_cash is not None else 1
-        if unit_multiplier < 1:
-            return None
-
-        long_put_leg.units *= unit_multiplier
         new_trade = LongPut(stock, [long_put_leg], target_price=target_price)
+        if available_cash and not new_trade.max_out(available_cash):
+            return None
         return new_trade
 
     @staticmethod
     def build_covered_call(stock, call_contract, target_price=None, available_cash=None):
         long_stock_leg = StockLeg('long_stock_leg', 100, stock)
         short_call_leg = OptionLeg('short_call_leg', False, 1, call_contract)
-        unit_cost = long_stock_leg.cost + short_call_leg.cost
-        unit_multiplier = int(available_cash / unit_cost) if available_cash is not None else 1
-        if unit_multiplier < 1:
-            return None
-
-        long_stock_leg.units *= unit_multiplier
-        short_call_leg.units *= unit_multiplier
         new_trade = CoveredCall(stock, [long_stock_leg, short_call_leg], target_price=target_price)
+        if available_cash and not new_trade.max_out(available_cash):
+            return None
         return new_trade
 
     @staticmethod
     def build_cash_secured_put(stock, put_contract, target_price=None, available_cash=None):
         short_put_leg = OptionLeg('short_put_leg', False, 1, put_contract)
         long_cash_leg = CashLeg(100 * put_contract.strike)
-        unit_cost = short_put_leg.cost + long_cash_leg.cost
-        unit_multiplier = int(available_cash / unit_cost) if available_cash is not None else 1
-        if unit_multiplier < 1:
-            return None
-
-        short_put_leg.units *= unit_multiplier
-        long_cash_leg.units *= unit_multiplier
         new_trade = CashSecuredPut(stock, [short_put_leg, long_cash_leg], target_price=target_price)
+        if available_cash and not new_trade.max_out(available_cash):
+            return None
         return new_trade
 
 
