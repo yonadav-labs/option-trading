@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useHistory, useLocation } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import Alert from 'react-bootstrap/Alert';
@@ -27,7 +27,6 @@ let lastTradedFilter;
 let strategyFilter;
 
 export default function BestCallByPrice() {
-    let history = useHistory()
     let location = useLocation()
     const querySymbol = useSearch(location, 'symbol')
 
