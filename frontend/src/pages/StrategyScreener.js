@@ -62,7 +62,9 @@ export default function BestCallByPrice() {
             dataField: "to_break_even_ratio",
             text: "Break-even",
             formatter: (cell, row, rowIndex, extraData) => (
-                PriceMovementFormatter(cell, row.break_even_price)
+                <span>
+                    At {PriceMovementFormatter(cell, row.break_even_price)}
+                </span>
             ),
             sort: true
         }, {
@@ -339,6 +341,9 @@ export default function BestCallByPrice() {
                                     </div>
                                     <div className="col-sm-4">
                                     </div>
+                                </div>
+                                <div>
+                                    Using estimated option value on expiration date.*
                                 </div>
                                 <div className="row">
                                     <div className="col">
