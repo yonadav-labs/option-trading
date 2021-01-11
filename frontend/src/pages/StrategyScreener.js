@@ -343,7 +343,7 @@ export default function BestCallByPrice() {
                                     </div>
                                 </div>
                                 <div>
-                                    Using estimated option value on expiration date.*
+                                    Based on estimated option value on expiration date.*
                                 </div>
                                 <div className="row">
                                     <div className="col">

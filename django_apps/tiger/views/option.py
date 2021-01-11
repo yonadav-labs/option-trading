@@ -10,6 +10,7 @@ from rest_framework.permissions import IsAuthenticated
 from tiger.serializers import TickerSerializer, OptionContractSerializer, TradeSerializer, TradeSnapshotSerializer
 from tiger.models import Ticker, TradeSnapshot
 from tiger.core import LongCall, CoveredCall, LongPut, CashSecuredPut, OptionContract, Stock, Trade, TradeFactory
+from tiger.utils import days_from_timestamp
 
 logger = logging.getLogger('console_info')
 
@@ -94,21 +95,34 @@ def get_best_trades(request, ticker_symbol):
                                                                  all_expiration_timestamps)
     for calls_per_exp in call_contract_lists:
         for call in calls_per_exp:
+            # Reduce response size.
+            if days_from_timestamp(call.last_trade_date) <= -7:
+                continue
             all_trades.append(TradeFactory.build_long_call(stock, call, target_price, available_cash))
             all_trades.append(TradeFactory.build_covered_call(stock, call, target_price, available_cash))
-            # TODO: enable bull call spread once we figure out the result size problem.
-            # for call2 in calls_per_exp:
-            #     if call2.strike > call.strike:
-            #         if target_price is not None and call2.strike < target_price:
-            #             # No reason to cap gain below target price.
-            #             continue
-            #         all_trades.append(
-            #             TradeFactory.build_bull_call_spread(stock, call, call2, target_price, available_cash))
 
     for puts_per_exp in put_contract_list:
         for put in puts_per_exp:
+            # Reduce response size.
+            if days_from_timestamp(put.last_trade_date) <= -7:
+                continue
             all_trades.append(TradeFactory.build_long_put(stock, put, target_price, available_cash))
             all_trades.append(TradeFactory.build_cash_secured_put(stock, put, target_price, available_cash))
+
+    # Bull call spread
+    # TODO: add tests.
+    for calls_per_exp in call_contract_lists:
+        # TODO: find a better way to reduce response size.
+        sampled_calls = sorted(calls_per_exp, key=lambda call: (call.volume, call.open_interest), reverse=True)[:40]
+        combos = ((itm_call, otm_call) for itm_call in sampled_calls for otm_call in sampled_calls)
+        for itm_call, otm_call in combos:
+            if not itm_call.in_the_money or otm_call.in_the_money:
+                continue
+            if target_price is not None and otm_call.strike < target_price:
+                # No reason to cap gain below target price.
+                continue
+            all_trades.append(
+                TradeFactory.build_bull_call_spread(stock, itm_call, otm_call, target_price, available_cash))
 
     all_trades = list(filter(lambda trade: trade is not None, all_trades))
     if target_price is not None:
