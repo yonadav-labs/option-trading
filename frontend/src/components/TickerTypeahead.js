@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { useHistory, useLocation} from "react-router-dom";
+import { useHistory, useLocation } from "react-router-dom";
 import { Typeahead } from 'react-bootstrap-typeahead';
 import Axios from 'axios';
 import getApiUrl from '../utils'
@@ -12,20 +12,25 @@ export default function TickerTypeahead({ selectedTicker, setSelectedTicker, set
     const API_URL = getApiUrl();
     const [allTickers, setAllTickers] = useState([]);
     const inputEl = useRef(null);
-    const search = location.search;
-    const params = new URLSearchParams(search);
+    const params = new URLSearchParams(location.search);
     const symbol = params.get('symbol');
 
     const loadTickers = async () => {
         try {
             const response = await Axios.get(`${API_URL}/tickers/`);
             let tickers = response.data;
-            tickers.forEach(function (ticker) {
+            tickers.map((ticker) => {
                 if (ticker.full_name) {
                     ticker.display_label = ticker.symbol + ' - ' + ticker.full_name;
                 } else {
                     ticker.display_label = ticker.symbol;
                 }
+
+                if (symbol && ticker.symbol === symbol) {
+                    setSelectedTicker([ticker], onTickerSelectionChange([ticker]));
+                }
+
+                return ticker;
             });
             setAllTickers(tickers);
         } catch (error) {
@@ -49,20 +54,16 @@ export default function TickerTypeahead({ selectedTicker, setSelectedTicker, set
 
     const onTickerSelectionChange = (selected) => {
         if (selected.length > 0) {
+            loadExpirationDates(selected);
             addQuery(location, history, 'symbol', selected[0].symbol)
         }
         if (resetStates) {
             resetStates([]);
         }
-        loadExpirationDates(selected);
-        inputEl.current.blur();
     };
 
     useEffect(() => {
         loadTickers();
-        if (symbol) {
-            onTickerSelectionChange([{display_label: symbol.toUpperCase(), full_name: "", symbol: symbol.toUpperCase()}]);
-        };
     }, []);
 
     return (
