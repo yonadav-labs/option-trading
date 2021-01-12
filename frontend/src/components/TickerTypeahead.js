@@ -72,7 +72,7 @@ export default function TickerTypeahead({querySymbol, selectedTicker, setSelecte
             labelKey="display_label"
             options={allTickers}
             selected={selectedTicker}
-            placeholder="Enter a ticker symbol. For example: TSLA, APPL, GOOG..."
+            placeholder="Enter a ticker symbol. For example: TSLA, AAPL, GOOG..."
             onChange={onTickerSelectionChange}
             filterBy={(option, props) => {
                 const uppercase_text = props.text.toUpperCase();
