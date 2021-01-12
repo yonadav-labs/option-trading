@@ -4,7 +4,7 @@ import Axios from 'axios';
 import { useOktaAuth } from '@okta/okta-react';
 
 import getApiUrl from '../utils';
-import TradeDetailsCard from '../components/TradeDetailsCard';
+import TradeDetailsCard from '../components/cards/TradeDetailsCard';
 
 
 export default function SingleTrade() {
@@ -39,7 +39,7 @@ export default function SingleTrade() {
 
     return (
         <div id="content" className="container min-vh-100" style={{ "marginTop": "4rem" }}>
-            {trade ? <TradeDetailsCard trade={trade}></TradeDetailsCard> : 'Loading...'}
+            {trade ? <TradeDetailsCard trade={trade} hideShareButton={true}></TradeDetailsCard> : 'Loading...'}
         </div>
     );
 }

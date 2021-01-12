@@ -7,11 +7,10 @@ import BootstrapTable from 'react-bootstrap-table-next';
 import paginationFactory from 'react-bootstrap-table2-paginator';
 import Axios from 'axios';
 import Select from "react-select";
-import { useOktaAuth } from '@okta/okta-react';
 
 import getApiUrl, {
-    PriceFormatter, TimestampDateFormatter, onLastTradedFilterChange, ProfitFormatter,
-    PriceMovementFormatter, getTradeTypeDisplay
+    PriceFormatter, TimestampDateFormatter, onLastTradedFilterChange,
+    PriceMovementFormatter, getTradeStrikeStr, getTradeTypeDisplay, getAllTradeTypes
 } from '../utils';
 import filterFactory, { multiSelectFilter, numberFilter } from 'react-bootstrap-table2-filter';
 import { BsArrowsExpand, BsArrowsCollapse } from 'react-icons/bs';
@@ -21,6 +20,7 @@ import ModalSpinner from '../components/ModalSpinner';
 import ShareTradeBtn from '../components/ShareTradeBtn.js';
 import TradeDetailsCard from '../components/TradeDetailsCard';
 import { useSearch } from "../components/querying"
+import TradeDetailsCard from '../components/cards/TradeDetailsCard';
 
 
 let lastTradedFilter;
@@ -30,25 +30,27 @@ export default function BestCallByPrice() {
     let location = useLocation()
     const querySymbol = useSearch(location, 'symbol')
 
+    const API_URL = getApiUrl();
     const [selectedTicker, setSelectedTicker] = useState([]);
     const [expirationTimestamps, setExpirationTimestamps] = useState([]);
     const [basicInfo, setbasicInfo] = useState({});
-    const API_URL = getApiUrl();
     const [showTimestampAlert, setShowTimestampAlert] = useState(false);
-    const [bestStrategies, setBestStrategies] = useState([]);
-    const [selectedExpirationTimestamps, setSelectedExpirationTimestamps] = useState([]);
+    const [bestStrategies, setBestStrategies] = useState(null);
+    const [selectedExpirationTimestamp, setSelectedExpirationTimestamp] = useState(null);
     const [useAsPremium, setUseAsPremium] = useState('estimated');
     const [modalActive, setModalActive] = useState(false);
-    const { authState, authService } = useOktaAuth();
+    const [targetPrice, setTargetPrice] = useState(null);
 
     const resetStates = () => {
         setSelectedTicker([]);
         setExpirationTimestamps([]);
         setbasicInfo({});
         setShowTimestampAlert(false);
-        setBestStrategies([]);
-        setSelectedExpirationTimestamps([]);
+        setBestStrategies(null);
+        setSelectedExpirationTimestamp(null);
+        setUseAsPremium('estimated');
         setModalActive(false);
+        setTargetPrice(null);
     }
 
     const result_table_columns = [
@@ -58,49 +60,47 @@ export default function BestCallByPrice() {
             formatter: (cell, row, rowIndex, extraData) => {
                 return (
                     <span>
-                        {getTradeTypeDisplay(cell)} <br />
-                        <small>{TimestampDateFormatter(row.min_expiration)}</small>
+                        {getTradeTypeDisplay(cell)}<br />
+                        <small>{getTradeStrikeStr(row)}</small>
                     </span>
                 );
             },
             sort: true
         }, {
             dataField: "to_break_even_ratio",
-            text: "Break even",
+            text: "Break-even",
             formatter: (cell, row, rowIndex, extraData) => (
-                PriceMovementFormatter(cell, row.break_even_price)
-            ),
-            sort: true
-        }, {
-            dataField: "to_target_price_ratio",
-            text: "Target price",
-            formatter: (cell, row, rowIndex, extraData) => (
-                PriceMovementFormatter(cell, row.target_price)
-            ),
-        }, {
-            dataField: "target_price_profit_ratio",
-            text: "ROI at target",
-            formatter: (cell, row, rowIndex, extraData) => (
-                (
-                    <span>{ProfitFormatter(cell)}</span>
-                )
-            ),
-            sort: true
-        }, {
-            dataField: "target_price_profit",
-            text: "Unit profit",
-            formatter: (cell, row, rowIndex, extraData) => (
-                (
-                    <span>{cell > 0 ? '+' : '-'}{PriceFormatter(Math.abs(cell))}</span>
-                )
+                <span>
+                    At {PriceMovementFormatter(cell, row.break_even_price)}
+                </span>
             ),
             sort: true
         }, {
             dataField: "cost",
-            text: "Unit cost",
+            text: "Cost",
             formatter: (cell, row, rowIndex, extraData) => (
                 PriceFormatter(cell)
             ),
+            sort: true
+        }, {
+            dataField: "profit_cap_ratio",
+            text: "Profit limit",
+            formatter: (cell, row, rowIndex, extraData) => (
+                cell != null ?
+                    (<span>{PriceMovementFormatter(cell, row.profit_cap)}</span>) : (<span>Unlimited</span>)
+            ),
+            sort: true
+        }, {
+            dataField: "target_price_profit_ratio",
+            text: "Profit at target",
+            hidden: targetPrice == null,
+            formatter: (cell, row, rowIndex, extraData) => {
+                if (cell != null) {
+                    return (<span>{PriceMovementFormatter(cell, row.target_price_profit)}</span>);
+                } else {
+                    return (<span></span>);
+                }
+            },
             sort: true
         }, {
             dataField: 'min_last_trade_date',
@@ -110,14 +110,6 @@ export default function BestCallByPrice() {
                 const exp_date = new Date(cell * 1000).toLocaleDateString('en-US')
                 const exp_time = new Date(cell * 1000).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })
                 return (<span>{exp_date} <br /><small>{exp_time}</small></span>);
-            },
-            sort: true
-        },
-        {
-            dataField: 'id',
-            text: 'Actions',
-            formatter: (cell, row, rowIndex, extraData) => {
-                return (<ShareTradeBtn trade={row} setModalActive={setModalActive} />);
             },
             sort: true
         },
@@ -138,8 +130,8 @@ export default function BestCallByPrice() {
             style: { 'display': 'none' },
             headerStyle: { 'display': 'none' },
             filter: multiSelectFilter({
-                options: { 'long_call': 'long_call', 'covered_call': 'covered_call', 'long_put': 'long_put', 'cash_secured_put': 'cash_secured_put' },
-                defaultValue: ['long_call', 'covered_call', 'long_put', 'cash_secured_put'],
+                options: getAllTradeTypes(),
+                defaultValue: getAllTradeTypes(),
                 getFilter: (filter) => {
                     strategyFilter = filter;
                 }
@@ -154,7 +146,7 @@ export default function BestCallByPrice() {
     function onStrategyFilterChange(event, strategyFilter) {
         const { value } = event.target;
         if (value == 'all') {
-            strategyFilter(['long_call', 'covered_call', 'long_put', 'cash_secured_put']);
+            strategyFilter(getAllTradeTypes());
         } else {
             strategyFilter([value]);
         }
@@ -167,9 +159,10 @@ export default function BestCallByPrice() {
         const formData = new FormData(event.target);
         const formDataObj = Object.fromEntries(formData.entries());
 
-        setShowTimestampAlert(selectedExpirationTimestamps == null);
-        if (form.checkValidity() !== false && selectedExpirationTimestamps != null) {
-            getBestStrategies(formDataObj.target_price, selectedExpirationTimestamps);
+        setShowTimestampAlert(selectedExpirationTimestamp == null);
+        if (form.checkValidity() !== false && selectedExpirationTimestamp != null) {
+            setTargetPrice(formDataObj.target_price ? formDataObj.target_price : null);
+            getBestStrategies(selectedExpirationTimestamp, formDataObj.target_price, formDataObj.available_cash);
         }
     };
 
@@ -179,10 +172,16 @@ export default function BestCallByPrice() {
         setUseAsPremium(value);
     };
 
-    const getBestStrategies = async (targetPrice, selectedExpirationTimestamps) => {
+    const getBestStrategies = async (selectedExpirationTimestamp, targetPrice, availableCash) => {
         try {
-            let url = `${API_URL}/tickers/${selectedTicker[0].symbol}/trades/?target_price=${targetPrice}&`;
-            selectedExpirationTimestamps.map((timestamp) => { url += `expiration_timestamps=${timestamp.value}&` });
+            let url = `${API_URL}/tickers/${selectedTicker[0].symbol}/trades/?`;
+            url += `expiration_timestamps=${selectedExpirationTimestamp.value}&`;
+            if (targetPrice) {
+                url += `target_price=${targetPrice}&`;
+            }
+            if (availableCash) {
+                url += `available_cash=${availableCash}&`;
+            }
             setModalActive(true);
             const response = await Axios.get(url);
             let trades = response.data.trades;
@@ -202,7 +201,7 @@ export default function BestCallByPrice() {
 
     const ExpandTradeRow = {
         renderer: (row) => (
-            <TradeDetailsCard trade={row} hideTitle={true} />
+            <TradeDetailsCard trade={row} />
         ),
         showExpandColumn: true,
         expandHeaderColumnRenderer: ({ isAnyExpands }) => {
@@ -250,24 +249,19 @@ export default function BestCallByPrice() {
                     <TickerSummary basicInfo={basicInfo} />
                     <div>
                         <h4>Configurations</h4>
-                        <hr />
                         <Form onSubmit={handleSubmit}>
                             <Form.Group>
-                                <Form.Label className="font-weight-bold">Target price on expiration date (USD)*:</Form.Label>
-                                <Form.Control name="target_price" as="input" type="number" placeholder="100.0" min="0.0" max="10000.0" step="0.01" required />
-                            </Form.Group>
-                            <Form.Group>
-                                <Form.Label className="font-weight-bold">Expiration Dates:*:</Form.Label>
+                                <Form.Label>Expiration Dates:*</Form.Label>
                                 <div className="row">
                                     <div className="col-sm-12">
                                         <Select
-                                            defaultValue={selectedExpirationTimestamps}
-                                            isMulti
+                                            defaultValue={selectedExpirationTimestamp}
                                             isClearable
-                                            onChange={setSelectedExpirationTimestamps}
+                                            onChange={setSelectedExpirationTimestamp}
                                             options={expirationTimestampsOptions}
                                             className="basic-multi-select"
                                             classNamePrefix="select"
+                                            placeholder="Select an option expiration date."
                                         />
                                     </div>
                                 </div>
@@ -282,10 +276,23 @@ export default function BestCallByPrice() {
                                     </div>
                                 </div>
                             </Form.Group>
+                            <Form.Group>
+                                <Form.Label>{selectedTicker[0].symbol} share target price on {selectedExpirationTimestamp ?
+                                    TimestampDateFormatter(selectedExpirationTimestamp.value / 1000) : "expiration day"}:</Form.Label>
+                                <Form.Control name="target_price" as="input" type="number"
+                                    placeholder={"Enter expected share price of " + selectedTicker[0].symbol
+                                        + ". For example: " + basicInfo.regularMarketPrice + '.'}
+                                    min="0.0" max="10000.0" step="0.01" />
+                            </Form.Group>
+                            <Form.Group>
+                                <Form.Label>Cash to invest:</Form.Label>
+                                <Form.Control name="available_cash" as="input" type="number"
+                                    placeholder="Enter the amount of cash you plan to invest in this trade." min="0.0" max="100000000.0" step="0.01" />
+                            </Form.Group>
                             <div className="row">
                                 <div className="col-sm-3">
                                     <Form.Group>
-                                        <Form.Label className="font-weight-bold">Premium price options:</Form.Label>
+                                        <Form.Label>Premium price options:</Form.Label>
                                         <Form.Control name="use_as_premium" as="select" defaultValue="estimated"
                                             onChange={handleUseAsPremiumChange}>
                                             <option key="estimated" value="estimated">Use estimated mid price</option>
@@ -302,7 +309,7 @@ export default function BestCallByPrice() {
                             </div>
                         </Form>
                         <br />
-                        {bestStrategies.length > 0 ?
+                        {bestStrategies != null ?
                             <div>
                                 <h4>Results</h4>
                                 <hr />
@@ -333,16 +340,20 @@ export default function BestCallByPrice() {
                                                 <Form.Control name="strategy" as="select" defaultValue="all"
                                                     onChange={(e) => onStrategyFilterChange(e, strategyFilter)}>
                                                     <option key="all" value="all">All</option>
-                                                    <option key="long_call" value="long_call">Long call</option>
-                                                    <option key="covered_call" value="covered_call">Covered call</option>
-                                                    <option key="long_put" value="long_put">Long put</option>
-                                                    <option key="cash_secured_put" value="cash_secured_put">Cash secured put</option>
+                                                    {getAllTradeTypes().map((type, index) => {
+                                                        return (
+                                                            <option key={type} value={type}>{getTradeTypeDisplay(type)}</option>
+                                                        );
+                                                    })}
                                                 </Form.Control>
                                             </Form.Group>
                                         </Form>
                                     </div>
                                     <div className="col-sm-4">
                                     </div>
+                                </div>
+                                <div>
+                                    Based on estimated option value on expiration date.*
                                 </div>
                                 <div className="row">
                                     <div className="col">
@@ -356,11 +367,12 @@ export default function BestCallByPrice() {
                                                 sizePerPage: 20,
                                                 hidePageListOnlyOnePage: true
                                             })}
-                                            noDataIndication="No Data"
+                                            noDataIndication="No eligible strategy found."
                                             bordered={false}
                                             expandRow={ExpandTradeRow}
                                             filter={filterFactory()}
                                             defaultSorted={defaultSorted}
+                                            rowStyle={{ "cursor": "pointer" }}
                                         />
                                     </div>
                                 </div>

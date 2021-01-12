@@ -1,23 +1,35 @@
 import React from 'react';
+import { Col, Row } from 'react-bootstrap';
 import Card from 'react-bootstrap/Card';
 
 import {
-    PriceFormatter, TimestampDateFormatter, PercentageFormatter, TimestampTimeFormatter,
-    NumberRoundFormatter, getContractName
-} from '../utils';
+    PriceFormatter, PercentageFormatter, TimestampTimeFormatter,
+    NumberRoundFormatter, TimestampDateFormatter, PriceMovementFormatter
+} from '../../utils';
 
 export default function ContractDetailsCard(props) {
     const { contract, hideTitle } = props;
-
+    
     return (
         (
             <Card>
+                {
+                    hideTitle ?
+                        null : <Card.Header>{contract.display_name}</Card.Header>
+                        // null :
+                        // <Card.Header>
+                        //     <Row>
+                        //         <Col>{contract.is_call ? 'Call' : 'Put'}</Col>
+                        //         <Col>Expiration: {TimestampDateFormatter(contract.expiration)}</Col>
+                        //         <Col>Strike: {PriceFormatter(contract.strike)}</Col>
+                        //         {/* <Col>Bid: {PriceFormatter(contract.bid)}</Col> */}
+                        //         <Col>Premium: {PriceFormatter(contract.premium)} <br/><small>Bid: {PriceFormatter(contract.bid)} Ask: {PriceFormatter(contract.ask)}</small></Col>
+                        //         {/* <Col>Ask: {PriceFormatter(contract.ask)}</Col> */}
+                        //         <Col>Breakeven: {PriceMovementFormatter(contract.to_break_even_ratio, contract.break_even_price)}</Col>
+                        //     </Row>
+                        // </Card.Header>
+                }
                 <Card.Body>
-                    {
-                        hideTitle ?
-                            null :
-                            <Card.Title>{getContractName(contract)}</Card.Title>
-                    }
                     <Card.Text>
                         <div>
                             <div className="row">
@@ -40,6 +52,9 @@ export default function ContractDetailsCard(props) {
                                 <div className="col-sm-3">Gamma: {NumberRoundFormatter(contract.gamma)}</div>
                                 <div className="col-sm-3">Theta: {NumberRoundFormatter(contract.theta)}</div>
                                 <div className="col-sm-3">Vega: {NumberRoundFormatter(contract.vega)}</div>
+                            </div>
+                            <div className="row">
+                                <div className="col-sm-3">Quoted at: {TimestampTimeFormatter(contract.quote_time)}</div>
                             </div>
                         </div>
                     </Card.Text>

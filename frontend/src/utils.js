@@ -88,7 +88,7 @@ export function ExpDayFormatter(ts, days_till_expiration) {
 
 
 export function InTheMoneyRowStyle(row, rowIndex) {
-    const style = {};
+    const style = { "cursor": "pointer" };
     if (row.in_the_money) {
         style.backgroundColor = '#e0f0ff';
     }
@@ -133,14 +133,9 @@ export function getLegByName(trade, name) {
     return return_leg;
 };
 
-export function getContractName(contract) {
-    return (
-        <span>
-            {contract.ticker.symbol} {TimestampDateFormatter(contract.expiration)}
-            &nbsp;strike {PriceFormatter(contract.strike)} {contract.is_call ? 'call' : 'put'}
-        </span>
-    );
-};
+export function getAllTradeTypes(type) {
+    return ['long_call', 'covered_call', 'long_put', 'cash_secured_put', 'bull_call_spread'];
+}
 
 export function getTradeTypeDisplay(type) {
     switch (type) {
@@ -152,5 +147,33 @@ export function getTradeTypeDisplay(type) {
             return "Long put"
         case ("cash_secured_put"):
             return "Cash secured put"
+        case ("bull_call_spread"):
+            return "Bull call spread"
+    }
+}
+
+export function getTradeStrikeStr(row) {
+    switch (row.type) {
+        case ("long_call"): {
+            let longCallLeg = getLegByName(row, 'long_call_leg');
+            return `Strike $${longCallLeg.contract.strike}`;
+        }
+        case ("covered_call"): {
+            let shortCallLeg = getLegByName(row, 'short_call_leg');
+            return `Strike $${shortCallLeg.contract.strike}`;
+        }
+        case ("long_put"): {
+            let longPutLeg = getLegByName(row, 'long_put_leg');
+            return `Strike $${longPutLeg.contract.strike}`;
+        }
+        case ("cash_secured_put"): {
+            let shortPutLeg = getLegByName(row, 'short_put_leg');
+            return `Strike $${shortPutLeg.contract.strike}`;
+        }
+        case ("bull_call_spread"): {
+            let longCallLeg = getLegByName(row, 'long_call_leg');
+            let shortCallLeg = getLegByName(row, 'short_call_leg');
+            return `Strike $${longCallLeg.contract.strike} / $${shortCallLeg.contract.strike}`;
+        }
     }
 }

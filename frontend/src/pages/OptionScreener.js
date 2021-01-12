@@ -15,7 +15,7 @@ import paginationFactory from 'react-bootstrap-table2-paginator';
 import filterFactory, { multiSelectFilter, numberFilter } from 'react-bootstrap-table2-filter';
 import { BsArrowsExpand, BsArrowsCollapse } from 'react-icons/bs';
 import ModalSpinner from '../components/ModalSpinner';
-import ContractDetailsCard from '../components/ContractDetailsCard';
+import ContractDetailsCard from '../components/cards/ContractDetailsCard';
 import { Comparator } from 'react-bootstrap-table2-filter';
 import Select from "react-select";
 import SingleChoiceFilter from "../components/filters/SingleChoiceFilter"
@@ -82,7 +82,9 @@ export default function SellCoveredCall() {
             dataField: "to_strike_ratio",
             text: "Strike",
             formatter: (cell, row, rowIndex, extraData) => (
-                PriceMovementFormatter(cell, row.strike)
+                <span>
+                    At {PriceMovementFormatter(cell, row.strike)}
+                </span>
             ),
             sort: true,
         }, {
@@ -101,7 +103,9 @@ export default function SellCoveredCall() {
             dataField: "to_break_even_ratio",
             text: "Break even",
             formatter: (cell, row, rowIndex, extraData) => (
-                PriceMovementFormatter(cell, row.break_even_price)
+                <span>
+                    At {PriceMovementFormatter(cell, row.break_even_price)}
+                </span>
             ),
             sort: true
         }, {
@@ -501,7 +505,7 @@ export default function SellCoveredCall() {
                                                 sizePerPage: 20,
                                                 hidePageListOnlyOnePage: true
                                             })}
-                                            noDataIndication="No Data"
+                                            noDataIndication="No eligible option contract found."
                                             bordered={false}
                                             // overlay={overlayFactory({ spinner: true })} // does not work with filter.
                                             expandRow={ExpandContractRow}

@@ -3,7 +3,7 @@ from django.test import TestCase
 from django.utils.timezone import make_aware, get_default_timezone
 from unittest import mock
 
-from tiger.core import Stock, OptionContract, LongCall, CoveredCall, LongPut, CashSecuredPut, Leg, OptionLeg, Trade
+from tiger.core import Stock, OptionContract, Leg, OptionLeg, Trade, TradeFactory
 from tiger.models import Ticker
 
 MOCK_NOW_TIMESTAMP = 1609664400  # 01/03/2021
@@ -46,14 +46,15 @@ class CallTradesTestCase(TestCase):
             "inTheMoney": False
         }
         self.stock_price = 420.0
-        self.stock = Stock(Ticker(id=1), self.stock_price)
+        self.ticker = Ticker(id=1)
+        self.stock = Stock(self.ticker, self.stock_price)
 
     @mock.patch('django.utils.timezone.now')
     def test_initialization(self, mock_now):
         mock_now.return_value = make_aware(datetime.fromtimestamp(MOCK_NOW_TIMESTAMP), get_default_timezone())
         target_price = 600.0
-        call_contract = OptionContract(1, True, self.yahoo_input, self.stock_price, 'estimated')
-        long_call = LongCall(self.stock, call_contract, target_price)
+        call_contract = OptionContract(self.ticker, True, self.yahoo_input, self.stock_price, 'estimated')
+        long_call = TradeFactory.build_long_call(self.stock, call_contract, target_price)
         # Test contract attributes.
         self.assertEqual(call_contract.ask, 163.15)
         self.assertEqual(call_contract.bid, 160.25)
@@ -80,14 +81,14 @@ class CallTradesTestCase(TestCase):
         # Missing bid.
         yahoo_input = dict(self.yahoo_input)
         yahoo_input.pop('bid', None)
-        call_contract = OptionContract(1, True, yahoo_input, self.stock_price)
+        call_contract = OptionContract(self.ticker, True, yahoo_input, self.stock_price)
         self.assertEqual(call_contract.ask, 163.15)
         self.assertEqual(call_contract.bid, None)
         self.assertAlmostEqual(call_contract.premium, 163.15)
         # Missing ask.
         yahoo_input = dict(self.yahoo_input)
         yahoo_input.pop('ask', None)
-        call_contract = OptionContract(1, True, yahoo_input, self.stock_price)
+        call_contract = OptionContract(self.ticker, True, yahoo_input, self.stock_price)
         self.assertEqual(call_contract.ask, None)
         self.assertEqual(call_contract.bid, 160.25)
         self.assertAlmostEqual(call_contract.premium, 160.25)
@@ -95,7 +96,7 @@ class CallTradesTestCase(TestCase):
         yahoo_input = dict(self.yahoo_input)
         yahoo_input.pop('bid', None)
         yahoo_input.pop('ask', None)
-        call_contract = OptionContract(1, True, yahoo_input, self.stock_price)
+        call_contract = OptionContract(self.ticker, True, yahoo_input, self.stock_price)
         self.assertAlmostEqual(call_contract.premium, 156.75)
         # Missing bid, ask and last price.
         yahoo_input = dict(self.yahoo_input)
@@ -103,31 +104,31 @@ class CallTradesTestCase(TestCase):
         yahoo_input.pop('ask', None)
         yahoo_input.pop('lastPrice', None)
         with self.assertRaises(ValueError):
-            OptionContract(1, True, yahoo_input, self.stock_price)
+            OptionContract(self.ticker, True, yahoo_input, self.stock_price)
         # All bid, ask and last price are 0.
         yahoo_input = dict(self.yahoo_input)
         yahoo_input['bid'] = 0.0
         yahoo_input['ask'] = 0.0
         yahoo_input['lastPrice'] = 0.0
         with self.assertRaises(ValueError):
-            OptionContract(1, True, yahoo_input, self.stock_price)
+            OptionContract(self.ticker, True, yahoo_input, self.stock_price)
         # Missing bid if use bid.
         yahoo_input = dict(self.yahoo_input)
         yahoo_input.pop('bid', None)
         with self.assertRaises(ValueError):
-            OptionContract(1, True, yahoo_input, self.stock_price, 'bid')
+            OptionContract(self.ticker, True, yahoo_input, self.stock_price, 'bid')
         # Missing ask if use ask.
         yahoo_input = dict(self.yahoo_input)
         yahoo_input.pop('ask', None)
         with self.assertRaises(ValueError):
-            OptionContract(1, True, yahoo_input, self.stock_price, 'ask')
+            OptionContract(self.ticker, True, yahoo_input, self.stock_price, 'ask')
 
     @mock.patch('django.utils.timezone.now')
     def test_sell_covered_call(self, mock_now):
         mock_now.return_value = make_aware(datetime.fromtimestamp(MOCK_NOW_TIMESTAMP), get_default_timezone())
 
-        call_contract = OptionContract(1, True, self.yahoo_input, self.stock_price)
-        sell_call = CoveredCall(self.stock, call_contract, target_price=258.3)
+        call_contract = OptionContract(self.ticker, True, self.yahoo_input, self.stock_price)
+        sell_call = TradeFactory.build_covered_call(self.stock, call_contract, target_price=258.3)
         self.assertEqual(call_contract.to_strike, -132.0)
         self.assertAlmostEqual(call_contract.to_strike_ratio, -0.31428571428)
         self.assertAlmostEqual(sell_call.break_even_price, 258.3)
@@ -135,8 +136,8 @@ class CallTradesTestCase(TestCase):
         self.assertAlmostEqual(sell_call.profit_cap_ratio, 0.11498257839)
         self.assertAlmostEqual(sell_call.target_price_profit, 0.0)
 
-        call_contract = OptionContract(1, True, self.yahoo_input2, self.stock_price)
-        sell_call = CoveredCall(self.stock, call_contract)
+        call_contract = OptionContract(self.ticker, True, self.yahoo_input2, self.stock_price)
+        sell_call = TradeFactory.build_covered_call(self.stock, call_contract)
         self.assertEqual(call_contract.to_strike, 25.0)
         self.assertAlmostEqual(call_contract.to_strike_ratio, 0.05952380952)
         self.assertAlmostEqual(sell_call.break_even_price, 343.65)
@@ -147,9 +148,21 @@ class CallTradesTestCase(TestCase):
 
     def test_use_as_premium(self):
         yahoo_input = dict(self.yahoo_input)
-        self.assertAlmostEqual(OptionContract(1, True, yahoo_input, 100.0, 'bid').premium, 160.25)
-        self.assertAlmostEqual(OptionContract(1, True, yahoo_input, 100.0, 'ask').premium, 163.15)
-        self.assertAlmostEqual(OptionContract(1, True, yahoo_input, 100.0, 'estimated').premium, 161.7)
+        self.assertAlmostEqual(OptionContract(self.ticker, True, yahoo_input, 100.0, 'bid').premium, 160.25)
+        self.assertAlmostEqual(OptionContract(self.ticker, True, yahoo_input, 100.0, 'ask').premium, 163.15)
+        self.assertAlmostEqual(OptionContract(self.ticker, True, yahoo_input, 100.0, 'estimated').premium, 161.7)
+
+    @mock.patch('django.utils.timezone.now')
+    def test_bull_call_spread(self, mock_now):
+        mock_now.return_value = make_aware(datetime.fromtimestamp(MOCK_NOW_TIMESTAMP), get_default_timezone())
+        call_contract_1 = OptionContract(self.ticker, True, self.yahoo_input, self.stock_price, 'estimated')
+        call_contract_2 = OptionContract(self.ticker, True, self.yahoo_input2, self.stock_price, 'estimated')
+        bull_call_spread = TradeFactory.build_bull_call_spread(self.stock, call_contract_1, call_contract_2,
+                                                               target_price=400, available_cash=10000)
+        self.assertAlmostEqual(bull_call_spread.cost, 8535.0)
+        self.assertAlmostEqual(bull_call_spread.break_even_price, 373.35)
+        self.assertAlmostEqual(bull_call_spread.profit_cap, 7165)  # ((445 - 288) - 85.35) * 100
+        self.assertAlmostEqual(bull_call_spread.target_price_profit, 2665)  # ((400 - 288) - 85.35) * 100
 
 
 class PutTradesTestCase(TestCase):
@@ -172,13 +185,14 @@ class PutTradesTestCase(TestCase):
         }
 
         self.stock_price = 73.55
-        self.stock = Stock(Ticker(id=2), self.stock_price)
+        self.ticker = Ticker(id=1)
+        self.stock = Stock(self.ticker, self.stock_price)
 
     @mock.patch('django.utils.timezone.now')
     def test_sell_put(self, mock_now):
         mock_now.return_value = make_aware(datetime.fromtimestamp(MOCK_NOW_TIMESTAMP), get_default_timezone())
-        put_contract = OptionContract(1, False, self.yahoo_input, self.stock_price)
-        sell_put = CashSecuredPut(self.stock, put_contract, target_price=67.3)
+        put_contract = OptionContract(self.ticker, False, self.yahoo_input, self.stock_price)
+        sell_put = TradeFactory.build_cash_secured_put(self.stock, put_contract, target_price=67.3)
         # Test attributes.
         self.assertEqual(put_contract.ask, 1.0)
         self.assertEqual(put_contract.bid, 0.4)
@@ -200,8 +214,8 @@ class PutTradesTestCase(TestCase):
     @mock.patch('django.utils.timezone.now')
     def test_buy_put(self, mock_now):
         mock_now.return_value = make_aware(datetime.fromtimestamp(MOCK_NOW_TIMESTAMP), get_default_timezone())
-        put_contract = OptionContract(1, False, self.yahoo_input, self.stock_price)
-        long_put = LongPut(self.stock, put_contract, target_price=65.0)
+        put_contract = OptionContract(self.ticker, False, self.yahoo_input, self.stock_price)
+        long_put = TradeFactory.build_long_put(self.stock, put_contract, target_price=65.0)
 
         # Test attributes.
         self.assertEqual(put_contract.ask, 1.0)
@@ -274,11 +288,13 @@ class TdTestCase(TestCase):
             "mini": False
         }
         self.stock_price = 210.0
+        self.ticker = Ticker(id=1)
+        self.stock = Stock(self.ticker, self.stock_price)
 
     @mock.patch('django.utils.timezone.now')
     def test_initialization(self, mock_now):
         mock_now.return_value = make_aware(datetime.fromtimestamp(MOCK_NOW_TIMESTAMP), get_default_timezone())
-        contract = OptionContract(1, True, self.td_input, self.stock_price)
+        contract = OptionContract(self.ticker, True, self.td_input, self.stock_price)
         # Test attributes.
         self.assertTrue(contract.is_call)
         self.assertEqual(contract.ask, 2.06)
