@@ -58,7 +58,7 @@ export default function ContractDetailsCard(props) {
                             </div>
                             <div className="row">
                                 <div className="col-sm-3">Rho: {NumberRoundFormatter(contract.rho)}</div>
-                                <div className="col-sm-3">Break-even: at {PriceFormatter(contract.break_even_price)}</div>
+                                <div className="col-sm-3">Break-even at: {PriceFormatter(contract.break_even_price)}</div>
                             </div>
                         </div>
                     </Card.Text>

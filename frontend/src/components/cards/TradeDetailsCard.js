@@ -18,13 +18,12 @@ export default function TradeDetailsCard(props) {
                 <Card.Text>
                     {trade.target_price ?
                         (<div className="row">
-                            <div className="col-sm-3">Target price: {PriceFormatter(trade.target_price)} ({ProfitFormatter(trade.to_target_price_ratio)})</div>
-                            <div className="col-sm-3">Profit at target: {PriceFormatter(trade.target_price_profit)}</div>
-                            <div className="col-sm-3">ROI at target: {ProfitFormatter(trade.target_price_profit_ratio)}</div>
+                            <div className="col-sm-3">Target price at: {PriceFormatter(trade.target_price)} ({ProfitFormatter(trade.to_target_price_ratio)})</div>
+                            <div className="col-sm-3">Profit at target: {PriceFormatter(trade.target_price_profit)} ({ProfitFormatter(trade.target_price_profit_ratio)})</div>
                         </div>) : null}
 
                     <div className="row">
-                        <div className="col-sm-3">Break-even: {PriceFormatter(trade.break_even_price)} ({ProfitFormatter(trade.to_break_even_ratio)})</div>
+                        <div className="col-sm-3">Break-even at: {PriceFormatter(trade.break_even_price)} ({ProfitFormatter(trade.to_break_even_ratio)})</div>
                         <div className="col-sm-3">Cost: {PriceFormatter(trade.cost)}</div>
                         <div className="col-sm-3">Profit limit:
                             {trade.profit_cap != null ?
