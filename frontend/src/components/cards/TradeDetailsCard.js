@@ -24,7 +24,7 @@ export default function TradeDetailsCard(props) {
                         </div>) : null}
 
                     <div className="row">
-                        <div className="col-sm-4">Breakeven: {PriceFormatter(trade.break_even_price)} ({ProfitFormatter(trade.to_break_even_ratio)})</div>
+                        <div className="col-sm-4">Break-even: {PriceFormatter(trade.break_even_price)} ({ProfitFormatter(trade.to_break_even_ratio)})</div>
                         <div className="col-sm-4">Cost: {PriceFormatter(trade.cost)}</div>
                         <div className="col-sm-4"></div>
                     </div>
