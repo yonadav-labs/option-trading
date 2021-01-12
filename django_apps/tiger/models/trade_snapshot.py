@@ -49,11 +49,12 @@ class LegSnapshot(BaseModel):
 
 class TradeSnapshot(BaseModel):
     TRADE_TYPE_CHOICES = (
-        ("unspecified", "Unspecified"),
-        ("long_call", "Long call"),
-        ("covered_call", "Covered call"),
-        ("long_put", "Long put"),
-        ("cash_secured_put", "Cash secured put"),
+        ('unspecified', 'Unspecified'),
+        ('long_call', 'Long call'),
+        ('covered_call', 'Covered call'),
+        ('long_put', 'Long put'),
+        ('cash_secured_put', 'Cash secured put'),
+        ('bull_call_spread', 'Bull call spread'),
     )
     type = models.CharField(max_length=100, choices=TRADE_TYPE_CHOICES, default="unspecified")
     stock_snapshot = models.ForeignKey(StockSnapshot, on_delete=models.CASCADE)  # Snapshot of underlying asset.

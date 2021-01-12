@@ -29,6 +29,8 @@ class Trade:
             new_trade.__class__ = CoveredCall
         elif trade_snapshot.type == 'cash_secured_put':
             new_trade.__class__ = CashSecuredPut
+        elif trade_snapshot.type == 'bull_call_spread':
+            new_trade.__class__ = BullCallSpread
         return new_trade
 
     def get_leg(self, name):

@@ -7,8 +7,8 @@ from rest_framework.response import Response
 from rest_framework.exceptions import APIException
 from rest_framework.permissions import IsAuthenticated
 
-from tiger.serializers import TickerSerializer, OptionContractSerializer, TradeSerializer, TradeSnapshotSerializer
-from tiger.models import Ticker, TradeSnapshot
+from tiger.serializers import TickerSerializer, OptionContractSerializer, TradeSerializer
+from tiger.models import Ticker
 from tiger.core import LongCall, CoveredCall, LongPut, CashSecuredPut, OptionContract, Stock, Trade, TradeFactory
 from tiger.utils import days_from_timestamp
 
@@ -129,28 +129,3 @@ def get_best_trades(request, ticker_symbol):
         all_trades = list(filter(lambda trade: trade.target_price_profit > 0.0, all_trades))
         all_trades = sorted(all_trades, key=lambda trade: -trade.target_price_profit_ratio)
     return Response({'trades': TradeSerializer(all_trades, many=True).data})
-
-
-@api_view(['GET'])
-def trade_snapshot_detail(request, pk):
-    trade_snapshot = get_object_or_404(TradeSnapshot, pk=pk)
-
-    if request.method == 'GET':
-        if not trade_snapshot.is_public and trade_snapshot.creator.id != request.user.id:
-            return Response(status=status.HTTP_404_NOT_FOUND)
-
-        trade = Trade.from_snapshot(trade_snapshot)
-        trade_serializer = TradeSerializer(trade)
-        return Response({'trade_snaphost': trade_serializer.data})
-
-
-@api_view(['POST'])
-@permission_classes([IsAuthenticated])
-def trade_snapshots(request):
-    if request.method == 'POST':
-        request.data['creator_id'] = request.user.id
-        trade_snapshot_serializer = TradeSnapshotSerializer(data=request.data)
-        if trade_snapshot_serializer.is_valid():
-            trade_snapshot = trade_snapshot_serializer.save()
-            return Response({'id': trade_snapshot.id}, status=status.HTTP_201_CREATED)
-        return Response(trade_snapshot_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
