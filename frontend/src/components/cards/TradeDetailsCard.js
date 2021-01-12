@@ -1,7 +1,7 @@
 import React from 'react';
 import Card from 'react-bootstrap/Card';
 import ShareTradeBtn from '../ShareTradeBtn.js';
-import { PriceFormatter, ProfitFormatter } from '../../utils';
+import { PriceFormatter, ProfitFormatter, PercentageFormatter } from '../../utils';
 import LegDetailsCard from './LegDetailsCard.js';
 
 export default function TradeDetailsCard(props) {
@@ -18,15 +18,23 @@ export default function TradeDetailsCard(props) {
                 <Card.Text>
                     {trade.target_price ?
                         (<div className="row">
-                            <div className="col-sm-4">Target price: {PriceFormatter(trade.target_price)} ({ProfitFormatter(trade.to_target_price_ratio)})</div>
-                            <div className="col-sm-4">Profit at target: {PriceFormatter(trade.target_price_profit)}</div>
-                            <div className="col-sm-4">ROI at target: {ProfitFormatter(trade.target_price_profit_ratio)}</div>
+                            <div className="col-sm-3">Target price: {PriceFormatter(trade.target_price)} ({ProfitFormatter(trade.to_target_price_ratio)})</div>
+                            <div className="col-sm-3">Profit at target: {PriceFormatter(trade.target_price_profit)}</div>
+                            <div className="col-sm-3">ROI at target: {ProfitFormatter(trade.target_price_profit_ratio)}</div>
                         </div>) : null}
 
                     <div className="row">
-                        <div className="col-sm-4">Break-even: {PriceFormatter(trade.break_even_price)} ({ProfitFormatter(trade.to_break_even_ratio)})</div>
-                        <div className="col-sm-4">Cost: {PriceFormatter(trade.cost)}</div>
-                        <div className="col-sm-4"></div>
+                        <div className="col-sm-3">Break-even: {PriceFormatter(trade.break_even_price)} ({ProfitFormatter(trade.to_break_even_ratio)})</div>
+                        <div className="col-sm-3">Cost: {PriceFormatter(trade.cost)}</div>
+                        <div className="col-sm-3">Profit limit:
+                            {trade.profit_cap != null ?
+                                (
+                                    <span>
+                                        {PriceFormatter(trade.profit_cap)} ({trade.profit_cap_ratio >= 0 ? '+' : '-'}{PercentageFormatter(Math.abs(trade.profit_cap_ratio))})
+                                    </span >
+                                )
+                                : (<span>Unlimited</span>)}
+                        </div>
                     </div>
                     <br />
                     <Card.Title>Details</Card.Title>
