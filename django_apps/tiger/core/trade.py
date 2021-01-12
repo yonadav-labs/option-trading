@@ -48,13 +48,9 @@ class Trade:
 
     def _get_aggr_contract_attribute(self, attribute_name, use_min):
         attributes = [getattr(leg.contract, attribute_name) for leg in self.legs if leg.contract]
-        if attributes:
-            if use_min:
-                return min(attributes)
-            else:
-                return max(attributes)
-        else:
+        if None in attributes or not attributes:
             return None
+        return min(attributes) if use_min else max(attributes)
 
     @property
     def min_expiration(self):
