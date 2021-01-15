@@ -124,9 +124,9 @@ class Trade:
     def graph_x_points(self):
         '''Currently all trade types we have strike prices as key points so we can share this.'''
         graph_prices = []
-        step = self.stock.stock_price / 50
-        price = self.stock.stock_price / 2.0
-        for i in range(50):
+        step = max(0.02, self.stock.stock_price / 50)
+        price = self.stock.stock_price * 0.25
+        while price < self.stock.stock_price * 1.75:
             graph_prices.append(price)
             price += step
 
