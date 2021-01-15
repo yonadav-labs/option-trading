@@ -251,7 +251,7 @@ export default function BestCallByPrice() {
                                             options={expirationTimestampsOptions}
                                             className="basic-multi-select"
                                             classNamePrefix="select"
-                                            placeholder="Select an option expiration date."
+                                            placeholder="Select an options expiration date."
                                         />
                                     </div>
                                 </div>
@@ -343,7 +343,7 @@ export default function BestCallByPrice() {
                                     </div>
                                 </div>
                                 <div>
-                                    Based on estimated option value on expiration date.*
+                                    Based on estimated options value on expiration date.*
                                 </div>
                                 <div className="row">
                                     <div className="col">

@@ -9,7 +9,7 @@ function Footer(props) {
                 <div className="row">
                     <div className="col-md-4 col-12">
                         <h3 className="text-light">
-                            Never get lost in the option chain again.
+                            Never get lost in the options chain again.
                         </h3>
                         <p className="text-light">
                             Contact us at contact@tigerstance.com or through this <a href="https://forms.gle/qEqcKb1mtG8PJUWq6" target="_blank">google form</a>.

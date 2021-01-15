@@ -63,8 +63,8 @@ function Header() {
                 <Navbar.Toggle aria-controls="responsive-navbar-nav" />
                 <Navbar.Collapse id="responsive-navbar-nav">
                     <Nav className="mr-auto justify-content-center" style={{ flex: 1 }}>
-                        <Nav.Link className="text-dark" as={Link} to="/option-screener">Option Screener</Nav.Link>
                         <Nav.Link className="text-dark" as={Link} to="/strategy-screener">Strategy Screener</Nav.Link>
+                        <Nav.Link className="text-dark" as={Link} to="/option-screener">Options Screener</Nav.Link>
                         {/* <Nav.Link className="text-dark" as={Link} to="/trade-composer">Trade Composer</Nav.Link> */}
                         <Nav.Link className="text-dark" href="#">Pricing</Nav.Link>
                         <Nav.Link className="text-dark" href="#">Support</Nav.Link>
