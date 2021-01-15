@@ -119,6 +119,28 @@ class Trade:
             return None
         return self.profit_cap / self.cost
 
+    # TODO: make this a separate API call to reduce payload.
+    @property
+    def graph_x_points(self):
+        '''Currently all trade types we have strike prices as key points so we can share this.'''
+        graph_prices = []
+        step = self.stock.stock_price / 50
+        price = self.stock.stock_price / 2.0
+        for i in range(50):
+            graph_prices.append(price)
+            price += step
+
+        for leg in self.legs:
+            if leg.contract and leg.contract.strike not in graph_prices:
+                graph_prices.append(leg.contract.strike)
+
+        graph_prices = sorted(graph_prices)
+        return graph_prices
+
+    @property
+    def graph_y_points(self):
+        return [self.get_profit_at_price(price) for price in self.graph_x_points]
+
     def get_profit_at_price(self, price):
         profit_sum = 0.0
         for leg in self.legs:

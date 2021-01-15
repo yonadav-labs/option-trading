@@ -103,6 +103,10 @@ class TradeSerializer(serializers.Serializer):
     target_price_profit_ratio = serializers.ReadOnlyField()
     profit_cap = serializers.ReadOnlyField()
     profit_cap_ratio = serializers.ReadOnlyField()
+    graph_x_points = serializers.ListField(
+        child=serializers.DecimalField(max_digits=8, decimal_places=2, coerce_to_string=False, read_only=True))
+    graph_y_points = serializers.ListField(
+        child=serializers.DecimalField(max_digits=12, decimal_places=2, coerce_to_string=False, read_only=True))
 
     # TODO: re-consider those metrics.
     # premium_profit = serializers.FloatField(allow_null=True)  # CoveredCall, CashSecuredPut only
