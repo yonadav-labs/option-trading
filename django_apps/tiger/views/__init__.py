@@ -1,4 +1,4 @@
-from .options import *
+from .option import *
 from .subscription import *
 from .ticker import *
 from .trade import *
