@@ -1,12 +1,8 @@
 from django.shortcuts import get_object_or_404, get_list_or_404
 from rest_framework.decorators import api_view, permission_classes
-from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
-
-from tiger.serializers import SubscriptionSerializer
+from rest_framework.response import Response
 from tiger.models import Subscription, User
-from tiger.serializers import UserSerializer
-import requests
 
 
 @api_view(['POST'])
