@@ -1,7 +1,9 @@
-from .base import BaseModel
 from django.db import models
-from .user import User
+
+from .base import BaseModel
 from .ticker import Ticker
+from .user import User
+
 
 class Watchlist(BaseModel):
     name = models.CharField(max_length=100)

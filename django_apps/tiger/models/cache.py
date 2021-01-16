@@ -1,11 +1,11 @@
 import json
-
 from datetime import timedelta
+
 from django.conf import settings
 from django.db import models
-
-from tiger.utils import get_now
 from tiger.fetcher import fetch_external_api
+from tiger.utils import get_now
+
 from .base import BaseModel
 
 

@@ -1,5 +1,5 @@
-from tiger.models import Subscription
 from rest_framework import serializers
+from tiger.models import Subscription
 
 
 class SubscriptionSerializer(serializers.ModelSerializer):

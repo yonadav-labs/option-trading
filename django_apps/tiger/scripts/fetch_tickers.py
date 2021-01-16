@@ -1,12 +1,10 @@
 import os
 import sys
-import django
-import time
-import requests
 
-from django.conf import settings
-from tiger.fetcher import fetch_external_api, get_yahoo_option_url
+import django
+import requests
 from tiger.blob_reader import get_expiration_timestamps, get_quote
+from tiger.fetcher import get_yahoo_option_url
 
 
 def fetch_symbols():

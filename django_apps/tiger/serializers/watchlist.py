@@ -1,5 +1,5 @@
-from tiger.models import Watchlist, WatchlistItem
 from rest_framework import serializers
+from tiger.models import Watchlist, WatchlistItem
 
 
 class WatchlistSerializer(serializers.HyperlinkedModelSerializer):

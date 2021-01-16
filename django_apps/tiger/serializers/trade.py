@@ -1,6 +1,5 @@
-from django.db import transaction
-from tiger.models import Ticker
 from rest_framework import serializers
+from tiger.models import Ticker
 
 '''
 The following serializer is for display-only!

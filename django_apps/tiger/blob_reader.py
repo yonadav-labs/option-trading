@@ -1,6 +1,3 @@
-import requests
-from requests.adapters import HTTPAdapter
-from django.conf import settings
 from tiger.core import OptionContract
 
 

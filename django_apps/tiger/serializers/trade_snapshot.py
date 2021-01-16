@@ -1,7 +1,7 @@
 from django.db import transaction
 from rest_framework import serializers
 
-from tiger.models import User, ExternalRequestCache, Ticker, StockSnapshot, OptionContractSnapshot, LegSnapshot, \
+from tiger.models import StockSnapshot, OptionContractSnapshot, LegSnapshot, \
     TradeSnapshot
 
 '''

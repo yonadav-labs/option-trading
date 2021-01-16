@@ -1,14 +1,13 @@
 import base64
 import json
-import requests
 
-from datetime import timedelta
+import requests
 from django.conf import settings
 from django.db import models
+from tiger.utils import get_now
 
 from .base import BaseModel
 from .user import User
-from tiger.utils import get_now
 
 
 class Subscription(BaseModel):

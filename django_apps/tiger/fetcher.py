@@ -1,5 +1,4 @@
 import requests
-from requests.adapters import HTTPAdapter
 
 from django.conf import settings
 

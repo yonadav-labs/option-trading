@@ -1,9 +1,9 @@
 from datetime import datetime
-from django.test import TestCase
-from django.utils.timezone import make_aware, get_default_timezone
 from unittest import mock
 
-from tiger.core import Stock, OptionContract, Leg, OptionLeg, Trade, TradeFactory
+from django.test import TestCase
+from django.utils.timezone import make_aware, get_default_timezone
+from tiger.core import Stock, OptionContract, TradeFactory
 from tiger.models import Ticker
 
 MOCK_NOW_TIMESTAMP = 1609664400  # 01/03/2021

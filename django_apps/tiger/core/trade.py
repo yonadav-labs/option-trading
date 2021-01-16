@@ -1,6 +1,7 @@
-from .security import Stock
+from tiger.utils import timestamp_to_datetime_with_default_tz
+
 from .leg import Leg, CashLeg, StockLeg, OptionLeg
-from tiger.utils import days_from_timestamp, timestamp_to_datetime_with_default_tz
+from .security import Stock
 
 
 class Trade:

@@ -1,9 +1,10 @@
 import json
-from django.db import models
-from django.conf import settings
 
+from django.conf import settings
+from django.db import models
 from tiger.blob_reader import get_expiration_timestamps, get_call_puts, get_quote
 from tiger.fetcher import get_yahoo_option_url, get_td_option_url
+
 from .base import BaseModel
 from .cache import ExternalRequestCache
 
