@@ -19,7 +19,8 @@ export default function ShareTradeBtn(props) {
             stock_snapshot: { ticker_id: trade.stock.ticker.id, external_cache_id: trade.stock.external_cache_id },
             leg_snapshots: [],
             is_public: true,
-            target_price: trade.target_price,
+            target_price_lower: trade.target_price_lower,
+            target_price_upper: trade.target_price_upper,
         };
         trade.legs.map((leg, index) => {
             let legSnapshot = { name: leg.name, is_long: leg.is_long, units: leg.units }

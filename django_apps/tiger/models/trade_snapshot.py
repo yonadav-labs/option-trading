@@ -63,4 +63,5 @@ class TradeSnapshot(BaseModel):
     is_public = models.BooleanField(default=False)  # If non-creator can view this trade.
 
     # Market assumptions.
-    target_price = models.FloatField(null=True, blank=True)
+    target_price_lower = models.FloatField(null=True, blank=True)
+    target_price_upper = models.FloatField(null=True, blank=True)

@@ -5,23 +5,28 @@ from .security import Stock
 
 
 class Trade:
-    def __init__(self, type, stock, legs, target_price=None):
+    def __init__(self, type, stock, legs, target_price_lower=None, target_price_upper=None):
         '''
         :param type: type of trade.
         :param stock: current state of underlying stock.
         :param legs: all legs of this trade.
-        :param target_price: target stock price in the future. Optional.
+        :param target_price_lower: lower bound of target stock price in the future. Optional.
+        :param target_price_upper: upper bound of target stock price in the future. Optional.
         '''
+        if target_price_lower is not None and target_price_upper is not None:
+            assert target_price_lower <= target_price_upper
         self.type = type
         self.stock = stock
         self.legs = legs
-        self.target_price = target_price
+        self.target_price_lower = target_price_lower
+        self.target_price_upper = target_price_upper
 
     @classmethod
     def from_snapshot(cls, trade_snapshot):
         stock = Stock.from_snapshot(trade_snapshot.stock_snapshot)
         legs = [Leg.from_snapshot(leg_snapshot) for leg_snapshot in trade_snapshot.leg_snapshots.all()]
-        new_trade = cls(trade_snapshot.type, stock, legs, target_price=trade_snapshot.target_price)
+        new_trade = cls(trade_snapshot.type, stock, legs, target_price_lower=trade_snapshot.target_price_lower,
+                        target_price_upper=trade_snapshot.target_price_upper)
         if trade_snapshot.type == 'long_call':
             new_trade.__class__ = LongCall
         elif trade_snapshot.type == 'long_put':
@@ -79,21 +84,28 @@ class Trade:
 
     @property
     def target_price_profit(self):
-        if self.target_price is None:
+        '''Expected profit within target price range.'''
+        if not self.has_target_prices():
             return None
-        return self.get_profit_at_price(self.target_price)
+        return self.get_profit_in_price_range(self.target_price_lower, self.target_price_upper)
 
     @property
     def target_price_profit_ratio(self):
-        if self.target_price is None:
+        if not self.has_target_prices():
             return None
         return self.target_price_profit / self.cost
 
     @property
-    def to_target_price_ratio(self):
-        if self.target_price is None:
+    def to_target_price_lower_ratio(self):
+        if not self.target_price_lower:
             return None
-        return self.target_price / self.stock.stock_price - 1.0
+        return self.target_price_lower / self.stock.stock_price - 1.0
+
+    @property
+    def to_target_price_upper_ratio(self):
+        if not self.target_price_upper:
+            return None
+        return self.target_price_upper / self.stock.stock_price - 1.0
 
     @property
     def to_break_even_ratio(self):
@@ -140,12 +152,12 @@ class Trade:
 
     @property
     def graph_y_points(self):
-        return [self.get_profit_at_price(price) for price in self.graph_x_points]
+        return [self.get_profit_in_price_range(price, price) for price in self.graph_x_points]
 
-    def get_profit_at_price(self, price):
+    def get_profit_in_price_range(self, price_lower, price_upper):
         profit_sum = 0.0
         for leg in self.legs:
-            profit_sum += leg.get_profit_at_target_price(price)
+            profit_sum += leg.get_profit_in_price_range(price_lower, price_upper)
         return profit_sum
 
     def max_out(self, available_cash):
@@ -157,44 +169,53 @@ class Trade:
             leg.units *= multiplier
         return multiplier >= 1
 
+    def has_target_prices(self):
+        return self.target_price_lower is not None and self.target_price_upper is not None
+
 
 class TradeFactory:
     @staticmethod
-    def build_long_call(stock, call_contract, target_price=None, available_cash=None):
+    def build_long_call(stock, call_contract, target_price_lower=None, target_price_upper=None, available_cash=None):
         long_call_leg = OptionLeg('long_call_leg', True, 1, call_contract)
-        new_trade = LongCall(stock, [long_call_leg], target_price=target_price)
+        new_trade = LongCall(stock, [long_call_leg], target_price_lower=target_price_lower,
+                             target_price_upper=target_price_upper)
         if available_cash and not new_trade.max_out(available_cash):
             return None
         return new_trade
 
     @staticmethod
-    def build_long_put(stock, put_contract, target_price=None, available_cash=None):
+    def build_long_put(stock, put_contract, target_price_lower=None, target_price_upper=None, available_cash=None):
         long_put_leg = OptionLeg('long_put_leg', True, 1, put_contract)
-        new_trade = LongPut(stock, [long_put_leg], target_price=target_price)
+        new_trade = LongPut(stock, [long_put_leg], target_price_lower=target_price_lower,
+                            target_price_upper=target_price_upper)
         if available_cash and not new_trade.max_out(available_cash):
             return None
         return new_trade
 
     @staticmethod
-    def build_covered_call(stock, call_contract, target_price=None, available_cash=None):
+    def build_covered_call(stock, call_contract, target_price_lower=None, target_price_upper=None, available_cash=None):
         long_stock_leg = StockLeg('long_stock_leg', 100, stock)
         short_call_leg = OptionLeg('short_call_leg', False, 1, call_contract)
-        new_trade = CoveredCall(stock, [long_stock_leg, short_call_leg], target_price=target_price)
+        new_trade = CoveredCall(stock, [long_stock_leg, short_call_leg], target_price_lower=target_price_lower,
+                                target_price_upper=target_price_upper)
         if available_cash and not new_trade.max_out(available_cash):
             return None
         return new_trade
 
     @staticmethod
-    def build_cash_secured_put(stock, put_contract, target_price=None, available_cash=None):
+    def build_cash_secured_put(stock, put_contract, target_price_lower=None, target_price_upper=None,
+                               available_cash=None):
         short_put_leg = OptionLeg('short_put_leg', False, 1, put_contract)
         long_cash_leg = CashLeg(100 * put_contract.strike)
-        new_trade = CashSecuredPut(stock, [short_put_leg, long_cash_leg], target_price=target_price)
+        new_trade = CashSecuredPut(stock, [short_put_leg, long_cash_leg], target_price_lower=target_price_lower,
+                                   target_price_upper=target_price_upper)
         if available_cash and not new_trade.max_out(available_cash):
             return None
         return new_trade
 
     @staticmethod
-    def build_bull_call_spread(stock, call_contract_1, call_contract_2, target_price=None, available_cash=None):
+    def build_bull_call_spread(stock, call_contract_1, call_contract_2, target_price_lower=None,
+                               target_price_upper=None, available_cash=None):
         if call_contract_1.strike == call_contract_2.strike or call_contract_1.expiration != call_contract_2.expiration:
             return None
         lower_strike_call, higher_strike_call = (call_contract_1, call_contract_2) \
@@ -202,16 +223,17 @@ class TradeFactory:
 
         long_call_leg = OptionLeg('long_call_leg', True, 1, lower_strike_call)
         short_call_leg = OptionLeg('short_call_leg', False, 1, higher_strike_call)
-        new_trade = BullCallSpread(stock, [long_call_leg, short_call_leg], target_price=target_price)
+        new_trade = BullCallSpread(stock, [long_call_leg, short_call_leg], target_price_lower=target_price_lower,
+                                   target_price_upper=target_price_upper)
         if available_cash and not new_trade.max_out(available_cash):
             return None
         return new_trade
 
 
 class LongCall(Trade):
-    def __init__(self, stock, legs, target_price=None):
+    def __init__(self, stock, legs, target_price_lower=None, target_price_upper=None):
         # TODO: add validation.
-        super().__init__('long_call', stock, legs, target_price)
+        super().__init__('long_call', stock, legs, target_price_lower, target_price_upper)
 
     @property
     def display_name(self):
@@ -223,9 +245,9 @@ class LongCall(Trade):
 
 
 class LongPut(Trade):
-    def __init__(self, stock, legs, target_price=None):
+    def __init__(self, stock, legs, target_price_lower=None, target_price_upper=None):
         # TODO: add validation.
-        super().__init__('long_put', stock, legs, target_price)
+        super().__init__('long_put', stock, legs, target_price_lower, target_price_upper)
 
     @property
     def display_name(self):
@@ -238,9 +260,9 @@ class LongPut(Trade):
 
 # TODO: add validation logic (number of stock and contract should match)
 class CoveredCall(Trade):
-    def __init__(self, stock, legs, target_price=None):
+    def __init__(self, stock, legs, target_price_lower=None, target_price_upper=None):
         # TODO: add validation.
-        super().__init__('covered_call', stock, legs, target_price)
+        super().__init__('covered_call', stock, legs, target_price_lower, target_price_upper)
 
     @property
     def display_name(self):
@@ -259,13 +281,14 @@ class CoveredCall(Trade):
     @property
     def profit_cap(self):
         profit_cap_price = self.get_leg('short_call_leg').contract.strike
-        return self.get_profit_at_price(profit_cap_price)
+        # TODO: refactor out a function just for single price.
+        return self.get_profit_in_price_range(profit_cap_price, profit_cap_price)
 
 
 class CashSecuredPut(Trade):
-    def __init__(self, stock, legs, target_price=None):
+    def __init__(self, stock, legs, target_price_lower=None, target_price_upper=None):
         # TODO: add validation.
-        super().__init__('cash_secured_put', stock, legs, target_price)
+        super().__init__('cash_secured_put', stock, legs, target_price_lower, target_price_upper)
 
     @property
     def display_name(self):
@@ -286,9 +309,9 @@ class CashSecuredPut(Trade):
 
 # TODO: generalize to vertical call spread, vertical spread...
 class BullCallSpread(Trade):
-    def __init__(self, stock, legs, target_price=None):
+    def __init__(self, stock, legs, target_price_lower=None, target_price_upper=None):
         # TODO: add validation.
-        super().__init__('bull_call_spread', stock, legs, target_price)
+        super().__init__('bull_call_spread', stock, legs, target_price_lower, target_price_upper)
 
     @property
     def display_name(self):
@@ -309,6 +332,6 @@ class BullCallSpread(Trade):
     @property
     def profit_cap(self):
         profit_cap_price = self.get_leg('short_call_leg').contract.strike
-        return self.get_profit_at_price(profit_cap_price)
+        return self.get_profit_in_price_range(profit_cap_price, profit_cap_price)
 
 # TODO: add a sell everything now and hold cash trade and a long stock trade.

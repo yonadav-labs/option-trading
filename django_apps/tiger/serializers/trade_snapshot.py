@@ -63,8 +63,8 @@ class TradeSnapshotSerializer(serializers.ModelSerializer):
 
         # Trade attributes
         stock_snapshot = StockSnapshot.objects.create(**validated_trade_snapshot.get('stock_snapshot'))
-        trade_snapshot_data = get_subdict_by_fields(validated_trade_snapshot,
-                                                    ['type', 'is_public', 'creator_id', 'target_price'])
+        trade_snapshot_data = get_subdict_by_fields(
+            validated_trade_snapshot, ['type', 'is_public', 'creator_id', 'target_price_lower', 'target_price_upper'])
         trade_snapshot_data['stock_snapshot'] = stock_snapshot
         new_trade_snapshot = TradeSnapshot.objects.create(**trade_snapshot_data)
         for leg_snapshot in leg_snapshots:
@@ -74,5 +74,6 @@ class TradeSnapshotSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = TradeSnapshot
-        fields = ('type', 'stock_snapshot', 'leg_snapshots', 'is_public', 'creator_id', 'target_price')
+        fields = ('type', 'stock_snapshot', 'leg_snapshots', 'is_public', 'creator_id', 'target_price_lower',
+                  'target_price_upper')
         depth = 2

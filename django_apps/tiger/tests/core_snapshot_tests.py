@@ -83,13 +83,14 @@ class LoadFromSnapshotTestCase(TestCase):
         cash_leg_snapshot = LegSnapshot.objects.create(name='long_cash_leg', is_long=True, units=7413,
                                                        cash_snapshot=True)
         trade_snapshot = TradeSnapshot.objects.create(type='cash_secured_put', stock_snapshot=stock_snapshot,
-                                                      creator=creator, is_public=True, target_price=100)
+                                                      creator=creator, is_public=True, target_price_lower=100,
+                                                      target_price_upper=100)
         trade_snapshot.leg_snapshots.add(contract_leg_snapshot)
         trade_snapshot.leg_snapshots.add(cash_leg_snapshot)
 
         trade = Trade.from_snapshot(trade_snapshot)
         self.assertEqual(trade.type, 'cash_secured_put')
-        self.assertEqual(trade.target_price, 100)
+        self.assertEqual(trade.target_price_lower, 100)
         self.assertEqual(trade.cost, 7388)
         self.assertEqual(trade.break_even_price, 65.75)
         self.assertEqual(trade.target_price_profit, 25)

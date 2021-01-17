@@ -40,11 +40,11 @@ class Leg(ABC):
         pass
 
     @abstractmethod
-    def get_value_at_target_price(self, target_price):
+    def get_value_in_price_range(self, price_lower, price_upper):
         pass
 
-    def get_profit_at_target_price(self, target_price):
-        return self.get_value_at_target_price(target_price) - self.cost
+    def get_profit_in_price_range(self, price_lower, price_upper):
+        return self.get_value_in_price_range(price_lower, price_upper) - self.cost
 
 
 # Represent units US dollar. Currently only long.
@@ -60,7 +60,7 @@ class CashLeg(Leg):
     def cost(self):
         return self.cash.cost * self.units
 
-    def get_value_at_target_price(self, target_price):
+    def get_value_in_price_range(self, price_lower, price_upper):
         return self.cash.cost * self.units
 
 
@@ -78,8 +78,8 @@ class StockLeg(Leg):
     def cost(self):
         return self.stock.cost * self.units
 
-    def get_value_at_target_price(self, target_price):
-        return self.stock.get_value_at_target_price(target_price) * self.units
+    def get_value_in_price_range(self, price_lower, price_upper):
+        return self.stock.get_value_in_price_range(price_lower, price_upper) * self.units
 
 
 # Represent `units` contract of option.
@@ -97,5 +97,6 @@ class OptionLeg(Leg):
     def cost(self):
         return self.contract.cost * (self.units if self.is_long else -self.units)
 
-    def get_value_at_target_price(self, target_price):
-        return self.contract.get_value_at_target_price(target_price) * (self.units if self.is_long else -self.units)
+    def get_value_in_price_range(self, price_lower, price_upper):
+        return self.contract.get_value_in_price_range(price_lower, price_upper) * (
+            self.units if self.is_long else -self.units)

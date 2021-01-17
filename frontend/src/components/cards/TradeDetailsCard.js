@@ -5,7 +5,7 @@ import { PriceFormatter, ProfitFormatter, PercentageFormatter } from '../../util
 import LegDetailsCard from './LegDetailsCard.js';
 
 export default function TradeDetailsCard(props) {
-    const { trade, hideShareButton } = props;
+    const { trade, hideShareButton, hideDisclaimer } = props;
 
     return (
         <Card>
@@ -16,24 +16,30 @@ export default function TradeDetailsCard(props) {
                     {hideShareButton ? null : <div className="col-md-6"><span style={{ float: 'right' }}><ShareTradeBtn trade={trade} /></span></div>}
                 </div>
                 <Card.Text>
-                    {trade.target_price ?
+                    {trade.target_price_lower ?
                         (<div className="row">
-                            <div className="col-sm-3">Target price at: {PriceFormatter(trade.target_price)} ({ProfitFormatter(trade.to_target_price_ratio)})</div>
-                            <div className="col-sm-3">Profit at target: {PriceFormatter(trade.target_price_profit)} ({ProfitFormatter(trade.target_price_profit_ratio)})</div>
+                            <div className="col-sm-6">Target price range
+                            : {PriceFormatter(trade.target_price_lower)}({ProfitFormatter(trade.to_target_price_lower_ratio)})
+                            - {PriceFormatter(trade.target_price_upper)}({ProfitFormatter(trade.to_target_price_upper_ratio)})
+                            </div>
+                            <div className="col-sm-6">Average return: {PriceFormatter(trade.target_price_profit)} ({ProfitFormatter(trade.target_price_profit_ratio)})</div>
                         </div>) : null}
 
                     <div className="row">
-                        <div className="col-sm-3">Break-even at: {PriceFormatter(trade.break_even_price)} ({ProfitFormatter(trade.to_break_even_ratio)})</div>
-                        <div className="col-sm-3">Cost: {PriceFormatter(trade.cost)}</div>
-                        <div className="col-sm-3">Profit limit:
+                        <div className="col-sm-6">Break-even at: {PriceFormatter(trade.break_even_price)} ({ProfitFormatter(trade.to_break_even_ratio)})</div>
+                        <div className="col-sm-6">Profit limit:
                             {trade.profit_cap != null ?
                                 (
                                     <span>
                                         {PriceFormatter(trade.profit_cap)} ({trade.profit_cap_ratio >= 0 ? '+' : '-'}{PercentageFormatter(Math.abs(trade.profit_cap_ratio))})
                                     </span >
                                 )
-                                : (<span>Unlimited</span>)}
+                                : (<span>unlimited</span>)}
                         </div>
+
+                    </div>
+                    <div className="row">
+                        <div className="col-sm-6">Cost: {PriceFormatter(trade.cost)}</div>
                     </div>
                     <br />
                     <Card.Title>Details</Card.Title>
@@ -48,6 +54,13 @@ export default function TradeDetailsCard(props) {
                         })
                     }
                 </Card.Text>
+                {hideDisclaimer ?
+                    null :
+                    (<p>
+                        *Option contract data on this page is frozen at "Quoted at" time.<br />
+                        *All data are based on estimated options value on expiration date.<br />
+                        *Average return: average of possible return outcomes if share price hits within the target price range.
+                    </p>)}
             </Card.Body>
         </Card >
     );

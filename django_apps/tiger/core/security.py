@@ -19,11 +19,12 @@ class Security(ABC):
         pass
 
     @abstractmethod
-    def get_value_at_target_price(self, target_price):
+    def get_value_at_price(self, target_price):
         pass
 
-    def get_profit_at_target_price(self, target_price):
-        return self.get_value_at_target_price(target_price) - self.cost
+    @abstractmethod
+    def get_value_in_price_range(self, price_lower, price_upper):
+        pass
 
 
 class Cash(Security):
@@ -38,7 +39,10 @@ class Cash(Security):
     def cost(self):
         return 1.0
 
-    def get_value_at_target_price(self, target_price):
+    def get_value_at_price(self, target_price):
+        return 1.0
+
+    def get_value_in_price_range(self, price_lower, price_upper):
         return 1.0
 
 
@@ -67,8 +71,12 @@ class Stock(Security):
     def cost(self):
         return self.stock_price
 
-    def get_value_at_target_price(self, target_price):
+    def get_value_at_price(self, target_price):
         return target_price
+
+    def get_value_in_price_range(self, price_lower, price_upper):
+        # TODO: upgrade from uniformed distribution.
+        return (self.get_value_at_price(price_lower) + self.get_value_at_price(price_upper)) / 2.0
 
 
 class OptionContract(Security):
@@ -222,11 +230,30 @@ class OptionContract(Security):
     def cost(self):
         return self.premium * 100
 
-    def get_value_at_target_price(self, target_price):
+    def get_value_at_price(self, target_price):
         if self.is_call:
             return max(0, target_price - self.strike) * 100
         else:
             return max(0, self.strike - target_price) * 100
+
+    def get_value_in_price_range(self, price_lower, price_upper):
+        # TODO: upgrade from uniformed distribution.
+        if self.is_call:
+            if self.strike <= price_lower:
+                return (self.get_value_at_price(price_lower) + self.get_value_at_price(price_upper)) / 2.0
+            elif self.strike >= price_upper:
+                return 0.0
+            else:
+                return self.get_value_at_price(price_upper) / 2.0 * \
+                       ((price_upper - self.strike) / (price_upper - price_lower))
+        else:
+            if self.strike <= price_lower:
+                return 0.0
+            elif self.strike >= price_upper:
+                return (self.get_value_at_price(price_lower) + self.get_value_at_price(price_upper)) / 2.0
+            else:
+                return self.get_value_at_price(price_lower) / 2.0 * \
+                       ((self.strike - price_lower) / (price_upper - price_lower))
 
     def __str__(self):
         return self.contract_symbol

@@ -17,6 +17,7 @@ import TickerTypeahead from '../components/TickerTypeahead';
 import TickerSummary from '../components/TickerSummary.js';
 import ModalSpinner from '../components/ModalSpinner';
 import TradeDetailsCard from '../components/cards/TradeDetailsCard';
+import TargetPriceRangeSlider from '../components/TargetPriceRangeSlider';
 
 let lastTradedFilter;
 let strategyFilter;
@@ -31,7 +32,8 @@ export default function BestCallByPrice() {
     const [selectedExpirationTimestamp, setSelectedExpirationTimestamp] = useState(null);
     const [useAsPremium, setUseAsPremium] = useState('estimated');
     const [modalActive, setModalActive] = useState(false);
-    const [targetPrice, setTargetPrice] = useState(null);
+    const [targetPriceLower, setTargetPriceLower] = useState(null);
+    const [targetPriceUpper, setTargetPriceUpper] = useState(null);
 
     const resetStates = () => {
         setSelectedTicker([]);
@@ -42,7 +44,14 @@ export default function BestCallByPrice() {
         setSelectedExpirationTimestamp(null);
         setUseAsPremium('estimated');
         setModalActive(false);
-        setTargetPrice(null);
+        setTargetPriceLower(null);
+        setTargetPriceUpper(null);
+    }
+
+    const setStockInfo = (basicInfo) => {
+        setbasicInfo(basicInfo);
+        setTargetPriceLower(basicInfo.regularMarketPrice * 0.5);
+        setTargetPriceUpper(basicInfo.regularMarketPrice * 2);
     }
 
     const result_table_columns = [
@@ -84,8 +93,8 @@ export default function BestCallByPrice() {
             sort: true
         }, {
             dataField: "target_price_profit_ratio",
-            text: "Profit at target",
-            hidden: targetPrice == null,
+            text: "Average return",
+            hidden: targetPriceLower == null,
             formatter: (cell, row, rowIndex, extraData) => {
                 if (cell != null) {
                     return (<span>{PriceMovementFormatter(cell, row.target_price_profit)}</span>);
@@ -153,8 +162,7 @@ export default function BestCallByPrice() {
 
         setShowTimestampAlert(selectedExpirationTimestamp == null);
         if (form.checkValidity() !== false && selectedExpirationTimestamp != null) {
-            setTargetPrice(formDataObj.target_price ? formDataObj.target_price : null);
-            getBestStrategies(selectedExpirationTimestamp, formDataObj.target_price, formDataObj.available_cash);
+            getBestStrategies(selectedExpirationTimestamp, formDataObj.available_cash);
         }
     };
 
@@ -164,13 +172,11 @@ export default function BestCallByPrice() {
         setUseAsPremium(value);
     };
 
-    const getBestStrategies = async (selectedExpirationTimestamp, targetPrice, availableCash) => {
+    const getBestStrategies = async (selectedExpirationTimestamp, availableCash) => {
         try {
             let url = `${API_URL}/tickers/${selectedTicker[0].symbol}/trades/?`;
             url += `expiration_timestamps=${selectedExpirationTimestamp.value}&`;
-            if (targetPrice) {
-                url += `target_price=${targetPrice}&`;
-            }
+            url += `target_price_lower=${targetPriceLower}&target_price_upper=${targetPriceUpper}&`;
             if (availableCash) {
                 url += `available_cash=${availableCash}&`;
             }
@@ -193,7 +199,7 @@ export default function BestCallByPrice() {
 
     const ExpandTradeRow = {
         renderer: (row) => (
-            <TradeDetailsCard trade={row} />
+            <TradeDetailsCard trade={row} hideDisclaimer={true} />
         ),
         showExpandColumn: true,
         expandHeaderColumnRenderer: ({ isAnyExpands }) => {
@@ -228,7 +234,7 @@ export default function BestCallByPrice() {
                     <TickerTypeahead
                         setSelectedTicker={setSelectedTicker}
                         setExpirationTimestamps={setExpirationTimestamps}
-                        setbasicInfo={setbasicInfo}
+                        setbasicInfo={setStockInfo}
                         resetStates={resetStates}
                         setModalActive={setModalActive}
                     />
@@ -267,13 +273,17 @@ export default function BestCallByPrice() {
                                 </div>
                             </Form.Group>
                             <Form.Group>
-                                <Form.Label>{selectedTicker[0].symbol} share target price on {selectedExpirationTimestamp ?
-                                    TimestampDateFormatter(selectedExpirationTimestamp.value / 1000) : "expiration day"}:</Form.Label>
-                                <Form.Control name="target_price" as="input" type="number"
-                                    placeholder={"Enter expected share price of " + selectedTicker[0].symbol
-                                        + ". For example: " + basicInfo.regularMarketPrice + '.'}
-                                    min="0.0" max="10000.0" step="0.01" />
+                                <Form.Label>Expected/target {selectedTicker[0].symbol} share price range on {selectedExpirationTimestamp ?
+                                    TimestampDateFormatter(selectedExpirationTimestamp.value / 1000) : "expiration day"}
+                                    : {targetPriceLower != null ? <span>{PriceFormatter(targetPriceLower)} - {PriceFormatter(targetPriceUpper)}</span> : null}
+                                </Form.Label>
                             </Form.Group>
+                            <div style={{ paddingLeft: '2.5rem', paddingRight: '2.5rem', marginBottom: '2.5rem' }}>
+                                <TargetPriceRangeSlider
+                                    currentPrice={basicInfo.regularMarketPrice}
+                                    setPriceLower={setTargetPriceLower}
+                                    setPriceUpper={setTargetPriceUpper} />
+                            </div>
                             <Form.Group>
                                 <Form.Label>Cash to invest:</Form.Label>
                                 <Form.Control name="available_cash" as="input" type="number"
@@ -342,9 +352,10 @@ export default function BestCallByPrice() {
                                     <div className="col-sm-4">
                                     </div>
                                 </div>
-                                <div>
-                                    Based on estimated options value on expiration date.*
-                                </div>
+                                <p>
+                                    *All results are based on estimated options value on expiration date.<br />
+                                    *Average return: average of possible return outcomes if {selectedTicker[0].symbol} share price hits within the target price range.
+                                </p>
                                 <div className="row">
                                     <div className="col">
                                         <BootstrapTable
