@@ -14,12 +14,12 @@ function TargetPriceRangeSlider(props) {
 
     const marks = {
         [currentPrice]: (
-            <span>{PriceFormatter(currentPrice)} (latest)</span>
+            <span>{PriceFormatter(currentPrice)}<br />(last price)</span>
         ),
-        [minPrice]: (<span>{PriceFormatter(minPrice)} (-50%)</span>),
-        [currentPrice * 0.75]: (<span>{PriceFormatter(currentPrice * 0.75)} (-25%)</span>),
-        [currentPrice * 1.25]: (<span>{PriceFormatter(currentPrice * 1.25)} (+25%)</span>),
-        [maxPrice]: (<span>{PriceFormatter(maxPrice)} (+50%)</span>),
+        [minPrice]: (<span>{PriceFormatter(minPrice)}<br />(-50%)</span>),
+        [currentPrice * 0.75]: (<span>{PriceFormatter(currentPrice * 0.75)}<br />(-25%)</span>),
+        [currentPrice * 1.25]: (<span>{PriceFormatter(currentPrice * 1.25)}<br />(+25%)</span>),
+        [maxPrice]: (<span>{PriceFormatter(maxPrice)}<br />(+50%)</span>),
     };
 
     function onRangeChange(lowUpArr) {
@@ -31,16 +31,15 @@ function TargetPriceRangeSlider(props) {
     };
 
     function getChangeRatio(price) {
-        if (price > currentPrice) {
+        if (price >= currentPrice) {
             return (
                 <span>+{PercentageFormatter(price / currentPrice - 1.0)}</span>
             )
-        } else if (price < currentPrice) {
+        } else {
             return (
                 <span>{PercentageFormatter(price / currentPrice - 1.0)}</span>
             )
         }
-        return (<span></span>)
     }
 
     return (
