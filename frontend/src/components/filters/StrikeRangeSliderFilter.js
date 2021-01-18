@@ -8,8 +8,10 @@ function StrikeRangeSliderFilter(props) {
 
     const { atmPrice, strikePrices, minStrikeFilter, maxStrikeFilter } = props;
 
+    // TODO: figure out why if I move the next 2 lines outside this function, then the slider won't work property.
     const { createSliderWithTooltip } = Slider;
     const Range = createSliderWithTooltip(Slider.Range);
+
     const minStrike = Math.min(...strikePrices);
     const maxStrike = Math.max(...strikePrices);
 
