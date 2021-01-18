@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect} from 'react';
+import { useHistory, useLocation } from "react-router-dom";
 import Form from 'react-bootstrap/Form'
 import TickerTypeahead from '../components/TickerTypeahead';
 import TickerSummary from '../components/TickerSummary.js';
@@ -19,6 +20,7 @@ import { Comparator } from 'react-bootstrap-table2-filter';
 import Select from "react-select";
 import SingleChoiceFilter from "../components/filters/SingleChoiceFilter"
 import StrikeRangeSliderFilter from "../components/filters/StrikeRangeSliderFilter"
+import { useSearch } from "../components/querying"
 
 let putCallFilter;
 let inTheMoneyFilter;
@@ -31,6 +33,10 @@ let minStrikeFilter;
 let maxStrikeFilter;
 
 export default function SellCoveredCall() {
+    let history = useHistory()
+    let location = useLocation()
+    const querySymbol = useSearch(location, 'symbol')
+
     const [selectedTicker, setSelectedTicker] = useState([]);
     const [expirationTimestamps, setExpirationTimestamps] = useState([]);
     const [basicInfo, setbasicInfo] = useState({});
@@ -260,6 +266,11 @@ export default function SellCoveredCall() {
         const formData = new FormData(event.target);
         const formDataObj = Object.fromEntries(formData.entries());
 
+        // push dates to url query
+        // let timestampValues = []
+        // selectedExpirationTimestamps.forEach( t => timestampValues.push(t.value))
+        // addQuery(location, history, `date`, timestampValues.join(','))
+  
         setShowTimestampAlert(selectedExpirationTimestamps == null);
         if (form.checkValidity() !== false && selectedExpirationTimestamps != null) {
             getContracts(selectedExpirationTimestamps);
@@ -328,6 +339,8 @@ export default function SellCoveredCall() {
                 <Form.Group>
                     <Form.Label className="requiredField"><h4>Enter ticker symbol:</h4></Form.Label>
                     <TickerTypeahead
+                        querySymbol={querySymbol}
+                        selectedTicker={selectedTicker}
                         setSelectedTicker={setSelectedTicker}
                         setExpirationTimestamps={setExpirationTimestamps}
                         setbasicInfo={setbasicInfo}

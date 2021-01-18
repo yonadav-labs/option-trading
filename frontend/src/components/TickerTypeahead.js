@@ -1,10 +1,14 @@
 import React, { useEffect, useState, useRef } from 'react';
+import { useHistory, useLocation } from "react-router-dom";
 import { Typeahead } from 'react-bootstrap-typeahead';
 import Axios from 'axios';
 import getApiUrl from '../utils'
+import { addQuery } from './querying'
 
 
-export default function TickerTypeahead({ setSelectedTicker, setExpirationTimestamps, setbasicInfo, /*optional*/resetStates, setModalActive }) {
+export default function TickerTypeahead({querySymbol, selectedTicker, setSelectedTicker, setExpirationTimestamps, setbasicInfo, /*optional*/resetStates, setModalActive }) {
+    let history = useHistory();
+    let location = useLocation();
     const API_URL = getApiUrl();
     const [allTickers, setAllTickers] = useState([]);
     const inputEl = useRef(null);
@@ -13,12 +17,18 @@ export default function TickerTypeahead({ setSelectedTicker, setExpirationTimest
         try {
             const response = await Axios.get(`${API_URL}/tickers/`);
             let tickers = response.data;
-            tickers.forEach(function (ticker) {
+            tickers.map((ticker) => {
                 if (ticker.full_name) {
                     ticker.display_label = ticker.symbol + ' - ' + ticker.full_name;
                 } else {
                     ticker.display_label = ticker.symbol;
                 }
+
+                if (querySymbol && ticker.symbol === querySymbol) {
+                    setSelectedTicker([ticker], onTickerSelectionChange([ticker]));
+                }
+
+                return ticker;
             });
             setAllTickers(tickers);
         } catch (error) {
@@ -41,11 +51,13 @@ export default function TickerTypeahead({ setSelectedTicker, setExpirationTimest
     };
 
     const onTickerSelectionChange = (selected) => {
+        if (selected.length > 0) {
+            loadExpirationDates(selected);
+            addQuery(location, history, 'symbol', selected[0].symbol)
+        }
         if (resetStates) {
             resetStates([]);
         }
-        loadExpirationDates(selected);
-        inputEl.current.blur();
     };
 
     useEffect(() => {
@@ -59,7 +71,8 @@ export default function TickerTypeahead({ setSelectedTicker, setExpirationTimest
             id="tickerTypeahead"
             labelKey="display_label"
             options={allTickers}
-            placeholder="Enter a ticker symbol. For example: TSLA, APPL, GOOG..."
+            selected={selectedTicker}
+            placeholder="Enter a ticker symbol. For example: TSLA, AAPL, GOOG..."
             onChange={onTickerSelectionChange}
             filterBy={(option, props) => {
                 const uppercase_text = props.text.toUpperCase();
@@ -68,4 +81,4 @@ export default function TickerTypeahead({ setSelectedTicker, setExpirationTimest
             ref={inputEl}
         />
     );
-}
+};
