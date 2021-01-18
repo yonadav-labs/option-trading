@@ -308,7 +308,7 @@ export default function BestCallByPrice() {
                                     }
                                 </div>
                             </div>
-                            <h4>Optional settings</h4>
+                            <h4>Optional settings:</h4>
                             <Form.Group>
                                 <Form.Label>Cash to invest in {selectedTicker[0].symbol}:</Form.Label>
                                 <Form.Control name="available_cash" as="input" type="number"
