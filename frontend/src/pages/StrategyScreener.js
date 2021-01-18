@@ -17,8 +17,6 @@ import { BsArrowsExpand, BsArrowsCollapse } from 'react-icons/bs';
 import TickerTypeahead from '../components/TickerTypeahead';
 import TickerSummary from '../components/TickerSummary.js';
 import ModalSpinner from '../components/ModalSpinner';
-import ShareTradeBtn from '../components/ShareTradeBtn.js';
-import TradeDetailsCard from '../components/TradeDetailsCard';
 import { useSearch } from "../components/querying"
 import TradeDetailsCard from '../components/cards/TradeDetailsCard';
 import TargetPriceRangeSlider from '../components/TargetPriceRangeSlider';
