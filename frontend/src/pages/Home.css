@@ -36,7 +36,7 @@
   background-image: url('../svg/Hero-Right-D.svg'), url('../svg/Hero-Left-D.svg');
   background-position: right top, left 5%;
   background-repeat: no-repeat, no-repeat;
-  background-size: 50vw, 50vw;
+  background-size: 35vw, 35vw;
 }
 
 /* Adjustments  */

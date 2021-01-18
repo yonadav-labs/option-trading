@@ -12,6 +12,7 @@ import Disclaimer from './components/disclaimer';
 import StrategyScreener from './pages/StrategyScreener';
 import SingleTrade from './pages/SingleTrade';
 import TradeComposer from './pages/TradeComposer';
+import Pricing from './pages/Pricing';
 
 export default withRouter(class AppWithRouterAccess extends Component {
     constructor(props) {
@@ -40,6 +41,7 @@ export default withRouter(class AppWithRouterAccess extends Component {
                             <Route path='/signin' component={Login} />
                             <Route path='/signin/register' component={Login} />
                             <Route path='/callback' component={LoginCallback} />
+                            <Route path='/pricing' component={Pricing} />
                         </Switch>
                     </main>
                     <Footer class="mt-auto"></Footer>
