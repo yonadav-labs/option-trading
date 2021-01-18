@@ -95,7 +95,7 @@ export default function BestCallByPrice() {
             sort: true
         }, {
             dataField: "target_price_profit_ratio",
-            text: "Average return",
+            text: "Hypothetical return",
             hidden: targetPriceLower == null,
             formatter: (cell, row, rowIndex, extraData) => {
                 if (cell != null) {
@@ -165,11 +165,17 @@ export default function BestCallByPrice() {
         if (selectedExpirationTimestamp == null) {
             setShowTimestampAlert(true);
             return;
+        } else {
+            setShowTimestampAlert(false);
         }
+
         if (targetPriceLower == null || targetPriceUpper == null) {
             setShowTargetPriceAlert(true);
             return;
+        } else {
+            setShowTargetPriceAlert(false);
         }
+
         if (form.checkValidity() !== false && selectedExpirationTimestamp != null) {
             getBestStrategies(selectedExpirationTimestamp, formDataObj.available_cash);
         }
@@ -239,7 +245,7 @@ export default function BestCallByPrice() {
             <h1 className="text-center">Strategy Screener</h1>
             <Form>
                 <Form.Group>
-                    <Form.Label className="requiredField"><h4>Enter ticker symbol:</h4></Form.Label>
+                    <Form.Label className="requiredField"><h4>Enter ticker symbol:*</h4></Form.Label>
                     <TickerTypeahead
                         setSelectedTicker={setSelectedTicker}
                         setExpirationTimestamps={setExpirationTimestamps}
@@ -253,10 +259,9 @@ export default function BestCallByPrice() {
                 <div>
                     <TickerSummary basicInfo={basicInfo} />
                     <div>
-                        <h4>Configurations</h4>
                         <Form onSubmit={handleSubmit}>
                             <Form.Group>
-                                <Form.Label>Expiration Dates:*</Form.Label>
+                                <h4>Select an option expiration date:*</h4>
                                 <div className="row">
                                     <div className="col-sm-12">
                                         <Select
@@ -282,12 +287,12 @@ export default function BestCallByPrice() {
                                 </div>
                             </Form.Group>
                             <Form.Group>
-                                <Form.Label>Expected/target {selectedTicker[0].symbol} share price range on {selectedExpirationTimestamp ?
-                                    TimestampDateFormatter(selectedExpirationTimestamp.value / 1000) : "expiration day*"}
-                                    : {targetPriceLower != null ? <span>{PriceFormatter(targetPriceLower)} - {PriceFormatter(targetPriceUpper)}</span> : null}
-                                </Form.Label>
+                                <h4>Enter my target price range of {selectedTicker[0].symbol} share on {selectedExpirationTimestamp ?
+                                    TimestampDateFormatter(selectedExpirationTimestamp.value / 1000) : "expiration day"}
+                                    :* {targetPriceLower != null ? <span>{PriceFormatter(targetPriceLower)} - {PriceFormatter(targetPriceUpper)}</span> : null}
+                                </h4>
                             </Form.Group>
-                            <div style={{ paddingLeft: '2.5rem', paddingRight: '2.5rem', marginBottom: '2.5rem' }}>
+                            <div style={{ marginLeft: '2.5rem', marginRight: '2.5rem', marginBottom: '3.5rem' }}>
                                 <TargetPriceRangeSlider
                                     currentPrice={basicInfo.regularMarketPrice}
                                     setPriceLower={setTargetPriceLower}
@@ -297,12 +302,13 @@ export default function BestCallByPrice() {
                                 <div className="col-sm-12">
                                     {showTargetPriceAlert ?
                                         <Alert variant="warning">
-                                            Please select an expected/target price range.
+                                            Please select a target price range.
                                             </Alert>
                                         : null
                                     }
                                 </div>
                             </div>
+                            <h4>Optional settings</h4>
                             <Form.Group>
                                 <Form.Label>Cash to invest in {selectedTicker[0].symbol}:</Form.Label>
                                 <Form.Control name="available_cash" as="input" type="number"
@@ -373,7 +379,7 @@ export default function BestCallByPrice() {
                                 </div>
                                 <p>
                                     *All results are based on estimated options value on expiration date.<br />
-                                    *Average return: average of possible return outcomes under the assumption that {selectedTicker[0].symbol} share price will be within the target price range.
+                                    *Hypothetical return: average of possible return outcomes under the assumption that {selectedTicker[0].symbol} share price will be within the target price range.
                                 </p>
                                 <div className="row">
                                     <div className="col">
