@@ -11,7 +11,10 @@ export default function Pricing() {
             <div className="row m-5">
                 <div className="col-lg-12 text-center">
                     <h1 className="mb-3">Subscription Plans</h1>
-                    <h5 className="m-auto pricing-descritpion">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</h5>
+                    <h5 className="m-auto pricing-descritpion">
+                        Upgrade to Tiger Pro membership to unlock powerful options analytics features.
+                        <br />Free trail for a week, cancel anytime.
+                    </h5>
                 </div>
             </div>
 
@@ -25,10 +28,9 @@ export default function Pricing() {
                             <h2>$5.69/mo</h2>
                             <div className="pt-3 card-list-left">
                                 <ul class="list-unstyled mt-3 mb-4">
-                                    <li>&#10003; Benifit 1 Lorem ipsum dolor sit amet</li>
-                                    <li>&#10003; Benifit 1 Lorem ipsum dolor sit amet</li>
-                                    <li>&#10003; Benifit 1 Lorem ipsum dolor sit amet</li>
-                                    <li>&#10003; Benifit 1 Lorem ipsum dolor sit amet</li>
+                                    <li>&#10003; Unlimited usage for all features.</li>
+                                    <li>&#10003; Unlock all 22 options trading strategies.</li>
+                                    <li>&#10003; More Pro member features to come!</li>
                                 </ul>
                             </div>
                             <button type="button" class="btn btn-md btn-block btn-light">GET STARTED</button>
@@ -39,16 +41,15 @@ export default function Pricing() {
                         <div class="card-header">
                             <h6 class="mt-3 font-weight-bold">YEARLY</h6>
                         </div>
-                        <div class="card-body card-body-right">  
-                        <div class="badge">MOST POPULAR</div>              
-                                <h2>$59.00/yr</h2>
-                                <h6>save 10% yearly</h6>                    
+                        <div class="card-body card-body-right">
+                            <div class="badge">MOST POPULAR</div>
+                            <h2>$59.00/yr</h2>
+                            <h6>save 10% yearly</h6>
                             <div className="pt-3 card-list-right">
                                 <ul class="list-unstyled mt-3 mb-4">
-                                    <li>&#10003; Benifit 1 Lorem ipsum dolor sit amet</li>
-                                    <li>&#10003; Benifit 1 Lorem ipsum dolor sit amet</li>
-                                    <li>&#10003; Benifit 1 Lorem ipsum dolor sit amet</li>
-                                    <li>&#10003; Benifit 1 Lorem ipsum dolor sit amet</li>
+                                    <li>&#10003; Includes everything in the monthly plan.</li>
+                                    <li>&nbsp;</li>
+                                    <li>&nbsp;</li>
                                 </ul>
                             </div>
                             <button type="button" class="btn btn-md btn-block btn-light">GET STARTED</button>
