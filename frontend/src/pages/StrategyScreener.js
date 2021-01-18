@@ -28,6 +28,7 @@ export default function BestCallByPrice() {
     const [expirationTimestamps, setExpirationTimestamps] = useState([]);
     const [basicInfo, setbasicInfo] = useState({});
     const [showTimestampAlert, setShowTimestampAlert] = useState(false);
+    const [showTargetPriceAlert, setShowTargetPriceAlert] = useState(false);
     const [bestStrategies, setBestStrategies] = useState(null);
     const [selectedExpirationTimestamp, setSelectedExpirationTimestamp] = useState(null);
     const [useAsPremium, setUseAsPremium] = useState('estimated');
@@ -40,6 +41,7 @@ export default function BestCallByPrice() {
         setExpirationTimestamps([]);
         setbasicInfo({});
         setShowTimestampAlert(false);
+        setShowTargetPriceAlert(false);
         setBestStrategies(null);
         setSelectedExpirationTimestamp(null);
         setUseAsPremium('estimated');
@@ -50,8 +52,8 @@ export default function BestCallByPrice() {
 
     const setStockInfo = (basicInfo) => {
         setbasicInfo(basicInfo);
-        setTargetPriceLower(basicInfo.regularMarketPrice * 0.5);
-        setTargetPriceUpper(basicInfo.regularMarketPrice * 2);
+        setTargetPriceLower(null);
+        setTargetPriceUpper(null);
     }
 
     const result_table_columns = [
@@ -160,7 +162,14 @@ export default function BestCallByPrice() {
         const formData = new FormData(event.target);
         const formDataObj = Object.fromEntries(formData.entries());
 
-        setShowTimestampAlert(selectedExpirationTimestamp == null);
+        if (selectedExpirationTimestamp == null) {
+            setShowTimestampAlert(true);
+            return;
+        }
+        if (targetPriceLower == null || targetPriceUpper == null) {
+            setShowTargetPriceAlert(true);
+            return;
+        }
         if (form.checkValidity() !== false && selectedExpirationTimestamp != null) {
             getBestStrategies(selectedExpirationTimestamp, formDataObj.available_cash);
         }
@@ -266,7 +275,7 @@ export default function BestCallByPrice() {
                                         {showTimestampAlert ?
                                             <Alert variant="warning">
                                                 Please select at least one expiration date.
-                                        </Alert>
+                                            </Alert>
                                             : null
                                         }
                                     </div>
@@ -274,7 +283,7 @@ export default function BestCallByPrice() {
                             </Form.Group>
                             <Form.Group>
                                 <Form.Label>Expected/target {selectedTicker[0].symbol} share price range on {selectedExpirationTimestamp ?
-                                    TimestampDateFormatter(selectedExpirationTimestamp.value / 1000) : "expiration day"}
+                                    TimestampDateFormatter(selectedExpirationTimestamp.value / 1000) : "expiration day*"}
                                     : {targetPriceLower != null ? <span>{PriceFormatter(targetPriceLower)} - {PriceFormatter(targetPriceUpper)}</span> : null}
                                 </Form.Label>
                             </Form.Group>
@@ -284,8 +293,18 @@ export default function BestCallByPrice() {
                                     setPriceLower={setTargetPriceLower}
                                     setPriceUpper={setTargetPriceUpper} />
                             </div>
+                            <div className="row">
+                                <div className="col-sm-12">
+                                    {showTargetPriceAlert ?
+                                        <Alert variant="warning">
+                                            Please select an expected/target price range.
+                                            </Alert>
+                                        : null
+                                    }
+                                </div>
+                            </div>
                             <Form.Group>
-                                <Form.Label>Cash to invest:</Form.Label>
+                                <Form.Label>Cash to invest in {selectedTicker[0].symbol}:</Form.Label>
                                 <Form.Control name="available_cash" as="input" type="number"
                                     placeholder="Enter the amount of cash you plan to invest in this trade." min="0.0" max="100000000.0" step="0.01" />
                             </Form.Group>
@@ -354,7 +373,7 @@ export default function BestCallByPrice() {
                                 </div>
                                 <p>
                                     *All results are based on estimated options value on expiration date.<br />
-                                    *Average return: average of possible return outcomes if {selectedTicker[0].symbol} share price hits within the target price range.
+                                    *Average return: average of possible return outcomes under the assumption that {selectedTicker[0].symbol} share price will be within the target price range.
                                 </p>
                                 <div className="row">
                                     <div className="col">
