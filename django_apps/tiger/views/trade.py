@@ -76,13 +76,13 @@ def get_best_trades(request, ticker_symbol):
     for calls_per_exp in call_contract_lists:
         # TODO: find a better way to reduce response size.
         sampled_calls = sorted(calls_per_exp, key=lambda call: (call.volume, call.open_interest), reverse=True)[:100]
-        combos = ((itm_call, otm_call) for itm_call in sampled_calls for otm_call in sampled_calls)
-        for itm_call, otm_call in combos:
-            if not itm_call.in_the_money or otm_call.in_the_money:
-                continue
-            bull_call_spread_trades.append(
-                TradeFactory.build_bull_call_spread(stock, itm_call, otm_call, target_price_lower, target_price_upper,
-                                                    available_cash=available_cash))
+        for low_strike_call in sampled_calls:
+            for high_strike_call in sampled_calls:
+                if low_strike_call.strike >= high_strike_call.strike:
+                    continue
+                bull_call_spread_trades.append(
+                    TradeFactory.build_bull_call_spread(stock, low_strike_call, high_strike_call, target_price_lower,
+                                                        target_price_upper, available_cash=available_cash))
     bull_call_spread_trades = filter_and_sort_trades(bull_call_spread_trades)[:100]
 
     all_trades = all_trades + bull_call_spread_trades
