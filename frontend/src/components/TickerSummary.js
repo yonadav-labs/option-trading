@@ -1,25 +1,24 @@
 import React, { useContext, useEffect, useState } from 'react';
-import TradingViewWidget from 'react-tradingview-widget';
-import Accordion from 'react-bootstrap/Accordion';
-import Card from 'react-bootstrap/Card';
-import Button from 'react-bootstrap/Button';
 import NumberFormat from 'react-number-format';
-import ToggleButton from 'react-bootstrap/ToggleButton'
-import ButtonGroup from 'react-bootstrap/ButtonGroup'
 import UserContext from '../UserContext';
 import getApiUrl from '../utils';
 import Axios from 'axios';
+import TradingWidget from './TradingWidget';
+
+// Bootstrap
+import ToggleButton from 'react-bootstrap/ToggleButton'
+import ButtonGroup from 'react-bootstrap/ButtonGroup'
+import {Row, Col, Badge} from 'react-bootstrap';
+
 
 export default function TickerSummary({ basicInfo }) {
     /*
     const { user, setUser } = useContext(UserContext);
     const [onWatchlist, setOnWatchlist] = useState(user ? user.watchlist.includes(basicInfo.symbol) : false);
     const API_URL = getApiUrl();
-
     useEffect(() => {
         setOnWatchlist(user ? user.watchlist.includes(basicInfo.symbol) : false);
     }, [basicInfo]);
-
     const updateWatchlist = async () => {
         try {
             if (onWatchlist) {
@@ -36,6 +35,19 @@ export default function TickerSummary({ basicInfo }) {
         }
     };
     */
+
+    // https://stackoverflow.com/a/32638472/14903155
+    function intToString(num, fixed) {
+        if (num === null) { return null; } // terminate early
+        if (num === 0) { return '0'; } // terminate early
+        fixed = (!fixed || fixed < 0) ? 0 : fixed; // number of decimal places to show
+        var b = (num).toPrecision(2).split("e"), // get power
+            k = b.length === 1 ? 0 : Math.floor(Math.min(b[1].slice(1), 14) / 3), // floor at decimals, ceiling at trillions
+            c = k < 1 ? num.toFixed(0 + fixed) : (num / Math.pow(10, k * 3) ).toFixed(1 + fixed), // divide by power
+            d = c < 0 ? c : Math.abs(c), // enforce -0 is 0
+            e = d + ['', 'K', 'M', 'B', 'T'][k]; // append power
+        return e;
+    }
 
     return (
         <div>
@@ -54,33 +66,75 @@ export default function TickerSummary({ basicInfo }) {
                     </ToggleButton>
                 </ButtonGroup> */}
             </div>
-            <div className="row">
-                <div className="col-sm">Last price: <NumberFormat value={basicInfo.regularMarketPrice} displayType={'text'} thousandSeparator={true} prefix={'$'} /></div>
-                <div className="col-sm">52 Week Range:
-                        <NumberFormat value={basicInfo.fiftyTwoWeekLow} displayType={'text'} thousandSeparator={true} prefix={'$'} />
-                         -
-                        <NumberFormat value={basicInfo.fiftyTwoWeekHigh} displayType={'text'} thousandSeparator={true} prefix={'$'} />
-                </div>
+            <div>
+                <Row>
+                    <Col s={6}>
+                        <div>
+                            <Badge variant="secondary">Last Price</Badge>
+                            <br/>
+                            <h4> {basicInfo.regularMarketPrice ? `$${basicInfo.regularMarketPrice}` : "N/A"} </h4>
+                        </div>
+                    </Col>
+                    <Col s={6}>
+                        <div>
+                            <Badge variant="secondary">Day Range</Badge>
+                            <br/>
+                            <h4> 
+                                {basicInfo.regularMarketDayLow && basicInfo.regularMarketDayHigh ? `${basicInfo.regularMarketDayLow.toFixed(2)}-${basicInfo.regularMarketDayHigh.toFixed(2)}` : "N/A"} 
+                            </h4>
+                        </div>
+                    </Col>
+                </Row>
+                <Row>
+                    <Col s={6}>
+                        <div>
+                            <Badge variant="secondary">52 Week Range</Badge>
+                            <br/>
+                            <h4> {basicInfo.fiftyTwoWeekLow && basicInfo.fiftyTwoWeekHigh ? `${basicInfo.fiftyTwoWeekLow.toFixed(2)}-${basicInfo.fiftyTwoWeekHigh.toFixed(2)}` : "N/A"} </h4>
+                        </div>
+                    </Col>
+                    <Col s={6}>
+                        <div>
+                            <Badge variant="secondary">Market Cap</Badge>
+                            <br/>
+                            <h4> {basicInfo.marketCap ? `$${intToString(basicInfo.marketCap, 1)}` : "N/A"} </h4>
+                        </div>
+                    </Col>
+                </Row>
+                <Row>
+                    <Col s={6}>
+                        <div>
+                            <Badge variant="secondary">Average Volume</Badge>
+                            <br/>
+                            <h4> {basicInfo.averageDailyVolume3Month ? intToString(basicInfo.averageDailyVolume3Month, 1) : "N/A"} </h4>
+                        </div>
+                    </Col>
+                    <Col s={6}>
+                        <div>
+                            <Badge variant="secondary">Outstanding Shares</Badge>
+                            <br/>
+                            <h4> {basicInfo.sharesOutstanding ? intToString(basicInfo.sharesOutstanding, 1) : "N/A"} </h4>
+                        </div>
+                    </Col>
+                </Row>
+                <Row>
+                    <Col s={6}>
+                        <div>
+                            <Badge variant="secondary">P/E</Badge>
+                            <br/>
+                            <h4> {basicInfo.trailingPE ? basicInfo.trailingPE.toFixed(2) : "N/A"} </h4>
+                        </div>
+                    </Col>
+                    <Col s={6}>
+                        <div>
+                            <Badge variant="secondary">EPS</Badge>
+                            <br/>
+                            <h4> {basicInfo.epsTrailingTwelveMonths ? `$${basicInfo.epsTrailingTwelveMonths.toFixed(2)}` : "N/A"} </h4>
+                        </div>
+                    </Col>
+                </Row>
             </div>
-            <div className="row">
-                <div className="col-sm">Market Cap: <NumberFormat value={basicInfo.marketCap} displayType={'text'} thousandSeparator={true} prefix={'$'} /></div>
-                <div className="col-sm">Outstanding Shares: <NumberFormat value={basicInfo.sharesOutstanding} displayType={'text'} thousandSeparator={true} /></div>
-            </div>
-            <br />
-            <Accordion>
-                <Card>
-                    <Accordion.Toggle as={Button} variant="link" eventKey="0">
-                        <span className="text-dark">Price Chart</span>
-                    </Accordion.Toggle>
-                    <Accordion.Collapse eventKey="0">
-                        <Card.Body>
-                            <TradingViewWidget
-                                symbol={basicInfo.symbol}
-                            />
-                        </Card.Body>
-                    </Accordion.Collapse>
-                </Card>
-            </Accordion>
+            <TradingWidget symbol={basicInfo.symbol}/>
             <br />
         </div >
     );
