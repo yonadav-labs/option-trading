@@ -1,6 +1,7 @@
 import React from 'react';
 import NumberFormat from 'react-number-format';
 import { Comparator } from 'react-bootstrap-table2-filter';
+import { Col, Row } from 'react-bootstrap';
 
 // Returns the backend API base url.
 export default function getApiUrl() {
@@ -136,6 +137,16 @@ export function getLegByName(trade, name) {
 export function getAllTradeTypes(type) {
     return ['long_call', 'covered_call', 'long_put', 'cash_secured_put', 'bull_call_spread'];
 }
+export function getContractName(contract) {
+    return (
+        <Row>
+            {/* <Col>{contract.ticker.symbol}</Col> */}
+            <Col>{contract.is_call ? 'Call' : 'Put'}</Col>
+            <Col>{TimestampDateFormatter(contract.expiration)}</Col>
+            <Col>{PriceFormatter(contract.strike)}</Col>
+        </Row>
+    );
+};
 
 export function getTradeTypeDisplay(type) {
     switch (type) {

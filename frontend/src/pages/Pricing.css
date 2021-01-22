@@ -5,7 +5,7 @@
   background-size: 35vw;
 }
 
-.card-background {
+.pricing-card-background {
     background:  linear-gradient(180deg, rgba(255,143,43),rgb(255, 211, 56));
     border-radius: 10px;
 }
@@ -53,17 +53,17 @@
     border-radius: 3px;
 }
 /* Overwrite boostrap css */
-.card,.card-header {
+.pricing-card,.pricing-card-header {
     border: none;
     background-color: transparent;
 }
 
 /* Desktop only */
 @media (min-width: 900px) {
-     .pricing-descritpion {
+     .pricing-description {
          width: 50%;
      }
-     .card-deck {
+     .pricing-card-deck {
         margin: 0 auto 100px !important;
         width: 65%;
         

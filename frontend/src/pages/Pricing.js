@@ -1,4 +1,5 @@
 import React from 'react';
+import { Card, CardDeck } from 'react-bootstrap';
 // import Carousel from "react-bootstrap/Carousel";
 import { Link } from "react-router-dom"
 import './Home.css';
@@ -11,7 +12,7 @@ export default function Pricing() {
             <div className="row m-5">
                 <div className="col-lg-12 text-center">
                     <h1 className="mb-3">Subscription Plans</h1>
-                    <h5 className="m-auto pricing-descritpion">
+                    <h5 className="m-auto pricing-description">
                         Upgrade to Tiger Pro membership to unlock powerful options analytics features.
                         <br />Free trail for a week, cancel anytime.
                     </h5>
@@ -19,12 +20,12 @@ export default function Pricing() {
             </div>
 
             <div>
-                <div class="card-deck m-3 text-center text-white">
-                    <div className="card mb-4 card-background">
-                        <div class="card-header">
+                <CardDeck className="m-3 text-center text-white pricing-card-deck">
+                    <Card className="mb-4 pricing-card pricing-card-background">
+                        <Card.Header className="pricing-card-header">
                             <h6 class="mt-3 font-weight-bold">MONTHLY</h6>
-                        </div>
-                        <div class="card-body">
+                        </Card.Header>
+                        <Card.Body>
                             <h2>$5.69/mo</h2>
                             <div className="pt-3 card-list-left">
                                 <ul class="list-unstyled mt-3 mb-4">
@@ -34,14 +35,14 @@ export default function Pricing() {
                                 </ul>
                             </div>
                             <button type="button" class="btn btn-md btn-block btn-light">GET STARTED</button>
-                        </div>
-                    </div>
+                        </Card.Body>
+                    </Card>
 
-                    <div className="card mb-4 card-background ">
-                        <div class="card-header">
+                    <Card className="mb-4 pricing-card-background">
+                        <Card.Header className="pricing-card-header">
                             <h6 class="mt-3 font-weight-bold">YEARLY</h6>
-                        </div>
-                        <div class="card-body card-body-right">
+                        </Card.Header>
+                        <Card.Body className="card-body-right">
                             <div class="badge">MOST POPULAR</div>
                             <h2>$59.00/yr</h2>
                             <h6>save 10% yearly</h6>
@@ -53,9 +54,9 @@ export default function Pricing() {
                                 </ul>
                             </div>
                             <button type="button" class="btn btn-md btn-block btn-light">GET STARTED</button>
-                        </div>
-                    </div>
-                </div>
+                        </Card.Body>
+                    </Card>
+                </CardDeck>
             </div>
         </div>
     );
