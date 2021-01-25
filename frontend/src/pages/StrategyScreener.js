@@ -251,7 +251,7 @@ export default function BestCallByPrice() {
             <h1 className="text-center">Strategy Screener</h1>
             <Form>
                 <Form.Group>
-                    <Form.Label className="requiredField"><h4>Enter ticker symbol:*</h4></Form.Label>
+                    <Form.Label className="requiredField"><h4>Enter ticker symbol:</h4></Form.Label>
                     <TickerTypeahead
                         querySymbol={querySymbol}
                         selectedTicker={selectedTicker}
@@ -269,7 +269,7 @@ export default function BestCallByPrice() {
                     <div>
                         <Form onSubmit={handleSubmit}>
                             <Form.Group>
-                                <h4>Select an option expiration date:*</h4>
+                                <h4>Select an option expiration date:</h4>
                                 <div className="row">
                                     <div className="col-sm-12">
                                         <Select
@@ -297,7 +297,7 @@ export default function BestCallByPrice() {
                             <Form.Group>
                                 <h4>Enter my target price range of {selectedTicker[0].symbol} share on {selectedExpirationTimestamp ?
                                     TimestampDateFormatter(selectedExpirationTimestamp.value / 1000) : "expiration day"}
-                                    :* {targetPriceLower != null ? <span>{PriceFormatter(targetPriceLower)} - {PriceFormatter(targetPriceUpper)}</span> : null}
+                                    : {targetPriceLower != null ? <span>{PriceFormatter(targetPriceLower)} - {PriceFormatter(targetPriceUpper)}</span> : null}
                                 </h4>
                             </Form.Group>
                             <div style={{ marginLeft: '2.5rem', marginRight: '2.5rem', marginBottom: '3.5rem' }}>
