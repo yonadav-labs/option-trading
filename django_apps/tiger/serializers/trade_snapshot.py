@@ -33,7 +33,7 @@ class LegSnapshotSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = LegSnapshot
-        fields = ('name', 'is_long', 'units', 'cash_snapshot', 'stock_snapshot', 'contract_snapshot')
+        fields = ('is_long', 'units', 'cash_snapshot', 'stock_snapshot', 'contract_snapshot')
 
 
 def get_subdict_by_fields(adict, keys):
@@ -50,7 +50,7 @@ class TradeSnapshotSerializer(serializers.ModelSerializer):
     def create(self, validated_trade_snapshot):
         leg_snapshots = []
         for leg_snapshot_data in validated_trade_snapshot.get('leg_snapshots'):
-            leg_snapshot_model_data = get_subdict_by_fields(leg_snapshot_data, ['name', 'is_long', 'units'])
+            leg_snapshot_model_data = get_subdict_by_fields(leg_snapshot_data, ['is_long', 'units'])
             if leg_snapshot_data.get('contract_snapshot'):
                 contract_snapshot = OptionContractSnapshot.objects.create(**leg_snapshot_data.get('contract_snapshot'))
                 leg_snapshot_model_data['contract_snapshot'] = contract_snapshot

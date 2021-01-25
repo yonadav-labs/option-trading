@@ -89,7 +89,7 @@ class CallTradesTestCase(TestCase):
         self.assertAlmostEqual(call_contract.get_value_in_price_range(300, 310), 1700.0)
         self.assertAlmostEqual(call_contract.get_value_in_price_range(278, 298), 250.0)
 
-        long_call_leg = OptionLeg('long_call_leg', True, 2, call_contract)
+        long_call_leg = OptionLeg(True, 2, call_contract)
         self.assertAlmostEqual(long_call_leg.get_value_in_price_range(100, 102), 0.0)
         self.assertAlmostEqual(long_call_leg.get_value_in_price_range(300, 310), 3400.0)
         self.assertAlmostEqual(long_call_leg.get_value_in_price_range(278, 298), 500.0)
@@ -98,7 +98,7 @@ class CallTradesTestCase(TestCase):
         self.assertAlmostEqual(long_call_leg.get_profit_in_price_range(278, 298), -31840)
         self.assertAlmostEqual(long_call_leg.get_profit_in_price_range(449.7, 449.7), 0)
 
-        short_call_leg = OptionLeg('short_call_leg', False, 2, call_contract)
+        short_call_leg = OptionLeg(False, 2, call_contract)
         self.assertAlmostEqual(short_call_leg.get_value_in_price_range(100, 102), 0.0)
         self.assertAlmostEqual(short_call_leg.get_value_in_price_range(300, 310), -3400.0)
         self.assertAlmostEqual(short_call_leg.get_value_in_price_range(278, 298), -500.0)
@@ -289,7 +289,7 @@ class PutTradesTestCase(TestCase):
         self.assertEqual(put_contract.get_value_in_price_range(55, 65), 800.0)
         self.assertEqual(put_contract.get_value_in_price_range(63, 73), 125.0)
 
-        long_put_leg = OptionLeg('long_put_leg', True, 2, put_contract)
+        long_put_leg = OptionLeg(True, 2, put_contract)
         self.assertAlmostEqual(long_put_leg.get_value_in_price_range(90, 102), 0.0)
         self.assertAlmostEqual(long_put_leg.get_value_in_price_range(55, 65), 1600.0)
         self.assertAlmostEqual(long_put_leg.get_value_in_price_range(63, 73), 250.0)

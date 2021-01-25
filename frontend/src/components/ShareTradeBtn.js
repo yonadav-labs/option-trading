@@ -23,7 +23,7 @@ export default function ShareTradeBtn(props) {
             target_price_upper: trade.target_price_upper,
         };
         trade.legs.map((leg, index) => {
-            let legSnapshot = { name: leg.name, is_long: leg.is_long, units: leg.units }
+            let legSnapshot = { is_long: leg.is_long, units: leg.units }
             if (leg.contract) {
                 let contract = {
                     ticker_id: leg.contract.ticker.id,

@@ -49,10 +49,9 @@ class LoadFromSnapshotTestCase(TestCase):
 
     def testLoadStockLegFromSnapshot(self):
         stock_snapshot = StockSnapshot.objects.create(ticker=self.ticker, external_cache=self.external_cache)
-        stock_leg_snapshot = LegSnapshot.objects.create(name='long_cash_leg', is_long=True, units=1,
-                                                        stock_snapshot=stock_snapshot)
+        stock_leg_snapshot = LegSnapshot.objects.create(is_long=True, units=1, stock_snapshot=stock_snapshot)
         stock_leg = Leg.from_snapshot(stock_leg_snapshot)
-        self.assertEqual(stock_leg.name, 'long_cash_leg')
+        self.assertEqual(stock_leg.name, 'long_stock_leg')
         self.assertEqual(stock_leg.is_long, True)
         self.assertEqual(stock_leg.units, 1)
         self.assertEqual(stock_leg.stock.ticker, self.ticker)
@@ -62,7 +61,7 @@ class LoadFromSnapshotTestCase(TestCase):
         contract_snapshot_td = OptionContractSnapshot.objects.create(ticker=self.ticker, is_call=False, strike=66.0,
                                                                      expiration_timestamp=1610744400, premium=0.0,
                                                                      external_cache=self.external_cache_td)
-        contract_leg_snapshot = LegSnapshot.objects.create(name='long_put_leg', is_long=True, units=2,
+        contract_leg_snapshot = LegSnapshot.objects.create(is_long=True, units=2,
                                                            contract_snapshot=contract_snapshot_td)
         contract_leg = Leg.from_snapshot(contract_leg_snapshot)
         self.assertEqual(contract_leg.name, 'long_put_leg')
@@ -78,10 +77,9 @@ class LoadFromSnapshotTestCase(TestCase):
         contract_snapshot_td = OptionContractSnapshot.objects.create(ticker=self.ticker, is_call=False, strike=66.0,
                                                                      expiration_timestamp=1610744400, premium=0.0,
                                                                      external_cache=self.external_cache_td)
-        contract_leg_snapshot = LegSnapshot.objects.create(name='short_put_leg', is_long=False, units=1,
+        contract_leg_snapshot = LegSnapshot.objects.create(is_long=False, units=1,
                                                            contract_snapshot=contract_snapshot_td)
-        cash_leg_snapshot = LegSnapshot.objects.create(name='long_cash_leg', is_long=True, units=7413,
-                                                       cash_snapshot=True)
+        cash_leg_snapshot = LegSnapshot.objects.create(is_long=True, units=7413, cash_snapshot=True)
         trade_snapshot = TradeSnapshot.objects.create(type='cash_secured_put', stock_snapshot=stock_snapshot,
                                                       creator=creator, is_public=True, target_price_lower=100,
                                                       target_price_upper=100)

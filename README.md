@@ -1,11 +1,19 @@
-# options
+# Tigerstance.com
 
 ## Local
+
+### Set up
 
 * Install docker.
 * Start containers: `docker-compose up -d`, `docker-compose up --build -d`
 * Stop containers: `docker-compose down`,  `docker-compose down -v`
-* Run scripts(optional): `docker-compose exec web python tiger/scripts/fetch_tickers.py`, `docker-compose exec web python tiger/scripts/disable_tickers.py`.
+
+### Common commands
+
+* `docker-compose exec web python manage.py makemigrations`
+* `docker-compose exec web python manage.py migrate`
+* `docker-compose exec web python tiger/scripts/fetch_tickers.py`
+* `docker-compose exec web python tiger/scripts/disable_tickers.py`
 
 ## Deployment
 

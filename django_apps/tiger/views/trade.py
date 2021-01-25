@@ -45,7 +45,7 @@ def get_best_trades(request, ticker_symbol):
 
     all_trades = []
     call_contract_lists, put_contract_list = get_valid_contracts(
-        ticker, request, use_as_premium, all_expiration_timestamps)
+        ticker, request, use_as_premium, all_expiration_timestamps, filter_low_liquidity=True)
     for calls_per_exp in call_contract_lists:
         for call in calls_per_exp:
             # Reduce response size.
@@ -74,7 +74,6 @@ def get_best_trades(request, ticker_symbol):
     # TODO: add tests.
     bull_call_spread_trades = []
     for calls_per_exp in call_contract_lists:
-        # TODO: find a better way to reduce response size.
         sampled_calls = sorted(calls_per_exp, key=lambda call: (call.volume, call.open_interest), reverse=True)[:100]
         for low_strike_call in sampled_calls:
             for high_strike_call in sampled_calls:

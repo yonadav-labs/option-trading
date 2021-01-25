@@ -37,8 +37,7 @@ class OptionContractSnapshotAdmin(admin.ModelAdmin):
 
 
 class LegSnapshotAdmin(admin.ModelAdmin):
-    list_display = ['id', 'name', 'is_long', 'units', 'cash_snapshot', 'stock_snapshot',
-                    'contract_snapshot', ] + DEFAULT_FIELDS
+    list_display = ['id', 'is_long', 'units', 'cash_snapshot', 'stock_snapshot', 'contract_snapshot', ] + DEFAULT_FIELDS
     list_filter = ['is_long']
     search_fields = ['id']
 
