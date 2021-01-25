@@ -33,5 +33,8 @@ def trade_snapshots(request):
         trade_snapshot_serializer = TradeSnapshotSerializer(data=request.data)
         if trade_snapshot_serializer.is_valid():
             trade_snapshot = trade_snapshot_serializer.save()
-            return Response({'id': trade_snapshot.id}, status=status.HTTP_201_CREATED)
+            trade = Trade.from_snapshot(trade_snapshot)
+            trade_serializer = TradeSerializer(trade)
+            return Response({'id': trade_snapshot.id, 'trade_snaphost': trade_serializer.data},
+                            status=status.HTTP_201_CREATED)
         return Response(trade_snapshot_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
