@@ -295,7 +295,7 @@ export default function BestCallByPrice() {
                                 </div>
                             </Form.Group>
                             <Form.Group>
-                                <h4>Enter my target price range of {selectedTicker[0].symbol} share on {selectedExpirationTimestamp ?
+                                <h4>Enter target price range of {selectedTicker[0].symbol} share on {selectedExpirationTimestamp ?
                                     TimestampDateFormatter(selectedExpirationTimestamp.value / 1000) : "expiration day"}
                                     : {targetPriceLower != null ? <span>{PriceFormatter(targetPriceLower)} - {PriceFormatter(targetPriceUpper)}</span> : null}
                                 </h4>

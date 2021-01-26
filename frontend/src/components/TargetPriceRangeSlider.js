@@ -9,17 +9,17 @@ const Range = createSliderWithTooltip(Slider.Range);
 function TargetPriceRangeSlider(props) {
 
     const { currentPrice, setPriceLower, setPriceUpper } = props;
-    const minPrice = currentPrice * 0.5;
-    const maxPrice = currentPrice * 1.5;
+    const minPrice = 0.0;
+    const maxPrice = currentPrice * 2;
 
     const marks = {
         [currentPrice]: (
             <span>{PriceFormatter(currentPrice)}<br />(last price)</span>
         ),
-        [minPrice]: (<span>{PriceFormatter(minPrice)}<br />(-50%)</span>),
-        [currentPrice * 0.75]: (<span>{PriceFormatter(currentPrice * 0.75)}<br />(-25%)</span>),
-        [currentPrice * 1.25]: (<span>{PriceFormatter(currentPrice * 1.25)}<br />(+25%)</span>),
-        [maxPrice]: (<span>{PriceFormatter(maxPrice)}<br />(+50%)</span>),
+        [minPrice]: (<span>{PriceFormatter(minPrice)}<br />(-100%)</span>),
+        [currentPrice * 0.5]: (<span>{PriceFormatter(currentPrice * 0.5)}<br />(-50%)</span>),
+        [currentPrice * 1.5]: (<span>{PriceFormatter(currentPrice * 1.5)}<br />(+50%)</span>),
+        [maxPrice]: (<span>{PriceFormatter(maxPrice)}<br />(+100%)</span>),
     };
 
     function onRangeChange(lowUpArr) {
