@@ -66,7 +66,7 @@ function Header() {
                         <Nav.Link className="text-dark" as={Link} to="/strategy-screener">Strategy Screener</Nav.Link>
                         <Nav.Link className="text-dark" as={Link} to="/option-screener">Options Screener</Nav.Link>
                         {/* <Nav.Link className="text-dark" as={Link} to="/strategy-composer">Strategy Composer</Nav.Link> */}
-                        <Nav.Link className="text-dark" href="#">Pricing</Nav.Link>
+                        <Nav.Link className="text-dark" as={Link} to="/pricing">Pricing</Nav.Link>
                         <Nav.Link className="text-dark" href="#">Support</Nav.Link>
                     </Nav>
                     {authState.isAuthenticated ?
