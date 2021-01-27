@@ -115,9 +115,6 @@ export default function BestCallByPrice() {
             dataField: 'min_volume',
             text: 'Liquidity',
             formatter: (cell, row, rowIndex, extraData) => {
-                if (cell == 0) return (<span>N/A</span>);
-                const exp_date = new Date(cell * 1000).toLocaleDateString('en-US')
-                const exp_time = new Date(cell * 1000).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })
                 return (
                     <span>
                         Volume: {cell}<br />
