@@ -1,5 +1,5 @@
 def is_low_liquidity(contract):
-    return contract.open_interest <= 10 or contract.volume <= 1
+    return contract.open_interest < 10 or contract.volume == 0
 
 
 def get_valid_contracts(ticker, request, use_as_premium, all_expiration_timestamps, filter_low_liquidity=False):
