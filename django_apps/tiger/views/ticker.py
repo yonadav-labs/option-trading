@@ -19,9 +19,11 @@ class TickerViewSet(viewsets.ModelViewSet):
         if expiration_timestamps is None:
             return Response(status=500)
 
+        quote, external_cache_id = ticker.get_quote()
         resp = {
-            'quote': ticker.get_quote()[0],
-            'expiration_timestamps': expiration_timestamps
+            'quote': quote,
+            'expiration_timestamps': expiration_timestamps,
+            'external_cache_id': external_cache_id
         }
 
         return Response(resp)
