@@ -112,13 +112,18 @@ export default function BestCallByPrice() {
             },
             sort: true
         }, {
-            dataField: 'min_last_trade_date',
-            text: 'Last traded',
+            dataField: 'min_volume',
+            text: 'Liquidity',
             formatter: (cell, row, rowIndex, extraData) => {
                 if (cell == 0) return (<span>N/A</span>);
                 const exp_date = new Date(cell * 1000).toLocaleDateString('en-US')
                 const exp_time = new Date(cell * 1000).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })
-                return (<span>{exp_date} <br /><small>{exp_time}</small></span>);
+                return (
+                    <span>
+                        Volume: {cell}<br />
+                        <small>Open: {row.min_open_interest}</small>
+                    </span>
+                );
             },
             sort: true
         },
