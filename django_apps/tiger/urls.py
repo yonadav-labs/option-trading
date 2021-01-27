@@ -1,10 +1,14 @@
 from django.urls import include, path
 from rest_framework.urlpatterns import format_suffix_patterns
+from rest_framework import routers
+
 from tiger import views
 
+router = routers.SimpleRouter()
+router.register(r'tickers', views.TickerViewSet, basename='tickers')
+
 restful_urlpatterns = [
-    path('api/tickers/', views.ticker_list, name='tickers'),
-    path('api/tickers/<str:ticker_symbol>/', views.ticker, name='ticker'),
+    path('api/', include(router.urls)),
     path('api/user', views.user_detail),
     path('api/tickers/<str:ticker_symbol>/contracts/', views.contracts, name='contracts'),
     path('api/tickers/<str:ticker_symbol>/trades/', views.get_best_trades, name='get_best_trades'),

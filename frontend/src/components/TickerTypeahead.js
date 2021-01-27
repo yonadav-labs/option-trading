@@ -39,7 +39,7 @@ export default function TickerTypeahead({querySymbol, selectedTicker, setSelecte
     const loadExpirationDates = async (selected) => {
         try {
             setModalActive(true);
-            const response = await Axios.get(`${API_URL}/tickers/${selected[0].symbol}`);
+            const response = await Axios.get(`${API_URL}/tickers/${selected[0].symbol}/expire_dates/`);
             setExpirationTimestamps(response.data.expiration_timestamps);
             setbasicInfo(response.data.quote)
             setSelectedTicker(selected);
