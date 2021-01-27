@@ -257,6 +257,7 @@ class PutTradesTestCase(TestCase):
         self.assertAlmostEqual(sell_put.target_price_profit, 0.0)
         self.assertAlmostEqual(sell_put.min_volume, 3)
         self.assertAlmostEqual(sell_put.min_open_interest, 10)
+        self.assertAlmostEqual(sell_put.profit_cap, 70)
 
     @mock.patch('django.utils.timezone.now')
     def test_buy_put(self, mock_now):
@@ -282,6 +283,7 @@ class PutTradesTestCase(TestCase):
         self.assertAlmostEqual(long_put.target_price_profit, 230.0)
         self.assertAlmostEqual(long_put.target_price_profit_ratio, 3.28571428571)
         self.assertAlmostEqual(long_put.to_target_price_lower_ratio, -0.11624745071)
+        self.assertAlmostEqual(long_put.profit_cap, 6730)
 
     def test_value_in_price_range(self):
         put_contract = OptionContract(self.ticker, False, self.yahoo_input, self.stock_price)

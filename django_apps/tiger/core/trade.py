@@ -1,10 +1,11 @@
+from abc import ABC, abstractmethod
 from tiger.utils import timestamp_to_datetime_with_default_tz
 
 from .leg import Leg, CashLeg, StockLeg, OptionLeg
 from .security import Stock
 
 
-class Trade:
+class Trade(ABC):
     def __init__(self, type, stock, legs, target_price_lower=None, target_price_upper=None):
         '''
         :param type: type of trade.
@@ -25,18 +26,20 @@ class Trade:
     def from_snapshot(cls, trade_snapshot):
         stock = Stock.from_snapshot(trade_snapshot.stock_snapshot)
         legs = [Leg.from_snapshot(leg_snapshot) for leg_snapshot in trade_snapshot.leg_snapshots.all()]
-        new_trade = cls(trade_snapshot.type, stock, legs, target_price_lower=trade_snapshot.target_price_lower,
-                        target_price_upper=trade_snapshot.target_price_upper)
+
         if trade_snapshot.type == 'long_call':
-            new_trade.__class__ = LongCall
+            trade_class = LongCall
         elif trade_snapshot.type == 'long_put':
-            new_trade.__class__ = LongPut
+            trade_class = LongPut
         elif trade_snapshot.type == 'covered_call':
-            new_trade.__class__ = CoveredCall
+            trade_class = CoveredCall
         elif trade_snapshot.type == 'cash_secured_put':
-            new_trade.__class__ = CashSecuredPut
+            trade_class = CashSecuredPut
         elif trade_snapshot.type == 'bull_call_spread':
-            new_trade.__class__ = BullCallSpread
+            trade_class = BullCallSpread
+
+        new_trade = trade_class(stock, legs, target_price_lower=trade_snapshot.target_price_lower,
+                                target_price_upper=trade_snapshot.target_price_upper)
         return new_trade
 
     def get_leg(self, is_long, type, is_call=None):
@@ -138,19 +141,28 @@ class Trade:
         return (self.break_even_price - self.stock.stock_price) / self.stock.stock_price
 
     @property
+    @abstractmethod
     def break_even_price(self):
-        return None
+        pass
 
     @property
+    @abstractmethod
     def display_name(self):
-        return None
+        pass
+
+    @property
+    @abstractmethod
+    def profit_cap_price(self):
+        ''' None means no cap.'''
+        pass
 
     @property
     def profit_cap(self):
-        '''
-        :return: None means no cap.
-        '''
-        return None
+        ''' None means no cap.'''
+        profit_cap_price = self.profit_cap_price
+        if profit_cap_price is None:
+            return None
+        return self.get_profit_in_price_range(profit_cap_price, profit_cap_price)
 
     @property
     def profit_cap_ratio(self):
@@ -270,6 +282,10 @@ class LongCall(Trade):
     def break_even_price(self):
         return self.get_long_call_leg().contract.strike + self.get_long_call_leg().contract.premium
 
+    @property
+    def profit_cap_price(self):
+        return None
+
 
 class LongPut(Trade):
     def __init__(self, stock, legs, target_price_lower=None, target_price_upper=None):
@@ -283,6 +299,10 @@ class LongPut(Trade):
     @property
     def break_even_price(self):
         return self.get_long_put_leg().contract.strike - self.get_long_put_leg().contract.premium
+
+    @property
+    def profit_cap_price(self):
+        return 0.0
 
 
 # TODO: add validation logic (number of stock and contract should match)
@@ -306,10 +326,8 @@ class CoveredCall(Trade):
         return self.stock.stock_price - self.get_short_call_leg().contract.premium
 
     @property
-    def profit_cap(self):
-        profit_cap_price = self.get_short_call_leg().contract.strike
-        # TODO: refactor out a function just for single price.
-        return self.get_profit_in_price_range(profit_cap_price, profit_cap_price)
+    def profit_cap_price(self):
+        return self.get_short_call_leg().contract.strike
 
 
 class CashSecuredPut(Trade):
@@ -330,8 +348,8 @@ class CashSecuredPut(Trade):
         return self.get_short_put_leg().contract.strike - self.get_short_put_leg().contract.premium
 
     @property
-    def profit_cap(self):
-        return -self.get_short_put_leg().cost
+    def profit_cap_price(self):
+        return self.get_short_put_leg().contract.strike
 
 
 # TODO: generalize to vertical call spread, vertical spread...
@@ -357,8 +375,7 @@ class BullCallSpread(Trade):
                - self.get_short_call_leg().contract.premium
 
     @property
-    def profit_cap(self):
-        profit_cap_price = self.get_short_call_leg().contract.strike
-        return self.get_profit_in_price_range(profit_cap_price, profit_cap_price)
+    def profit_cap_price(self):
+        return self.get_short_call_leg().contract.strike
 
 # TODO: add a sell everything now and hold cash trade and a long stock trade.
