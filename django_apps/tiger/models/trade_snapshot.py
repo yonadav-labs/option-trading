@@ -58,7 +58,7 @@ class TradeSnapshot(BaseModel):
     stock_snapshot = models.ForeignKey(StockSnapshot, on_delete=models.CASCADE)  # Snapshot of underlying asset.
     leg_snapshots = models.ManyToManyField(LegSnapshot)
 
-    creator = models.ForeignKey(User, on_delete=models.CASCADE, related_name='trades')
+    creator = models.ForeignKey(User, on_delete=models.CASCADE, related_name='trades', null=True, blank=True)
     is_public = models.BooleanField(default=False)  # If non-creator can view this trade.
 
     # Market assumptions.

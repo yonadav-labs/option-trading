@@ -2,8 +2,7 @@ import logging
 
 from django.shortcuts import get_object_or_404
 from rest_framework import status
-from rest_framework.decorators import api_view, permission_classes
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from tiger.core import Trade
 from tiger.models import TradeSnapshot
@@ -26,10 +25,10 @@ def trade_snapshot_detail(request, pk):
 
 
 @api_view(['POST'])
-@permission_classes([IsAuthenticated])
 def trade_snapshots(request):
     if request.method == 'POST':
-        request.data['creator_id'] = request.user.id
+        if request.user:
+            request.data['creator_id'] = request.user.id
         trade_snapshot_serializer = TradeSnapshotSerializer(data=request.data)
         if trade_snapshot_serializer.is_valid():
             trade_snapshot = trade_snapshot_serializer.save()

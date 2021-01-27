@@ -42,7 +42,7 @@ def get_subdict_by_fields(adict, keys):
 
 # TODO: add validators.
 class TradeSnapshotSerializer(serializers.ModelSerializer):
-    creator_id = serializers.IntegerField()
+    creator_id = serializers.IntegerField(allow_null=True)
     stock_snapshot = StockSnapshotSerializer()
     leg_snapshots = LegSnapshotSerializer(many=True)
 

@@ -49,13 +49,16 @@ export default function ShareTradeBtn(props) {
 
     const SaveTradeSnaphot = async (tradeSnapshot) => {
         try {
-            const { accessToken } = authState;
             let url = `${API_URL}/trade_snapshots`;
+            let headers = {
+                'Content-Type': 'application/json',
+            }
+            if (authState.isAuthenticated) {
+                const { accessToken } = authState;
+                headers['Authorization'] = `Bearer ${accessToken}`
+            }
             const response = await Axios.post(url, tradeSnapshot, {
-                headers: {
-                    'Content-Type': 'application/json',
-                    Authorization: `Bearer ${accessToken}`,
-                }
+                headers: headers
             });
             setShareLink('/t/' + response.data.id);
             setIsLoading(false);
@@ -79,14 +82,14 @@ export default function ShareTradeBtn(props) {
     return (
         (
             <div>
-                {authState.isAuthenticated ? shareLink ?
-                    <span><FaShare /> Share:&nbsp;
+                {
+                    shareLink ?
+                        <span><FaShare /> Share:&nbsp;
                         <Link style={{ "cursor": "pointer" }} to={shareLink} onClick={(e) => { e.stopPropagation() }} target="_blank">
-                            www.tigerstance.com{shareLink}
-                        </Link>
-                    </span> :
-                    <div style={{ "cursor": "pointer" }} onClick={ShareTrade}><FaShare /> Share</div>
-                    : <Link className="btn btn-primary mr-3 text-light" to="/signin">Sign in to share</Link>
+                                www.tigerstance.com{shareLink}
+                            </Link>
+                        </span> :
+                        <div style={{ "cursor": "pointer" }} onClick={ShareTrade}><FaShare /> Share</div>
                 }
             </div >
         )
