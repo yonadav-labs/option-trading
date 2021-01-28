@@ -14,7 +14,7 @@ export default function Pricing() {
                     <h1 className="mb-3">Subscription Plans</h1>
                     <h5 className="m-auto pricing-description">
                         Upgrade to Tiger Pro membership to unlock powerful options analytics features.
-                        <br />Free trail for a week, cancel anytime.
+                        <br />Free trial for a week, cancel anytime.
                     </h5>
                 </div>
             </div>
@@ -45,7 +45,7 @@ export default function Pricing() {
                         <Card.Body className="card-body-right">
                             <div class="badge">MOST POPULAR</div>
                             <h2>$59.00/yr</h2>
-                            <h6>save 10% yearly</h6>
+                            <h6>Save $9.28 yearly</h6>
                             <div className="pt-3 card-list-right">
                                 <ul class="list-unstyled mt-3 mb-4">
                                     <li>&#10003; Includes everything in the monthly plan.</li>
