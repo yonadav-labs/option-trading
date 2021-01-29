@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react';
 import NumberFormat from 'react-number-format';
 import UserContext from '../UserContext';
-import getApiUrl from '../utils';
+import getApiUrl, { TimestampDateFormatter } from '../utils';
 import Axios from 'axios';
 import TradingWidget from './TradingWidget';
 
@@ -89,20 +89,20 @@ export default function TickerSummary({ basicInfo }) {
             </Row>
             <Row>
                 <Col sm={3} xs={6}>
-                    <Badge variant="secondary">Average Volume</Badge>
-                    <div> {basicInfo.averageDailyVolume3Month ? intToString(basicInfo.averageDailyVolume3Month, 1) : "N/A"} </div>
-                </Col>
-                <Col sm={3} xs={6}>
-                    <Badge variant="secondary">Shares Outstanding</Badge>
-                    <div> {basicInfo.sharesOutstanding ? intToString(basicInfo.sharesOutstanding, 1) : "N/A"} </div>
-                </Col>
-                <Col sm={3} xs={6}>
-                    <Badge variant="secondary">P/E</Badge>
+                    <Badge variant="secondary">P/E Ratio</Badge>
                     <div> {basicInfo.trailingPE ? basicInfo.trailingPE.toFixed(2) : "N/A"} </div>
                 </Col>
                 <Col sm={3} xs={6}>
                     <Badge variant="secondary">EPS</Badge>
                     <div> {basicInfo.epsTrailingTwelveMonths ? `$${basicInfo.epsTrailingTwelveMonths.toFixed(2)}` : "N/A"} </div>
+                </Col>
+                <Col sm={3} xs={6}>
+                    <Badge variant="secondary">Earnings date</Badge>
+                    <div> {basicInfo.earningsTimestamp && basicInfo.earningsTimestamp > Date.now() / 1000 ? TimestampDateFormatter(basicInfo.earningsTimestamp) : "N/A"} </div>
+                </Col>
+                <Col sm={3} xs={6}>
+                    <Badge variant="secondary">Dividend Date</Badge>
+                    <div> {basicInfo.dividendDate && basicInfo.earningsTimestamp > Date.now() / 1000 ? TimestampDateFormatter(basicInfo.dividendDate) : "N/A"} </div>
                 </Col>
             </Row>
         </div >
