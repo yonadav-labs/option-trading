@@ -101,7 +101,7 @@ export default function TickerSummary({ basicInfo }) {
                     <div> {basicInfo.earningsTimestamp && basicInfo.earningsTimestamp > Date.now() / 1000 ? TimestampDateFormatter(basicInfo.earningsTimestamp) : "N/A"} </div>
                 </Col>
                 <Col sm={3} xs={6}>
-                    <Badge variant="secondary">Dividend Date</Badge>
+                    <Badge variant="secondary">Dividend date</Badge>
                     <div> {basicInfo.dividendDate && basicInfo.earningsTimestamp > Date.now() / 1000 ? TimestampDateFormatter(basicInfo.dividendDate) : "N/A"} </div>
                 </Col>
             </Row>
