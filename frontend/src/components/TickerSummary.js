@@ -123,9 +123,6 @@ export default function TickerSummary({ basicInfo }) {
                     </Col>
                 </Row>
             </div>
-            <br />
-            <TradingWidget symbol={basicInfo.symbol} />
-            <br />
         </div >
     );
 }

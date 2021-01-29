@@ -1,6 +1,5 @@
-import React, { useState, useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import { useHistory, useLocation } from "react-router-dom";
-import Form from 'react-bootstrap/Form'
 import TickerTypeahead from '../components/TickerTypeahead';
 import TickerSummary from '../components/TickerSummary.js';
 import Axios from 'axios';
@@ -8,19 +7,22 @@ import getApiUrl, {
     PriceFormatter, TimestampDateFormatter, InTheMoneyRowStyle,
     InTheMoneySign, onLastTradedFilterChange, PriceMovementFormatter, NumberRoundFormatter
 } from '../utils';
-import Button from 'react-bootstrap/Button';
-import Alert from 'react-bootstrap/Alert';
-import BootstrapTable from 'react-bootstrap-table-next';
-import paginationFactory from 'react-bootstrap-table2-paginator';
-import filterFactory, { multiSelectFilter, numberFilter } from 'react-bootstrap-table2-filter';
 import { BsArrowsExpand, BsArrowsCollapse } from 'react-icons/bs';
 import ModalSpinner from '../components/ModalSpinner';
 import ContractDetailsCard from '../components/cards/ContractDetailsCard';
-import { Comparator } from 'react-bootstrap-table2-filter';
 import Select from "react-select";
-import SingleChoiceFilter from "../components/filters/SingleChoiceFilter"
-import StrikeRangeSliderFilter from "../components/filters/StrikeRangeSliderFilter"
+import TradingViewWidget from 'react-tradingview-widget';
 import { useSearch } from "../components/querying"
+
+// Bootstrap
+import BootstrapTable from 'react-bootstrap-table-next';
+import paginationFactory from 'react-bootstrap-table2-paginator';
+import filterFactory, { multiSelectFilter, numberFilter, Comparator } from 'react-bootstrap-table2-filter';
+import { Form, Button, Alert, Container, Row, Col, Accordion, Card } from 'react-bootstrap'
+
+// Filters
+import StrikeRangeSliderFilter from "../components/filters/StrikeRangeSliderFilter"
+import ButtonToggleFilter from '../components/filters/ButtonToggleFilter';
 
 let putCallFilter;
 let inTheMoneyFilter;
@@ -270,7 +272,14 @@ export default function SellCoveredCall() {
         // let timestampValues = []
         // selectedExpirationTimestamps.forEach( t => timestampValues.push(t.value))
         // addQuery(location, history, `date`, timestampValues.join(','))
-  
+
+        if (!selectedExpirationTimestamps || selectedExpirationTimestamps[0] === undefined) {
+            setShowTimestampAlert(true);
+            return;
+        } else {
+            setShowTimestampAlert(false);
+        }
+
         setShowTimestampAlert(selectedExpirationTimestamps == null);
         if (form.checkValidity() !== false && selectedExpirationTimestamps != null) {
             getContracts(selectedExpirationTimestamps);
@@ -332,198 +341,239 @@ export default function SellCoveredCall() {
     }
 
     return (
-        <div id="content" className="container min-vh-100" style={{ "marginTop": "4rem" }}>
+        <Container id="content" className="min-vh-100" style={{ "marginTop": "4rem" }} fluid>
             <ModalSpinner active={modalActive}></ModalSpinner>
             <h1 className="text-center">Option Screener</h1>
-            <Form>
-                <Form.Group>
-                    <Form.Label className="requiredField"><h4>Enter ticker symbol:</h4></Form.Label>
-                    <TickerTypeahead
-                        querySymbol={querySymbol}
-                        selectedTicker={selectedTicker}
-                        setSelectedTicker={setSelectedTicker}
-                        setExpirationTimestamps={setExpirationTimestamps}
-                        setbasicInfo={setbasicInfo}
-                        resetStates={resetStates}
-                        setModalActive={setModalActive}
-                    />
-                </Form.Group>
-            </Form>
-            {selectedTicker.length > 0 ?
-                <div>
-                    <TickerSummary basicInfo={basicInfo} />
-                    <div>
-                        <Form onSubmit={handleSubmit}>
-                            <Form.Group>
-                                <h4>Expiration Dates:</h4>
-                                <div className="row">
-                                    <div className="col-sm-12">
-                                        <Select
-                                            defaultValue={selectedExpirationTimestamps}
-                                            isMulti
-                                            isClearable
-                                            onChange={setSelectedExpirationTimestamps}
-                                            options={expirationTimestampsOptions}
-                                            className="basic-multi-select"
-                                            classNamePrefix="select"
-                                        />
-                                    </div>
-                                </div>
-                                <div className="row">
-                                    <div className="col-sm-12">
-                                        {showTimestampAlert ?
-                                            <Alert variant="warning">
-                                                Please select at least one expiration date.
-                                        </Alert>
-                                            : null
-                                        }
-                                    </div>
-                                </div>
-                            </Form.Group>
-                            <div class="row">
-                                <div className="col">
-                                    <Button type="submit" className="btn btn-primary">Get option chain</Button>
-                                </div>
+            <Row className="justify-content-md-center">
+                <Col md={3}>
+                    <Form>
+                        <Form.Group>
+                            <Form.Label className="requiredField"><h4>Enter ticker symbol:</h4></Form.Label>
+                            <TickerTypeahead
+                                querySymbol={querySymbol}
+                                selectedTicker={selectedTicker}
+                                setSelectedTicker={setSelectedTicker}
+                                setExpirationTimestamps={setExpirationTimestamps}
+                                setbasicInfo={setbasicInfo}
+                                resetStates={resetStates}
+                                setModalActive={setModalActive}
+                            />
+                        </Form.Group>
+                    </Form>
+                    {selectedTicker.length > 0 ?
+                        <div>
+                            <TickerSummary basicInfo={basicInfo} />
+                        </div>
+                        :
+                        null
+                    }
+                    {selectedTicker.length > 0 ?
+                        <div>
+                            <br />
+                            <div style={{ maxWidth: '30rem', height: '20rem' }}>
+                                <TradingViewWidget
+                                    symbol={basicInfo.symbol}
+                                    autosize
+                                />
+
                             </div>
-                        </Form>
-                        <br />
-                        {contracts.length > 0 ?
-                            <div>
-                                <h4>Filters</h4>
-                                <hr />
-                                <div className="row">
-                                    <div className="col-sm-3">
-                                        <Form>
-                                            <Form.Group>
-                                                <Form.Label className="font-weight-bold">Put or call:</Form.Label>
-                                                <SingleChoiceFilter choiceLabelMap={{ false: 'Put', true: 'Call' }} tableFilter={putCallFilter} />
-                                            </Form.Group>
-                                        </Form>
-                                    </div>
-                                    <div className="col-sm-3">
-                                        <Form>
-                                            <Form.Group>
-                                                <Form.Label className="font-weight-bold">Strike price:</Form.Label>
-                                                <StrikeRangeSliderFilter
-                                                    atmPrice={basicInfo.regularMarketPrice}
-                                                    strikePrices={strikePrices}
-                                                    minStrikeFilter={minStrikeFilter}
-                                                    maxStrikeFilter={maxStrikeFilter}
+                            <br />
+                        </div>
+                        :
+                        null
+                    }
+                </Col>
+                <Col md={7}>
+                    {selectedTicker.length > 0 ?
+                        <div>
+                            <Form onSubmit={handleSubmit}>
+                                <Form.Label className="requiredField"><h4>Expiration Dates:</h4></Form.Label>
+                                <Row>
+                                    <Col md={8}>
+                                        <Form.Group>
+                                            <div>
+                                                <Select
+                                                    defaultValue={selectedExpirationTimestamps}
+                                                    isMulti
+                                                    isClearable
+                                                    onChange={setSelectedExpirationTimestamps}
+                                                    options={expirationTimestampsOptions}
+                                                    className="basic-multi-select"
+                                                    classNamePrefix="select"
                                                 />
-                                            </Form.Group>
-                                        </Form>
-                                    </div>
-                                    <div className="col-sm-3">
-                                        <Form>
-                                            <Form.Group>
-                                                <Form.Label className="font-weight-bold">Min volume:</Form.Label>
-                                                <Form.Control name="volume" as="select" defaultValue={0}
-                                                    onChange={(e) => onVolumeFilterChange(e, minVolumeFilter)}>
-                                                    <option key="0" value="0">All</option>
-                                                    {[1, 5, 10, 20, 50, 100, 200, 500, 1000, 10000].map((v, index) => {
-                                                        return (
-                                                            <option key={v} value={v}>{v}</option>
-                                                        );
-                                                    })}
-                                                </Form.Control>
-                                            </Form.Group>
-                                        </Form>
-                                    </div>
-                                    <div className="col-sm-3">
-                                        <Form>
-                                            <Form.Group>
-                                                <Form.Label className="font-weight-bold">Min open interest:</Form.Label>
-                                                <Form.Control name="open_interest" as="select" defaultValue={0}
-                                                    onChange={(e) => onOpenInterestFilterChange(e, minOpenInterestFilter)}>
-                                                    <option key="0" value="0">All</option>
-                                                    {[1, 5, 10, 20, 50, 100, 200, 500, 1000, 10000].map((v, index) => {
-                                                        return (
-                                                            <option key={v} value={v}>{v}</option>
-                                                        );
-                                                    })}
-                                                </Form.Control>
-                                            </Form.Group>
-                                        </Form>
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div className="col-sm-3">
-                                        <Form>
-                                            <Form.Group>
-                                                <Form.Label className="font-weight-bold">Last traded:</Form.Label>
-                                                <Form.Control name="tradeoff" as="select" defaultValue={0}
-                                                    onChange={(e) => onLastTradedFilterChange(e, lastTradedFilter)}>
-                                                    <option key="9999999" value="9999999">All</option>
-                                                    {[1, 4, 8, 24, 48, 72, 120, 240].map((hour, index) => {
-                                                        return (
-                                                            <option key={hour} value={hour}>
-                                                                In&nbsp;
-                                                                {(hour <= 24 ? hour + (hour > 1 ? " hours" : " hour") : hour / 24 + " days")}
-                                                            </option>
-                                                        );
-                                                    })}
-                                                </Form.Control>
-                                            </Form.Group>
-                                        </Form>
-                                    </div>
-                                    <div className="col-sm-3">
-                                        <Form>
-                                            <Form.Group>
-                                                <Form.Label className="font-weight-bold">Delta:</Form.Label>
-                                                <Form.Control name="delta" as="select" defaultValue="all"
-                                                    onChange={(e) => onDeltaFilterChange(e, minDeltaFilter, maxDeltaFilter)}>
-                                                    <option key="all" value="all">All</option>
-                                                    <option key="-1" value="-1">-1.0 to -0.8</option>
-                                                    <option key="-0.8" value="-0.8">-0.8 to -0.6</option>
-                                                    <option key="-0.6" value="-0.6">-0.6 to -0.4</option>
-                                                    <option key="-0.4" value="-0.4">-0.4 to -0.2</option>
-                                                    <option key="-0.2" value="-0.2">-0.2 to 0.0</option>
-                                                    <option key="0" value="0">0.0 to 0.2</option>
-                                                    <option key="0.2" value="0.2">0.2 to 0.4</option>
-                                                    <option key="0.4" value="0.4">0.4 to 0.6</option>
-                                                    <option key="0.6" value="0.6">0.6 to 0.8</option>
-                                                    <option key="0.8" value="0.8">0.8 to 1.0</option>
-                                                </Form.Control>
-                                            </Form.Group>
-                                        </Form>
-                                    </div>
-                                    <div className="col-sm-3">
-                                    </div>
-                                    <div className="col-sm-3">
+                                            </div>
+                                            <div>
+                                                {showTimestampAlert ?
+                                                    <Alert variant="warning">
+                                                        Please select at least one expiration date.
+                                                    </Alert>
+                                                    : null
+                                                }
+                                            </div>
+                                        </Form.Group>
+                                    </Col>
+                                    <Col md={4}>
+                                        <Button type="submit" className="btn btn-primary">Get options</Button>
+                                    </Col>
+                                </Row>
+                            </Form>
+                        </div>
+                        :
+                        null
+                    }
+                    {contracts.length > 0 ?
+                        <div>
+                            <Row className="justify-content-md-center" >
+                                <Col md="auto">
+                                    <Form>
+                                        <Form.Group>
+                                            <Form.Label className="font-weight-bold">Type:</Form.Label>
+                                            <br />
+                                            <ButtonToggleFilter
+                                                choiceLabelMap={{ false: 'Put', true: 'Call' }}
+                                                tableFilter={putCallFilter}
+                                            />
+                                        </Form.Group>
+                                    </Form>
+                                </Col>
+                                <Col>
+                                    <Form>
+                                        <Form.Group>
+                                            <Form.Label className="font-weight-bold">Strike price:</Form.Label>
+                                            <StrikeRangeSliderFilter
+                                                atmPrice={basicInfo.regularMarketPrice}
+                                                strikePrices={strikePrices}
+                                                minStrikeFilter={minStrikeFilter}
+                                                maxStrikeFilter={maxStrikeFilter}
+                                            />
+                                        </Form.Group>
+                                    </Form>
+                                </Col>
+                                {/* <Col>
+                                    <Form>
+                                        <Form.Group>
+                                            <Form.Label className="font-weight-bold">Premium:</Form.Label>
+                                            <SliderFilter
+                                                min={0}
+                                                max={200}
+                                                // onChange={(e) => onPremiumFilterChange(e, premiumFilter)}
+                                            />
+                                        </Form.Group>
+                                    </Form>
+                                </Col> */}
+                            </Row>
+                            <br />
+                            <Accordion>
+                                <Card>
+                                    <Accordion.Toggle as={Button} variant="link" eventKey="0">
+                                        <span className="text-dark">Advanced Filters</span>
+                                    </Accordion.Toggle>
+                                    <Accordion.Collapse eventKey="0">
+                                        <Card.Body>
+                                            <Row className="justify-content-md-center" >
+                                                <Col>
+                                                    <Form>
+                                                        <Form.Label className="font-weight-bold">Min volume:</Form.Label>
+                                                        <Form.Control name="volume" as="select" defaultValue={0}
+                                                            onChange={(e) => onVolumeFilterChange(e, minVolumeFilter)}>
+                                                            <option key="0" value="0">All</option>
+                                                            {[1, 5, 10, 20, 50, 100, 200, 500, 1000, 10000].map((v, index) => {
+                                                                return (
+                                                                    <option key={v} value={v}>{v}</option>
+                                                                );
+                                                            })}
+                                                        </Form.Control>
+                                                    </Form>
+                                                    <Form>
+                                                        <Form.Group>
+                                                            <Form.Label className="font-weight-bold">Min open Interest:</Form.Label>
+                                                            <Form.Control name="open_interest" as="select" defaultValue={0}
+                                                                onChange={(e) => onOpenInterestFilterChange(e, minOpenInterestFilter)}>
+                                                                <option key="0" value="0">All</option>
+                                                                {[1, 5, 10, 20, 50, 100, 200, 500, 1000, 10000].map((v, index) => {
+                                                                    return (
+                                                                        <option key={v} value={v}>{v}</option>
+                                                                    );
+                                                                })}
+                                                            </Form.Control>
+                                                        </Form.Group>
+                                                    </Form>
+                                                    <Form>
+                                                        <Form.Group>
+                                                            <Form.Label className="font-weight-bold">Last traded:</Form.Label>
+                                                            <Form.Control name="tradeoff" as="select" defaultValue={0}
+                                                                onChange={(e) => onLastTradedFilterChange(e, lastTradedFilter)}>
+                                                                <option key="9999999" value="9999999">All</option>
+                                                                {[1, 4, 8, 24, 48, 72, 120, 240].map((hour, index) => {
+                                                                    return (
+                                                                        <option key={hour} value={hour}>
+                                                                            In&nbsp;
+                                                                            {(hour <= 24 ? hour + (hour > 1 ? " hours" : " hour") : hour / 24 + " days")}
+                                                                        </option>
+                                                                    );
+                                                                })}
+                                                            </Form.Control>
+                                                        </Form.Group>
+                                                    </Form>
+                                                </Col>
+                                                <Col>
+                                                    <Form>
+                                                        <Form.Group>
+                                                            <Form.Label className="font-weight-bold">Delta:</Form.Label>
+                                                            <Form.Control name="delta" as="select" defaultValue="all"
+                                                                onChange={(e) => onDeltaFilterChange(e, minDeltaFilter, maxDeltaFilter)}>
+                                                                <option key="all" value="all">All</option>
+                                                                <option key="-1" value="-1">-1.0 to -0.8</option>
+                                                                <option key="-0.8" value="-0.8">-0.8 to -0.6</option>
+                                                                <option key="-0.6" value="-0.6">-0.6 to -0.4</option>
+                                                                <option key="-0.4" value="-0.4">-0.4 to -0.2</option>
+                                                                <option key="-0.2" value="-0.2">-0.2 to 0.0</option>
+                                                                <option key="0" value="0">0.0 to 0.2</option>
+                                                                <option key="0.2" value="0.2">0.2 to 0.4</option>
+                                                                <option key="0.4" value="0.4">0.4 to 0.6</option>
+                                                                <option key="0.6" value="0.6">0.6 to 0.8</option>
+                                                                <option key="0.8" value="0.8">0.8 to 1.0</option>
+                                                            </Form.Control>
+                                                        </Form.Group>
+                                                    </Form>
+                                                </Col>
+                                            </Row>
+                                        </Card.Body>
+                                    </Accordion.Collapse>
+                                </Card>
+                            </Accordion>
+                            <div>
+                                <Row>
+                                    <Col sm="9"></Col>
+                                    <Col sm="3">
                                         {InTheMoneySign()}
-                                    </div>
-                                </div>
-                                <div className="row">
-                                    <div className="col">
-                                        <BootstrapTable
-                                            classes="table-responsive"
-                                            bootstrap4={true}
-                                            keyField="contract_symbol"
-                                            data={contracts}
-                                            columns={result_table_columns}
-                                            pagination={paginationFactory({
-                                                sizePerPage: 20,
-                                                hidePageListOnlyOnePage: true
-                                            })}
-                                            noDataIndication="No eligible option contract found."
-                                            bordered={false}
-                                            // overlay={overlayFactory({ spinner: true })} // does not work with filter.
-                                            expandRow={ExpandContractRow}
-                                            rowStyle={InTheMoneyRowStyle}
-                                            filter={filterFactory()}
-                                            defaultSorted={defaultSorted}
-                                        />
-                                    </div>
-                                </div>
+                                    </Col>
+                                </Row>
+                                <BootstrapTable
+                                    classes="table-responsive"
+                                    bootstrap4={true}
+                                    keyField="contract_symbol"
+                                    data={contracts}
+                                    columns={result_table_columns}
+                                    pagination={paginationFactory({
+                                        sizePerPage: 20,
+                                        hidePageListOnlyOnePage: true
+                                    })}
+                                    noDataIndication="No Data"
+                                    bordered={false}
+                                    // overlay={overlayFactory({ spinner: true })} // does not work with filter.
+                                    expandRow={ExpandContractRow}
+                                    rowStyle={InTheMoneyRowStyle}
+                                    filter={filterFactory()}
+                                    defaultSorted={defaultSorted}
+                                />
                             </div>
-                            :
-                            null
-                        }
-                    </div>
-                </div>
-                :
-                null
-            }
-        </div>
+                        </div>
+                        :
+                        null
+                    }
+                </Col>
+            </Row>
+        </Container>
     );
 }

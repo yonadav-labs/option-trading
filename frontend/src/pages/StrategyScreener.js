@@ -7,6 +7,9 @@ import BootstrapTable from 'react-bootstrap-table-next';
 import paginationFactory from 'react-bootstrap-table2-paginator';
 import Axios from 'axios';
 import Select from "react-select";
+import TradingViewWidget from 'react-tradingview-widget';
+import Accordion from 'react-bootstrap/Accordion';
+import Card from 'react-bootstrap/Card';
 
 import getApiUrl, {
     PriceFormatter, TimestampDateFormatter, onLastTradedFilterChange,
@@ -268,6 +271,22 @@ export default function BestCallByPrice() {
             {selectedTicker.length > 0 ?
                 <div>
                     <TickerSummary basicInfo={basicInfo} />
+                    <br />
+                    <Accordion>
+                        <Card>
+                            <Accordion.Toggle as={Button} variant="link" eventKey="0">
+                                <span className="text-dark">Price Chart</span>
+                            </Accordion.Toggle>
+                            <Accordion.Collapse eventKey="0">
+                                <Card.Body>
+                                    <TradingViewWidget 
+                                        symbol={basicInfo.symbol}
+                                    />
+                                </Card.Body>
+                            </Accordion.Collapse>
+                        </Card>
+                    </Accordion>
+                    <br />
                     <div>
                         <Form onSubmit={handleSubmit}>
                             <Form.Group>
