@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useParams } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
 import Axios from 'axios';
 import { useOktaAuth } from '@okta/okta-react';
 
@@ -39,7 +39,14 @@ export default function SingleTrade() {
 
     return (
         <div id="content" className="container min-vh-100" style={{ "marginTop": "4rem" }}>
-            {trade ? <TradeDetailsCard trade={trade} hideShareButton={true}></TradeDetailsCard> : 'Loading...'}
+            {trade ? (
+                <div>
+                    <h4>{trade.display_name}</h4>
+                    <TradeDetailsCard trade={trade} hideShareButton={true} hideTitle={true} ></TradeDetailsCard>
+                </div>
+            ) : 'Loading...'}
+            <br />
+            <h4>Find your own options trading ideas through our <Link to="/strategy-screener" role="button">Strategy Screener</Link> now!</h4>
         </div>
     );
 }

@@ -5,11 +5,11 @@ import { PriceFormatter, ProfitFormatter, PercentageFormatter } from '../../util
 import LegDetailsCard from './LegDetailsCard.js';
 
 export default function TradeDetailsCard(props) {
-    const { trade, hideShareButton, hideDisclaimer } = props;
+    const { trade, hideShareButton, hideDisclaimer, hideTitle } = props;
 
     return (
         <Card>
-            <Card.Header>{trade.display_name}</Card.Header>
+            {hideTitle ? null : <Card.Header>{trade.display_name}</Card.Header>}
             <Card.Body>
                 <div className="row">
                     <div className="col-md-6"><Card.Title>Overview</Card.Title></div>
