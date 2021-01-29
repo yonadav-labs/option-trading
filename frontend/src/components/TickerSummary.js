@@ -65,64 +65,46 @@ export default function TickerSummary({ basicInfo }) {
                     </ToggleButton>
                 </ButtonGroup> */}
             </div>
-            <div>
-                <Row>
-                    <Col s={3}>
-                        <div>
-                            <Badge variant="secondary">Last Price</Badge>
-                            <div> {basicInfo.regularMarketPrice ? `$${basicInfo.regularMarketPrice}` : "N/A"} </div>
-                        </div>
-                    </Col>
-                    <Col s={3}>
-                        <div>
-                            <Badge variant="secondary">Day Range</Badge>
-                            <div>
-                                {basicInfo.regularMarketDayLow && basicInfo.regularMarketDayHigh ?
-                                    `${basicInfo.regularMarketDayLow.toFixed(2)}-${basicInfo.regularMarketDayHigh.toFixed(2)}` : "N/A"}
-                            </div>
-                        </div>
-                    </Col>
-                    <Col s={3}>
-                        <div>
-                            <Badge variant="secondary">52 Week Range</Badge>
-                            <div> {basicInfo.fiftyTwoWeekLow && basicInfo.fiftyTwoWeekHigh ?
-                                `${basicInfo.fiftyTwoWeekLow.toFixed(2)}-${basicInfo.fiftyTwoWeekHigh.toFixed(2)}` : "N/A"} </div>
-                        </div>
-                    </Col>
-                    <Col s={3}>
-                        <div>
-                            <Badge variant="secondary">Market Cap</Badge>
-                            <div> {basicInfo.marketCap ? `$${intToString(basicInfo.marketCap, 1)}` : "N/A"} </div>
-                        </div>
-                    </Col>
-                </Row>
-                <Row>
-                    <Col s={3}>
-                        <div>
-                            <Badge variant="secondary">Average Volume</Badge>
-                            <div> {basicInfo.averageDailyVolume3Month ? intToString(basicInfo.averageDailyVolume3Month, 1) : "N/A"} </div>
-                        </div>
-                    </Col>
-                    <Col s={3}>
-                        <div>
-                            <Badge variant="secondary">Shares Outstanding</Badge>
-                            <div> {basicInfo.sharesOutstanding ? intToString(basicInfo.sharesOutstanding, 1) : "N/A"} </div>
-                        </div>
-                    </Col>
-                    <Col s={3}>
-                        <div>
-                            <Badge variant="secondary">P/E</Badge>
-                            <div> {basicInfo.trailingPE ? basicInfo.trailingPE.toFixed(2) : "N/A"} </div>
-                        </div>
-                    </Col>
-                    <Col s={3}>
-                        <div>
-                            <Badge variant="secondary">EPS</Badge>
-                            <div> {basicInfo.epsTrailingTwelveMonths ? `$${basicInfo.epsTrailingTwelveMonths.toFixed(2)}` : "N/A"} </div>
-                        </div>
-                    </Col>
-                </Row>
-            </div>
+            <Row>
+                <Col sm={3} xs={6}>
+                    <Badge variant="secondary">Last Price</Badge>
+                    <div> {basicInfo.regularMarketPrice ? `$${basicInfo.regularMarketPrice}` : "N/A"} </div>
+                </Col>
+                <Col sm={3} xs={6}>
+                    <Badge variant="secondary">Day Range</Badge>
+                    <div>
+                        {basicInfo.regularMarketDayLow && basicInfo.regularMarketDayHigh ?
+                            `${basicInfo.regularMarketDayLow.toFixed(2)}-${basicInfo.regularMarketDayHigh.toFixed(2)}` : "N/A"}
+                    </div>
+                </Col>
+                <Col sm={3} xs={6}>
+                    <Badge variant="secondary">52 Week Range</Badge>
+                    <div> {basicInfo.fiftyTwoWeekLow && basicInfo.fiftyTwoWeekHigh ?
+                        `${basicInfo.fiftyTwoWeekLow.toFixed(2)}-${basicInfo.fiftyTwoWeekHigh.toFixed(2)}` : "N/A"} </div>
+                </Col>
+                <Col sm={3} xs={6}>
+                    <Badge variant="secondary">Market Cap</Badge>
+                    <div> {basicInfo.marketCap ? `$${intToString(basicInfo.marketCap, 1)}` : "N/A"} </div>
+                </Col>
+            </Row>
+            <Row>
+                <Col sm={3} xs={6}>
+                    <Badge variant="secondary">Average Volume</Badge>
+                    <div> {basicInfo.averageDailyVolume3Month ? intToString(basicInfo.averageDailyVolume3Month, 1) : "N/A"} </div>
+                </Col>
+                <Col sm={3} xs={6}>
+                    <Badge variant="secondary">Shares Outstanding</Badge>
+                    <div> {basicInfo.sharesOutstanding ? intToString(basicInfo.sharesOutstanding, 1) : "N/A"} </div>
+                </Col>
+                <Col sm={3} xs={6}>
+                    <Badge variant="secondary">P/E</Badge>
+                    <div> {basicInfo.trailingPE ? basicInfo.trailingPE.toFixed(2) : "N/A"} </div>
+                </Col>
+                <Col sm={3} xs={6}>
+                    <Badge variant="secondary">EPS</Badge>
+                    <div> {basicInfo.epsTrailingTwelveMonths ? `$${basicInfo.epsTrailingTwelveMonths.toFixed(2)}` : "N/A"} </div>
+                </Col>
+            </Row>
         </div >
     );
 }
