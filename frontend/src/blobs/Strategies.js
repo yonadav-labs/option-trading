@@ -36,9 +36,9 @@ class StockLeg extends Leg {
 
 class OptionLeg extends Leg {
     expiration = null;
-    action = "";
-    optionType = "";
-    contract = {};
+    action = ""; // is_long
+    optionType = ""; // is_call boolean
+    contract = {}; // contract
 
     constructor(data) {
         super("option");
@@ -50,59 +50,65 @@ class Strategy {
     id = "";
     name = "";
     description = "";
+    sentiment = [];
+    linkedProperties = [];
     legs = [];
 
     constructor(data) {
         Object.assign(this, data);
         // TODO hash strategy settings to help identify it
-        this.id = this.name.replace(/\s+/g, '');
+        this.id = this.name.toLowerCase().replace(/\s+/g, '_');
     }
 }
 
 export const strategies = [
+    // new Strategy(
+    //     {
+    //         name: "Put Credit Spread",
+    //         description: "",
+    //         sentiment: ["bull", "flat"],
+    //         linkedProperties: ["expiration"],
+    //         legs: [
+    //             new OptionLeg(
+    //                 {
+    //                     ticker: "",
+    //                     action: "long",
+    //                     expiration: "",
+    //                     optionType: "put"
+    //                 }
+    //             ),
+    //             new OptionLeg(
+    //                 {
+    //                     ticker: "",
+    //                     action: "short",
+    //                     expiration: "",
+    //                     optionType: "put"
+    //                 }
+    //             )
+    //         ]
+    //     }
+    // ),
     new Strategy(
         {
-            name: "Put Credit Spread",
+            name: "Bull Call Spread",
             description: "",
+            sentiment: ["bull"],
+            linkedProperties: ["expiration"],
             legs: [
                 new OptionLeg(
                     {
                         ticker: "",
-                        action: "buy",
+                        action: "long",
                         expiration: 0,
-                        optionType: "put"
+                        optionType: "call"
                     }
                 ),
                 new OptionLeg(
                     {
                         ticker: "",
-                        action: "sell",
+                        action: "short",
                         expiration: 0,
-                        optionType: "put"
-                    }
-                )
-            ]
-        }
-    ),
-    new Strategy(
-        {
-            name: "another strat",
-            description: "",
-            legs: [
-                new OptionLeg(
-                    {
-                        ticker: "",
-                        action: "buy",
-                        expiration: new Date(),
-                        type: "call"
-                    }
-                ),
-                new OptionLeg(
-                    {
-                        ticker: "",
-                        action: "sell",
-                        expiration: new Date(),
-                        type: "call"
+                        optionType: "call"
                     }
                 )
             ]

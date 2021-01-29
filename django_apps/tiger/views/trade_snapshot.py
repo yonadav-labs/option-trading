@@ -21,7 +21,7 @@ def trade_snapshot_detail(request, pk):
 
         trade = Trade.from_snapshot(trade_snapshot)
         trade_serializer = TradeSerializer(trade)
-        return Response({'trade_snaphost': trade_serializer.data})
+        return Response({'trade_snapshot': trade_serializer.data})
 
 
 @api_view(['POST'])
@@ -34,6 +34,6 @@ def trade_snapshots(request):
             trade_snapshot = trade_snapshot_serializer.save()
             trade = Trade.from_snapshot(trade_snapshot)
             trade_serializer = TradeSerializer(trade)
-            return Response({'id': trade_snapshot.id, 'trade_snaphost': trade_serializer.data},
+            return Response({'id': trade_snapshot.id, 'trade_snapshot': trade_serializer.data},
                             status=status.HTTP_201_CREATED)
         return Response(trade_snapshot_serializer.errors, status=status.HTTP_400_BAD_REQUEST)

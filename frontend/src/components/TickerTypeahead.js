@@ -42,6 +42,7 @@ export default function TickerTypeahead({querySymbol, selectedTicker, setSelecte
             const response = await Axios.get(`${API_URL}/tickers/${selected[0].symbol}/expire_dates/`);
             setExpirationTimestamps(response.data.expiration_timestamps);
             setbasicInfo(response.data.quote)
+            selected[0].external_cache_id = response.data.external_cache_id;
             setSelectedTicker(selected);
             setModalActive(false);
         } catch (error) {

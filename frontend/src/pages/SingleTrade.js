@@ -27,7 +27,7 @@ export default function SingleTrade() {
             const response = await Axios.get(`${API_URL}/trade_snapshots/${tradeId}`, {
                 headers: headers
             });
-            setTrade(response.data.trade_snaphost);
+            setTrade(response.data.trade_snapshot);
         } catch (error) {
             console.error(error);
         }

@@ -1,5 +1,4 @@
 import React from 'react';
-import { Col, Row } from 'react-bootstrap';
 import Card from 'react-bootstrap/Card';
 
 import {
@@ -12,6 +11,7 @@ export default function ContractDetailsCard(props) {
 
     return (
         (
+            contract ?
             <Card>
                 {
                     hideTitle ?
@@ -64,6 +64,8 @@ export default function ContractDetailsCard(props) {
                     </Card.Text>
                 </Card.Body>
             </Card>
+            :
+            null
         )
     );
 }
