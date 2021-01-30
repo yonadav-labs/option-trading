@@ -42,11 +42,11 @@ export default function SingleTrade() {
             {trade ? (
                 <div>
                     <h4>{trade.display_name}</h4>
+                    <p>Find your own options trading ideas through our <Link to="/strategy-screener" role="button">Strategy Screener</Link> now!</p>
                     <TradeDetailsCard trade={trade} hideShareButton={true} hideTitle={true} ></TradeDetailsCard>
                 </div>
             ) : 'Loading...'}
-            <br />
-            <h4>Find your own options trading ideas through our <Link to="/strategy-screener" role="button">Strategy Screener</Link> now!</h4>
+
         </div>
     );
 }

@@ -276,7 +276,12 @@ class LongCall(Trade):
 
     @property
     def display_name(self):
-        return self.get_long_call_leg().display_name
+        long_call_leg = self.get_long_call_leg()
+        expiration_date_str = timestamp_to_datetime_with_default_tz(long_call_leg.contract.expiration) \
+            .strftime("%m/%d/%Y")
+        return '[{}][Long call] {} {} strike ${} at ${:.2f} per contract' \
+            .format(self.stock.ticker.symbol, '{}X'.format(long_call_leg.units) if long_call_leg.units > 1 else '',
+                    expiration_date_str, long_call_leg.contract.strike, long_call_leg.contract.cost)
 
     @property
     def break_even_price(self):
@@ -294,7 +299,12 @@ class LongPut(Trade):
 
     @property
     def display_name(self):
-        return self.get_long_put_leg().display_name
+        long_put_leg = self.get_long_put_leg()
+        expiration_date_str = timestamp_to_datetime_with_default_tz(long_put_leg.contract.expiration) \
+            .strftime("%m/%d/%Y")
+        return '[{}][Long put] {} {} strike ${} at ${:.2f} per contract' \
+            .format(self.stock.ticker.symbol, '{}X'.format(long_put_leg.units) if long_put_leg.units > 1 else '',
+                    expiration_date_str, long_put_leg.contract.strike, long_put_leg.contract.cost)
 
     @property
     def break_even_price(self):
@@ -314,12 +324,12 @@ class CoveredCall(Trade):
     @property
     def display_name(self):
         short_call_leg = self.get_short_call_leg()
-        long_stock_leg = self.get_long_stock_leg()
-        return 'Short {} contract{} of {}, covered by {} share{} of {}' \
-            .format(short_call_leg.units, 's' if short_call_leg.units > 1 else '',
-                    short_call_leg.contract.display_name,
-                    long_stock_leg.units, 's' if long_stock_leg.units > 1 else '',
-                    long_stock_leg.stock.display_name)
+        expiration_date_str = timestamp_to_datetime_with_default_tz(short_call_leg.contract.expiration) \
+            .strftime("%m/%d/%Y")
+        return '[{}][Covered call] {} {} strike ${} - ${} at ${:.2f} per position' \
+            .format(self.stock.ticker.symbol, '{}X'.format(short_call_leg.units) if short_call_leg.units > 1 else '',
+                    expiration_date_str, short_call_leg.contract.strike, short_call_leg.contract.strike,
+                    self.cost / short_call_leg.units)
 
     @property
     def break_even_price(self):
@@ -338,10 +348,12 @@ class CashSecuredPut(Trade):
     @property
     def display_name(self):
         short_put_leg = self.get_short_put_leg()
-        long_cash_leg = self.get_long_cash_leg()
-        return 'Short {} contract{} of {}, covered by ${} cash' \
-            .format(short_put_leg.units, 's' if short_put_leg.units > 1 else '',
-                    short_put_leg.contract.display_name, long_cash_leg.units)
+        expiration_date_str = timestamp_to_datetime_with_default_tz(short_put_leg.contract.expiration) \
+            .strftime("%m/%d/%Y")
+        return '[{}][Cash secured put] {} {} strike ${} at ${:.2f} per position' \
+            .format(self.stock.ticker.symbol, '{}X'.format(short_put_leg.units) if short_put_leg.units > 1 else '',
+                    expiration_date_str, short_put_leg.contract.strike, short_put_leg.contract.strike,
+                    self.cost / short_put_leg.units)
 
     @property
     def break_even_price(self):
@@ -364,9 +376,10 @@ class BullCallSpread(Trade):
         short_call_leg = self.get_short_call_leg()
         expiration_date_str = timestamp_to_datetime_with_default_tz(long_call_leg.contract.expiration) \
             .strftime("%m/%d/%Y")
-        return '{} {} {} strike ${} - ${} bull call spread for total ${:.2f}' \
-            .format(long_call_leg.units, self.stock.ticker.symbol, expiration_date_str, long_call_leg.contract.strike,
-                    short_call_leg.contract.strike, self.cost)
+        return '[{}][Bull call spread] {} {} strike ${} - ${} at ${:.2f} per spread' \
+            .format(self.stock.ticker.symbol, '{}X'.format(long_call_leg.units) if long_call_leg.units > 1 else '',
+                    expiration_date_str, long_call_leg.contract.strike, short_call_leg.contract.strike,
+                    self.cost / long_call_leg.units)
 
     @property
     def break_even_price(self):
