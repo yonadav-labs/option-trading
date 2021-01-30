@@ -279,7 +279,7 @@ export default function BestCallByPrice() {
                             </Accordion.Toggle>
                             <Accordion.Collapse eventKey="0">
                                 <Card.Body>
-                                    <TradingViewWidget 
+                                    <TradingViewWidget
                                         symbol={basicInfo.symbol}
                                     />
                                 </Card.Body>

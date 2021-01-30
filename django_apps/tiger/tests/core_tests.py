@@ -22,6 +22,7 @@ class CallTradesTestCase(TestCase):
             "openInterest": 15,
             "bid": 160.25,
             "ask": 163.15,
+            # mid: 161.7
             "contractSize": "REGULAR",
             "expiration": 1626393600,
             "lastTradeDate": 1603466039,
@@ -39,6 +40,7 @@ class CallTradesTestCase(TestCase):
             "openInterest": 203,
             "bid": 75.5,
             "ask": 77.2,
+            # mid: 76.35
             "contractSize": "REGULAR",
             "expiration": 1626393600,
             "lastTradeDate": 1603466039,
@@ -209,6 +211,18 @@ class CallTradesTestCase(TestCase):
         self.assertAlmostEqual(bull_call_spread.break_even_price, 373.35)
         self.assertAlmostEqual(bull_call_spread.profit_cap, 7165)  # ((445 - 288) - 85.35) * 100
         self.assertAlmostEqual(bull_call_spread.target_price_profit, 2665)  # ((400 - 288) - 85.35) * 100
+
+    @mock.patch('django.utils.timezone.now')
+    def test_bear_call_spread(self, mock_now):
+        mock_now.return_value = make_aware(datetime.fromtimestamp(MOCK_NOW_TIMESTAMP), get_default_timezone())
+        call_contract_1 = OptionContract(self.ticker, True, self.yahoo_input, self.stock_price, 'estimated')
+        call_contract_2 = OptionContract(self.ticker, True, self.yahoo_input2, self.stock_price, 'estimated')
+        bear_call_spread = TradeFactory.build_bear_call_spread(self.stock, call_contract_1, call_contract_2,
+                                                               400, 400, available_cash=10000)
+        self.assertAlmostEqual(bear_call_spread.cost, 7165.0)
+        self.assertAlmostEqual(bear_call_spread.break_even_price, 373.35)
+        self.assertAlmostEqual(bear_call_spread.profit_cap, 8535)
+        self.assertAlmostEqual(bear_call_spread.target_price_profit, -2665)
 
 
 class PutTradesTestCase(TestCase):

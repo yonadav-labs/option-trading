@@ -73,6 +73,7 @@ def get_best_trades(request, ticker_symbol):
     # Bull call spread
     # TODO: add tests.
     bull_call_spread_trades = []
+    bear_call_spread_trades = []
     for calls_per_exp in call_contract_lists:
         sampled_calls = sorted(calls_per_exp, key=lambda call: (call.volume, call.open_interest), reverse=True)[:100]
         for low_strike_call in sampled_calls:
@@ -82,8 +83,12 @@ def get_best_trades(request, ticker_symbol):
                 bull_call_spread_trades.append(
                     TradeFactory.build_bull_call_spread(stock, low_strike_call, high_strike_call, target_price_lower,
                                                         target_price_upper, available_cash=available_cash))
+                bear_call_spread_trades.append(
+                    TradeFactory.build_bear_call_spread(stock, low_strike_call, high_strike_call, target_price_lower,
+                                                        target_price_upper, available_cash=available_cash))
     bull_call_spread_trades = filter_and_sort_trades(bull_call_spread_trades)[:100]
+    bear_call_spread_trades = filter_and_sort_trades(bear_call_spread_trades)[:100]
 
-    all_trades = all_trades + bull_call_spread_trades
+    all_trades = all_trades + bull_call_spread_trades + bear_call_spread_trades
     all_trades = filter_and_sort_trades(all_trades)
     return Response({'trades': TradeSerializer(all_trades, many=True).data})

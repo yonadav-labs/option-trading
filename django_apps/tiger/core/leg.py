@@ -63,7 +63,7 @@ class CashLeg(Leg):
 
     @property
     def display_name(self):
-        return 'Keep ${} cash'.format(self.units)
+        return 'Keep ${} cash as collateral'.format(self.units)
 
     @property
     def cost(self):
@@ -84,8 +84,8 @@ class StockLeg(Leg):
 
     @property
     def display_name(self):
-        return 'Long {} share{} of {} at ${:.2f} per share'.format(self.units, 's' if self.units > 1 else '',
-                                                                   self.stock.display_name, self.stock.stock_price)
+        return 'Long {} share{} of {} at ${:.2f} per share as collateral' \
+            .format(self.units, 's' if self.units > 1 else '', self.stock.display_name, self.stock.stock_price)
 
     @property
     def cost(self):

@@ -135,7 +135,7 @@ export function getLegByName(trade, name) {
 };
 
 export function getAllTradeTypes(type) {
-    return ['long_call', 'covered_call', 'long_put', 'cash_secured_put', 'bull_call_spread'];
+    return ['long_call', 'covered_call', 'long_put', 'cash_secured_put', 'bull_call_spread', 'bear_call_spread'];
 }
 export function getContractName(contract) {
     return (
@@ -160,6 +160,8 @@ export function getTradeTypeDisplay(type) {
             return "Cash secured put"
         case ("bull_call_spread"):
             return "Bull call spread"
+        case ("bear_call_spread"):
+            return "Bear call spread"
     }
 }
 
@@ -185,6 +187,11 @@ export function getTradeStrikeStr(row) {
             let longCallLeg = getLegByName(row, 'long_call_leg');
             let shortCallLeg = getLegByName(row, 'short_call_leg');
             return `Strike $${longCallLeg.contract.strike} / $${shortCallLeg.contract.strike}`;
+        }
+        case ("bear_call_spread"): {
+            let longCallLeg = getLegByName(row, 'long_call_leg');
+            let shortCallLeg = getLegByName(row, 'short_call_leg');
+            return `Strike $${shortCallLeg.contract.strike} / $${longCallLeg.contract.strike}`;
         }
     }
 }
