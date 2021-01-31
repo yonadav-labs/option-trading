@@ -34,10 +34,10 @@ class BearCallSpread(Trade):
         short_call_leg = self.get_short_call_leg()
         expiration_date_str = timestamp_to_datetime_with_default_tz(long_call_leg.contract.expiration) \
             .strftime("%m/%d/%Y")
-        return '[{}][Bear call spread] {} {} strike ${} / ${} at ${:.2f} net credit' \
+        return '[{}][Bear call spread] {} {} strike ${} / ${} at ${:.2f} net credit per spread' \
             .format(self.stock.ticker.symbol, '{}X'.format(long_call_leg.units) if long_call_leg.units > 1 else '',
                     expiration_date_str, long_call_leg.contract.strike, short_call_leg.contract.strike,
-                    short_call_leg.contract.premium - long_call_leg.contract.premium)
+                    abs(short_call_leg.cost + long_call_leg.cost))
 
     @property
     def break_even_price(self):

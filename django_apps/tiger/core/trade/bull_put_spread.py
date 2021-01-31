@@ -34,10 +34,10 @@ class BullPutSpread(Trade):
         short_put_leg = self.get_short_put_leg()
         expiration_date_str = timestamp_to_datetime_with_default_tz(long_put_leg.contract.expiration) \
             .strftime("%m/%d/%Y")
-        return '[{}][Bull put spread] {} {} strike ${} / ${} at ${:.2f} net credit' \
+        return '[{}][Bull put spread] {} {} strike ${} / ${} at ${:.2f} net credit per spread' \
             .format(self.stock.ticker.symbol, '{}X'.format(long_put_leg.units) if long_put_leg.units > 1 else '',
                     expiration_date_str, long_put_leg.contract.strike, short_put_leg.contract.strike,
-                    short_put_leg.contract.premium - long_put_leg.contract.premium)
+                    abs(short_put_leg.cost + long_put_leg.cost))
 
     @property
     def break_even_price(self):
