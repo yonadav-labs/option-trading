@@ -4,7 +4,8 @@ from django.shortcuts import get_object_or_404
 from rest_framework.decorators import api_view
 from rest_framework.exceptions import APIException
 from rest_framework.response import Response
-from tiger.core import Stock, TradeFactory
+from tiger.core import Stock
+from tiger.core.trade.trade_factory import TradeFactory
 from tiger.models import Ticker
 from tiger.serializers import TradeSerializer
 from tiger.utils import days_from_timestamp

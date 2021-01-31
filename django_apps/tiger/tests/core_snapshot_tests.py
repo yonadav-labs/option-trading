@@ -1,6 +1,7 @@
 from django.test import TestCase
 
-from tiger.core import Stock, OptionContract, Leg, Trade, TradeFactory
+from tiger.core import Stock, OptionContract, Leg, Trade
+from tiger.core.trade.trade_factory import TradeFactory
 from tiger.models import ExternalRequestCache, Ticker, StockSnapshot, OptionContractSnapshot, LegSnapshot, \
     TradeSnapshot, User
 
