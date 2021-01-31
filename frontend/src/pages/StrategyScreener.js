@@ -1,22 +1,18 @@
 import React, { useState } from 'react';
 import { useLocation } from "react-router-dom";
-import Form from 'react-bootstrap/Form';
-import Button from 'react-bootstrap/Button';
-import Alert from 'react-bootstrap/Alert';
 import BootstrapTable from 'react-bootstrap-table-next';
 import paginationFactory from 'react-bootstrap-table2-paginator';
 import Axios from 'axios';
 import Select from "react-select";
 import TradingViewWidget from 'react-tradingview-widget';
-import Accordion from 'react-bootstrap/Accordion';
-import Card from 'react-bootstrap/Card';
+import { Form, Button, Alert, Row, Col, Accordion, Card } from 'react-bootstrap';
+import filterFactory, { multiSelectFilter, numberFilter, Comparator } from 'react-bootstrap-table2-filter';
+import { BsArrowsExpand, BsArrowsCollapse } from 'react-icons/bs';
 
 import getApiUrl, {
     PriceFormatter, TimestampDateFormatter, onLastTradedFilterChange,
     PriceMovementFormatter, getTradeStrikeStr, getTradeTypeDisplay, getAllTradeTypes
 } from '../utils';
-import filterFactory, { multiSelectFilter, numberFilter } from 'react-bootstrap-table2-filter';
-import { BsArrowsExpand, BsArrowsCollapse } from 'react-icons/bs';
 import TickerTypeahead from '../components/TickerTypeahead';
 import TickerSummary from '../components/TickerSummary.js';
 import ModalSpinner from '../components/ModalSpinner';
@@ -27,6 +23,8 @@ import TargetPriceRangeSlider from '../components/TargetPriceRangeSlider';
 
 let lastTradedFilter;
 let strategyFilter;
+let minVolumeFilter;
+let minOpenInterestFilter;
 
 export default function BestCallByPrice() {
     let location = useLocation()
@@ -155,6 +153,26 @@ export default function BestCallByPrice() {
                     strategyFilter = filter;
                 }
             })
+        }, {
+            dataField: "min_volume2",
+            text: "min_volume2",
+            style: { 'display': 'none' },
+            headerStyle: { 'display': 'none' },
+            filter: numberFilter({
+                getFilter: (filter) => {
+                    minVolumeFilter = filter;
+                }
+            })
+        }, {
+            dataField: "min_open_interest",
+            text: "min_open_interest",
+            style: { 'display': 'none' },
+            headerStyle: { 'display': 'none' },
+            filter: numberFilter({
+                getFilter: (filter) => {
+                    minOpenInterestFilter = filter;
+                }
+            })
         },
     ];
     const defaultSorted = [{
@@ -169,6 +187,22 @@ export default function BestCallByPrice() {
         } else {
             strategyFilter([value]);
         }
+    };
+
+    function onVolumeFilterChange(event, volumeFilter) {
+        const { value } = event.target;
+        volumeFilter({
+            number: value,
+            comparator: Comparator.GE
+        });
+    };
+
+    function onOpenInterestFilterChange(event, openInterestFilter) {
+        const { value } = event.target;
+        openInterestFilter({
+            number: value,
+            comparator: Comparator.GE
+        });
     };
 
     const handleSubmit = (event) => {
@@ -217,6 +251,7 @@ export default function BestCallByPrice() {
             trades.map((val, index) => {
                 val.type2 = val.type;
                 val.min_last_trade_date2 = val.min_last_trade_date;
+                val.min_volume2 = val.min_volume;
                 val.id = index;
                 return val;
             })
@@ -296,7 +331,7 @@ export default function BestCallByPrice() {
                         <Form onSubmit={handleSubmit}>
                             <Form.Group>
                                 <h4>Select an option expiration date:</h4>
-                                <div className="row">
+                                <Row>
                                     <div className="col-sm-12">
                                         <Select
                                             defaultValue={selectedExpirationTimestamp}
@@ -308,8 +343,8 @@ export default function BestCallByPrice() {
                                             placeholder="Select an options expiration date."
                                         />
                                     </div>
-                                </div>
-                                <div className="row">
+                                </Row>
+                                <Row>
                                     <div className="col-sm-12">
                                         {showTimestampAlert ?
                                             <Alert variant="warning">
@@ -318,7 +353,7 @@ export default function BestCallByPrice() {
                                             : null
                                         }
                                     </div>
-                                </div>
+                                </Row>
                             </Form.Group>
                             <Form.Group>
                                 <h4>Enter target price range of {selectedTicker[0].symbol} share on {selectedExpirationTimestamp ?
@@ -332,7 +367,7 @@ export default function BestCallByPrice() {
                                     setPriceLower={setTargetPriceLower}
                                     setPriceUpper={setTargetPriceUpper} />
                             </div>
-                            <div className="row">
+                            <Row>
                                 <div className="col-sm-12">
                                     {showTargetPriceAlert ?
                                         <Alert variant="warning">
@@ -341,15 +376,17 @@ export default function BestCallByPrice() {
                                         : null
                                     }
                                 </div>
-                            </div>
+                            </Row>
                             <h4>Optional settings:</h4>
-                            <Form.Group>
-                                <Form.Label>Cash to invest in {selectedTicker[0].symbol}:</Form.Label>
-                                <Form.Control name="available_cash" as="input" type="number"
-                                    placeholder="Enter the amount of cash you plan to invest in this trade." min="0.0" max="100000000.0" step="0.01" />
-                            </Form.Group>
-                            <div className="row">
-                                <div className="col-sm-3">
+                            <Row>
+                                <Col sm="3">
+                                    <Form.Group>
+                                        <Form.Label>Cash to invest in {selectedTicker[0].symbol}:</Form.Label>
+                                        <Form.Control name="available_cash" as="input" type="number"
+                                            placeholder="Enter the amount of cash you plan to invest in this trade." min="0.0" max="100000000.0" step="0.01" />
+                                    </Form.Group>
+                                </Col>
+                                <Col sm="3">
                                     <Form.Group>
                                         <Form.Label>Premium price options:</Form.Label>
                                         <Form.Control name="use_as_premium" as="select" defaultValue="estimated"
@@ -359,64 +396,82 @@ export default function BestCallByPrice() {
                                             <option key="ask" value="ask">Use ask (seller's) price</option>
                                         </Form.Control>
                                     </Form.Group>
-                                </div>
-                            </div>
-                            <div className="row">
-                                <div className="col">
+                                </Col>
+                            </Row>
+                            <Row>
+                                <Col>
                                     <Button type="submit" className="btn btn-primary">Analyze</Button>
-                                </div>
-                            </div>
+                                </Col>
+                            </Row>
                         </Form>
                         <br />
                         {bestStrategies != null ?
                             <div>
                                 <h4>Results</h4>
                                 <hr />
-                                <div className="row">
-                                    <div className="col-sm-3">
-                                        <Form>
-                                            <Form.Group>
-                                                <Form.Label className="font-weight-bold">Filter by last traded:</Form.Label>
-                                                <Form.Control name="tradeoff" as="select" defaultValue={0}
-                                                    onChange={(e) => onLastTradedFilterChange(e, lastTradedFilter)}>
-                                                    <option key="9999999" value="9999999">All</option>
-                                                    {[1, 4, 8, 24, 48, 72, 120, 240].map((hour, index) => {
-                                                        return (
-                                                            <option key={hour} value={hour}>
-                                                                Last traded in&nbsp;
-                                                                {(hour <= 24 ? hour + (hour > 1 ? " hours" : " hour") : hour / 24 + " days")}
-                                                            </option>
-                                                        );
-                                                    })}
-                                                </Form.Control>
-                                            </Form.Group>
-                                        </Form>
-                                    </div>
-                                    <div className="col-sm-3">
-                                        <Form>
-                                            <Form.Group>
-                                                <Form.Label className="font-weight-bold">Strategy:</Form.Label>
-                                                <Form.Control name="strategy" as="select" defaultValue="all"
-                                                    onChange={(e) => onStrategyFilterChange(e, strategyFilter)}>
-                                                    <option key="all" value="all">All</option>
-                                                    {getAllTradeTypes().map((type, index) => {
-                                                        return (
-                                                            <option key={type} value={type}>{getTradeTypeDisplay(type)}</option>
-                                                        );
-                                                    })}
-                                                </Form.Control>
-                                            </Form.Group>
-                                        </Form>
-                                    </div>
-                                    <div className="col-sm-4">
-                                    </div>
-                                </div>
+                                <Row>
+                                    <Col sm="3" xs="6">
+                                        <Form.Group>
+                                            <Form.Label className="font-weight-bold">Strategy type:</Form.Label>
+                                            <Form.Control name="strategy" as="select" defaultValue="all"
+                                                onChange={(e) => onStrategyFilterChange(e, strategyFilter)}>
+                                                <option key="all" value="all">All</option>
+                                                {getAllTradeTypes().map((type, index) => {
+                                                    return (
+                                                        <option key={type} value={type}>{getTradeTypeDisplay(type)}</option>
+                                                    );
+                                                })}
+                                            </Form.Control>
+                                        </Form.Group>
+                                    </Col>
+                                    <Col sm="3" xs="6">
+                                        <Form.Label className="font-weight-bold">Min volume:</Form.Label>
+                                        <Form.Control name="volume" as="select" defaultValue={0}
+                                            onChange={(e) => onVolumeFilterChange(e, minVolumeFilter)}>
+                                            <option key="0" value="0">All</option>
+                                            {[1, 5, 10, 20, 50, 100, 200, 500, 1000, 10000].map((v, index) => {
+                                                return (
+                                                    <option key={v} value={v}>{v}</option>
+                                                );
+                                            })}
+                                        </Form.Control>
+                                    </Col>
+                                    <Col sm="3" xs="6">
+                                        <Form.Label className="font-weight-bold">Min open interest:</Form.Label>
+                                        <Form.Control name="open_interest" as="select" defaultValue={0}
+                                            onChange={(e) => onOpenInterestFilterChange(e, minOpenInterestFilter)}>
+                                            <option key="0" value="0">All</option>
+                                            {[1, 5, 10, 20, 50, 100, 200, 500, 1000, 10000].map((v, index) => {
+                                                return (
+                                                    <option key={v} value={v}>{v}</option>
+                                                );
+                                            })}
+                                        </Form.Control>
+                                    </Col>
+                                    <Col sm="3" xs="6">
+                                        <Form.Group>
+                                            <Form.Label className="font-weight-bold">Filter by last traded:</Form.Label>
+                                            <Form.Control name="tradeoff" as="select" defaultValue={0}
+                                                onChange={(e) => onLastTradedFilterChange(e, lastTradedFilter)}>
+                                                <option key="9999999" value="9999999">All</option>
+                                                {[1, 4, 8, 24, 48, 72, 120, 240].map((hour, index) => {
+                                                    return (
+                                                        <option key={hour} value={hour}>
+                                                            Last traded in&nbsp;
+                                                            {(hour <= 24 ? hour + (hour > 1 ? " hours" : " hour") : hour / 24 + " days")}
+                                                        </option>
+                                                    );
+                                                })}
+                                            </Form.Control>
+                                        </Form.Group>
+                                    </Col>
+                                </Row>
                                 <p>
                                     *All results are based on estimated options value on expiration date.<br />
                                     *Hypothetical profit: average of possible profit outcomes under the assumption that {selectedTicker[0].symbol} share price will be within the target price range.
                                 </p>
-                                <div className="row">
-                                    <div className="col">
+                                <Row>
+                                    <Col>
                                         <BootstrapTable
                                             classes="table-responsive"
                                             bootstrap4={true}
@@ -434,8 +489,8 @@ export default function BestCallByPrice() {
                                             defaultSorted={defaultSorted}
                                             rowStyle={{ "cursor": "pointer" }}
                                         />
-                                    </div>
-                                </div>
+                                    </Col>
+                                </Row>
                             </div>
                             :
                             null

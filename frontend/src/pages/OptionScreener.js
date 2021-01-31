@@ -18,10 +18,10 @@ import { useSearch } from "../components/querying"
 import BootstrapTable from 'react-bootstrap-table-next';
 import paginationFactory from 'react-bootstrap-table2-paginator';
 import filterFactory, { multiSelectFilter, numberFilter, Comparator } from 'react-bootstrap-table2-filter';
-import { Form, Button, Alert, Container, Row, Col, Accordion, Card } from 'react-bootstrap'
+import { Form, Button, Alert, Container, Row, Col, Accordion, Card } from 'react-bootstrap';
 
 // Filters
-import StrikeRangeSliderFilter from "../components/filters/StrikeRangeSliderFilter"
+import StrikeRangeSliderFilter from "../components/filters/StrikeRangeSliderFilter";
 import ButtonToggleFilter from '../components/filters/ButtonToggleFilter';
 
 let putCallFilter;
@@ -494,7 +494,7 @@ export default function SellCoveredCall() {
                                                     </Form>
                                                     <Form>
                                                         <Form.Group>
-                                                            <Form.Label className="font-weight-bold">Min open Interest:</Form.Label>
+                                                            <Form.Label className="font-weight-bold">Min open interest:</Form.Label>
                                                             <Form.Control name="open_interest" as="select" defaultValue={0}
                                                                 onChange={(e) => onOpenInterestFilterChange(e, minOpenInterestFilter)}>
                                                                 <option key="0" value="0">All</option>
