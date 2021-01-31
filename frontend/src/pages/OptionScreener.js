@@ -60,6 +60,7 @@ export default function SellCoveredCall() {
 
     const API_URL = getApiUrl();
 
+    const headerSortingStyle = { backgroundColor: '#FF8F2B' };
     const result_table_columns = [
         {
             dataField: 'is_call',
@@ -67,7 +68,8 @@ export default function SellCoveredCall() {
             formatter: (cell, row, rowIndex, extraData) => (
                 cell ? 'Call' : 'Put'
             ),
-            sort: true
+            sort: true,
+            headerSortingStyle,
         }, {
             dataField: "expiration",
             text: "Expiration",
@@ -79,7 +81,8 @@ export default function SellCoveredCall() {
                     </span>
                 )
             ),
-            sort: true
+            sort: true,
+            headerSortingStyle,
         }, {
             dataField: "to_strike_ratio",
             text: "Strike",
@@ -89,6 +92,7 @@ export default function SellCoveredCall() {
                 </span>
             ),
             sort: true,
+            headerSortingStyle,
         }, {
             dataField: "premium",
             text: "Premium",
@@ -100,7 +104,8 @@ export default function SellCoveredCall() {
                     </span>
                 )
             ),
-            sort: true
+            sort: true,
+            headerSortingStyle,
         }, {
             dataField: "to_break_even_ratio",
             text: "Break even",
@@ -109,18 +114,21 @@ export default function SellCoveredCall() {
                     At {PriceMovementFormatter(cell, row.break_even_price)}
                 </span>
             ),
-            sort: true
+            sort: true,
+            headerSortingStyle,
         }, {
             dataField: "volume",
             text: "Volume",
-            sort: true
+            sort: true,
+            headerSortingStyle,
         }, {
             dataField: "delta",
             text: "Delta",
             formatter: (cell, row, rowIndex, extraData) => (
                 NumberRoundFormatter(cell, row)
             ),
-            sort: true
+            sort: true,
+            headerSortingStyle,
         },
         // Below fields are hidden and used for filtering only.
         {

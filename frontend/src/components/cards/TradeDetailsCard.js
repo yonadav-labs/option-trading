@@ -22,7 +22,7 @@ export default function TradeDetailsCard(props) {
                             : {PriceFormatter(trade.target_price_lower)}({ProfitFormatter(trade.to_target_price_lower_ratio)})
                             - {PriceFormatter(trade.target_price_upper)}({ProfitFormatter(trade.to_target_price_upper_ratio)})
                             </div>
-                            <div className="col-sm-6">Hypothetical return: {PriceFormatter(trade.target_price_profit)} ({ProfitFormatter(trade.target_price_profit_ratio)})</div>
+                            <div className="col-sm-6">Hypothetical profit: {PriceFormatter(trade.target_price_profit)} ({ProfitFormatter(trade.target_price_profit_ratio)})</div>
                         </div>) : null}
 
                     <div className="row">
@@ -39,7 +39,7 @@ export default function TradeDetailsCard(props) {
 
                     </div>
                     <div className="row">
-                        <div className="col-sm-6">Cost: {PriceFormatter(trade.cost)}</div>
+                        <div className="col-sm-6">Cost / Max loss: {PriceFormatter(trade.cost)}</div>
                     </div>
                     <br />
                     <Card.Title>Details</Card.Title>
@@ -59,7 +59,7 @@ export default function TradeDetailsCard(props) {
                     (<p>
                         *Option contract data on this page is frozen at "Quoted at" time.<br />
                         *All data are based on estimated options value on expiration date.<br />
-                        *Hypothetical return: average of possible return outcomes if share price hits within the target price range.
+                        *Hypothetical profit: average of possible profit outcomes if share price hits within the target price range.
                     </p>)}
             </Card.Body>
         </Card >

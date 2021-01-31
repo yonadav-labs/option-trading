@@ -65,6 +65,7 @@ export default function BestCallByPrice() {
         setTargetPriceUpper(null);
     }
 
+    const headerSortingStyle = { backgroundColor: '#FF8F2B' };
     const result_table_columns = [
         {
             dataField: "type",
@@ -76,35 +77,10 @@ export default function BestCallByPrice() {
                         <small>{getTradeStrikeStr(row)}</small>
                     </span>
                 );
-            },
-            sort: true
-        }, {
-            dataField: "to_break_even_ratio",
-            text: "Break-even",
-            formatter: (cell, row, rowIndex, extraData) => (
-                <span>
-                    At {PriceMovementFormatter(cell, row.break_even_price)}
-                </span>
-            ),
-            sort: true
-        }, {
-            dataField: "cost",
-            text: "Cost",
-            formatter: (cell, row, rowIndex, extraData) => (
-                PriceFormatter(cell)
-            ),
-            sort: true
-        }, {
-            dataField: "profit_cap_ratio",
-            text: "Profit limit",
-            formatter: (cell, row, rowIndex, extraData) => (
-                cell != null ?
-                    (<span>{PriceMovementFormatter(cell, row.profit_cap)}</span>) : (<span>Unlimited</span>)
-            ),
-            sort: true
+            }
         }, {
             dataField: "target_price_profit_ratio",
-            text: "Hypothetical return",
+            text: "Hypothetical profit",
             hidden: targetPriceLower == null,
             formatter: (cell, row, rowIndex, extraData) => {
                 if (cell != null) {
@@ -113,7 +89,35 @@ export default function BestCallByPrice() {
                     return (<span></span>);
                 }
             },
-            sort: true
+            sort: true,
+            headerSortingStyle,
+        }, {
+            dataField: "to_break_even_ratio",
+            text: "Break-even",
+            formatter: (cell, row, rowIndex, extraData) => (
+                <span>
+                    At {PriceMovementFormatter(cell, row.break_even_price)}
+                </span>
+            ),
+            sort: true,
+            headerSortingStyle,
+        }, {
+            dataField: "cost",
+            text: "Cost / Max loss",
+            formatter: (cell, row, rowIndex, extraData) => (
+                PriceFormatter(cell)
+            ),
+            sort: true,
+            headerSortingStyle,
+        }, {
+            dataField: "profit_cap_ratio",
+            text: "Max profit",
+            formatter: (cell, row, rowIndex, extraData) => (
+                cell != null ?
+                    (<span>{PriceMovementFormatter(cell, row.profit_cap)}</span>) : (<span>Unlimited</span>)
+            ),
+            sort: true,
+            headerSortingStyle,
         }, {
             dataField: 'min_volume',
             text: 'Liquidity',
@@ -125,7 +129,8 @@ export default function BestCallByPrice() {
                     </span>
                 );
             },
-            sort: true
+            sort: true,
+            headerSortingStyle,
         },
         // Below fields are hidden and used for filtering only.
         {
@@ -408,7 +413,7 @@ export default function BestCallByPrice() {
                                 </div>
                                 <p>
                                     *All results are based on estimated options value on expiration date.<br />
-                                    *Hypothetical return: average of possible return outcomes under the assumption that {selectedTicker[0].symbol} share price will be within the target price range.
+                                    *Hypothetical profit: average of possible profit outcomes under the assumption that {selectedTicker[0].symbol} share price will be within the target price range.
                                 </p>
                                 <div className="row">
                                     <div className="col">
