@@ -5,7 +5,8 @@ from rest_framework.decorators import api_view
 from rest_framework.exceptions import APIException
 from rest_framework.response import Response
 from tiger.core import Stock
-from tiger.core.trade.trade_factory import TradeFactory
+from tiger.core.trade import LongCall, LongPut, CoveredCall, CashSecuredPut, BullPutSpread, BullCallSpread, \
+    BearCallSpread, BearPutSpread
 from tiger.models import Ticker
 from tiger.serializers import TradeSerializer
 from tiger.utils import days_from_timestamp
@@ -29,11 +30,11 @@ def get_call_spreads(stock, call_contract_lists, target_price_lower, target_pric
                 if low_strike_call.strike >= high_strike_call.strike:
                     continue
                 bull_call_spread_trades.append(
-                    TradeFactory.build_bull_call_spread(stock, low_strike_call, high_strike_call, target_price_lower,
-                                                        target_price_upper, available_cash=available_cash))
+                    BullCallSpread.build(stock, low_strike_call, high_strike_call, target_price_lower,
+                                         target_price_upper, available_cash=available_cash))
                 bear_call_spread_trades.append(
-                    TradeFactory.build_bear_call_spread(stock, low_strike_call, high_strike_call, target_price_lower,
-                                                        target_price_upper, available_cash=available_cash))
+                    BearCallSpread.build(stock, low_strike_call, high_strike_call, target_price_lower,
+                                         target_price_upper, available_cash=available_cash))
     bull_call_spread_trades = filter_and_sort_trades(bull_call_spread_trades)[:100]
     bear_call_spread_trades = filter_and_sort_trades(bear_call_spread_trades)[:100]
     return bull_call_spread_trades, bear_call_spread_trades
@@ -49,11 +50,11 @@ def get_put_spreads(stock, put_contract_lists, target_price_lower, target_price_
                 if low_strike_put.strike >= high_strike_put.strike:
                     continue
                 bear_put_spread_trades.append(
-                    TradeFactory.build_bear_put_spread(stock, low_strike_put, high_strike_put, target_price_lower,
-                                                       target_price_upper, available_cash=available_cash))
+                    BearPutSpread.build(stock, low_strike_put, high_strike_put, target_price_lower,
+                                        target_price_upper, available_cash=available_cash))
                 bull_put_spread_trades.append(
-                    TradeFactory.build_bull_put_spread(stock, low_strike_put, high_strike_put, target_price_lower,
-                                                       target_price_upper, available_cash=available_cash))
+                    BullPutSpread.build(stock, low_strike_put, high_strike_put, target_price_lower,
+                                        target_price_upper, available_cash=available_cash))
     bear_put_spread_trades = filter_and_sort_trades(bear_put_spread_trades)[:100]
     bull_put_spread_trades = filter_and_sort_trades(bull_put_spread_trades)[:100]
     return bear_put_spread_trades, bull_put_spread_trades
@@ -93,11 +94,9 @@ def get_best_trades(request, ticker_symbol):
             if days_from_timestamp(call.last_trade_date) <= -7:
                 continue
             all_trades.append(
-                TradeFactory.build_long_call(stock, call, target_price_lower, target_price_upper,
-                                             available_cash=available_cash))
+                LongCall.build(stock, call, target_price_lower, target_price_upper, available_cash=available_cash))
             all_trades.append(
-                TradeFactory.build_covered_call(stock, call, target_price_lower, target_price_upper,
-                                                available_cash=available_cash))
+                CoveredCall.build(stock, call, target_price_lower, target_price_upper, available_cash=available_cash))
 
     for puts_per_exp in put_contract_lists:
         for put in puts_per_exp:
@@ -105,11 +104,9 @@ def get_best_trades(request, ticker_symbol):
             if days_from_timestamp(put.last_trade_date) <= -7:
                 continue
             all_trades.append(
-                TradeFactory.build_long_put(stock, put, target_price_lower, target_price_upper,
-                                            available_cash=available_cash))
+                LongPut.build(stock, put, target_price_lower, target_price_upper, available_cash=available_cash))
             all_trades.append(
-                TradeFactory.build_cash_secured_put(stock, put, target_price_lower, target_price_upper,
-                                                    available_cash=available_cash))
+                CashSecuredPut.build(stock, put, target_price_lower, target_price_upper, available_cash=available_cash))
 
     # Call spreads
     # TODO: add tests.
