@@ -54,6 +54,7 @@ class TradeSnapshot(BaseModel):
         ('cash_secured_put', 'Cash secured put'),
         ('bull_call_spread', 'Bull call spread'),
         ('bear_call_spread', 'Bear call spread'),
+        ('bear_put_spread', 'Bear put spread'),
     )
     type = models.CharField(max_length=100, choices=TRADE_TYPE_CHOICES, default="unspecified")
     stock_snapshot = models.ForeignKey(StockSnapshot, on_delete=models.CASCADE)  # Snapshot of underlying asset.

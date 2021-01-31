@@ -40,12 +40,12 @@ export default function Pricing() {
 
                     <Card className="mb-4 pricing-card-background">
                         <Card.Header className="pricing-card-header">
-                            <h6 class="mt-3 font-weight-bold">YEARLY</h6>
+                            <h6 class="mt-3 font-weight-bold">ANNUALLY</h6>
                         </Card.Header>
                         <Card.Body className="card-body-right">
                             <div class="badge">MOST POPULAR</div>
                             <h2>$59.00/yr</h2>
-                            <h6>Save $9.28 yearly</h6>
+                            <h6>Save $9.28 annually</h6>
                             <div className="pt-3 card-list-right">
                                 <ul class="list-unstyled mt-3 mb-4">
                                     <li>&#10003; Includes everything in the monthly plan.</li>

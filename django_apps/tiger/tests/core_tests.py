@@ -244,6 +244,23 @@ class PutTradesTestCase(TestCase):
             "inTheMoney": False
         }
 
+        self.yahoo_input2 = {
+            "contractSymbol": "QQQE210115P00074000",
+            "strike": 74.0,
+            "currency": "USD",
+            "lastPrice": 2.65,
+            "change": 0.65,
+            "volume": 3,
+            "openInterest": 10,
+            "bid": 2.4,
+            "ask": 3.0,
+            "contractSize": "REGULAR",
+            "expiration": 1626393600,
+            "lastTradeDate": 1603466039,
+            "impliedVolatility": 0.26031929687499994,
+            "inTheMoney": True
+        }
+
         self.stock_price = 73.55
         self.ticker = Ticker(id=1)
         self.stock = Stock(self.ticker, self.stock_price)
@@ -313,6 +330,16 @@ class PutTradesTestCase(TestCase):
         self.assertAlmostEqual(long_put_leg.get_profit_in_price_range(55, 65), 1460)
         self.assertAlmostEqual(long_put_leg.get_profit_in_price_range(63, 73), 110)
         self.assertAlmostEqual(long_put_leg.get_profit_in_price_range(67.3, 67.3), 0)
+
+    def test_bear_put_spread(self):
+        put_contract_1 = OptionContract(self.ticker, False, self.yahoo_input, self.stock_price, 'estimated')
+        put_contract_2 = OptionContract(self.ticker, False, self.yahoo_input2, self.stock_price, 'estimated')
+        bear_put_spread = TradeFactory.build_bear_put_spread(self.stock, put_contract_1, put_contract_2,
+                                                             70, 70)
+        self.assertAlmostEqual(bear_put_spread.cost, 200.0)
+        self.assertAlmostEqual(bear_put_spread.break_even_price, 72)
+        self.assertAlmostEqual(bear_put_spread.profit_cap, 400)
+        self.assertAlmostEqual(bear_put_spread.target_price_profit, 200)
 
 
 class TdTestCase(TestCase):
