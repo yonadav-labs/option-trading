@@ -341,6 +341,16 @@ class PutTradesTestCase(TestCase):
         self.assertAlmostEqual(bear_put_spread.profit_cap, 400)
         self.assertAlmostEqual(bear_put_spread.target_price_profit, 200)
 
+    def test_bull_put_spread(self):
+        put_contract_1 = OptionContract(self.ticker, False, self.yahoo_input, self.stock_price, 'estimated')
+        put_contract_2 = OptionContract(self.ticker, False, self.yahoo_input2, self.stock_price, 'estimated')
+        bear_put_spread = TradeFactory.build_bull_put_spread(self.stock, put_contract_1, put_contract_2,
+                                                             70, 70)
+        self.assertAlmostEqual(bear_put_spread.cost, 400.0)
+        self.assertAlmostEqual(bear_put_spread.break_even_price, 72)
+        self.assertAlmostEqual(bear_put_spread.profit_cap, 200)
+        self.assertAlmostEqual(bear_put_spread.target_price_profit, -200)
+
 
 class TdTestCase(TestCase):
     def setUp(self):

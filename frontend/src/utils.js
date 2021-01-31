@@ -135,7 +135,8 @@ export function getLegByName(trade, name) {
 };
 
 export function getAllTradeTypes(type) {
-    return ['long_call', 'covered_call', 'long_put', 'cash_secured_put', 'bull_call_spread', 'bear_call_spread', 'bear_put_spread'];
+    return ['long_call', 'covered_call', 'long_put', 'cash_secured_put', 'bull_call_spread', 'bear_call_spread',
+        'bear_put_spread', 'bull_put_spread'];
 }
 export function getContractName(contract) {
     return (
@@ -149,22 +150,17 @@ export function getContractName(contract) {
 };
 
 export function getTradeTypeDisplay(type) {
-    switch (type) {
-        case ("long_call"):
-            return "Long call";
-        case ("covered_call"):
-            return "Covered call"
-        case ("long_put"):
-            return "Long put"
-        case ("cash_secured_put"):
-            return "Cash secured put"
-        case ("bull_call_spread"):
-            return "Bull call spread"
-        case ("bear_call_spread"):
-            return "Bear call spread"
-        case ("bear_put_spread"):
-            return "Bear put spread"
+    let typeToName = {
+        'long_call': 'Long call',
+        'covered_call': 'Covered call',
+        'long_put': 'Long put',
+        'cash_secured_put': 'Cash secured put',
+        'bull_call_spread': 'Bull call spread',
+        'bear_call_spread': 'Bear call spread',
+        'bear_put_spread': 'Bear put spread',
+        'bull_put_spread': 'Bull put spread',
     }
+    return typeToName[type];
 }
 
 export function getTradeStrikeStr(row) {
@@ -199,6 +195,11 @@ export function getTradeStrikeStr(row) {
             let longPutLeg = getLegByName(row, 'long_put_leg');
             let shortPutLeg = getLegByName(row, 'short_put_leg');
             return `Strike $${shortPutLeg.contract.strike} / $${longPutLeg.contract.strike}`;
+        }
+        case ("bull_put_spread"): {
+            let longPutLeg = getLegByName(row, 'long_put_leg');
+            let shortPutLeg = getLegByName(row, 'short_put_leg');
+            return `Strike $${longPutLeg.contract.strike} / $${shortPutLeg.contract.strike}`;
         }
     }
 }

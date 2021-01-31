@@ -50,9 +50,9 @@ def get_put_spreads(stock, put_contract_lists, target_price_lower, target_price_
                 bear_put_spread_trades.append(
                     TradeFactory.build_bear_put_spread(stock, low_strike_put, high_strike_put, target_price_lower,
                                                        target_price_upper, available_cash=available_cash))
-                # bull_put_spread_trades.append(
-                #     TradeFactory.build_bull_put_spread(stock, low_strike_put, high_strike_put, target_price_lower,
-                #                                        target_price_upper, available_cash=available_cash))
+                bull_put_spread_trades.append(
+                    TradeFactory.build_bull_put_spread(stock, low_strike_put, high_strike_put, target_price_lower,
+                                                       target_price_upper, available_cash=available_cash))
     bear_put_spread_trades = filter_and_sort_trades(bear_put_spread_trades)[:100]
     bull_put_spread_trades = filter_and_sort_trades(bull_put_spread_trades)[:100]
     return bear_put_spread_trades, bull_put_spread_trades
