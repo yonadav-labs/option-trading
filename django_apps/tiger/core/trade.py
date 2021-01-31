@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+
 from tiger.utils import timestamp_to_datetime_with_default_tz
 
 from .leg import Leg, CashLeg, StockLeg, OptionLeg
@@ -21,32 +22,6 @@ class Trade(ABC):
         self.legs = legs
         self.target_price_lower = target_price_lower
         self.target_price_upper = target_price_upper
-
-    @classmethod
-    def from_snapshot(cls, trade_snapshot):
-        stock = Stock.from_snapshot(trade_snapshot.stock_snapshot)
-        legs = [Leg.from_snapshot(leg_snapshot) for leg_snapshot in trade_snapshot.leg_snapshots.all()]
-
-        if trade_snapshot.type == 'long_call':
-            trade_class = LongCall
-        elif trade_snapshot.type == 'long_put':
-            trade_class = LongPut
-        elif trade_snapshot.type == 'covered_call':
-            trade_class = CoveredCall
-        elif trade_snapshot.type == 'cash_secured_put':
-            trade_class = CashSecuredPut
-        elif trade_snapshot.type == 'bull_call_spread':
-            trade_class = BullCallSpread
-        elif trade_snapshot.type == 'bear_call_spread':
-            trade_class = BearCallSpread
-        elif trade_snapshot.type == 'bear_put_spread':
-            trade_class = BearPutSpread
-        elif trade_snapshot.type == 'bull_put_spread':
-            trade_class = BullPutSpread
-
-        new_trade = trade_class(stock, legs, target_price_lower=trade_snapshot.target_price_lower,
-                                target_price_upper=trade_snapshot.target_price_upper)
-        return new_trade
 
     def get_leg(self, is_long, type, is_call=None):
         assert type in ('cash', 'stock', 'option')
@@ -218,6 +193,32 @@ class Trade(ABC):
 
 
 class TradeFactory:
+    @staticmethod
+    def from_snapshot(trade_snapshot):
+        stock = Stock.from_snapshot(trade_snapshot.stock_snapshot)
+        legs = [Leg.from_snapshot(leg_snapshot) for leg_snapshot in trade_snapshot.leg_snapshots.all()]
+
+        if trade_snapshot.type == 'long_call':
+            trade_class = LongCall
+        elif trade_snapshot.type == 'long_put':
+            trade_class = LongPut
+        elif trade_snapshot.type == 'covered_call':
+            trade_class = CoveredCall
+        elif trade_snapshot.type == 'cash_secured_put':
+            trade_class = CashSecuredPut
+        elif trade_snapshot.type == 'bull_call_spread':
+            trade_class = BullCallSpread
+        elif trade_snapshot.type == 'bear_call_spread':
+            trade_class = BearCallSpread
+        elif trade_snapshot.type == 'bear_put_spread':
+            trade_class = BearPutSpread
+        elif trade_snapshot.type == 'bull_put_spread':
+            trade_class = BullPutSpread
+
+        new_trade = trade_class(stock, legs, target_price_lower=trade_snapshot.target_price_lower,
+                                target_price_upper=trade_snapshot.target_price_upper)
+        return new_trade
+
     @staticmethod
     def build_long_call(stock, call_contract, target_price_lower=None, target_price_upper=None, available_cash=None):
         long_call_leg = OptionLeg(True, 1, call_contract)

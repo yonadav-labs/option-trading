@@ -1,6 +1,6 @@
 from django.test import TestCase
 
-from tiger.core import Stock, OptionContract, Leg, Trade
+from tiger.core import Stock, OptionContract, Leg, Trade, TradeFactory
 from tiger.models import ExternalRequestCache, Ticker, StockSnapshot, OptionContractSnapshot, LegSnapshot, \
     TradeSnapshot, User
 
@@ -86,7 +86,7 @@ class LoadFromSnapshotTestCase(TestCase):
         trade_snapshot.leg_snapshots.add(contract_leg_snapshot)
         trade_snapshot.leg_snapshots.add(cash_leg_snapshot)
 
-        trade = Trade.from_snapshot(trade_snapshot)
+        trade = TradeFactory.from_snapshot(trade_snapshot)
         self.assertEqual(trade.type, 'cash_secured_put')
         self.assertEqual(trade.target_price_lower, 100)
         self.assertEqual(trade.cost, 7388)
