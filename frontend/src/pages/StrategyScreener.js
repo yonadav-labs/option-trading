@@ -377,16 +377,19 @@ export default function BestCallByPrice() {
                                     }
                                 </div>
                             </Row>
-                            <h4>Optional settings:</h4>
+                            {/* <h4>Optional settings:</h4> */}
                             <Row>
-                                <Col sm="3">
+                                <Col sm="12">
                                     <Form.Group>
-                                        <Form.Label>Cash to invest in {selectedTicker[0].symbol}:</Form.Label>
+                                        <Form.Label>Cash to invest in {selectedTicker[0].symbol} (optional):</Form.Label>
                                         <Form.Control name="available_cash" as="input" type="number"
-                                            placeholder="Enter the amount of cash you plan to invest in this trade." min="0.0" max="100000000.0" step="0.01" />
+                                            placeholder="Enter the amount that you could afford to loss."
+                                            min="0.0" max="100000000.0" step="0.01" />
                                     </Form.Group>
                                 </Col>
-                                <Col sm="3">
+                                {
+                                // TODO: re-enable after we fix the Premium selection for strategy screener.
+                                /* <Col sm="3">
                                     <Form.Group>
                                         <Form.Label>Premium price options:</Form.Label>
                                         <Form.Control name="use_as_premium" as="select" defaultValue="estimated"
@@ -396,7 +399,7 @@ export default function BestCallByPrice() {
                                             <option key="ask" value="ask">Use ask (seller's) price</option>
                                         </Form.Control>
                                     </Form.Group>
-                                </Col>
+                                </Col> */}
                             </Row>
                             <Row>
                                 <Col>
@@ -408,7 +411,6 @@ export default function BestCallByPrice() {
                         {bestStrategies != null ?
                             <div>
                                 <h4>Results</h4>
-                                <hr />
                                 <Row>
                                     <Col sm="3" xs="6">
                                         <Form.Group>
