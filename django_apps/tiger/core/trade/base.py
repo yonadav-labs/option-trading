@@ -151,9 +151,9 @@ class Trade(ABC):
     def graph_x_points(self):
         '''Currently all trade types we have strike prices as key points so we can share this.'''
         graph_prices = []
-        step = max(0.02, self.stock.stock_price / 50)
-        price = self.stock.stock_price * 0.25
-        while price < self.stock.stock_price * 1.75:
+        step = max(0.05, self.stock.stock_price / 200.0)
+        price = 0.0
+        while price < self.stock.stock_price * 2:
             graph_prices.append(price)
             price += step
 
@@ -161,6 +161,12 @@ class Trade(ABC):
             if leg.contract and leg.contract.strike not in graph_prices:
                 graph_prices.append(leg.contract.strike)
 
+        graph_prices.append(self.stock.stock_price)
+        graph_prices.append(self.break_even_price)
+        if self.target_price_lower:
+            graph_prices.append(self.target_price_lower)
+        if self.target_price_upper:
+            graph_prices.append(self.target_price_upper)
         graph_prices = sorted(graph_prices)
         return graph_prices
 
