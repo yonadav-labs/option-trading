@@ -1,10 +1,10 @@
 import React, { useState, useCallback } from 'react';
-import { Button, Card, CardColumns, CardDeck, Col, Container, Dropdown, Form, Row, ToggleButton, ToggleButtonGroup } from 'react-bootstrap';
+import { Alert, Button, Card, CardColumns, Col, Container, Form, Row, Spinner, ToggleButton, ToggleButtonGroup } from 'react-bootstrap';
 import { MdTrendingFlat, MdArrowUpward, MdArrowDownward, MdShowChart } from 'react-icons/md';
 import 'react-bootstrap-typeahead/css/Typeahead.css';
 import './StrategyComposer.css';
 import { strategies } from '../blobs/Strategies';
-import { cloneDeep, isEmpty, throttle } from 'lodash';
+import { cloneDeep, get, isEmpty, throttle } from 'lodash';
 import TickerTypeahead from '../components/TickerTypeahead';
 import ModalSpinner from '../components/ModalSpinner';
 import TickerSummary from '../components/TickerSummary';
@@ -14,6 +14,7 @@ import Axios from 'axios';
 import LegCardDetails from '../components/LegCardDetails';
 import { useOktaAuth } from '@okta/okta-react/src/OktaContext';
 import TradeDetailsCard from '../components/cards/TradeDetailsCard';
+import TradingViewWidget from 'react-tradingview-widget';
 
 // export function useHorizontalScroll() {
 //     const elRef = useRef();
@@ -45,10 +46,20 @@ export default function StrategyComposer() {
     const [modalActive, setModalActive] = useState(false);
     const [sentiment, setSentiment] = useState("all");
     const [strategyDetails, setStrategyDetails] = useState(null);
+    const [ruleMessage, setRuleMessage] = useState("");
+    const [loadingStrategyDetails, setLoadingStrategyDetails] = useState(false);
     const API_URL = getApiUrl();
     const { authState } = useOktaAuth();
+    const operators = {
+        "<": (a, b, property) => { return get(a, property) < get(b, property) },
+        "<=": (a, b, property) => { return get(a, property) <= get(b, property) },
+        ">": (a, b, property) => { return get(a, property) > get(b, property) },
+        ">=": (a, b, property) => { return get(a, property) >= get(b, property) }
+    }
 
     const applyStrategy = (strategy) => {
+        // enforce rules on change
+        setStrategyDetails(null);
         setSelectedStrategy(strategy);
         if (strategy) {
             setLegs(cloneDeep(strategy.legs));
@@ -56,18 +67,52 @@ export default function StrategyComposer() {
     }
 
     const updateLeg = (key, value, index) => {
+        // if (legs[index][key]) {
+        //     setRuleMessage(enforceRules(selectedStrategy.rules, legs));
+        // }
         // check if key is a linkedProperty
         if (selectedStrategy && selectedStrategy.linkedProperties.includes(key)) {
             // set value for all legs
-            setLegs(prevState => prevState.map(val => { val[key] = value; return val }));
+            setLegs(prevState => {
+                const newState = prevState.map(val => { val[key] = value; return val }); 
+                if (prevState[index][key]) {
+                    console.log(prevState[index][key]);
+                    enforceRules(selectedStrategy.rules, newState); 
+                }
+                return newState;
+            });
         } else {
-            setLegs(prevState => ([...prevState.slice(0, index), { ...prevState[index], [key]: value }, ...prevState.slice(index + 1)]));
+            setLegs(prevState => {
+                const newState = [...prevState.slice(0, index), { ...prevState[index], [key]: value }, ...prevState.slice(index + 1)]; 
+                if (prevState[index][key]) {
+                    enforceRules(selectedStrategy.rules, newState); 
+                }
+                return newState;
+            });
         }
+    }
+
+    const enforceRules = (rules, legs) => {
+        let message = "";
+        const finalResult = rules.reduce((prev, curr) => {
+            const legAIndex = curr.legAIndex;
+            const legBIndex = curr.legBIndex;
+            const property = curr.legProperty;
+            const operator = curr.operator;
+            const ruleResult = operators[operator](legs[legAIndex], legs[legBIndex], property);
+            if (!ruleResult) {
+                message += `Leg ${legAIndex + 1}'s ${property.replace(".", " ")} needs to be ${operator} Leg ${legBIndex + 1}'s ${property.replace(".", " ")} \n`;
+            }
+            return (prev && ruleResult);
+        }, true);
+        setRuleMessage(message);
+
+        return finalResult;
     }
 
     const getStrategyDetails = async () => {
         // console.log(selectedTicker, basicInfo, selectedStrategy);
-
+        setLoadingStrategyDetails(true);
         let strategy = {
             type: selectedStrategy.id,
             stock_snapshot: { ticker_id: selectedTicker[0].id, external_cache_id: selectedTicker[0].external_cache_id },
@@ -114,6 +159,7 @@ export default function StrategyComposer() {
         } catch (error) {
             console.error(error);
         }
+        setLoadingStrategyDetails(false);
     }
 
     return (
@@ -184,7 +230,19 @@ export default function StrategyComposer() {
                 <>
                     <Row className="mb-3">
                         <Col lg="4">
-                            <TickerSummary basicInfo={basicInfo} />
+                            {basicInfo.symbol ?
+                                <div className="h-100">
+                                    <TickerSummary basicInfo={basicInfo} />
+                                    <div className="h-75">
+                                        <TradingViewWidget
+                                            symbol={basicInfo.symbol}
+                                            autosize
+                                        />
+                                    </div>
+                                </div>
+                                :
+                                null
+                            }
                         </Col>
                         <Col lg="8">
                             <Row>
@@ -247,19 +305,22 @@ export default function StrategyComposer() {
                                                 return null;
                                         }
                                     })}
-                                    <Button disabled={selectedTicker.length < 1 || !legs.reduce((prevVal, currVal) => (prevVal && !isEmpty(currVal.contract)), true)} onClick={getStrategyDetails}>Calculate Strategy Details</Button>
+                                    <Button disabled={(selectedTicker.length < 1 || !legs.reduce((prevVal, currVal) => (prevVal && !isEmpty(currVal.contract)), true)) || ruleMessage} onClick={getStrategyDetails}>Calculate Strategy Details</Button>
                                 </Col>
                             </Row>
                         </Col>
                     </Row>
                     <Row>
                         <Col>
+                            <Spinner hidden={!loadingStrategyDetails} animation="grow" role="status">
+                                <span className="sr-only"></span>
+                            </Spinner>
                             {strategyDetails ?
                                 <TradeDetailsCard
                                     trade={strategyDetails}
                                 />
                                 :
-                                null
+                                <Alert hidden={!ruleMessage} variant='danger' onClose={() => setRuleMessage("")} dismissible>{ruleMessage}</Alert>
                             }
                         </Col>
                     </Row>

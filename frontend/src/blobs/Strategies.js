@@ -53,11 +53,26 @@ class Strategy {
     sentiment = [];
     linkedProperties = [];
     legs = [];
+    rules = []; // array of rules where rule in this format: {<leg_index>, <leg_property>, <operator>, <leg_index>} e.g. {0, "contract.strike", ">", 1}
 
     constructor(data) {
         Object.assign(this, data);
         // TODO hash strategy settings to help identify it
         this.id = this.name.toLowerCase().replace(/\s+/g, '_');
+    }
+}
+
+class Rule {
+    legAIndex = 0;
+    legProperty = '';
+    operator = '';
+    legBIndex = 0;
+
+    constructor(legAIndex, legProperty, operator, legBIndex) {
+        this.legAIndex = legAIndex;
+        this.legProperty = legProperty;
+        this.operator = operator;
+        this.legBIndex = legBIndex;
     }
 }
 
@@ -94,6 +109,7 @@ export const strategies = [
             description: "",
             sentiment: ["bull"],
             linkedProperties: ["expiration"],
+            rules: [new Rule(0, "contract.strike", "<", 1)],
             legs: [
                 new OptionLeg(
                     {
