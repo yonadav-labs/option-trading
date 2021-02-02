@@ -13,6 +13,7 @@ import StrategyScreener from './pages/StrategyScreener';
 import SingleTrade from './pages/SingleTrade';
 import Pricing from './pages/Pricing';
 import StrategyComposer from './pages/StrategyComposer';
+import EmailVerified from './pages/EmailVerified';
 
 export default withRouter(class AppWithRouterAccess extends Component {
     constructor(props) {
@@ -40,6 +41,7 @@ export default withRouter(class AppWithRouterAccess extends Component {
                             <Route path="/disclaimer" component={Disclaimer}></Route>
                             <Route path='/signin' component={Login} />
                             <Route path='/signin/register' component={Login} />
+                            <Route path='/verify-email' component={EmailVerified} />
                             <Route path='/callback' component={LoginCallback} />
                             <Route path='/pricing' component={Pricing} />
                         </Switch>
