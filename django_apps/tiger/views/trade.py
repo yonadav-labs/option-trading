@@ -15,8 +15,10 @@ from tiger.views.utils import get_valid_contracts
 logger = logging.getLogger('console_info')
 
 
+# TODO: trade.cost > 0.1 is needed for some spreads where the spread width is almost equal to cost.
 def filter_and_sort_trades(input_trades):
-    output_trades = list(filter(lambda trade: trade is not None and trade.target_price_profit > 0.0, input_trades))
+    output_trades = list(
+        filter(lambda trade: trade is not None and trade.target_price_profit > 0.0 and trade.cost > 0.1, input_trades))
     return sorted(output_trades, key=lambda trade: -trade.target_price_profit_ratio)
 
 
