@@ -5,7 +5,7 @@ import "@okta/okta-signin-widget/dist/css/okta-sign-in.min.css";
 import getOktaConfig from "./../oktaConfig";
 
 export default function Login() {
-    const { pkce, issuer, clientId, redirectUri, scopes } = getOktaConfig().oidc;
+    const { pkce, issuer, clientId, redirectUri, scopes, idpFbId } = getOktaConfig().oidc;
     const signIn = new OktaSignIn({
         baseUrl: issuer.split("/oauth2")[0],
         clientId,
@@ -22,6 +22,10 @@ export default function Login() {
             display: 'page',
             scopes
         },
+        idps: [
+            {type: 'FACEBOOK', id: idpFbId}
+        ],
+        idpDisplay: 'SECONDARY',
         // registration: {
         //     parseSchema: function (schema, onSuccess, onFailure) {
         //         // handle parseSchema callback
