@@ -3,6 +3,7 @@ import Card from 'react-bootstrap/Card';
 import ShareTradeBtn from '../ShareTradeBtn.js';
 import { PriceFormatter, ProfitFormatter, PercentageFormatter } from '../../utils';
 import LegDetailsCard from './LegDetailsCard.js';
+import TradeProfitLossGraph from '../TradeProfitLossGraph.js';
 
 export default function TradeDetailsCard(props) {
     const { trade, hideShareButton, hideDisclaimer, hideTitle } = props;
@@ -42,6 +43,9 @@ export default function TradeDetailsCard(props) {
                         <div className="col-sm-6">Cost / Max loss: {PriceFormatter(trade.cost)}</div>
                     </div>
                     <br />
+                    <div>
+                        <TradeProfitLossGraph trade={trade}/>
+                    </div>
                     <Card.Title>Details</Card.Title>
                     {
                         trade.legs.map((leg, index) => {

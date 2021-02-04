@@ -7,7 +7,7 @@ import { PriceFormatter } from '../../utils';
 export default function LegDetailsCard(props) {
     const { leg, position_num } = props;
 
-    console.log(leg, position_num)
+    // console.log(leg, position_num)
 
     if (leg.contract) {
         return (
