@@ -1,9 +1,33 @@
-import React from 'react';
+import React, {useState} from 'react';
 import { Link } from "react-router-dom";
 import { Row, Col } from 'react-bootstrap';
 import './Home.css';
 
 export default function Home() {
+    const [sliderState, setSliderState] = useState("stock select")
+    const [pictureState, setPictureState] = useState('slider1.png')
+
+    const sliderSelectHandler = (select) => {
+        setSliderState(select)
+        switch (select) {
+            case 'stock select':
+                setPictureState('slider1.png')
+                break;
+            case 'expiration select':
+                setPictureState('slider2.png')
+                break;
+            case 'price select':
+                setPictureState('slider3.png')
+                break;
+            case 'trade select':
+                setPictureState('slider4.png')
+                break;
+        
+            default:
+                break;
+        }
+    }
+
     return (
         <div>
             <div className="container-fluid home-background">
@@ -27,10 +51,10 @@ export default function Home() {
                         <h1 className="find-title">Find the right options trading ideas just for you</h1>
                     </div>
                     <div className="col-lg-5 mb-3">
-                        <img className="img-fluid mx-auto d-block" src="data:image/gif;base64,R0lGODlhAQABAIAAAHd3dwAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" width="400" height="400" />
+                        <img className="img-fluid mx-auto d-block" src={pictureState} width="400" height="400" />
                     </div>
                     <div className="col-lg-7">
-                        <Row>
+                        <Row className={sliderState === 'stock select' ? '' : "text-muted"} onClick={e => sliderSelectHandler('stock select')}>
                             <span className="col-lg-1">
                                 <h2 className="display-4 font-weight-bold">1</h2>
                             </span>
@@ -39,31 +63,31 @@ export default function Home() {
                                 <p className="lead">AAPL, AMZN, TSLA...</p>
                             </span>
                         </Row>
-                        <Row>
+                        <Row className={sliderState === 'expiration select' ? '' : "text-muted"} onClick={e => sliderSelectHandler('expiration select')}>
                             <span className="col-lg-1">
-                                <h2 className="display-4 font-weight-bold text-muted">2</h2>
+                                <h2 className="display-4 font-weight-bold ">2</h2>
                             </span>
                             <span className="col-lg-11">
-                                <h2 className="text-muted">Select an expiration date.</h2>
-                                <p className="lead text-muted">Timeframe for this trade.</p>
+                                <h2>Select an expiration date.</h2>
+                                <p className="lead">Timeframe for this trade.</p>
                             </span>
                         </Row>
-                        <Row>
+                        <Row className={sliderState === 'price select' ? '' : "text-muted"} onClick={e => sliderSelectHandler('price select')}>
                             <span className="col-lg-1">
-                                <h2 className="display-4 font-weight-bold text-muted">3</h2>
+                                <h2 className="display-4 font-weight-bold ">3</h2>
                             </span>
                             <span className="col-lg-11">
-                                <h2 className="text-muted">Enter target stock price.</h2>
-                                <p className="lead text-muted">Where do you think the stock price will go?</p>
+                                <h2>Enter target stock price.</h2>
+                                <p className="lead">Where do you think the stock price will go?</p>
                             </span>
                         </Row>
-                        <Row>
+                        <Row className={sliderState === 'trade select' ? '' : "text-muted"} onClick={e => sliderSelectHandler('trade select')}>
                             <span className="col-lg-1">
-                                <h2 className="display-4 font-weight-bold text-muted">4</h2>
+                                <h2 className="display-4 font-weight-bold ">4</h2>
                             </span>
                             <span className="col-lg-11">
-                                <h2 className="text-muted">Get trading ideas.</h2>
-                                <p className="lead text-muted">We enumerate tens of thousands trading ideas and present the best ones to you.</p>
+                                <h2>Get trading ideas.</h2>
+                                <p className="lead">We enumerate tens of thousands trading ideas and present the best ones to you.</p>
                             </span>
                         </Row>
                     </div>
