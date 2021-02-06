@@ -1,4 +1,4 @@
-const { REACT_APP_OIDC_CLIENT_ID, REACT_APP_OIDC_ISSUER, REACT_APP_OIDC_REDIRECT_URI, REACT_APP_IDP_FB_ID } = process.env;
+const { REACT_APP_OIDC_CLIENT_ID, REACT_APP_OIDC_ISSUER, REACT_APP_OIDC_REDIRECT_URI, REACT_APP_IDP_FB_ID, REACT_APP_IDP_GL_ID } = process.env;
 
 export default function getOktaConfig() {
   return {
@@ -7,6 +7,7 @@ export default function getOktaConfig() {
       issuer: REACT_APP_OIDC_ISSUER,
       redirectUri: REACT_APP_OIDC_REDIRECT_URI,
       idpFbId: REACT_APP_IDP_FB_ID,
+      idpGlId: REACT_APP_IDP_GL_ID,
       scopes: ['openid', 'profile', 'email'],
       pkce: true
     }
