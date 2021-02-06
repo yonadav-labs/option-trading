@@ -18,6 +18,9 @@ export default function TradeProfitLossGraph(props) {
     });
 
     const options = {
+        credits: {
+            enabled: false
+        },
         chart: {
             type: "line",
             zoomType: "xy",
