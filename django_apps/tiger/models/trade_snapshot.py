@@ -25,7 +25,6 @@ class OptionContractSnapshot(SecuritySnapshot):
     is_call = models.BooleanField()
     strike = models.FloatField()
     expiration_timestamp = models.PositiveIntegerField()
-    premium = models.FloatField(null=True, blank=True)
 
     def __str__(self):
         return "({}) {}-{}-${}-{}".format(self.id, self.ticker.symbol, 'CALL' if self.is_call else 'PUT', self.strike,
@@ -67,3 +66,9 @@ class TradeSnapshot(BaseModel):
     # Market assumptions.
     target_price_lower = models.FloatField(null=True, blank=True)
     target_price_upper = models.FloatField(null=True, blank=True)
+
+    PREMIUM_TYPE_CHOICES = (
+        ('estimated', 'Estimated'),  # Use estimated mid price.
+        ('immediate', 'Immediate'),  # Use bid for sell, use ask for buy.
+    )
+    premium_type = models.CharField(max_length=20, choices=PREMIUM_TYPE_CHOICES, default='estimated')

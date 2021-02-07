@@ -5,16 +5,16 @@ from .base import Trade
 
 
 class CashSecuredPut(Trade):
-    def __init__(self, stock, legs, target_price_lower=None, target_price_upper=None):
+    def __init__(self, stock, legs, premium_type, target_price_lower=None, target_price_upper=None):
         # TODO: add validation.
-        super().__init__('cash_secured_put', stock, legs, target_price_lower, target_price_upper)
+        super().__init__('cash_secured_put', stock, legs, premium_type, target_price_lower, target_price_upper)
 
     @staticmethod
-    def build(stock, put_contract, target_price_lower=None, target_price_upper=None, available_cash=None):
-        short_put_leg = OptionLeg(False, 1, put_contract)
+    def build(stock, put_contract, premium_type, target_price_lower=None, target_price_upper=None, available_cash=None):
+        short_put_leg = OptionLeg(False, 1, put_contract, premium_type)
         long_cash_leg = CashLeg(100 * put_contract.strike)
-        new_trade = CashSecuredPut(stock, [short_put_leg, long_cash_leg], target_price_lower=target_price_lower,
-                                   target_price_upper=target_price_upper)
+        new_trade = CashSecuredPut(stock, [short_put_leg, long_cash_leg], premium_type,
+                                   target_price_lower=target_price_lower, target_price_upper=target_price_upper)
         if available_cash and not new_trade.max_out(available_cash):
             return None
         return new_trade
@@ -31,7 +31,7 @@ class CashSecuredPut(Trade):
 
     @property
     def break_even_price(self):
-        return self.get_short_put_leg().contract.strike - self.get_short_put_leg().contract.premium
+        return self.get_short_put_leg().contract.strike - self.get_short_put_leg().premium_used
 
     @property
     def profit_cap_price(self):

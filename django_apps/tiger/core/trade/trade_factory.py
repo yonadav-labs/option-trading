@@ -15,7 +15,8 @@ class TradeFactory:
     @staticmethod
     def from_snapshot(trade_snapshot):
         stock = Stock.from_snapshot(trade_snapshot.stock_snapshot)
-        legs = [Leg.from_snapshot(leg_snapshot) for leg_snapshot in trade_snapshot.leg_snapshots.all()]
+        legs = [Leg.from_snapshot(leg_snapshot, trade_snapshot.premium_type) for leg_snapshot in
+                trade_snapshot.leg_snapshots.all()]
 
         if trade_snapshot.type == 'long_call':
             trade_class = LongCall
@@ -34,7 +35,7 @@ class TradeFactory:
         elif trade_snapshot.type == 'bull_put_spread':
             trade_class = BullPutSpread
 
-        new_trade = trade_class(stock, legs, target_price_lower=trade_snapshot.target_price_lower,
+        new_trade = trade_class(stock, legs, premium_type=trade_snapshot.premium_type,
+                                target_price_lower=trade_snapshot.target_price_lower,
                                 target_price_upper=trade_snapshot.target_price_upper)
         return new_trade
-

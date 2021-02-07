@@ -14,7 +14,7 @@ class Leg(ABC):
         self.contract = contract
 
     @classmethod
-    def from_snapshot(cls, leg_snapshot):
+    def from_snapshot(cls, leg_snapshot, premium_type):
         if leg_snapshot.cash_snapshot:
             return CashLeg(leg_snapshot.units)
         elif leg_snapshot.stock_snapshot:
@@ -22,7 +22,7 @@ class Leg(ABC):
             return StockLeg(leg_snapshot.units, stock)
         elif leg_snapshot.contract_snapshot:
             contract = OptionContract.from_snapshot(leg_snapshot.contract_snapshot)
-            return OptionLeg(leg_snapshot.is_long, leg_snapshot.units, contract)
+            return OptionLeg(leg_snapshot.is_long, leg_snapshot.units, contract, premium_type)
 
     @property
     def is_cash(self):
@@ -67,10 +67,10 @@ class CashLeg(Leg):
 
     @property
     def cost(self):
-        return self.cash.cost * self.units
+        return self.units
 
     def get_value_in_price_range(self, price_lower, price_upper):
-        return self.cash.cost * self.units
+        return self.cost
 
 
 # Represent `units` shares of stock. Currently only long.
@@ -89,7 +89,7 @@ class StockLeg(Leg):
 
     @property
     def cost(self):
-        return self.stock.cost * self.units
+        return self.stock.stock_price * self.units
 
     def get_value_in_price_range(self, price_lower, price_upper):
         return self.stock.get_value_in_price_range(price_lower, price_upper) * self.units
@@ -97,8 +97,10 @@ class StockLeg(Leg):
 
 # Represent `units` contract of option.
 class OptionLeg(Leg):
-    def __init__(self, is_long, units, contract):
+    def __init__(self, is_long, units, contract, premium_type):
+        assert premium_type in ('estimated', 'immediate')
         super().__init__(is_long, units, contract=contract)
+        self.premium_type = premium_type
 
     @property
     def name(self):
@@ -106,13 +108,24 @@ class OptionLeg(Leg):
 
     @property
     def display_name(self):
-        return '{} {} contract{} of {} at ${:.2f} per contract' \
+        if self.premium_type == 'immediate':
+            premium_name = 'ask' if self.is_long else 'bid'
+        else:
+            premium_name = 'mid/mark'
+        return '{} {} contract{} of {} at ${:.2f}({}) per contract' \
             .format('Long' if self.is_long else 'Short', self.units,
-                    's' if self.units > 1 else '', self.contract.display_name, self.contract.cost)
+                    's' if self.units > 1 else '', self.contract.display_name, abs(self.cost), premium_name)
+
+    @property
+    def premium_used(self):
+        if self.premium_type == 'estimated':
+            return self.contract.mark
+        else:
+            return self.contract.ask if self.is_long else self.contract.bid
 
     @property
     def cost(self):
-        return self.contract.cost * (self.units if self.is_long else -self.units)
+        return self.premium_used * 100 * (self.units if self.is_long else -self.units)
 
     def get_value_in_price_range(self, price_lower, price_upper):
         return self.contract.get_value_in_price_range(price_lower, price_upper) * (

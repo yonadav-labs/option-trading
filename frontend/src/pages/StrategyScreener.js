@@ -38,7 +38,7 @@ export default function BestCallByPrice() {
     const [showTargetPriceAlert, setShowTargetPriceAlert] = useState(false);
     const [bestStrategies, setBestStrategies] = useState(null);
     const [selectedExpirationTimestamp, setSelectedExpirationTimestamp] = useState(null);
-    const [useAsPremium, setUseAsPremium] = useState('estimated');
+    const [premiumType, setPremiumType] = useState('estimated');
     const [modalActive, setModalActive] = useState(false);
     const [targetPriceLower, setTargetPriceLower] = useState(null);
     const [targetPriceUpper, setTargetPriceUpper] = useState(null);
@@ -51,7 +51,7 @@ export default function BestCallByPrice() {
         setShowTargetPriceAlert(false);
         setBestStrategies(null);
         setSelectedExpirationTimestamp(null);
-        setUseAsPremium('estimated');
+        setPremiumType('immediate');
         setModalActive(false);
         setTargetPriceLower(null);
         setTargetPriceUpper(null);
@@ -231,10 +231,9 @@ export default function BestCallByPrice() {
         }
     };
 
-    const handleUseAsPremiumChange = (event) => {
+    const handlePremiumTypeChange = (event) => {
         const target = event.target;
-        var value = target.value;
-        setUseAsPremium(value);
+        setPremiumType(target.value);
     };
 
     const getBestStrategies = async (selectedExpirationTimestamp, availableCash) => {
@@ -242,6 +241,7 @@ export default function BestCallByPrice() {
             let url = `${API_URL}/tickers/${selectedTicker[0].symbol}/trades/?`;
             url += `expiration_timestamps=${selectedExpirationTimestamp.value}&`;
             url += `target_price_lower=${targetPriceLower}&target_price_upper=${targetPriceUpper}&`;
+            url += `premium_type=${premiumType}&`
             if (availableCash) {
                 url += `available_cash=${availableCash}&`;
             }
@@ -379,7 +379,7 @@ export default function BestCallByPrice() {
                             </Row>
                             {/* <h4>Optional settings:</h4> */}
                             <Row>
-                                <Col sm="12">
+                                <Col sm="6">
                                     <Form.Group>
                                         <Form.Label>Cash to invest in {selectedTicker[0].symbol} (optional):</Form.Label>
                                         <Form.Control name="available_cash" as="input" type="number"
@@ -387,19 +387,16 @@ export default function BestCallByPrice() {
                                             min="0.0" max="100000000.0" step="0.01" />
                                     </Form.Group>
                                 </Col>
-                                {
-                                // TODO: re-enable after we fix the Premium selection for strategy screener.
-                                /* <Col sm="3">
+                                <Col sm="6">
                                     <Form.Group>
                                         <Form.Label>Premium price options:</Form.Label>
-                                        <Form.Control name="use_as_premium" as="select" defaultValue="estimated"
-                                            onChange={handleUseAsPremiumChange}>
-                                            <option key="estimated" value="estimated">Use estimated mid price</option>
-                                            <option key="bid" value="bid">Use bid (buyer's) price</option>
-                                            <option key="ask" value="ask">Use ask (seller's) price</option>
+                                        <Form.Control name="premium_type" as="select" defaultValue="immediate"
+                                            onChange={handlePremiumTypeChange}>
+                                            <option key="immediate" value="immediate">Market order price</option>
+                                            <option key="estimated" value="estimated">Mid/mark price</option>
                                         </Form.Control>
                                     </Form.Group>
-                                </Col> */}
+                                </Col>
                             </Row>
                             <Row>
                                 <Col>

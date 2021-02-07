@@ -40,7 +40,6 @@ class OptionContractSerializer(serializers.Serializer):
     volume = serializers.IntegerField(allow_null=True)
     days_till_expiration = serializers.IntegerField(min_value=0)
 
-    mark = serializers.FloatField(allow_null=True, min_value=0.0)
     high_price = serializers.FloatField(allow_null=True, min_value=0.0)
     low_price = serializers.FloatField(allow_null=True, min_value=0.0)
     open_price = serializers.FloatField(allow_null=True, min_value=0.0)
@@ -58,13 +57,12 @@ class OptionContractSerializer(serializers.Serializer):
     quote_time = serializers.IntegerField(min_value=0)
 
     stock_price = serializers.FloatField(min_value=0.0)
-    use_as_premium = serializers.CharField(max_length=20)
 
     display_name = serializers.ReadOnlyField()
     bid_ask_spread = serializers.ReadOnlyField()
     to_strike = serializers.ReadOnlyField()
     to_strike_ratio = serializers.ReadOnlyField()
-    premium = serializers.ReadOnlyField()
+    mark = serializers.ReadOnlyField()
     break_even_price = serializers.ReadOnlyField()
     to_break_even_ratio = serializers.ReadOnlyField()
 
@@ -76,8 +74,10 @@ class LegSerializer(serializers.Serializer):
     cash = serializers.ReadOnlyField(source='is_cash')
     stock = StockSerializer(allow_null=True)
     contract = OptionContractSerializer(allow_null=True)
-    display_name = serializers.ReadOnlyField()
+    premium_type = serializers.ReadOnlyField()
+    premium_used = serializers.ReadOnlyField()
     cost = serializers.ReadOnlyField()
+    display_name = serializers.ReadOnlyField()
 
 
 class TradeSerializer(serializers.Serializer):
@@ -85,6 +85,7 @@ class TradeSerializer(serializers.Serializer):
     type = serializers.CharField(max_length=50)
     stock = StockSerializer()  # The underlying.
     legs = LegSerializer(required=True, many=True)
+    premium_type = serializers.ReadOnlyField()
     target_price_lower = serializers.FloatField(allow_null=True, min_value=0.0)
     target_price_upper = serializers.FloatField(allow_null=True, min_value=0.0)
 

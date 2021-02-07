@@ -19,8 +19,8 @@ export default function ContractDetailsCard(props) {
                         <Card.Text>
                             <Row>
                                 <Col sm="3" xs="6">
-                                    <Badge variant="secondary">Premium</Badge>
-                                    <div>{PriceFormatter(contract.premium)}</div>
+                                    <Badge variant="secondary">Mid/mark</Badge>
+                                    <div>{PriceFormatter(contract.mark)}</div>
                                 </Col>
                                 <Col sm="3" xs="6">
                                     <Badge variant="secondary">Bid</Badge>

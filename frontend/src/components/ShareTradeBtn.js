@@ -19,6 +19,7 @@ export default function ShareTradeBtn(props) {
             stock_snapshot: { ticker_id: trade.stock.ticker.id, external_cache_id: trade.stock.external_cache_id },
             leg_snapshots: [],
             is_public: true,
+            premium_type: trade.premium_type,
             target_price_lower: trade.target_price_lower,
             target_price_upper: trade.target_price_upper,
         };
@@ -31,7 +32,6 @@ export default function ShareTradeBtn(props) {
                     is_call: leg.contract.is_call,
                     strike: leg.contract.strike,
                     expiration_timestamp: leg.contract.expiration,
-                    premium: leg.contract.premium,
                 }
                 legSnapshot.contract_snapshot = contract;
             } else if (leg.stock) {

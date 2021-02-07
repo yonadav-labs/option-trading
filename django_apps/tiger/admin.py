@@ -44,7 +44,7 @@ class LegSnapshotAdmin(admin.ModelAdmin):
 
 class TradeSnapshotAdmin(admin.ModelAdmin):
     list_display = ['id', 'type', 'stock_snapshot', 'creator', 'is_public', 'target_price_lower',
-                    'target_price_upper'] + DEFAULT_FIELDS
+                    'target_price_upper', 'premium_type'] + DEFAULT_FIELDS
     list_filter = ['type', 'is_public']
     search_fields = ['id', 'type', 'creator__id', 'is_public']
 

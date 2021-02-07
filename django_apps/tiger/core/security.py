@@ -13,11 +13,6 @@ class Security(ABC):
     def display_name(self):
         pass
 
-    @property
-    @abstractmethod
-    def cost(self):
-        pass
-
     @abstractmethod
     def get_value_at_price(self, target_price):
         pass
@@ -34,10 +29,6 @@ class Cash(Security):
     @property
     def display_name(self):
         return 'cash'
-
-    @property
-    def cost(self):
-        return 1.0
 
     def get_value_at_price(self, target_price):
         return 1.0
@@ -67,10 +58,6 @@ class Stock(Security):
     def display_name(self):
         return '{} stock'.format(self.ticker.symbol)
 
-    @property
-    def cost(self):
-        return self.stock_price
-
     def get_value_at_price(self, target_price):
         return target_price
 
@@ -80,7 +67,7 @@ class Stock(Security):
 
 
 class OptionContract(Security):
-    def __init__(self, ticker, is_call, data_dict, stock_price, use_as_premium='estimated', external_cache_id=None):
+    def __init__(self, ticker, is_call, data_dict, stock_price, external_cache_id=None):
         super().__init__(external_cache_id)
         if 'contractSymbol' in data_dict:
             # Yahoo.
@@ -127,7 +114,6 @@ class OptionContract(Security):
             self.volume = data_dict.get('totalVolume')
 
             # TD specific data.
-            self.mark = data_dict.get('mark')
             self.high_price = data_dict.get('highPrice')
             self.low_price = data_dict.get('lowPrice')
             self.open_price = data_dict.get('openPrice')
@@ -145,7 +131,7 @@ class OptionContract(Security):
             self.quote_time = int(data_dict.get('quoteTimeInLong') / 1000)
             '''
             TD data not used.
-            "daysToExpiration", "tradeDate", "optionDeliverablesList",
+            "mark", "daysToExpiration", "tradeDate", "optionDeliverablesList",
             "expirationType", "lastTradingDay", "settlementType", "deliverableNote",
             "isIndexOption", "markChange", "markPercentChange", "mini", "nonStandard"
             '''
@@ -154,9 +140,8 @@ class OptionContract(Security):
         self.ticker = ticker
         self.stock_price = stock_price
         self.days_till_expiration = days_from_timestamp(self.expiration)
-        self.use_as_premium = use_as_premium if use_as_premium in ('bid', 'ask', 'estimated') else 'estimated'
         # Validation.
-        self.premium
+        self.mark
 
     @classmethod
     def from_snapshot(cls, contract_snapshot):
@@ -173,7 +158,7 @@ class OptionContract(Security):
                                                      contract_snapshot.strike, contract_snapshot.expiration_timestamp)
         # TODO: set customizable premium
         return cls(contract_snapshot.ticker, contract_snapshot.is_call, contract_data, stock_price,
-                   use_as_premium='estimated', external_cache_id=cache.id)
+                   external_cache_id=cache.id)
 
     @property
     def display_name(self):
@@ -192,20 +177,15 @@ class OptionContract(Security):
         return self.to_strike / self.stock_price
 
     @property
-    def premium(self):
-        if self.use_as_premium == 'estimated':
-            if self.bid and self.ask:
-                return (self.ask + self.bid) / 2.0
-            elif self.bid:
-                return self.bid
-            elif self.ask:
-                return self.ask
-            elif self.last_price:
-                return self.last_price
-        elif self.use_as_premium == 'bid' and self.bid:
+    def mark(self):
+        if self.bid and self.ask:
+            return (self.ask + self.bid) / 2.0
+        elif self.bid:
             return self.bid
-        elif self.use_as_premium == 'ask' and self.ask:
+        elif self.ask:
             return self.ask
+        elif self.last_price:
+            return self.last_price
         raise ValueError('missing bid ask last_price')
 
     @property
@@ -217,18 +197,13 @@ class OptionContract(Security):
     @property
     def break_even_price(self):
         if self.is_call:
-            return self.strike + self.premium
+            return self.strike + self.mark
         else:
-            return self.strike - self.premium
+            return self.strike - self.mark
 
     @property
     def to_break_even_ratio(self):
         return self.break_even_price / self.stock_price - 1.0
-
-    # TODO: 100 can be obtained from contract_size. Fix this.
-    @property
-    def cost(self):
-        return self.premium * 100
 
     def get_value_at_price(self, target_price):
         if self.is_call:

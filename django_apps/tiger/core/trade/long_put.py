@@ -5,14 +5,14 @@ from .base import Trade
 
 
 class LongPut(Trade):
-    def __init__(self, stock, legs, target_price_lower=None, target_price_upper=None):
+    def __init__(self, stock, legs, premium_type, target_price_lower=None, target_price_upper=None):
         # TODO: add validation.
-        super().__init__('long_put', stock, legs, target_price_lower, target_price_upper)
+        super().__init__('long_put', stock, legs, premium_type, target_price_lower, target_price_upper)
 
     @staticmethod
-    def build(stock, put_contract, target_price_lower=None, target_price_upper=None, available_cash=None):
-        long_put_leg = OptionLeg(True, 1, put_contract)
-        new_trade = LongPut(stock, [long_put_leg], target_price_lower=target_price_lower,
+    def build(stock, put_contract, premium_type, target_price_lower=None, target_price_upper=None, available_cash=None):
+        long_put_leg = OptionLeg(True, 1, put_contract, premium_type)
+        new_trade = LongPut(stock, [long_put_leg], premium_type, target_price_lower=target_price_lower,
                             target_price_upper=target_price_upper)
         if available_cash and not new_trade.max_out(available_cash):
             return None
@@ -25,11 +25,11 @@ class LongPut(Trade):
             .strftime("%m/%d/%Y")
         return '[{}][Long put] {} {} strike ${} at ${:.2f} per contract' \
             .format(self.stock.ticker.symbol, '{}X'.format(long_put_leg.units) if long_put_leg.units > 1 else '',
-                    expiration_date_str, long_put_leg.contract.strike, long_put_leg.contract.cost)
+                    expiration_date_str, long_put_leg.contract.strike, long_put_leg.cost)
 
     @property
     def break_even_price(self):
-        return self.get_long_put_leg().contract.strike - self.get_long_put_leg().contract.premium
+        return self.get_long_put_leg().contract.strike - self.get_long_put_leg().premium_used
 
     @property
     def profit_cap_price(self):

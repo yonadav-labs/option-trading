@@ -74,18 +74,18 @@ export default function StrategyComposer() {
         if (selectedStrategy && selectedStrategy.linkedProperties.includes(key)) {
             // set value for all legs
             setLegs(prevState => {
-                const newState = prevState.map(val => { val[key] = value; return val }); 
+                const newState = prevState.map(val => { val[key] = value; return val });
                 if (prevState[index][key]) {
                     console.log(prevState[index][key]);
-                    enforceRules(selectedStrategy.rules, newState); 
+                    enforceRules(selectedStrategy.rules, newState);
                 }
                 return newState;
             });
         } else {
             setLegs(prevState => {
-                const newState = [...prevState.slice(0, index), { ...prevState[index], [key]: value }, ...prevState.slice(index + 1)]; 
+                const newState = [...prevState.slice(0, index), { ...prevState[index], [key]: value }, ...prevState.slice(index + 1)];
                 if (prevState[index][key]) {
-                    enforceRules(selectedStrategy.rules, newState); 
+                    enforceRules(selectedStrategy.rules, newState);
                 }
                 return newState;
             });
@@ -130,8 +130,7 @@ export default function StrategyComposer() {
                     external_cache_id: leg.contract.external_cache_id,
                     is_call: leg.contract.is_call,
                     strike: leg.contract.strike,
-                    expiration_timestamp: leg.contract.expiration,
-                    premium: leg.contract.premium,
+                    expiration_timestamp: leg.contract.expiration
                 }
                 legSnapshot.contract_snapshot = contract;
             } else if (leg.type === "stock") {

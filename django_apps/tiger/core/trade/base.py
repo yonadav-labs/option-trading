@@ -2,11 +2,12 @@ from abc import ABC, abstractmethod
 
 
 class Trade(ABC):
-    def __init__(self, type, stock, legs, target_price_lower=None, target_price_upper=None):
+    def __init__(self, type, stock, legs, premium_type, target_price_lower=None, target_price_upper=None):
         '''
         :param type: type of trade.
         :param stock: current state of underlying stock.
         :param legs: all legs of this trade.
+        :param premium_type: 'estimated': use estimated mid price; 'immediate': use bid for sell, use ask for buy.
         :param target_price_lower: lower bound of target stock price in the future. Optional.
         :param target_price_upper: upper bound of target stock price in the future. Optional.
         '''
@@ -17,6 +18,7 @@ class Trade(ABC):
         self.legs = legs
         self.target_price_lower = target_price_lower
         self.target_price_upper = target_price_upper
+        self.premium_type = premium_type
 
     def get_leg(self, is_long, type, is_call=None):
         assert type in ('cash', 'stock', 'option')

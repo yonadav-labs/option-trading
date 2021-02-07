@@ -22,7 +22,7 @@ def filter_and_sort_trades(input_trades):
     return sorted(output_trades, key=lambda trade: -trade.target_price_profit_ratio)
 
 
-def get_call_spreads(stock, call_contract_lists, target_price_lower, target_price_upper, available_cash):
+def get_call_spreads(stock, call_contract_lists, premium_type, target_price_lower, target_price_upper, available_cash):
     bull_call_spread_trades = []
     bear_call_spread_trades = []
     for calls_per_exp in call_contract_lists:
@@ -33,17 +33,17 @@ def get_call_spreads(stock, call_contract_lists, target_price_lower, target_pric
                 if low_strike_call.strike >= high_strike_call.strike:
                     continue
                 bull_call_spread_trades.append(
-                    BullCallSpread.build(stock, low_strike_call, high_strike_call, target_price_lower,
+                    BullCallSpread.build(stock, low_strike_call, high_strike_call, premium_type, target_price_lower,
                                          target_price_upper, available_cash=available_cash))
                 bear_call_spread_trades.append(
-                    BearCallSpread.build(stock, low_strike_call, high_strike_call, target_price_lower,
+                    BearCallSpread.build(stock, low_strike_call, high_strike_call, premium_type, target_price_lower,
                                          target_price_upper, available_cash=available_cash))
     bull_call_spread_trades = filter_and_sort_trades(bull_call_spread_trades)[:50]
     bear_call_spread_trades = filter_and_sort_trades(bear_call_spread_trades)[:50]
     return bull_call_spread_trades, bear_call_spread_trades
 
 
-def get_put_spreads(stock, put_contract_lists, target_price_lower, target_price_upper, available_cash):
+def get_put_spreads(stock, put_contract_lists, premium_type, target_price_lower, target_price_upper, available_cash):
     bear_put_spread_trades = []
     bull_put_spread_trades = []
     for puts_per_exp in put_contract_lists:
@@ -54,10 +54,10 @@ def get_put_spreads(stock, put_contract_lists, target_price_lower, target_price_
                 if low_strike_put.strike >= high_strike_put.strike:
                     continue
                 bear_put_spread_trades.append(
-                    BearPutSpread.build(stock, low_strike_put, high_strike_put, target_price_lower,
+                    BearPutSpread.build(stock, low_strike_put, high_strike_put, premium_type, target_price_lower,
                                         target_price_upper, available_cash=available_cash))
                 bull_put_spread_trades.append(
-                    BullPutSpread.build(stock, low_strike_put, high_strike_put, target_price_lower,
+                    BullPutSpread.build(stock, low_strike_put, high_strike_put, premium_type, target_price_lower,
                                         target_price_upper, available_cash=available_cash))
     bear_put_spread_trades = filter_and_sort_trades(bear_put_spread_trades)[:50]
     bull_put_spread_trades = filter_and_sort_trades(bull_put_spread_trades)[:50]
@@ -74,16 +74,15 @@ def get_best_trades(request, ticker_symbol):
         raise APIException('No contracts found.')
 
     try:
-        use_as_premium = request.query_params.get('use_as_premium', 'estimated')
+        premium_type = request.query_params.get('premium_type', 'immediate')
         target_price_lower = float(request.query_params.get('target_price_lower'))
         target_price_upper = float(request.query_params.get('target_price_upper'))
+        available_cash = request.query_params.get('available_cash')
+        if available_cash is not None:
+            available_cash = float(available_cash)
         assert target_price_lower <= target_price_upper
     except Exception:
         raise APIException('Invalid query parameters.')
-
-    available_cash = request.query_params.get('available_cash')
-    if available_cash is not None:
-        available_cash = float(available_cash)
 
     quote, external_cache_id = ticker.get_quote()
     stock_price = quote.get('regularMarketPrice')  # This is from Yahoo.
@@ -91,17 +90,19 @@ def get_best_trades(request, ticker_symbol):
 
     long_call_trades = []
     covered_call_trades = []
-    call_contract_lists, put_contract_lists = get_valid_contracts(
-        ticker, request, use_as_premium, all_expiration_timestamps, filter_low_liquidity=True)
+    call_contract_lists, put_contract_lists = get_valid_contracts(ticker, request, all_expiration_timestamps,
+                                                                  filter_low_liquidity=True)
     for calls_per_exp in call_contract_lists:
         for call in calls_per_exp:
             # Reduce response size.
             if days_from_timestamp(call.last_trade_date) <= -7:
                 continue
             long_call_trades.append(
-                LongCall.build(stock, call, target_price_lower, target_price_upper, available_cash=available_cash))
+                LongCall.build(stock, call, premium_type, target_price_lower, target_price_upper,
+                               available_cash=available_cash))
             covered_call_trades.append(
-                CoveredCall.build(stock, call, target_price_lower, target_price_upper, available_cash=available_cash))
+                CoveredCall.build(stock, call, premium_type, target_price_lower, target_price_upper,
+                                  available_cash=available_cash))
     long_call_trades = filter_and_sort_trades(long_call_trades)[:25]
     covered_call_trades = filter_and_sort_trades(covered_call_trades)[:25]
 
@@ -113,19 +114,23 @@ def get_best_trades(request, ticker_symbol):
             if days_from_timestamp(put.last_trade_date) <= -7:
                 continue
             long_put_trades.append(
-                LongPut.build(stock, put, target_price_lower, target_price_upper, available_cash=available_cash))
+                LongPut.build(stock, put, premium_type, target_price_lower, target_price_upper,
+                              available_cash=available_cash))
             cash_secured_put_trades.append(
-                CashSecuredPut.build(stock, put, target_price_lower, target_price_upper, available_cash=available_cash))
+                CashSecuredPut.build(stock, put, premium_type, target_price_lower, target_price_upper,
+                                     available_cash=available_cash))
     long_put_trades = filter_and_sort_trades(long_put_trades)[:25]
     cash_secured_put_trades = filter_and_sort_trades(cash_secured_put_trades)[:25]
 
     # Call spreads
     # TODO: add tests.
-    bull_call_spread_trades, bear_call_spread_trades = get_call_spreads(stock, call_contract_lists, target_price_lower,
-                                                                        target_price_upper, available_cash)
+    bull_call_spread_trades, bear_call_spread_trades = get_call_spreads(stock, call_contract_lists, premium_type,
+                                                                        target_price_lower, target_price_upper,
+                                                                        available_cash)
 
-    bear_put_spread_trades, bull_put_spread_trades = get_put_spreads(stock, put_contract_lists, target_price_lower,
-                                                                     target_price_upper, available_cash)
+    bear_put_spread_trades, bull_put_spread_trades = get_put_spreads(stock, put_contract_lists, premium_type,
+                                                                     target_price_lower, target_price_upper,
+                                                                     available_cash)
 
     all_trades = long_call_trades + covered_call_trades + long_put_trades + cash_secured_put_trades + \
                  bull_call_spread_trades + bear_call_spread_trades + bear_put_spread_trades + bull_put_spread_trades

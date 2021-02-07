@@ -16,9 +16,6 @@ def contracts(request, ticker_symbol):
     all_expiration_timestamps = ticker.get_expiration_timestamps()
     if all_expiration_timestamps is None:
         raise APIException('No contracts found.')
-    use_as_premium = request.query_params.get('use_as_premium', 'estimated')
-
-    call_contract_lists, put_contract_list = get_valid_contracts(ticker, request, use_as_premium,
-                                                                 all_expiration_timestamps)
+    call_contract_lists, put_contract_list = get_valid_contracts(ticker, request, all_expiration_timestamps)
     contracts = list(itertools.chain(*call_contract_lists)) + list(itertools.chain(*put_contract_list))
     return Response({'contracts': OptionContractSerializer(contracts, many=True).data})
