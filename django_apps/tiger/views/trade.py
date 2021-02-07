@@ -74,7 +74,7 @@ def get_best_trades(request, ticker_symbol):
         raise APIException('No contracts found.')
 
     try:
-        premium_type = request.query_params.get('premium_type', 'immediate')
+        premium_type = request.query_params.get('premium_type', 'market')
         target_price_lower = float(request.query_params.get('target_price_lower'))
         target_price_upper = float(request.query_params.get('target_price_upper'))
         available_cash = request.query_params.get('available_cash')

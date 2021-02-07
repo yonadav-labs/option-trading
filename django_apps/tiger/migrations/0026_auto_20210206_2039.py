@@ -13,7 +13,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='tradesnapshot',
             name='premium_type',
-            field=models.CharField(choices=[('estimated', 'Estimated'), ('immediate', 'Immediate')], default='estimated', max_length=20),
+            field=models.CharField(choices=[('mid', 'Mid/mark'), ('market', 'Market order')], default='mid', max_length=20),
         ),
         migrations.AlterField(
             model_name='tradesnapshot',

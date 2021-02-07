@@ -68,7 +68,7 @@ class TradeSnapshot(BaseModel):
     target_price_upper = models.FloatField(null=True, blank=True)
 
     PREMIUM_TYPE_CHOICES = (
-        ('estimated', 'Estimated'),  # Use estimated mid price.
-        ('immediate', 'Immediate'),  # Use bid for sell, use ask for buy.
+        ('mid', 'Mid/mark'),  # Use mid/mark price.
+        ('market', 'Market order'),  # Use bid for sell, use ask for buy.
     )
-    premium_type = models.CharField(max_length=20, choices=PREMIUM_TYPE_CHOICES, default='estimated')
+    premium_type = models.CharField(max_length=20, choices=PREMIUM_TYPE_CHOICES, default='mid')

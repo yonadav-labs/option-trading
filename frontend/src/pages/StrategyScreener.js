@@ -38,7 +38,7 @@ export default function BestCallByPrice() {
     const [showTargetPriceAlert, setShowTargetPriceAlert] = useState(false);
     const [bestStrategies, setBestStrategies] = useState(null);
     const [selectedExpirationTimestamp, setSelectedExpirationTimestamp] = useState(null);
-    const [premiumType, setPremiumType] = useState('estimated');
+    const [premiumType, setPremiumType] = useState('market');
     const [modalActive, setModalActive] = useState(false);
     const [targetPriceLower, setTargetPriceLower] = useState(null);
     const [targetPriceUpper, setTargetPriceUpper] = useState(null);
@@ -51,7 +51,7 @@ export default function BestCallByPrice() {
         setShowTargetPriceAlert(false);
         setBestStrategies(null);
         setSelectedExpirationTimestamp(null);
-        setPremiumType('immediate');
+        setPremiumType('market');
         setModalActive(false);
         setTargetPriceLower(null);
         setTargetPriceUpper(null);
@@ -390,10 +390,10 @@ export default function BestCallByPrice() {
                                 <Col sm="6">
                                     <Form.Group>
                                         <Form.Label>Premium price options:</Form.Label>
-                                        <Form.Control name="premium_type" as="select" defaultValue="immediate"
+                                        <Form.Control name="premium_type" as="select" defaultValue="market"
                                             onChange={handlePremiumTypeChange}>
-                                            <option key="immediate" value="immediate">Market order price</option>
-                                            <option key="estimated" value="estimated">Mid/mark price</option>
+                                            <option key="market" value="market">Market order price</option>
+                                            <option key="mid" value="mid">Mid/mark price</option>
                                         </Form.Control>
                                     </Form.Group>
                                 </Col>

@@ -7,7 +7,7 @@ class Trade(ABC):
         :param type: type of trade.
         :param stock: current state of underlying stock.
         :param legs: all legs of this trade.
-        :param premium_type: 'estimated': use estimated mid price; 'immediate': use bid for sell, use ask for buy.
+        :param premium_type: 'mid': use mid/mark price; 'market': use bid for sell, use ask for buy.
         :param target_price_lower: lower bound of target stock price in the future. Optional.
         :param target_price_upper: upper bound of target stock price in the future. Optional.
         '''

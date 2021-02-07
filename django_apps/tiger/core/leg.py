@@ -98,7 +98,7 @@ class StockLeg(Leg):
 # Represent `units` contract of option.
 class OptionLeg(Leg):
     def __init__(self, is_long, units, contract, premium_type):
-        assert premium_type in ('estimated', 'immediate')
+        assert premium_type in ('mid', 'market')
         super().__init__(is_long, units, contract=contract)
         self.premium_type = premium_type
 
@@ -108,7 +108,7 @@ class OptionLeg(Leg):
 
     @property
     def display_name(self):
-        if self.premium_type == 'immediate':
+        if self.premium_type == 'market':
             premium_name = 'ask' if self.is_long else 'bid'
         else:
             premium_name = 'mid/mark'
@@ -118,7 +118,7 @@ class OptionLeg(Leg):
 
     @property
     def premium_used(self):
-        if self.premium_type == 'estimated':
+        if self.premium_type == 'mid':
             return self.contract.mark
         else:
             return self.contract.ask if self.is_long else self.contract.bid

@@ -51,7 +51,7 @@ class LoadFromSnapshotTestCase(TestCase):
     def testLoadStockLegFromSnapshot(self):
         stock_snapshot = StockSnapshot.objects.create(ticker=self.ticker, external_cache=self.external_cache)
         stock_leg_snapshot = LegSnapshot.objects.create(is_long=True, units=1, stock_snapshot=stock_snapshot)
-        stock_leg = Leg.from_snapshot(stock_leg_snapshot, 'estimated')
+        stock_leg = Leg.from_snapshot(stock_leg_snapshot, 'mid')
         self.assertEqual(stock_leg.name, 'long_stock_leg')
         self.assertEqual(stock_leg.is_long, True)
         self.assertEqual(stock_leg.units, 1)
@@ -64,7 +64,7 @@ class LoadFromSnapshotTestCase(TestCase):
                                                                      external_cache=self.external_cache_td)
         contract_leg_snapshot = LegSnapshot.objects.create(is_long=True, units=2,
                                                            contract_snapshot=contract_snapshot_td)
-        contract_leg = Leg.from_snapshot(contract_leg_snapshot, 'estimated')
+        contract_leg = Leg.from_snapshot(contract_leg_snapshot, 'mid')
         self.assertEqual(contract_leg.name, 'long_put_leg')
         self.assertEqual(contract_leg.is_long, True)
         self.assertEqual(contract_leg.units, 2)
@@ -78,8 +78,8 @@ class LoadFromSnapshotTestCase(TestCase):
                                                                       external_cache=self.external_cache_td)
         contract_leg_snapshot2 = LegSnapshot.objects.create(is_long=True, units=2,
                                                             contract_snapshot=contract_snapshot_td2)
-        self.assertEqual(Leg.from_snapshot(contract_leg_snapshot2, 'estimated').cost, 42.5 * 2)
-        self.assertEqual(Leg.from_snapshot(contract_leg_snapshot2, 'immediate').cost, 75 * 2)
+        self.assertEqual(Leg.from_snapshot(contract_leg_snapshot2, 'mid').cost, 42.5 * 2)
+        self.assertEqual(Leg.from_snapshot(contract_leg_snapshot2, 'market').cost, 75 * 2)
 
     def testLoadTradeFromSnapshot(self):
         creator = User.objects.create_user(username='testuser', password='12345')
