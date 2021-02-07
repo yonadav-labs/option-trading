@@ -27,7 +27,7 @@ export default withRouter(class AppWithRouterAccess extends Component {
 
     render() {
         return (
-            <body class="d-flex flex-column min-vh-100">
+            <div className="d-flex flex-column min-vh-100">
                 <Security  {...(getOktaConfig().oidc)} onAuthRequired={this.onAuthRequired} >
                     <Header></Header>
                     <main role="main" className="mb-2">
@@ -46,9 +46,9 @@ export default withRouter(class AppWithRouterAccess extends Component {
                             <Route path='/pricing' component={Pricing} />
                         </Switch>
                     </main>
-                    <Footer class="mt-auto"></Footer>
+                    <Footer className="mt-auto"></Footer>
                 </Security>
-            </body>
+            </div>
         );
     }
 });
