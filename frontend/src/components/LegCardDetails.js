@@ -3,17 +3,15 @@ import getApiUrl, { PercentageFormatter, PriceFormatter } from '../utils';
 import Axios from 'axios';
 import Slider, { createSliderWithTooltip } from 'rc-slider';
 import ContractDetailsCard from './cards/ContractDetailsCard';
-import { Col, Row } from 'react-bootstrap';
+import { Badge, Col, Row } from 'react-bootstrap';
 import { isEmpty } from 'lodash';
-
-const SliderWithTooltip = createSliderWithTooltip(Slider);
+import Select from 'react-select';
 
 export default function LegCardDetails(props) {
     const { legs, index, selectedTicker, updateLeg } = props;
     const [strikes, setStrikes] = useState([]);
-    const [marks, setMarks] = useState({});
     const [contracts, setContracts] = useState([]);
-    const [strikeSliderValue, setStrikeSliderValue] = useState(0);
+    const [selectedStrike, setSelectedStrike] = useState(0);
     const API_URL = getApiUrl();
 
     useEffect(async () => {
@@ -25,31 +23,25 @@ export default function LegCardDetails(props) {
                 let url = `${API_URL}/tickers/${selectedTicker[0].symbol}/contracts/?`;
                 url += `expiration_timestamps=${leg.expiration}&`
                 const response = await Axios.get(url);
-                let marksObj = {};
-                const sortedContracts = response.data.contracts.sort((a, b) => a.strike - b.strike);
-                const filteredContracts = sortedContracts.filter(contract => (leg.optionType === "call" && contract.is_call) || (leg.optionType === "put" && !contract.is_call));
+                const filteredContracts = response.data.contracts.filter(contract => (leg.optionType === "call" && contract.is_call) || (leg.optionType === "put" && !contract.is_call));
+                let strikes = filteredContracts.map(val => {
+                    const percentageChange = ((props.atmPrice - val.strike) / props.atmPrice) * -1;
 
+                    return { value: val.strike, label: <>{PriceFormatter(val.strike)} ({percentageChange > 0 ? "+" : ""}{PercentageFormatter(percentageChange)})</> };
+                });
+
+                strikes.push({ value: props.atmPrice, label: <>{PriceFormatter(props.atmPrice)} (Current Price)</>, isDisabled: true });
                 setContracts(filteredContracts);
-                setStrikes(filteredContracts.map(val => {
-                    marksObj[val.strike] = "";
-                    return val.strike;
-                }));
-                marksObj[props.atmPrice] = <>{PriceFormatter(props.atmPrice)}<br />(Current Price)</>;
-                setMarks(marksObj);
+                setStrikes(strikes.sort((a, b) => a.value - b.value));
             } catch (error) {
                 console.error(error);
             }
         }
     }, [props.legs]);
 
-    const onStrikeSliderChange = (strike) => {
-        setStrikeSliderValue(strike);
-        updateLeg("contract", contracts.filter((val) => val.strike === strike)[0], index);
-    }
-
-    const strikeSliderTooltipFormatter = (v) => {
-        const percentageChange = ((props.atmPrice - v) / props.atmPrice) * -1;
-        return <>{PriceFormatter(v)} ({percentageChange > 0 ? "+" : ""}{PercentageFormatter(percentageChange)})</>;
+    const onStrikeSelectChange = (option) => {
+        setSelectedStrike(option.value);
+        updateLeg("contract", contracts.filter((val) => val.strike === option.value)[0], index);
     }
 
     switch (legs[index].type) {
@@ -58,23 +50,15 @@ export default function LegCardDetails(props) {
                 <>
                     <Row className="mb-5">
                         <Col>
-                            <SliderWithTooltip
-                                tipFormatter={strikeSliderTooltipFormatter}
-                                value={strikeSliderValue}
-                                min={strikes.length > 1 ? strikes[0] : 0}
-                                max={strikes.length > 1 ? strikes[strikes.length - 1] : 0}
-                                marks={marks}
-                                step={null}
-                                onChange={(e) => onStrikeSliderChange(e)}
+                            <Select
+                                className="basic-single"
+                                isSearchable
+                                isClearable
+                                options={strikes}
+                                placeholder="Select a strike..."
+                                value={selectedStrike}
+                                onChange={(val) => onStrikeSelectChange(val)}
                             />
-                            {/* <Slider
-                                value={strikeSliderValue}
-                                min={strikes.length > 1 ? strikes[0] : 0}
-                                max={strikes.length > 1 ? strikes[strikes.length - 1] : 0}
-                                marks={marks}
-                                step={null}
-                                onChange={(e) => onStrikeSliderChange(e)}
-                            /> */}
                         </Col>
                     </Row>
                     <Row>
@@ -89,7 +73,7 @@ export default function LegCardDetails(props) {
                 <>
                     <Row className="mb-5">
                         <Col>
-                            <p>{legs[index].shares} Shares</p>
+                            <p>Hold {selectedTicker.length > 0 ? `${legs[index].shares} ${selectedTicker[0].symbol}` : ""} shares</p>
                         </Col>
                     </Row>
                 </>
@@ -99,7 +83,7 @@ export default function LegCardDetails(props) {
                 <>
                     <Row className="mb-5">
                         <Col>
-                            <p>{PriceFormatter(legs[index].value)}</p>
+                            <p>Hold {PriceFormatter(legs[index].value)} in cash</p>
                         </Col>
                     </Row>
                 </>

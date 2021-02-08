@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from 'react';
-import { Alert, Button, Card, CardColumns, Col, Container, Form, Row, Spinner, ToggleButton, ToggleButtonGroup } from 'react-bootstrap';
+import { Alert, Badge, Button, Card, CardColumns, Col, Container, Form, Row, Spinner, ToggleButton, ToggleButtonGroup } from 'react-bootstrap';
 import { MdTrendingFlat, MdArrowUpward, MdArrowDownward, MdShowChart } from 'react-icons/md';
 import 'react-bootstrap-typeahead/css/Typeahead.css';
 import './StrategyComposer.css';
@@ -38,6 +38,7 @@ import TradingViewWidget from 'react-tradingview-widget';
 export default function StrategyComposer() {
     const [inputText, setInputText] = useState("");
     const [selectedTicker, setSelectedTicker] = useState("");
+    const [selectedPremiumType, setSelectedPremiumType] = useState({ value: "market", label: "Market" });
     const [selectedStrategy, setSelectedStrategy] = useState(null);
     const [legs, setLegs] = useState([]);
     const [basicInfo, setbasicInfo] = useState({});
@@ -124,6 +125,7 @@ export default function StrategyComposer() {
             is_public: false,
             target_price_lower: 0, // there is no target price
             target_price_upper: 0, // there is no target price
+            premium_type: selectedPremiumType
         };
 
         legs.map((leg) => {
@@ -157,7 +159,7 @@ export default function StrategyComposer() {
                     Authorization: `Bearer ${accessToken}`,
                 }
             });
-            
+
             setStrategyDetails(response.data.trade_snapshot);
         } catch (error) {
             console.error(error);
@@ -178,7 +180,7 @@ export default function StrategyComposer() {
                     />
                 </Col>
 
-                <Col lg="8">
+                <Col lg="6">
                     <Select
                         className="basic-single"
                         isSearchable
@@ -190,6 +192,17 @@ export default function StrategyComposer() {
                         value={selectedStrategy}
                         onChange={(val) => applyStrategy(val)}
                         onInputChange={(val) => throttledSetInputText(val)}
+                    />
+                </Col>
+                <Col lg="2">
+                    <Select
+                        className="basic-single"
+                        isSearchable
+                        isClearable
+                        options={[{ value: "market", label: "Market" }, { value: "mid", label: "Mid" }]}
+                        placeholder="Premium type..."
+                        value={selectedPremiumType}
+                        onChange={(val) => setSelectedPremiumType(val)}
                     />
                 </Col>
             </Row>
@@ -256,30 +269,40 @@ export default function StrategyComposer() {
                                                     return (
                                                         <Card className="mb-3">
                                                             <Card.Header>
-                                                                <Form>
-                                                                    <Form.Row>
-                                                                        <Col>
-                                                                            <Form.Control as="select" value={leg.action} onChange={(e) => updateLeg("action", e.target.value, idx)} disabled={selectedStrategy.legs[idx].action}>
-                                                                                <option value="long" key="long">Long</option>
-                                                                                <option value="short" key="short">Short</option>
-                                                                            </Form.Control>
-                                                                        </Col>
-                                                                        <Col>
-                                                                            <Form.Control as="select" value={leg.optionType} onChange={(e) => updateLeg("optionType", e.target.value, idx)} disabled={selectedStrategy.legs[idx].optionType}>
-                                                                                <option value="call" key="call">Call</option>
-                                                                                <option value="put" key="put">Put</option>
-                                                                            </Form.Control>
-                                                                        </Col>
-                                                                        <Col>
-                                                                            <Form.Control as="select" value={leg.expiration || 0} onChange={(e) => updateLeg("expiration", e.target.value, idx)} disabled={selectedStrategy.legs[idx].expiration}>
-                                                                                {expirationTimestamps.map(val => {
-                                                                                    return (<option value={val} key={val}>{new Date(val < 9999999999 ? val * 1000 : val).toLocaleDateString()}</option>);
-                                                                                })}
-                                                                                <option disabled value={0} key="blank">Select an expiration</option>
-                                                                            </Form.Control>
-                                                                        </Col>
-                                                                    </Form.Row>
-                                                                </Form>
+                                                                <Row>
+                                                                    <Col className="d-flex justify-content-center"><h3><Badge variant="secondary">Leg {idx + 1}</Badge></h3></Col>
+                                                                </Row>
+                                                                <Row>
+                                                                    <Col>
+                                                                        <Form>
+                                                                            <Form.Row>
+                                                                                <Col>
+                                                                                    <Badge variant="secondary">Position</Badge>
+                                                                                    <Form.Control as="select" value={leg.action} onChange={(e) => updateLeg("action", e.target.value, idx)} disabled={selectedStrategy.legs[idx].action}>
+                                                                                        <option value="long" key="long">Long</option>
+                                                                                        <option value="short" key="short">Short</option>
+                                                                                    </Form.Control>
+                                                                                </Col>
+                                                                                <Col>
+                                                                                    <Badge variant="secondary">Option Type</Badge>
+                                                                                    <Form.Control as="select" value={leg.optionType} onChange={(e) => updateLeg("optionType", e.target.value, idx)} disabled={selectedStrategy.legs[idx].optionType}>
+                                                                                        <option value="call" key="call">Call</option>
+                                                                                        <option value="put" key="put">Put</option>
+                                                                                    </Form.Control>
+                                                                                </Col>
+                                                                                <Col>
+                                                                                    <Badge variant="secondary">Expiration Date</Badge>
+                                                                                    <Form.Control as="select" value={leg.expiration || 0} onChange={(e) => updateLeg("expiration", e.target.value, idx)} disabled={selectedStrategy.legs[idx].expiration}>
+                                                                                        {expirationTimestamps.map(val => {
+                                                                                            return (<option value={val} key={val}>{new Date(val < 9999999999 ? val * 1000 : val).toLocaleDateString()}</option>);
+                                                                                        })}
+                                                                                        <option disabled value={0} key="blank">Select an expiration</option>
+                                                                                    </Form.Control>
+                                                                                </Col>
+                                                                            </Form.Row>
+                                                                        </Form>
+                                                                    </Col>
+                                                                </Row>
                                                             </Card.Header>
                                                             <Card.Body>
                                                                 <LegCardDetails legs={legs} index={idx} selectedTicker={selectedTicker} atmPrice={basicInfo.regularMarketPrice} updateLeg={updateLeg} />
@@ -289,7 +312,16 @@ export default function StrategyComposer() {
                                                 case "stock":
                                                     return (
                                                         <Card className="mb-3">
-                                                            <Card.Header>{leg.ticker} Shares</Card.Header>
+                                                            <Card.Header>
+                                                                <Row>
+                                                                    <Col className="d-flex justify-content-center"><h3><Badge variant="secondary">Leg {idx + 1}</Badge></h3></Col>
+                                                                </Row>
+                                                                <Row>
+                                                                    <Col>
+                                                                        <Badge variant="secondary">Shares</Badge>
+                                                                    </Col>
+                                                                </Row>
+                                                            </Card.Header>
                                                             <Card.Body>
                                                                 <LegCardDetails legs={legs} index={idx} selectedTicker={selectedTicker} updateLeg={updateLeg} />
                                                             </Card.Body>
@@ -298,7 +330,16 @@ export default function StrategyComposer() {
                                                 case "cash":
                                                     return (
                                                         <Card className="mb-3">
-                                                            <Card.Header>Cash</Card.Header>
+                                                            <Card.Header>
+                                                                <Row>
+                                                                    <Col className="d-flex justify-content-center"><h3><Badge variant="secondary">Leg {idx + 1}</Badge></h3></Col>
+                                                                </Row>
+                                                                <Row>
+                                                                    <Col>
+                                                                        <Badge variant="secondary">Cash</Badge>
+                                                                    </Col>
+                                                                </Row>
+                                                            </Card.Header>
                                                             <Card.Body>
                                                                 <LegCardDetails legs={legs} index={idx} selectedTicker={selectedTicker} updateLeg={updateLeg} />
                                                             </Card.Body>

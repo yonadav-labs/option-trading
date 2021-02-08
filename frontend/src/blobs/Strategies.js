@@ -25,7 +25,6 @@ class CashLeg extends Leg {
 }
 
 class StockLeg extends Leg {
-    ticker = "";
     shares = 0;
 
     constructor(data) {
@@ -120,17 +119,17 @@ export const strategies = [
             description: "Receive a premium to allow your shares of the stock to be sold at the strike price until the expiration",
             sentiment: ["flat, bear"],
             legs: [
-                new StockLeg(
-                    {
-                        ticker: "",
-                        shares: 100
-                    }
-                ),
                 new OptionLeg(
                     {
                         action: "short",
                         expiration: 0,
                         optionType: "call"
+                    }
+                ),
+                new StockLeg(
+                    {
+                        ticker: "",
+                        shares: 100
                     }
                 )
             ]
@@ -157,18 +156,18 @@ export const strategies = [
             name: "Cash Secured Put",
             description: "Receive a premium to allow your cash to be exchanged for shares of the stock at the strike price until the expiration",
             sentiment: ["flat, bull"],
-            relationships: [new Relation(0, "value", "*", 1, "contract.stock_price", 100)],
+            relationships: [new Relation(1, "value", "*", 0, "contract.stock_price", 100)],
             legs: [
-                new CashLeg(
-                    {
-                        value: 0
-                    }
-                ),
                 new OptionLeg(
                     {
                         action: "short",
                         expiration: 0,
                         optionType: "put"
+                    }
+                ),
+                new CashLeg(
+                    {
+                        value: 0
                     }
                 )
             ]
