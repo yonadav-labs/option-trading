@@ -40,7 +40,7 @@ export default function LegCardDetails(props) {
     }, [props.legs]);
 
     const onStrikeSelectChange = (option) => {
-        setSelectedStrike(option.value);
+        setSelectedStrike(option);
         updateLeg("contract", contracts.filter((val) => val.strike === option.value)[0], index);
     }
 
@@ -50,6 +50,7 @@ export default function LegCardDetails(props) {
                 <>
                     <Row className="mb-5">
                         <Col>
+                            <Badge variant="secondary">Strike</Badge>
                             <Select
                                 className="basic-single"
                                 isSearchable

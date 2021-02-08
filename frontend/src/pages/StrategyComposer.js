@@ -125,7 +125,7 @@ export default function StrategyComposer() {
             is_public: false,
             target_price_lower: 0, // there is no target price
             target_price_upper: 0, // there is no target price
-            premium_type: selectedPremiumType
+            premium_type: selectedPremiumType.value,
         };
 
         legs.map((leg) => {
@@ -151,13 +151,17 @@ export default function StrategyComposer() {
         });
 
         try {
-            const { accessToken } = authState;
+            let headers = {
+                'Content-Type': 'application/json',
+            }
+            if (authState.isAuthenticated) {
+                const { accessToken } = authState;
+                headers['Authorization'] = `Bearer ${accessToken}`
+            }
+
             let url = `${API_URL}/trade_snapshots`;
             const response = await Axios.post(url, strategy, {
-                headers: {
-                    'Content-Type': 'application/json',
-                    Authorization: `Bearer ${accessToken}`,
-                }
+                headers: headers
             });
 
             setStrategyDetails(response.data.trade_snapshot);
@@ -172,6 +176,7 @@ export default function StrategyComposer() {
             <ModalSpinner active={modalActive}></ModalSpinner>
             <Row className="mb-3">
                 <Col lg="4">
+                    <Badge variant="secondary">Ticker</Badge>
                     <TickerTypeahead
                         setSelectedTicker={setSelectedTicker}
                         setExpirationTimestamps={setExpirationTimestamps}
@@ -181,6 +186,7 @@ export default function StrategyComposer() {
                 </Col>
 
                 <Col lg="6">
+                    <Badge variant="secondary">Strategy Type</Badge>
                     <Select
                         className="basic-single"
                         isSearchable
@@ -195,11 +201,12 @@ export default function StrategyComposer() {
                     />
                 </Col>
                 <Col lg="2">
+                    <Badge variant="secondary">Premium Price</Badge>
                     <Select
                         className="basic-single"
                         isSearchable
                         isClearable
-                        options={[{ value: "market", label: "Market" }, { value: "mid", label: "Mid" }]}
+                        options={[{ value: "market", label: "Market order price" }, { value: "Mid/Mark price", label: "Mid" }]}
                         placeholder="Premium type..."
                         value={selectedPremiumType}
                         onChange={(val) => setSelectedPremiumType(val)}
