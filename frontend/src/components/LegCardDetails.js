@@ -4,6 +4,7 @@ import Axios from 'axios';
 import Slider, { createSliderWithTooltip } from 'rc-slider';
 import ContractDetailsCard from './cards/ContractDetailsCard';
 import { Col, Row } from 'react-bootstrap';
+import { isEmpty } from 'lodash';
 
 const SliderWithTooltip = createSliderWithTooltip(Slider);
 
@@ -26,9 +27,10 @@ export default function LegCardDetails(props) {
                 const response = await Axios.get(url);
                 let marksObj = {};
                 const sortedContracts = response.data.contracts.sort((a, b) => a.strike - b.strike);
-                
-                setContracts(sortedContracts);
-                setStrikes(sortedContracts.map(val => {
+                const filteredContracts = sortedContracts.filter(contract => (leg.optionType === "call" && contract.is_call) || (leg.optionType === "put" && !contract.is_call));
+
+                setContracts(filteredContracts);
+                setStrikes(filteredContracts.map(val => {
                     marksObj[val.strike] = "";
                     return val.strike;
                 }));
@@ -38,7 +40,7 @@ export default function LegCardDetails(props) {
                 console.error(error);
             }
         }
-    }, [props.legs[index].action, props.legs[index].optionType, props.legs[index].expiration, props.legs[index].ticker]);
+    }, [props.legs]);
 
     const onStrikeSliderChange = (strike) => {
         setStrikeSliderValue(strike);
@@ -77,7 +79,7 @@ export default function LegCardDetails(props) {
                     </Row>
                     <Row>
                         <Col>
-                            <ContractDetailsCard contract={contracts.filter((val) => val.strike === strikeSliderValue)[0]} />
+                            <ContractDetailsCard contract={!isEmpty(legs[index].contract) ? legs[index].contract : null} />
                         </Col>
                     </Row>
                 </>
@@ -87,7 +89,7 @@ export default function LegCardDetails(props) {
                 <>
                     <Row className="mb-5">
                         <Col>
-                            <p>{legs[index].shares} Shares at $_ per Share</p>
+                            <p>{legs[index].shares} Shares</p>
                         </Col>
                     </Row>
                 </>
@@ -97,7 +99,7 @@ export default function LegCardDetails(props) {
                 <>
                     <Row className="mb-5">
                         <Col>
-                            <p>${legs[index].value}</p>
+                            <p>{PriceFormatter(legs[index].value)}</p>
                         </Col>
                     </Row>
                 </>

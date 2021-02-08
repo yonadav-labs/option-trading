@@ -54,6 +54,7 @@ class Strategy {
     linkedProperties = [];
     legs = [];
     rules = []; // array of rules where rule in this format: {<leg_index>, <leg_property>, <operator>, <leg_index>} e.g. {0, "contract.strike", ">", 1}
+    relationships = [];
 
     constructor(data) {
         Object.assign(this, data);
@@ -64,56 +65,125 @@ class Strategy {
 
 class Rule {
     legAIndex = 0;
-    legProperty = '';
+    legAProperty = '';
     operator = '';
     legBIndex = 0;
+    legBProperty = '';
 
-    constructor(legAIndex, legProperty, operator, legBIndex) {
+    constructor(legAIndex, legAProperty, operator, legBIndex, legBProperty) {
         this.legAIndex = legAIndex;
-        this.legProperty = legProperty;
+        this.legAProperty = legAProperty;
         this.operator = operator;
         this.legBIndex = legBIndex;
+        this.legBProperty = legBProperty;
     }
 }
 
-export const strategies = [
-    // new Strategy(
-    //     {
-    //         name: "Put Credit Spread",
-    //         description: "",
-    //         sentiment: ["bull", "flat"],
-    //         linkedProperties: ["expiration"],
-    //         legs: [
-    //             new OptionLeg(
-    //                 {
-    //                     ticker: "",
-    //                     action: "long",
-    //                     expiration: "",
-    //                     optionType: "put"
-    //                 }
-    //             ),
-    //             new OptionLeg(
-    //                 {
-    //                     ticker: "",
-    //                     action: "short",
-    //                     expiration: "",
-    //                     optionType: "put"
-    //                 }
-    //             )
-    //         ]
-    //     }
-    // ),
+class Relation {
+    legAIndex = 0;
+    legAProperty = '';
+    operator = '';
+    legBIndex = 0;
+    legBProperty = '';
+    constant = 0;
+
+    constructor(legAIndex, legAProperty, operator, legBIndex, legBProperty, constant) {
+        this.legAIndex = legAIndex;
+        this.legAProperty = legAProperty;
+        this.operator = operator;
+        this.legBIndex = legBIndex;
+        this.legBProperty = legBProperty;
+        this.constant = constant;
+    }
+
+}
+
+export const strategies = [    
     new Strategy(
         {
-            name: "Bull Call Spread",
-            description: "",
+            name: "Long Call",
+            description: "Pay a premium to have the option until the expiration to buy shares of the stock at the strike price",
             sentiment: ["bull"],
-            linkedProperties: ["expiration"],
-            rules: [new Rule(0, "contract.strike", "<", 1)],
             legs: [
                 new OptionLeg(
                     {
+                        action: "long",
+                        expiration: 0,
+                        optionType: "call"
+                    }
+                )
+            ]
+        }
+    ),
+    new Strategy({
+            name: "Covered Call",
+            description: "Receive a premium to allow your shares of the stock to be sold at the strike price until the expiration",
+            sentiment: ["flat, bear"],
+            legs: [
+                new StockLeg(
+                    {
                         ticker: "",
+                        shares: 100
+                    }
+                ),
+                new OptionLeg(
+                    {
+                        action: "short",
+                        expiration: 0,
+                        optionType: "call"
+                    }
+                )
+            ]
+        }
+    ),
+    new Strategy(
+        {
+            name: "Long Put",
+            description: "Pay a premium to have the option until the expiration to sell shares of the stock at the strike price",
+            sentiment: ["bear"],
+            legs: [
+                new OptionLeg(
+                    {
+                        action: "long",
+                        expiration: 0,
+                        optionType: "put"
+                    }
+                )
+            ]
+        }
+    ),
+    new Strategy(
+        {
+            name: "Cash Secured Put",
+            description: "Receive a premium to allow your cash to be exchanged for shares of the stock at the strike price until the expiration",
+            sentiment: ["flat, bull"],
+            relationships: [new Relation(0, "value", "*", 1, "contract.stock_price", 100)],
+            legs: [
+                new CashLeg(
+                    {
+                        value: 0
+                    }
+                ),
+                new OptionLeg(
+                    {
+                        action: "short",
+                        expiration: 0,
+                        optionType: "put"
+                    }
+                )
+            ]
+        }
+    ),
+    new Strategy(
+        {
+            name: "Bull Call Spread",
+            description: "Pay a cost for buying a call and selling a call at a strike higher than from the call you bought. You profit when the stock price goes up.",
+            sentiment: ["bull"],
+            linkedProperties: ["expiration"],
+            rules: [new Rule(0, "contract.strike", "<", 1, "contract.strike")],
+            legs: [
+                new OptionLeg(
+                    {
                         action: "long",
                         expiration: 0,
                         optionType: "call"
@@ -121,10 +191,84 @@ export const strategies = [
                 ),
                 new OptionLeg(
                     {
-                        ticker: "",
                         action: "short",
                         expiration: 0,
                         optionType: "call"
+                    }
+                )
+            ]
+        }
+    ),
+    new Strategy(
+        {
+            name: "Bear Call Spread",
+            description: "Receive a credit from buying a call and selling a call at a strike higher than from the call you bought. You profit when the stock price goes down or stays flat.",
+            sentiment: ["bear", "flat"],
+            linkedProperties: ["expiration"],
+            rules: [new Rule(0, "contract.strike", ">", 1, "contract.strike")],
+            legs: [
+                new OptionLeg(
+                    {
+                        action: "long",
+                        expiration: 0,
+                        optionType: "call"
+                    }
+                ),
+                new OptionLeg(
+                    {
+                        action: "short",
+                        expiration: 0,
+                        optionType: "call"
+                    }
+                )
+            ]
+        }
+    ),
+    new Strategy(
+        {
+            name: "Bear Put Spread",
+            description: "Pay a cost for buying a put and selling a put at a strike lower than from the put you bought. You profit when the stock price goes down.",
+            sentiment: ["bear"],
+            linkedProperties: ["expiration"],
+            rules: [new Rule(0, "contract.strike", ">", 1, "contract.strike")],
+            legs: [
+                new OptionLeg(
+                    {
+                        action: "long",
+                        expiration: 0,
+                        optionType: "put"
+                    }
+                ),
+                new OptionLeg(
+                    {
+                        action: "short",
+                        expiration: 0,
+                        optionType: "put"
+                    }
+                )
+            ]
+        }
+    ),
+    new Strategy(
+        {
+            name: "Bull Put Spread",
+            description: "Receive a credit from buying a put and selling a put at a strike higher than from the put you bought. You profit when the stock price goes up or stays flat.",
+            sentiment: ["bull", "flat"],
+            linkedProperties: ["expiration"],
+            rules: [new Rule(0, "contract.strike", "<", 1, "contract.strike")],
+            legs: [
+                new OptionLeg(
+                    {
+                        action: "long",
+                        expiration: 0,
+                        optionType: "put"
+                    }
+                ),
+                new OptionLeg(
+                    {
+                        action: "short",
+                        expiration: 0,
+                        optionType: "put"
                     }
                 )
             ]
