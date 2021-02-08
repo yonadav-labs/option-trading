@@ -30,10 +30,11 @@ export default function Home() {
 
     return (
         <div>
-            <div className="container-fluid home-background">
+            <div className="container-fluid">
                 {/* <img src={HeroRight} alt="hero-right" /> */}
-                <div className="row p-5 min-vh-100">
-                    <div className="col-lg-12 text-center my-auto">
+                <Row className="mt-5 mb-5 mx-3 top-container">
+                <div className="col-md-6 top-left">
+                    <div className="text-center my-auto">
                         <h1>We do the math, so you don't have to.</h1>
                         <h4>Find your next options trading opportunity in one glance.</h4>
                         <div className="center-buttons">
@@ -44,6 +45,10 @@ export default function Home() {
                         </div>
                     </div>
                 </div>
+                <div className="col-md-6 top-right">
+                    <img className="ml-5" src="home-person.png"></img>
+                </div>     
+                </Row>
 
                 <Row className="p-5">
                     <div className="col-lg-12 text-center my-auto">
@@ -54,7 +59,7 @@ export default function Home() {
                         <img className="img-fluid mx-auto d-block" src={pictureState} width="400" height="400" />
                     </div>
                     <div className="col-lg-7">
-                        <Row className={sliderState === 'stock select' ? '' : "text-muted"} onClick={e => sliderSelectHandler('stock select')}>
+                        <Row className={sliderState === 'stock select' ? '' : "text-muted"} onMouseEnter={e => sliderSelectHandler('stock select')} onClick={e => sliderSelectHandler('stock select')}>
                             <span className="col-lg-1">
                                 <h2 className="display-4 font-weight-bold">1</h2>
                             </span>
@@ -63,7 +68,7 @@ export default function Home() {
                                 <p className="lead">AAPL, AMZN, TSLA...</p>
                             </span>
                         </Row>
-                        <Row className={sliderState === 'expiration select' ? '' : "text-muted"} onClick={e => sliderSelectHandler('expiration select')}>
+                        <Row className={sliderState === 'expiration select' ? '' : "text-muted"} onMouseEnter={e => sliderSelectHandler('expiration select')} onClick={e => sliderSelectHandler('expiration select')}>
                             <span className="col-lg-1">
                                 <h2 className="display-4 font-weight-bold ">2</h2>
                             </span>
@@ -72,7 +77,7 @@ export default function Home() {
                                 <p className="lead">Timeframe for this trade.</p>
                             </span>
                         </Row>
-                        <Row className={sliderState === 'price select' ? '' : "text-muted"} onClick={e => sliderSelectHandler('price select')}>
+                        <Row className={sliderState === 'price select' ? '' : "text-muted"} onMouseEnter={e => sliderSelectHandler('price select')} onClick={e => sliderSelectHandler('price select')}>
                             <span className="col-lg-1">
                                 <h2 className="display-4 font-weight-bold ">3</h2>
                             </span>
@@ -81,7 +86,7 @@ export default function Home() {
                                 <p className="lead">Where do you think the stock price will go?</p>
                             </span>
                         </Row>
-                        <Row className={sliderState === 'trade select' ? '' : "text-muted"} onClick={e => sliderSelectHandler('trade select')}>
+                        <Row className={sliderState === 'trade select' ? '' : "text-muted"} onMouseEnter={e => sliderSelectHandler('trade select')} onClick={e => sliderSelectHandler('trade select')}>
                             <span className="col-lg-1">
                                 <h2 className="display-4 font-weight-bold ">4</h2>
                             </span>

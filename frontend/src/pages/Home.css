@@ -32,13 +32,6 @@
 }
 
 
-.home-background {
-  background-image: url('../svg/Hero-Right-D.svg'), url('../svg/Hero-Left-D.svg');
-  background-position: right top, left 5%;
-  background-repeat: no-repeat, no-repeat;
-  background-size: 35vw, 35vw;
-}
-
 /* Adjustments  */
 .navbar {
   padding: 1rem 3rem;
@@ -57,7 +50,7 @@
 }
 
 .center-buttons .btn {
-  width: 12rem;
+  width: 13rem;
   margin: .5rem 1rem !important;
 }
 
@@ -73,6 +66,21 @@ h1, h2{
 
 h2 {
   font-weight: 400;
+}
+
+.top-container {
+  display:flex
+}
+.top-left {
+  margin:auto;
+}
+
+.top-right img{
+  width: 85%;
+}
+
+.col-lg-11 {
+  cursor: pointer;
 }
 
 /* RESPONSIVE CSS
@@ -108,5 +116,15 @@ h2 {
     width: 156px;
     text-align: center;
   }
+
+  .top-left {
+    padding-top: 3rem;
+  }
   
+}
+
+@media only screen and (max-width: 768px) {
+  .top-right {
+    display: none;
+  }
 }
