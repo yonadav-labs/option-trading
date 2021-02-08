@@ -94,8 +94,8 @@ export default function SellCoveredCall() {
             sort: true,
             headerSortingStyle,
         }, {
-            dataField: "premium",
-            text: "Premium",
+            dataField: "mark",
+            text: "Mark/mid premium",
             formatter: (cell, row, rowIndex, extraData) => (
                 (
                     <span>
@@ -431,31 +431,54 @@ export default function SellCoveredCall() {
                     }
                     {contracts.length > 0 ?
                         <div>
-                            <Row className="justify-content-md-center" >
-                                <Col md="auto">
-                                    <Form>
-                                        <Form.Group>
-                                            <Form.Label className="font-weight-bold">Type:</Form.Label>
-                                            <br />
-                                            <ButtonToggleFilter
-                                                choiceLabelMap={{ false: 'Put', true: 'Call' }}
-                                                tableFilter={putCallFilter}
-                                            />
-                                        </Form.Group>
-                                    </Form>
+                            <h4>Filters</h4>
+                            <Row>
+                                <Col sm="2" xs="12">
+                                    <Form.Group>
+                                        <Form.Label className="font-weight-bold">Type:</Form.Label>
+                                        <br />
+                                        <ButtonToggleFilter
+                                            choiceLabelMap={{ false: 'Put', true: 'Call' }}
+                                            tableFilter={putCallFilter}
+                                        />
+                                    </Form.Group>
                                 </Col>
-                                <Col>
-                                    <Form>
-                                        <Form.Group>
-                                            <Form.Label className="font-weight-bold">Strike price:</Form.Label>
-                                            <StrikeRangeSliderFilter
-                                                atmPrice={basicInfo.regularMarketPrice}
-                                                strikePrices={strikePrices}
-                                                minStrikeFilter={minStrikeFilter}
-                                                maxStrikeFilter={maxStrikeFilter}
-                                            />
-                                        </Form.Group>
-                                    </Form>
+                                <Col sm="4" xs="12">
+                                    <Form.Group style={{ paddingBottom: "1.5rem" }}>
+                                        <Form.Label className="font-weight-bold">Strike price:</Form.Label>
+                                        <StrikeRangeSliderFilter
+                                            atmPrice={basicInfo.regularMarketPrice}
+                                            strikePrices={strikePrices}
+                                            minStrikeFilter={minStrikeFilter}
+                                            maxStrikeFilter={maxStrikeFilter}
+                                        />
+                                    </Form.Group>
+                                </Col>
+                                <Col sm="3" xs="6">
+                                    <Form.Label className="font-weight-bold">Min volume:</Form.Label>
+                                    <Form.Control name="volume" as="select" defaultValue={0}
+                                        onChange={(e) => onVolumeFilterChange(e, minVolumeFilter)}>
+                                        <option key="0" value="0">&#x2265; 0</option>
+                                        {[10, 50, 100, 200, 500, 1000, 10000].map((v, index) => {
+                                            return (
+                                                <option key={v} value={v}>&#x2265; {v}</option>
+                                            );
+                                        })}
+                                    </Form.Control>
+                                </Col>
+                                <Col sm="3" xs="6">
+                                    <Form.Group>
+                                        <Form.Label className="font-weight-bold">Min open interest:</Form.Label>
+                                        <Form.Control name="open_interest" as="select" defaultValue={0}
+                                            onChange={(e) => onOpenInterestFilterChange(e, minOpenInterestFilter)}>
+                                            <option key="0" value="0">&#x2265; 0</option>
+                                            {[10, 50, 100, 200, 500, 1000, 10000].map((v, index) => {
+                                                return (
+                                                    <option key={v} value={v}>&#x2265; {v}</option>
+                                                );
+                                            })}
+                                        </Form.Control>
+                                    </Form.Group>
                                 </Col>
                                 {/* <Col>
                                     <Form>
@@ -479,71 +502,41 @@ export default function SellCoveredCall() {
                                     <Accordion.Collapse eventKey="0">
                                         <Card.Body>
                                             <Row className="justify-content-md-center" >
-                                                <Col>
-                                                    <Form>
-                                                        <Form.Label className="font-weight-bold">Min volume:</Form.Label>
-                                                        <Form.Control name="volume" as="select" defaultValue={0}
-                                                            onChange={(e) => onVolumeFilterChange(e, minVolumeFilter)}>
-                                                            <option key="0" value="0">All</option>
-                                                            {[1, 5, 10, 20, 50, 100, 200, 500, 1000, 10000].map((v, index) => {
+                                                <Col sm="3" xs="6">
+                                                    <Form.Group>
+                                                        <Form.Label className="font-weight-bold">Last traded:</Form.Label>
+                                                        <Form.Control name="tradeoff" as="select" defaultValue={0}
+                                                            onChange={(e) => onLastTradedFilterChange(e, lastTradedFilter)}>
+                                                            <option key="9999999" value="9999999">All</option>
+                                                            {[1, 4, 8, 24, 48, 72, 120, 240].map((hour, index) => {
                                                                 return (
-                                                                    <option key={v} value={v}>{v}</option>
+                                                                    <option key={hour} value={hour}>
+                                                                        In&nbsp;
+                                                                        {(hour <= 24 ? hour + (hour > 1 ? " hours" : " hour") : hour / 24 + " days")}
+                                                                    </option>
                                                                 );
                                                             })}
                                                         </Form.Control>
-                                                    </Form>
-                                                    <Form>
-                                                        <Form.Group>
-                                                            <Form.Label className="font-weight-bold">Min open interest:</Form.Label>
-                                                            <Form.Control name="open_interest" as="select" defaultValue={0}
-                                                                onChange={(e) => onOpenInterestFilterChange(e, minOpenInterestFilter)}>
-                                                                <option key="0" value="0">All</option>
-                                                                {[1, 5, 10, 20, 50, 100, 200, 500, 1000, 10000].map((v, index) => {
-                                                                    return (
-                                                                        <option key={v} value={v}>{v}</option>
-                                                                    );
-                                                                })}
-                                                            </Form.Control>
-                                                        </Form.Group>
-                                                    </Form>
-                                                    <Form>
-                                                        <Form.Group>
-                                                            <Form.Label className="font-weight-bold">Last traded:</Form.Label>
-                                                            <Form.Control name="tradeoff" as="select" defaultValue={0}
-                                                                onChange={(e) => onLastTradedFilterChange(e, lastTradedFilter)}>
-                                                                <option key="9999999" value="9999999">All</option>
-                                                                {[1, 4, 8, 24, 48, 72, 120, 240].map((hour, index) => {
-                                                                    return (
-                                                                        <option key={hour} value={hour}>
-                                                                            In&nbsp;
-                                                                            {(hour <= 24 ? hour + (hour > 1 ? " hours" : " hour") : hour / 24 + " days")}
-                                                                        </option>
-                                                                    );
-                                                                })}
-                                                            </Form.Control>
-                                                        </Form.Group>
-                                                    </Form>
+                                                    </Form.Group>
                                                 </Col>
-                                                <Col>
-                                                    <Form>
-                                                        <Form.Group>
-                                                            <Form.Label className="font-weight-bold">Delta:</Form.Label>
-                                                            <Form.Control name="delta" as="select" defaultValue="all"
-                                                                onChange={(e) => onDeltaFilterChange(e, minDeltaFilter, maxDeltaFilter)}>
-                                                                <option key="all" value="all">All</option>
-                                                                <option key="-1" value="-1">-1.0 to -0.8</option>
-                                                                <option key="-0.8" value="-0.8">-0.8 to -0.6</option>
-                                                                <option key="-0.6" value="-0.6">-0.6 to -0.4</option>
-                                                                <option key="-0.4" value="-0.4">-0.4 to -0.2</option>
-                                                                <option key="-0.2" value="-0.2">-0.2 to 0.0</option>
-                                                                <option key="0" value="0">0.0 to 0.2</option>
-                                                                <option key="0.2" value="0.2">0.2 to 0.4</option>
-                                                                <option key="0.4" value="0.4">0.4 to 0.6</option>
-                                                                <option key="0.6" value="0.6">0.6 to 0.8</option>
-                                                                <option key="0.8" value="0.8">0.8 to 1.0</option>
-                                                            </Form.Control>
-                                                        </Form.Group>
-                                                    </Form>
+                                                <Col sm="3" xs="6">
+                                                    <Form.Group>
+                                                        <Form.Label className="font-weight-bold">Delta:</Form.Label>
+                                                        <Form.Control name="delta" as="select" defaultValue="all"
+                                                            onChange={(e) => onDeltaFilterChange(e, minDeltaFilter, maxDeltaFilter)}>
+                                                            <option key="all" value="all">All</option>
+                                                            <option key="-1" value="-1">-1.0 to -0.8</option>
+                                                            <option key="-0.8" value="-0.8">-0.8 to -0.6</option>
+                                                            <option key="-0.6" value="-0.6">-0.6 to -0.4</option>
+                                                            <option key="-0.4" value="-0.4">-0.4 to -0.2</option>
+                                                            <option key="-0.2" value="-0.2">-0.2 to 0.0</option>
+                                                            <option key="0" value="0">0.0 to 0.2</option>
+                                                            <option key="0.2" value="0.2">0.2 to 0.4</option>
+                                                            <option key="0.4" value="0.4">0.4 to 0.6</option>
+                                                            <option key="0.6" value="0.6">0.6 to 0.8</option>
+                                                            <option key="0.8" value="0.8">0.8 to 1.0</option>
+                                                        </Form.Control>
+                                                    </Form.Group>
                                                 </Col>
                                             </Row>
                                         </Card.Body>
@@ -582,6 +575,6 @@ export default function SellCoveredCall() {
                     }
                 </Col>
             </Row>
-        </Container>
+        </Container >
     );
 }

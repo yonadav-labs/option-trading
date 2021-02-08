@@ -381,20 +381,20 @@ export default function BestCallByPrice() {
                             <Row>
                                 <Col sm="6">
                                     <Form.Group>
-                                        <Form.Label>Cash to invest in {selectedTicker[0].symbol} (optional):</Form.Label>
-                                        <Form.Control name="available_cash" as="input" type="number"
-                                            placeholder="Enter the amount that you could afford to loss."
-                                            min="0.0" max="100000000.0" step="0.01" />
-                                    </Form.Group>
-                                </Col>
-                                <Col sm="6">
-                                    <Form.Group>
                                         <Form.Label>Premium price options:</Form.Label>
                                         <Form.Control name="premium_type" as="select" defaultValue="market"
                                             onChange={handlePremiumTypeChange}>
                                             <option key="market" value="market">Market order price</option>
                                             <option key="mid" value="mid">Mid/mark price</option>
                                         </Form.Control>
+                                    </Form.Group>
+                                </Col>
+                                <Col sm="6">
+                                    <Form.Group>
+                                        <Form.Label>Cash to invest in {selectedTicker[0].symbol} (optional):</Form.Label>
+                                        <Form.Control name="available_cash" as="input" type="number"
+                                            placeholder="Enter the amount that you could afford to loss."
+                                            min="0.0" max="100000000.0" step="0.01" />
                                     </Form.Group>
                                 </Col>
                             </Row>
@@ -407,7 +407,7 @@ export default function BestCallByPrice() {
                         <br />
                         {bestStrategies != null ?
                             <div>
-                                <h4>Results</h4>
+                                <h4>Filters</h4>
                                 <Row>
                                     <Col sm="3" xs="6">
                                         <Form.Group>
@@ -427,10 +427,10 @@ export default function BestCallByPrice() {
                                         <Form.Label className="font-weight-bold">Min volume:</Form.Label>
                                         <Form.Control name="volume" as="select" defaultValue={0}
                                             onChange={(e) => onVolumeFilterChange(e, minVolumeFilter)}>
-                                            <option key="0" value="0">All</option>
-                                            {[1, 5, 10, 20, 50, 100, 200, 500, 1000, 10000].map((v, index) => {
+                                            <option key="0" value="0">&#x2265; 0</option>
+                                            {[10, 50, 100, 200, 500, 1000, 10000].map((v, index) => {
                                                 return (
-                                                    <option key={v} value={v}>{v}</option>
+                                                    <option key={v} value={v}>&#x2265; {v}</option>
                                                 );
                                             })}
                                         </Form.Control>
@@ -439,10 +439,10 @@ export default function BestCallByPrice() {
                                         <Form.Label className="font-weight-bold">Min open interest:</Form.Label>
                                         <Form.Control name="open_interest" as="select" defaultValue={0}
                                             onChange={(e) => onOpenInterestFilterChange(e, minOpenInterestFilter)}>
-                                            <option key="0" value="0">All</option>
-                                            {[1, 5, 10, 20, 50, 100, 200, 500, 1000, 10000].map((v, index) => {
+                                            <option key="10" value="10">&#x2265; 10</option>
+                                            {[50, 100, 200, 500, 1000, 10000].map((v, index) => {
                                                 return (
-                                                    <option key={v} value={v}>{v}</option>
+                                                    <option key={v} value={v}>&#x2265; {v}</option>
                                                 );
                                             })}
                                         </Form.Control>
@@ -465,10 +465,6 @@ export default function BestCallByPrice() {
                                         </Form.Group>
                                     </Col>
                                 </Row>
-                                <p>
-                                    *All results are based on estimated options value on expiration date.<br />
-                                    *Hypothetical profit: average of possible profit outcomes under the assumption that {selectedTicker[0].symbol} share price will be within the target price range.
-                                </p>
                                 <Row>
                                     <Col>
                                         <BootstrapTable
@@ -478,7 +474,7 @@ export default function BestCallByPrice() {
                                             data={bestStrategies}
                                             columns={result_table_columns}
                                             pagination={paginationFactory({
-                                                sizePerPage: 20,
+                                                sizePerPage: 10,
                                                 hidePageListOnlyOnePage: true
                                             })}
                                             noDataIndication="No eligible strategy found."
@@ -490,6 +486,10 @@ export default function BestCallByPrice() {
                                         />
                                     </Col>
                                 </Row>
+                                <p>
+                                    *All results are based on estimated options value on expiration date.<br />
+                                    *Hypothetical profit: average of possible profit outcomes under the assumption that {selectedTicker[0].symbol} share price will be within the target price range.
+                                </p>
                             </div>
                             :
                             null
