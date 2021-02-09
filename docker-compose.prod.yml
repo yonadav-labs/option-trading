@@ -2,9 +2,6 @@ version: '3.7'
 
 services:
   backend:
-    build:
-      context: ./django_apps
-      dockerfile: Dockerfile.prod
     image: 813539762970.dkr.ecr.us-east-2.amazonaws.com/options-ec2:backend
     restart: always
     command: gunicorn django_apps.wsgi:application --bind 0.0.0.0:8080
@@ -15,9 +12,6 @@ services:
     env_file:
       - ./.env.prod
   frontend:
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile.prod
     image: 813539762970.dkr.ecr.us-east-2.amazonaws.com/options-ec2:frontend
     restart: always
     volumes:
