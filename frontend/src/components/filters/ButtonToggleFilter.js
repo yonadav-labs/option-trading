@@ -10,17 +10,27 @@ function ButtonToggleFilter(props) {
     function onChoiceFilterChange(event) {
         setRadioValue(event.currentTarget.value)
         const value = event.target.value;
-        if (value == 'All') {
+
+        switch (value) {
+          case 'All':
             tableFilter(Object.keys(choiceLabelMap));
-        } else {
-            tableFilter([value]);
+            break;
+          case 'Call':
+            tableFilter([true]);
+            break;
+          case 'Put':
+            tableFilter([false]);
+            break;
+          default:
+            break;
         }
+
     };
   
     const radios = [
       { name: 'All', value: 'All' },
-      { name: 'Call', value: true },
-      { name: 'Put', value: false },
+      { name: 'Call', value: "Call" },
+      { name: 'Put', value: "Put" },
     ];
   
     return (
