@@ -6,8 +6,11 @@ import { Button, Row, Col } from "react-bootstrap";
 export default function TradeProfitLossGraph(props) {
     const { trade } = props;
 
-    let xMin = trade.break_even_price * 0.8;
-    let xMax = trade.break_even_price * 1.2;
+    let annotationValues = [trade.break_even_price, trade.target_price_lower, trade.target_price_upper, trade.stock.stock_price]
+    let xMin = Math.min(...annotationValues) * 0.8;
+    let xMax = Math.max(...annotationValues) * 1.2;
+    let lowerTargetAnnotation = {}
+    let upperTargetAnnotation = {}
     let data = [];
 
     trade.graph_x_points.forEach((x, i) => {
@@ -17,6 +20,41 @@ export default function TradeProfitLossGraph(props) {
         data.push(point);
     });
 
+    // set annotations for target price if the exist
+    if (trade.target_price_lower !== null && trade.target_price_upper !== null) {
+        lowerTargetAnnotation = {
+            color: "blue",
+            dashStyle: "dash",
+            width: 2,
+            value: trade.target_price_lower,
+            label: {
+                rotation: 0,
+                y: 75,
+                style: {
+                    fontStyle: "italic",
+                },
+                text: `Lower Target Price <br /> $${trade.target_price_lower}`,
+            },
+            zIndex: 100,
+        };
+        upperTargetAnnotation = {
+            color: "blue",
+            dashStyle: "dash",
+            width: 2,
+            value: trade.target_price_upper,
+            label: {
+                rotation: 0,
+                y: 105,
+                style: {
+                    fontStyle: "italic",
+                },
+                text: `Upper Target Price <br /> $${trade.target_price_upper}`,
+            },
+            zIndex: 100,
+        };
+    }
+
+    // chart options
     const options = {
         credits: {
             enabled: false
@@ -44,6 +82,7 @@ export default function TradeProfitLossGraph(props) {
                 text: "Stock Price",
             },
             plotLines: [
+                // annotation for breakeven
                 {
                     color: "green",
                     width: 2,
@@ -59,6 +98,7 @@ export default function TradeProfitLossGraph(props) {
                     },
                     zIndex: 100,
                 },
+                // annotation for last price
                 {
                     color: "black",
                     width: 2,
@@ -73,6 +113,10 @@ export default function TradeProfitLossGraph(props) {
                     },
                     zIndex: 100,
                 },
+                // annotation for lower target price
+                lowerTargetAnnotation,
+                // annotation for upper target price
+                upperTargetAnnotation,
             ],
         },
         yAxis: {
@@ -83,6 +127,7 @@ export default function TradeProfitLossGraph(props) {
                 format: "${value}",
             },
             plotLines: [
+                // annotation for 0
                 {
                     color: "black",
                     width: 2,
