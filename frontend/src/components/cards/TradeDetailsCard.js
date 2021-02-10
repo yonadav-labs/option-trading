@@ -1,5 +1,5 @@
 import React from 'react';
-import Card from 'react-bootstrap/Card';
+import {Card, Badge} from 'react-bootstrap';
 import ShareTradeBtn from '../ShareTradeBtn.js';
 import { PriceFormatter, ProfitFormatter, PercentageFormatter } from '../../utils';
 import LegDetailsCard from './LegDetailsCard.js';
@@ -19,28 +19,44 @@ export default function TradeDetailsCard(props) {
                 <Card.Text>
                     {trade.target_price_lower ?
                         (<div className="row">
-                            <div className="col-sm-6">Target price range
-                            : {PriceFormatter(trade.target_price_lower)}({ProfitFormatter(trade.to_target_price_lower_ratio)})
-                            - {PriceFormatter(trade.target_price_upper)}({ProfitFormatter(trade.to_target_price_upper_ratio)})
+                            <div className="col-sm-6">
+                                <Badge variant="secondary">Target Price Range</Badge>
+                                <br/>
+                                {PriceFormatter(trade.target_price_lower)}({ProfitFormatter(trade.to_target_price_lower_ratio)})
+                                - {PriceFormatter(trade.target_price_upper)}({ProfitFormatter(trade.to_target_price_upper_ratio)})
                             </div>
-                            <div className="col-sm-6">Hypothetical profit: {PriceFormatter(trade.target_price_profit)} ({ProfitFormatter(trade.target_price_profit_ratio)})</div>
+                            <div className="col-sm-6">
+                                <Badge variant="secondary">Hypothetical Profit</Badge>
+                                <br/> 
+                                {PriceFormatter(trade.target_price_profit)} ({ProfitFormatter(trade.target_price_profit_ratio)})
+                            </div>
                         </div>) : null}
 
                     <div className="row">
-                        <div className="col-sm-6">Break-even at: {PriceFormatter(trade.break_even_price)} ({ProfitFormatter(trade.to_break_even_ratio)})</div>
-                        <div className="col-sm-6">Profit limit:
+                        <div className="col-sm-6">
+                            <Badge variant="secondary">Break-Even At</Badge> 
+                            <br/>
+                            {PriceFormatter(trade.break_even_price)} ({ProfitFormatter(trade.to_break_even_ratio)})
+                        </div>
+                        <div className="col-sm-6">
+                            <Badge variant="secondary">Profit Limit</Badge>
+                            <br/>
                             {trade.profit_cap != null ?
                                 (
                                     <span>
                                         {PriceFormatter(trade.profit_cap)} ({trade.profit_cap_ratio >= 0 ? '+' : '-'}{PercentageFormatter(Math.abs(trade.profit_cap_ratio))})
                                     </span >
                                 )
-                                : (<span>unlimited</span>)}
+                                : (<span>Unlimited</span>)}
                         </div>
 
                     </div>
                     <div className="row">
-                        <div className="col-sm-6">Cost / Max loss: {PriceFormatter(trade.cost)}</div>
+                        <div className="col-sm-6">
+                            <Badge variant="secondary">Cost / Max Loss</Badge> 
+                            <br/>
+                            {PriceFormatter(trade.cost)}
+                        </div>
                     </div>
                     <br />
                     <div>

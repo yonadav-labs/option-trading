@@ -10,7 +10,6 @@ import ToggleButton from 'react-bootstrap/ToggleButton'
 import ButtonGroup from 'react-bootstrap/ButtonGroup'
 import { Row, Col, Badge } from 'react-bootstrap';
 
-
 export default function TickerSummary({ basicInfo }) {
     /*
     const { user, setUser } = useContext(UserContext);
