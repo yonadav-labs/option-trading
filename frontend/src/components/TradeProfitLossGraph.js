@@ -7,8 +7,8 @@ export default function TradeProfitLossGraph(props) {
     const { trade } = props;
 
     let annotationValues = [trade.break_even_price, trade.target_price_lower, trade.target_price_upper, trade.stock.stock_price]
-    let xMin = Math.min(...annotationValues) * 0.8;
-    let xMax = Math.max(...annotationValues) * 1.2;
+    let xMin = Math.min(...annotationValues) * 0.9;
+    let xMax = Math.max(...annotationValues) * 1.1;
     let lowerTargetAnnotation = {}
     let upperTargetAnnotation = {}
     let data = [];
