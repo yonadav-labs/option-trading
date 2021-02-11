@@ -353,7 +353,7 @@ export default function SellCoveredCall() {
             <ModalSpinner active={modalActive}></ModalSpinner>
             <h1 className="text-center">Option Screener</h1>
             <Row className="justify-content-md-center">
-                <Col md={3}>
+                <Col md={4}>
                     <Form>
                         <Form.Group>
                             <Form.Label className="requiredField"><h4>Enter ticker symbol:</h4></Form.Label>
@@ -370,7 +370,7 @@ export default function SellCoveredCall() {
                     </Form>
                     {selectedTicker.length > 0 ?
                         <div>
-                            <TickerSummary basicInfo={basicInfo} />
+                            <TickerSummary basicInfo={basicInfo} from={'option'}/>
                         </div>
                         :
                         null
@@ -432,7 +432,7 @@ export default function SellCoveredCall() {
                     {contracts.length > 0 ?
                         <div>
                             <h4>Filters</h4>
-                            <Row>
+                            <Row md={2}>
                                 <Col sm="2" xs="12">
                                     <Form.Group>
                                         <Form.Label className="font-weight-bold">Type:</Form.Label>

@@ -10,7 +10,7 @@ import ToggleButton from 'react-bootstrap/ToggleButton'
 import ButtonGroup from 'react-bootstrap/ButtonGroup'
 import { Row, Col, Badge } from 'react-bootstrap';
 
-export default function TickerSummary({ basicInfo }) {
+export default function TickerSummary({ basicInfo, from }) {
     /*
     const { user, setUser } = useContext(UserContext);
     const [onWatchlist, setOnWatchlist] = useState(user ? user.watchlist.includes(basicInfo.symbol) : false);
@@ -64,7 +64,7 @@ export default function TickerSummary({ basicInfo }) {
                     </ToggleButton>
                 </ButtonGroup> */}
             </div>
-            <Row>
+            <Row md={from === 'option' ? 2 : 4}>
                 <Col sm={3} xs={6}>
                     <Badge variant="secondary">Last Price</Badge>
                     <div> {basicInfo.regularMarketPrice ? `$${basicInfo.regularMarketPrice}` : "N/A"} </div>
@@ -86,7 +86,7 @@ export default function TickerSummary({ basicInfo }) {
                     <div> {basicInfo.marketCap ? `$${intToString(basicInfo.marketCap, 1)}` : "N/A"} </div>
                 </Col>
             </Row>
-            <Row>
+            <Row md={from === 'option' ? 2 : 4}>
                 <Col sm={3} xs={6}>
                     <Badge variant="secondary">P/E Ratio</Badge>
                     <div> {basicInfo.trailingPE ? basicInfo.trailingPE.toFixed(2) : "N/A"} </div>
