@@ -35,7 +35,7 @@ function ButtonToggleFilter(props) {
   
     return (
       <>
-        <ButtonGroup toggle>
+        <ButtonGroup toggle style={{zIndex:0}}>
           {radios.map((radio, idx) => (
             <ToggleButton
               key={idx}
