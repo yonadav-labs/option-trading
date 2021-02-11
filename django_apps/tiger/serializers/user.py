@@ -5,8 +5,14 @@ from .subscription import SubscriptionSerializer
 
 
 class UserSerializer(serializers.ModelSerializer):
-    subscriptions = SubscriptionSerializer(many=True, read_only=True)
+    subscription = serializers.SerializerMethodField()
+
+    def get_subscription(self, obj):
+        subscription = obj.get_subscription()
+        if subscription:
+            serializer = SubscriptionSerializer(subscription)
+            return serializer.data
 
     class Meta:
         model = User
-        fields = ('username', 'email', 'id', 'okta_id', 'subscriptions')
+        fields = ('username', 'email', 'id', 'okta_id', 'subscription')

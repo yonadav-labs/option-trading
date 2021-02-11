@@ -61,7 +61,7 @@ const Profile = () => {
             <div class="col-md-4 bg-gradient user-profile">
               <div class="card-block text-center text-white">
                 <h6 class="f-w-600">{user.email}</h6>
-                {user.subscriptions.length > 0 && user.subscriptions.filter(value => value.status === "ACTIVE").length > 0 ?
+                {user.subscription ?
                   <div>
                     <p>Member</p>
                     <Button onClick={() => setShowCancelSubscriptionModal(true)} >Cancel Subscription</Button>
@@ -78,6 +78,12 @@ const Profile = () => {
                   <div class="col-md-6">
                     <p class="f-w-600">Email</p>
                     <h6 class="text-muted">{user.email}</h6>
+                    {user.subscription && 
+                      <>
+                        <p class="f-w-600 mt-4">Next Billing Time</p>
+                        <h6 class="text-muted">{user.subscription.detail.next_billing_time}</h6>
+                      </>
+                    }
                   </div>
                   {/* <div class="col-md-6">
                   <p class="f-w-600">???</p>
