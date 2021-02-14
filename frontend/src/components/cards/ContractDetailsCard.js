@@ -19,89 +19,89 @@ export default function ContractDetailsCard(props) {
                         <Card.Text>
                             <Row>
                                 <Col sm="3" xs="6">
-                                    <Badge variant="secondary">Mid/mark</Badge>
-                                    <div>{PriceFormatter(contract.mark)}</div>
+                                    <Row><Col><Badge variant="secondary">Mid/mark</Badge></Col></Row>
+                                    <Row><Col>{PriceFormatter(contract.mark)}</Col></Row>
                                 </Col>
                                 <Col sm="3" xs="6">
-                                    <Badge variant="secondary">Bid</Badge>
-                                    <div>{PriceFormatter(contract.bid)} X {NumberRoundFormatter(contract.bid_size)}</div>
+                                <Row><Col><Badge variant="secondary">Bid</Badge></Col></Row>
+                                <Row><Col>{PriceFormatter(contract.bid)} X {NumberRoundFormatter(contract.bid_size)}</Col></Row>
                                 </Col>
                                 <Col sm="3" xs="6">
-                                    <Badge variant="secondary">Ask</Badge>
-                                    <div>{PriceFormatter(contract.ask)} X {NumberRoundFormatter(contract.ask_size)}</div>
+                                <Row><Col><Badge variant="secondary">Ask</Badge></Col></Row>
+                                <Row><Col>{PriceFormatter(contract.ask)} X {NumberRoundFormatter(contract.ask_size)}</Col></Row>
                                 </Col>
                                 <Col sm="3" xs="6">
-                                    <Badge variant="secondary">Last</Badge>
-                                    <div>{PriceFormatter(contract.last_price)}</div>
+                                <Row><Col><Badge variant="secondary">Last</Badge></Col></Row>
+                                <Row><Col>{PriceFormatter(contract.last_price)}</Col></Row>
                                 </Col>
                             </Row>
                             <Row>
                                 <Col sm="3" xs="6">
-                                    <Badge variant="secondary">Change</Badge>
-                                    <div>{PriceFormatter(contract.change)} ({NumberRoundFormatter(contract.percent_change)}%)</div>
+                                <Row><Col><Badge variant="secondary">Change</Badge></Col></Row>
+                                <Row><Col>{PriceFormatter(contract.change)} ({NumberRoundFormatter(contract.percent_change)}%)</Col></Row>
                                 </Col>
                                 <Col sm="3" xs="6">
-                                    <Badge variant="secondary">Range</Badge>
-                                    <div>{PriceFormatter(contract.low_price)} - {PriceFormatter(contract.high_price)}</div>
+                                <Row><Col><Badge variant="secondary">Range</Badge></Col></Row>
+                                <Row><Col>{PriceFormatter(contract.low_price)} - {PriceFormatter(contract.high_price)}</Col></Row>
                                 </Col>
                                 <Col sm="3" xs="6">
-                                    <Badge variant="secondary">Open interest</Badge>
-                                    <div>{contract.open_interest}</div>
+                                <Row><Col><Badge variant="secondary">Open interest</Badge></Col></Row>
+                                <Row><Col>{contract.open_interest}</Col></Row>
                                 </Col>
                                 <Col sm="3" xs="6">
-                                    <Badge variant="secondary">Volume</Badge>
-                                    <div>{contract.volume}</div>
+                                <Row><Col><Badge variant="secondary">Volume</Badge></Col></Row>
+                                <Row><Col>{contract.volume}</Col></Row>
                                 </Col>
                             </Row>
-                            {readMore ? <div>
+                            {readMore ? <>
                                 <Row>
                                     <Col sm="3" xs="6">
-                                        <Badge variant="secondary">Delta</Badge>
-                                        <div>{NumberRoundFormatter(contract.delta)}</div>
+                                        <Row><Col><Badge variant="secondary">Delta</Badge></Col></Row>
+                                        <Row><Col>{NumberRoundFormatter(contract.delta)}</Col></Row>
                                     </Col>
                                     <Col sm="3" xs="6">
-                                        <Badge variant="secondary">Gamma</Badge>
-                                        <div>{NumberRoundFormatter(contract.gamma)}</div>
+                                        <Row><Col><Badge variant="secondary">Gamma</Badge></Col></Row>
+                                        <Row><Col>{NumberRoundFormatter(contract.gamma)}</Col></Row>
                                     </Col>
                                     <Col sm="3" xs="6">
-                                        <Badge variant="secondary">Theta</Badge>
-                                        <div>{NumberRoundFormatter(contract.theta)}</div>
+                                        <Row><Col><Badge variant="secondary">Theta</Badge></Col></Row>
+                                        <Row><Col>{NumberRoundFormatter(contract.theta)}</Col></Row>
                                     </Col>
                                     <Col sm="3" xs="6">
-                                        <Badge variant="secondary">Vega</Badge>
-                                        <div>{NumberRoundFormatter(contract.vega)}</div>
+                                        <Row><Col><Badge variant="secondary">Vega</Badge></Col></Row>
+                                        <Row><Col>{NumberRoundFormatter(contract.vega)}</Col></Row>
                                     </Col>
                                 </Row>
                                 <Row>
                                     <Col sm="3" xs="6">
-                                        <Badge variant="secondary">Rho</Badge>
-                                        <div>{NumberRoundFormatter(contract.rho)}</div>
+                                        <Row><Col><Badge variant="secondary">Rho</Badge></Col></Row>
+                                        <Row><Col>{NumberRoundFormatter(contract.rho)}</Col></Row>
                                     </Col>
                                     <Col sm="3" xs="6">
-                                        <Badge variant="secondary">Implied volatility</Badge>
-                                        <div>{PercentageFormatter(contract.implied_volatility)}</div>
+                                        <Row><Col><Badge variant="secondary">Implied volatility</Badge></Col></Row>
+                                        <Row><Col>{PercentageFormatter(contract.implied_volatility)}</Col></Row>
                                     </Col>
                                     <Col sm="3" xs="6">
-                                        <Badge variant="secondary">Break-even at</Badge>
-                                        <div>{PriceFormatter(contract.break_even_price)}</div>
+                                        <Row><Col><Badge variant="secondary">Break-even at</Badge></Col></Row>
+                                        <Row><Col>{PriceFormatter(contract.break_even_price)}</Col></Row>
                                     </Col>
                                     <Col sm="3" xs="6">
-                                        <Badge variant="secondary">To expiration</Badge>
-                                        <div>{contract.days_till_expiration} days</div>
+                                        <Row><Col><Badge variant="secondary">To expiration</Badge></Col></Row>
+                                        <Row><Col>{contract.days_till_expiration} days</Col></Row>
                                     </Col>
                                 </Row>
                                 <Row>
                                     <Col sm="3" xs="12">
-                                        <Badge variant="secondary">Last traded</Badge>
-                                        <div>{TimestampTimeFormatter(contract.last_trade_date)}</div>
+                                        <Row><Col><Badge variant="secondary">Last traded</Badge></Col></Row>
+                                        <Row><Col>{TimestampTimeFormatter(contract.last_trade_date)}</Col></Row>
                                     </Col>
                                     <Col sm="3" xs="12">
-                                        <Badge variant="secondary">Quoted at</Badge>
-                                        <div>{TimestampTimeFormatter(contract.quote_time)}</div>
+                                        <Row><Col><Badge variant="secondary">Quoted at</Badge></Col></Row>
+                                        <Row><Col>{TimestampTimeFormatter(contract.quote_time)}</Col></Row>
                                     </Col>
                                 </Row>
                                 <a className="read-more-link" style={{ cursor: 'pointer' }} onClick={() => { setReadMore(!readMore) }}>{linkName}</a>
-                            </div> : <a className="read-more-link" style={{ cursor: 'pointer' }} onClick={() => { setReadMore(!readMore) }}>{linkName}</a>}
+                            </> : <a className="read-more-link" style={{ cursor: 'pointer' }} onClick={() => { setReadMore(!readMore) }}>{linkName}</a>}
                         </Card.Text>
                     </Card.Body>
                 </Card>

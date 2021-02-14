@@ -3,12 +3,12 @@ import getApiUrl, { PercentageFormatter, PriceFormatter } from '../utils';
 import Axios from 'axios';
 import Slider, { createSliderWithTooltip } from 'rc-slider';
 import ContractDetailsCard from './cards/ContractDetailsCard';
-import { Badge, Col, Row } from 'react-bootstrap';
+import { Badge, Col, Form, Row } from 'react-bootstrap';
 import { isEmpty } from 'lodash';
 import Select from 'react-select';
 
 export default function LegCardDetails(props) {
-    const { legs, index, selectedTicker, updateLeg } = props;
+    const { legs, index, selectedTicker, updateLeg, selectedStrategy, expirationTimestamps } = props;
     const [strikes, setStrikes] = useState([]);
     const [contracts, setContracts] = useState([]);
     const [selectedStrike, setSelectedStrike] = useState(0);
@@ -41,14 +41,45 @@ export default function LegCardDetails(props) {
 
     const onStrikeSelectChange = (option) => {
         setSelectedStrike(option);
-        updateLeg("contract", contracts.filter((val) => val.strike === option.value)[0], index);
+        updateLeg("contract", option ? contracts.filter((val) => val.strike === option.value)[0] : {}, index);
     }
 
     switch (legs[index].type) {
         case "option":
             return (
                 <>
-                    <Row className="mb-5">
+                    <Row>
+                        <Col>
+                            <Form>
+                                <Form.Row>
+                                    <Col>
+                                        <Badge variant="secondary">Position</Badge>
+                                        <Form.Control as="select" value={legs[index].action} onChange={(e) => updateLeg("action", e.target.value, index)} disabled={selectedStrategy.legs[index].action}>
+                                            <option value="long" key="long">Long</option>
+                                            <option value="short" key="short">Short</option>
+                                        </Form.Control>
+                                    </Col>
+                                    <Col>
+                                        <Badge variant="secondary">Option Type</Badge>
+                                        <Form.Control as="select" value={legs[index].optionType} onChange={(e) => updateLeg("optionType", e.target.value, index)} disabled={selectedStrategy.legs[index].optionType}>
+                                            <option value="call" key="call">Call</option>
+                                            <option value="put" key="put">Put</option>
+                                        </Form.Control>
+                                    </Col>
+                                    <Col>
+                                        <Badge variant="secondary">Expiration Date</Badge>
+                                        <Form.Control as="select" value={legs[index].expiration || 0} onChange={(e) => updateLeg("expiration", e.target.value, index)} disabled={selectedStrategy.legs[index].expiration}>
+                                            {expirationTimestamps.map(val => {
+                                                return (<option value={val} key={val}>{new Date(val < 9999999999 ? val * 1000 : val).toLocaleDateString()}</option>);
+                                            })}
+                                            <option disabled value={0} key="blank">Select an expiration</option>
+                                        </Form.Control>
+                                    </Col>
+                                </Form.Row>
+                            </Form>
+                        </Col>
+                    </Row>
+                    <Row className="mb-3">
                         <Col>
                             <Badge variant="secondary">Strike</Badge>
                             <Select
@@ -72,7 +103,7 @@ export default function LegCardDetails(props) {
         case "stock":
             return (
                 <>
-                    <Row className="mb-5">
+                    <Row>
                         <Col>
                             <p>Hold {selectedTicker.length > 0 ? `${legs[index].shares} ${selectedTicker[0].symbol}` : ""} shares</p>
                         </Col>
@@ -82,7 +113,7 @@ export default function LegCardDetails(props) {
         case "cash":
             return (
                 <>
-                    <Row className="mb-5">
+                    <Row>
                         <Col>
                             <p>Hold {PriceFormatter(legs[index].value)} in cash</p>
                         </Col>

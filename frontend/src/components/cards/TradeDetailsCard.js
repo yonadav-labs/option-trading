@@ -1,5 +1,5 @@
 import React from 'react';
-import {Card, Badge} from 'react-bootstrap';
+import {Card, Badge, Row, Col} from 'react-bootstrap';
 import ShareTradeBtn from '../ShareTradeBtn.js';
 import { PriceFormatter, ProfitFormatter, PercentageFormatter } from '../../utils';
 import LegDetailsCard from './LegDetailsCard.js';
@@ -7,38 +7,39 @@ import TradeProfitLossGraph from '../TradeProfitLossGraph.js';
 
 export default function TradeDetailsCard(props) {
     const { trade, hideShareButton, hideDisclaimer, hideTitle } = props;
+    // console.log(trade)
 
     return (
         <Card>
             {hideTitle ? null : <Card.Header>{trade.display_name}</Card.Header>}
             <Card.Body>
-                <div className="row">
+                <Row>
                     <div className="col-md-6"><Card.Title>Overview</Card.Title></div>
                     {hideShareButton ? null : <div className="col-md-6"><span style={{ float: 'right' }}><ShareTradeBtn trade={trade} /></span></div>}
-                </div>
+                </Row>
                 <Card.Text>
                     {trade.target_price_lower ?
-                        (<div className="row">
-                            <div className="col-sm-6">
+                        (<Row>
+                            <Col sm="6">
                                 <Badge variant="secondary">Target Price Range</Badge>
                                 <br/>
                                 {PriceFormatter(trade.target_price_lower)}({ProfitFormatter(trade.to_target_price_lower_ratio)})
                                 - {PriceFormatter(trade.target_price_upper)}({ProfitFormatter(trade.to_target_price_upper_ratio)})
-                            </div>
-                            <div className="col-sm-6">
+                            </Col>
+                            <Col sm="6">
                                 <Badge variant="secondary">Hypothetical Profit</Badge>
                                 <br/> 
                                 {PriceFormatter(trade.target_price_profit)} ({ProfitFormatter(trade.target_price_profit_ratio)})
-                            </div>
-                        </div>) : null}
+                            </Col>
+                        </Row>) : null}
 
-                    <div className="row">
-                        <div className="col-sm-6">
+                    <Row>
+                        <Col sm="6">
                             <Badge variant="secondary">Break-Even At</Badge> 
                             <br/>
                             {PriceFormatter(trade.break_even_price)} ({ProfitFormatter(trade.to_break_even_ratio)})
-                        </div>
-                        <div className="col-sm-6">
+                        </Col>
+                        <Col sm="6">
                             <Badge variant="secondary">Profit Limit</Badge>
                             <br/>
                             {trade.profit_cap != null ?
@@ -48,16 +49,16 @@ export default function TradeDetailsCard(props) {
                                     </span >
                                 )
                                 : (<span>Unlimited</span>)}
-                        </div>
+                        </Col>
 
-                    </div>
-                    <div className="row">
-                        <div className="col-sm-6">
+                    </Row>
+                    <Row>
+                        <Col sm="6">
                             <Badge variant="secondary">Cost / Max Loss</Badge> 
                             <br/>
                             {PriceFormatter(trade.cost)}
-                        </div>
-                    </div>
+                        </Col>
+                    </Row>
                     <br />
                     <div>
                         <TradeProfitLossGraph trade={trade}/>
@@ -66,8 +67,8 @@ export default function TradeDetailsCard(props) {
                     {
                         trade.legs.map((leg, index) => {
                             return (
-                                <div>
-                                    <LegDetailsCard leg={leg} position_num={index + 1}></LegDetailsCard>
+                                <div key={"leg_" + index + "_details"}>
+                                    <LegDetailsCard key={index} leg={leg} position_num={index + 1}></LegDetailsCard>
                                     {index < trade.legs.length - 1 ? <br /> : null}
                                 </div>
                             );

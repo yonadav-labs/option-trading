@@ -140,12 +140,15 @@ export default function StrategyComposer() {
                 }
                 legSnapshot.contract_snapshot = contract;
             } else if (leg.type === "stock") {
+                // console.log(leg)
                 legSnapshot.stock_snapshot = {
                     ticker_id: selectedTicker[0].id,
-                    external_cache_id: selectedTicker[0].external_cache_id,
+                    external_cache_id: selectedTicker[0].external_cache_id
                 };
+                legSnapshot.units = leg.shares;
             } else {
                 legSnapshot.cash_snapshot = true;
+                legSnapshot.units = leg.value;
             }
             strategy.leg_snapshots.push(legSnapshot);
         });
@@ -185,7 +188,7 @@ export default function StrategyComposer() {
                     />
                 </Col>
 
-                <Col lg="6">
+                <Col lg="8">
                     <Badge variant="secondary">Strategy Type</Badge>
                     <Select
                         className="basic-single"
@@ -198,18 +201,6 @@ export default function StrategyComposer() {
                         value={selectedStrategy}
                         onChange={(val) => applyStrategy(val)}
                         onInputChange={(val) => throttledSetInputText(val)}
-                    />
-                </Col>
-                <Col lg="2">
-                    <Badge variant="secondary">Premium Price</Badge>
-                    <Select
-                        className="basic-single"
-                        isSearchable
-                        isClearable
-                        options={[{ value: "market", label: "Market order price" }, { value: "Mid/Mark price", label: "Mid" }]}
-                        placeholder="Premium type..."
-                        value={selectedPremiumType}
-                        onChange={(val) => setSelectedPremiumType(val)}
                     />
                 </Col>
             </Row>
@@ -252,8 +243,8 @@ export default function StrategyComposer() {
                                     {strategies.map(val => {
                                         if (val.name.toLowerCase().includes(inputText.toLowerCase()) && (sentiment === "all" || val.sentiment.includes(sentiment))) {
                                             return (
-                                                <Col key={val.id}>
-                                                    <Card>
+                                                <Col key={val.id + "_col"}>
+                                                    <Card key={val.id + "_card"}>
                                                         <Card.Header> {val.name} </Card.Header>
                                                         <Card.Body>
                                                             <Card.Text>{val.description}</Card.Text>
@@ -274,80 +265,49 @@ export default function StrategyComposer() {
                                             switch (leg.type) {
                                                 case "option":
                                                     return (
-                                                        <Card className="mb-3">
+                                                        <Card key={"leg_" + idx + "_card"} className="mb-3">
                                                             <Card.Header>
                                                                 <Row>
-                                                                    <Col className="d-flex justify-content-center"><h3><Badge variant="secondary">Leg {idx + 1}</Badge></h3></Col>
-                                                                </Row>
-                                                                <Row>
-                                                                    <Col>
-                                                                        <Form>
-                                                                            <Form.Row>
-                                                                                <Col>
-                                                                                    <Badge variant="secondary">Position</Badge>
-                                                                                    <Form.Control as="select" value={leg.action} onChange={(e) => updateLeg("action", e.target.value, idx)} disabled={selectedStrategy.legs[idx].action}>
-                                                                                        <option value="long" key="long">Long</option>
-                                                                                        <option value="short" key="short">Short</option>
-                                                                                    </Form.Control>
-                                                                                </Col>
-                                                                                <Col>
-                                                                                    <Badge variant="secondary">Option Type</Badge>
-                                                                                    <Form.Control as="select" value={leg.optionType} onChange={(e) => updateLeg("optionType", e.target.value, idx)} disabled={selectedStrategy.legs[idx].optionType}>
-                                                                                        <option value="call" key="call">Call</option>
-                                                                                        <option value="put" key="put">Put</option>
-                                                                                    </Form.Control>
-                                                                                </Col>
-                                                                                <Col>
-                                                                                    <Badge variant="secondary">Expiration Date</Badge>
-                                                                                    <Form.Control as="select" value={leg.expiration || 0} onChange={(e) => updateLeg("expiration", e.target.value, idx)} disabled={selectedStrategy.legs[idx].expiration}>
-                                                                                        {expirationTimestamps.map(val => {
-                                                                                            return (<option value={val} key={val}>{new Date(val < 9999999999 ? val * 1000 : val).toLocaleDateString()}</option>);
-                                                                                        })}
-                                                                                        <option disabled value={0} key="blank">Select an expiration</option>
-                                                                                    </Form.Control>
-                                                                                </Col>
-                                                                            </Form.Row>
-                                                                        </Form>
-                                                                    </Col>
+                                                                    <Col className="d-flex justify-content-center"><h4>Leg {idx + 1}</h4></Col>
                                                                 </Row>
                                                             </Card.Header>
                                                             <Card.Body>
-                                                                <LegCardDetails legs={legs} index={idx} selectedTicker={selectedTicker} atmPrice={basicInfo.regularMarketPrice} updateLeg={updateLeg} />
+                                                                <LegCardDetails legs={legs} index={idx} selectedTicker={selectedTicker} atmPrice={basicInfo.regularMarketPrice} updateLeg={updateLeg} selectedStrategy={selectedStrategy} expirationTimestamps={expirationTimestamps} />
                                                             </Card.Body>
                                                         </Card>
                                                     );
                                                 case "stock":
                                                     return (
-                                                        <Card className="mb-3">
+                                                        <Card key={"leg_" + idx + "_card"} className="mb-3">
                                                             <Card.Header>
                                                                 <Row>
-                                                                    <Col className="d-flex justify-content-center"><h3><Badge variant="secondary">Leg {idx + 1}</Badge></h3></Col>
+                                                                    <Col className="d-flex justify-content-center"><h4>Leg {idx + 1}</h4></Col>
                                                                 </Row>
+                                                            </Card.Header>
+                                                            <Card.Body>
                                                                 <Row>
                                                                     <Col>
                                                                         <Badge variant="secondary">Shares</Badge>
                                                                     </Col>
                                                                 </Row>
-                                                            </Card.Header>
-                                                            <Card.Body>
                                                                 <LegCardDetails legs={legs} index={idx} selectedTicker={selectedTicker} updateLeg={updateLeg} />
                                                             </Card.Body>
                                                         </Card>
                                                     );
                                                 case "cash":
                                                     return (
-                                                        <Card className="mb-3">
+                                                        <Card key={"leg_" + idx + "_card"} className="mb-3">
                                                             <Card.Header>
                                                                 <Row>
-                                                                    <Col className="d-flex justify-content-center"><h3><Badge variant="secondary">Leg {idx + 1}</Badge></h3></Col>
+                                                                    <Col className="d-flex justify-content-center"><h4>Leg {idx + 1}</h4></Col>
                                                                 </Row>
+                                                            </Card.Header>
+                                                            <Card.Body>
                                                                 <Row>
                                                                     <Col>
                                                                         <Badge variant="secondary">Cash</Badge>
                                                                     </Col>
                                                                 </Row>
-                                                            </Card.Header>
-                                                            <Card.Body>
                                                                 <LegCardDetails legs={legs} index={idx} selectedTicker={selectedTicker} updateLeg={updateLeg} />
                                                             </Card.Body>
                                                         </Card>
@@ -356,7 +316,21 @@ export default function StrategyComposer() {
                                                     return null;
                                             }
                                         })}
-                                        <Button disabled={(selectedTicker.length < 1 || !legs.reduce((prevVal, currVal) => (currVal.type !== "option" || prevVal && !isEmpty(currVal.contract)), true)) || ruleMessage} onClick={getStrategyDetails}>Calculate Strategy Details</Button>
+                                        <Col lg="3" className="mb-3">
+                                            <Badge variant="secondary">Premium Price</Badge>
+                                            <Select
+                                                className="basic-single"
+                                                isSearchable
+                                                isClearable
+                                                options={[{ value: "market", label: "Market order price" }, { value: "Mid/Mark price", label: "Mid" }]}
+                                                placeholder="Premium type..."
+                                                value={selectedPremiumType}
+                                                onChange={(val) => setSelectedPremiumType(val)}
+                                            />
+                                        </Col>
+                                        <Col lg="auto">
+                                            <Button disabled={(selectedTicker.length < 1 || !legs.reduce((prevVal, currVal) => (currVal.type !== "option" || prevVal && !isEmpty(currVal.contract)), true)) || ruleMessage} onClick={getStrategyDetails}>Calculate Strategy Details</Button>
+                                        </Col>
                                     </Col>
                                 </Row>
                             }

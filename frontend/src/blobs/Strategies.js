@@ -156,7 +156,7 @@ export const strategies = [
             name: "Cash Secured Put",
             description: "Receive a premium to allow your cash to be exchanged for shares of the stock at the strike price until the expiration",
             sentiment: ["flat, bull"],
-            relationships: [new Relation(1, "value", "*", 0, "contract.stock_price", 100)],
+            relationships: [new Relation(1, "value", "*", 0, "contract.strike", 100)],
             legs: [
                 new OptionLeg(
                     {
