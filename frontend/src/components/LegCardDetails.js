@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import getApiUrl, { PercentageFormatter, PriceFormatter } from '../utils';
 import Axios from 'axios';
-import Slider, { createSliderWithTooltip } from 'rc-slider';
 import ContractDetailsCard from './cards/ContractDetailsCard';
 import { Badge, Col, Form, Row } from 'react-bootstrap';
 import { isEmpty } from 'lodash';
@@ -52,21 +51,21 @@ export default function LegCardDetails(props) {
                         <Col>
                             <Form>
                                 <Form.Row>
-                                    <Col>
+                                    <Col sm="3" xs="6">
                                         <Badge variant="secondary">Position</Badge>
                                         <Form.Control as="select" value={legs[index].action} onChange={(e) => updateLeg("action", e.target.value, index)} disabled={selectedStrategy.legs[index].action}>
                                             <option value="long" key="long">Long</option>
                                             <option value="short" key="short">Short</option>
                                         </Form.Control>
                                     </Col>
-                                    <Col>
+                                    <Col sm="3" xs="6">
                                         <Badge variant="secondary">Option Type</Badge>
                                         <Form.Control as="select" value={legs[index].optionType} onChange={(e) => updateLeg("optionType", e.target.value, index)} disabled={selectedStrategy.legs[index].optionType}>
                                             <option value="call" key="call">Call</option>
                                             <option value="put" key="put">Put</option>
                                         </Form.Control>
                                     </Col>
-                                    <Col>
+                                    <Col sm="3" xs="6">
                                         <Badge variant="secondary">Expiration Date</Badge>
                                         <Form.Control as="select" value={legs[index].expiration || 0} onChange={(e) => updateLeg("expiration", e.target.value, index)} disabled={selectedStrategy.legs[index].expiration}>
                                             {expirationTimestamps.map(val => {
@@ -75,22 +74,20 @@ export default function LegCardDetails(props) {
                                             <option disabled value={0} key="blank">Select an expiration</option>
                                         </Form.Control>
                                     </Col>
+                                    <Col sm="3" xs="6">
+                                        <Badge variant="secondary">Strike</Badge>
+                                        <Select
+                                            className="basic-single"
+                                            isSearchable
+                                            isClearable
+                                            options={strikes}
+                                            placeholder="Select a strike..."
+                                            value={selectedStrike}
+                                            onChange={(val) => onStrikeSelectChange(val)}
+                                        />
+                                    </Col>
                                 </Form.Row>
                             </Form>
-                        </Col>
-                    </Row>
-                    <Row className="mb-3">
-                        <Col>
-                            <Badge variant="secondary">Strike</Badge>
-                            <Select
-                                className="basic-single"
-                                isSearchable
-                                isClearable
-                                options={strikes}
-                                placeholder="Select a strike..."
-                                value={selectedStrike}
-                                onChange={(val) => onStrikeSelectChange(val)}
-                            />
                         </Col>
                     </Row>
                     <Row>

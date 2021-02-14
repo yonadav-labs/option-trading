@@ -175,10 +175,10 @@ export default function StrategyComposer() {
     }
 
     return (
-        <Container fluid className="min-vh-100">
+        <Container fluid className="min-vh-100" style={{ "marginTop": "1rem" }}>
             <ModalSpinner active={modalActive}></ModalSpinner>
-            <Row className="mb-3">
-                <Col lg="4">
+            <Row className="justify-content-md-center">
+                <Col md="4">
                     <Badge variant="secondary">Ticker</Badge>
                     <TickerTypeahead
                         setSelectedTicker={setSelectedTicker}
@@ -187,8 +187,7 @@ export default function StrategyComposer() {
                         setModalActive={setModalActive}
                     />
                 </Col>
-
-                <Col lg="8">
+                <Col md="7">
                     <Badge variant="secondary">Strategy Type</Badge>
                     <Select
                         className="basic-single"
@@ -204,12 +203,12 @@ export default function StrategyComposer() {
                     />
                 </Col>
             </Row>
-            <Row className="mb-3">
-                <Col lg="4">
+            <Row className="justify-content-md-center" style={{ marginTop: "1rem" }}>
+                <Col md="4">
                     {basicInfo.symbol ?
                         <div className="h-100">
                             <TickerSummary basicInfo={basicInfo} />
-                            <div className="h-75">
+                            <div style={{ maxWidth: '30rem', height: '20rem' }}>
                                 <TradingViewWidget
                                     symbol={basicInfo.symbol}
                                     autosize
@@ -220,7 +219,7 @@ export default function StrategyComposer() {
                         null
                     }
                 </Col>
-                <Col lg="8">
+                <Col md="7">
                     {(!selectedStrategy) ?
                         <Row className="mb-3">
                             <Col className="d-flex justify-content-center">
@@ -334,22 +333,22 @@ export default function StrategyComposer() {
                                     </Col>
                                 </Row>
                             }
+                            <Row style={{ marginTop: '1rem' }}>
+                                <Col>
+                                    <Spinner hidden={!loadingStrategyDetails} animation="grow" role="status">
+                                        <span className="sr-only"></span>
+                                    </Spinner>
+                                    {strategyDetails ?
+                                        <TradeDetailsCard
+                                            trade={strategyDetails}
+                                        />
+                                        :
+                                        <Alert hidden={!ruleMessage} variant='danger' onClose={() => setRuleMessage("")} dismissible>{ruleMessage}</Alert>
+                                    }
+                                </Col>
+                            </Row>
                         </Col>
                     </Row>
-                </Col>
-            </Row>
-            <Row>
-                <Col>
-                    <Spinner hidden={!loadingStrategyDetails} animation="grow" role="status">
-                        <span className="sr-only"></span>
-                    </Spinner>
-                    {strategyDetails ?
-                        <TradeDetailsCard
-                            trade={strategyDetails}
-                        />
-                        :
-                        <Alert hidden={!ruleMessage} variant='danger' onClose={() => setRuleMessage("")} dismissible>{ruleMessage}</Alert>
-                    }
                 </Col>
             </Row>
         </Container>

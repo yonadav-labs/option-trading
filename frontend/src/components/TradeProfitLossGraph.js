@@ -5,10 +5,15 @@ import { Button, Row, Col } from "react-bootstrap";
 
 export default function TradeProfitLossGraph(props) {
     const { trade } = props;
-
-    let annotationValues = [trade.break_even_price, trade.target_price_lower, trade.target_price_upper, trade.stock.stock_price]
-    let xMin = Math.min(...annotationValues) * 0.9;
-    let xMax = Math.max(...annotationValues) * 1.1;
+    let priceMarks = [trade.break_even_price, trade.stock.stock_price]
+    if (trade.target_price_lower !== null) {
+        priceMarks.push(trade.target_price_lower);
+    }
+    if (trade.target_price_upper !== null) {
+        priceMarks.push(trade.target_price_upper);
+    }
+    let xMin = Math.min(...priceMarks) * 0.9;
+    let xMax = Math.max(...priceMarks) * 1.1;
     let lowerTargetAnnotation = {}
     let upperTargetAnnotation = {}
     let data = [];
@@ -21,7 +26,7 @@ export default function TradeProfitLossGraph(props) {
     });
 
     // set annotations for target price if the exist
-    if (trade.target_price_lower !== null && trade.target_price_upper !== null) {
+    if (trade.target_price_lower !== null) {
         lowerTargetAnnotation = {
             color: "blue",
             dashStyle: "dash",
@@ -37,6 +42,8 @@ export default function TradeProfitLossGraph(props) {
             },
             zIndex: 100,
         };
+    }
+    if (trade.target_price_upper !== null) {
         upperTargetAnnotation = {
             color: "blue",
             dashStyle: "dash",
