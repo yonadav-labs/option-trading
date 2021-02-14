@@ -73,7 +73,7 @@ export default function TradeProfitLossGraph(props) {
             panKey: "shift",
         },
         title: {
-            text: "Profit/Loss Graph",
+            text: "Profit/Loss at expiry",
         },
         subtitle: {
             text: "Click and drag to zoom in. Hold down shift key to pan.",
@@ -128,7 +128,7 @@ export default function TradeProfitLossGraph(props) {
         },
         yAxis: {
             title: {
-                text: "Profit/Loss",
+                text: "Profit/Loss at expiry",
             },
             labels: {
                 format: "${value}",

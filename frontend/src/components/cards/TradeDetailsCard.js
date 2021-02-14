@@ -1,5 +1,5 @@
 import React from 'react';
-import {Card, Badge, Row, Col} from 'react-bootstrap';
+import { Card, Badge, Row, Col } from 'react-bootstrap';
 import ShareTradeBtn from '../ShareTradeBtn.js';
 import { PriceFormatter, ProfitFormatter, PercentageFormatter } from '../../utils';
 import LegDetailsCard from './LegDetailsCard.js';
@@ -20,28 +20,28 @@ export default function TradeDetailsCard(props) {
                 <Card.Text>
                     {trade.target_price_lower ?
                         (<Row>
-                            <Col sm="6">
+                            <Col sm="3" xs="6">
                                 <Badge variant="secondary">Target Price Range</Badge>
-                                <br/>
+                                <br />
                                 {PriceFormatter(trade.target_price_lower)}({ProfitFormatter(trade.to_target_price_lower_ratio)})
                                 - {PriceFormatter(trade.target_price_upper)}({ProfitFormatter(trade.to_target_price_upper_ratio)})
                             </Col>
-                            <Col sm="6">
+                            <Col sm="3" xs="6">
                                 <Badge variant="secondary">Hypothetical Profit</Badge>
-                                <br/> 
+                                <br />
                                 {PriceFormatter(trade.target_price_profit)} ({ProfitFormatter(trade.target_price_profit_ratio)})
                             </Col>
                         </Row>) : null}
 
                     <Row>
-                        <Col sm="6">
-                            <Badge variant="secondary">Break-Even At</Badge> 
-                            <br/>
+                        <Col sm="3" xs="6">
+                            <Badge variant="secondary">Break-Even At</Badge>
+                            <br />
                             {PriceFormatter(trade.break_even_price)} ({ProfitFormatter(trade.to_break_even_ratio)})
                         </Col>
-                        <Col sm="6">
+                        <Col sm="3" xs="6">
                             <Badge variant="secondary">Profit Limit</Badge>
-                            <br/>
+                            <br />
                             {trade.profit_cap != null ?
                                 (
                                     <span>
@@ -50,19 +50,15 @@ export default function TradeDetailsCard(props) {
                                 )
                                 : (<span>Unlimited</span>)}
                         </Col>
-
-                    </Row>
-                    <Row>
-                        <Col sm="6">
-                            <Badge variant="secondary">Cost / Max Loss</Badge> 
-                            <br/>
+                        <Col sm="3" xs="6">
+                            <Badge variant="secondary">Cost / Max Loss</Badge>
+                            <br />
                             {PriceFormatter(trade.cost)}
                         </Col>
+                        <Col sm="3" xs="6"></Col>
                     </Row>
                     <br />
-                    <div>
-                        <TradeProfitLossGraph trade={trade}/>
-                    </div>
+                    <TradeProfitLossGraph trade={trade} />
                     <Card.Title>Details</Card.Title>
                     {
                         trade.legs.map((leg, index) => {
