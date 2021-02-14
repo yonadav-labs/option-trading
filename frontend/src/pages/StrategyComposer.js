@@ -15,6 +15,8 @@ import LegCardDetails from '../components/LegCardDetails';
 import { useOktaAuth } from '@okta/okta-react/src/OktaContext';
 import TradeDetailsCard from '../components/cards/TradeDetailsCard';
 import TradingViewWidget from 'react-tradingview-widget';
+import { useLocation } from 'react-router-dom';
+import { useSearch } from '../components/querying';
 
 // export function useHorizontalScroll() {
 //     const elRef = useRef();
@@ -51,6 +53,8 @@ export default function StrategyComposer() {
     const [loadingStrategyDetails, setLoadingStrategyDetails] = useState(false);
     const API_URL = getApiUrl();
     const { authState } = useOktaAuth();
+    const location = useLocation();
+    const querySymbol = useSearch(location, 'symbol');
     const operators = {
         "<": (a, aProperty, b, bProperty) => { return get(a, aProperty) < get(b, bProperty) },
         "<=": (a, aProperty, b, bProperty) => { return get(a, aProperty) <= get(b, bProperty) },
@@ -181,6 +185,8 @@ export default function StrategyComposer() {
                 <Col md="4">
                     <Badge variant="secondary">Ticker</Badge>
                     <TickerTypeahead
+                        querySymbol={querySymbol}
+                        selectedTicker={selectedTicker}
                         setSelectedTicker={setSelectedTicker}
                         setExpirationTimestamps={setExpirationTimestamps}
                         setbasicInfo={setbasicInfo}

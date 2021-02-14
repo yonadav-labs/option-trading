@@ -15,6 +15,9 @@ export default function LegCardDetails(props) {
 
     useEffect(async () => {
         const leg = legs[index];
+        setSelectedStrike(0);
+        setStrikes([]);
+        updateLeg("contract", {}, index);
 
         if (leg.type === "option" && leg.action && leg.optionType && leg.expiration) {
             // call api to get option chain
@@ -36,45 +39,49 @@ export default function LegCardDetails(props) {
                 console.error(error);
             }
         }
-    }, [props.legs]);
+    }, [props.legs[props.index].expiration, props.legs[props.index].action, props.legs[props.index].optionType, selectedStrategy]);
 
     const onStrikeSelectChange = (option) => {
         setSelectedStrike(option);
         updateLeg("contract", option ? contracts.filter((val) => val.strike === option.value)[0] : {}, index);
     }
 
+    const onExpirationChange = (event) => {
+        updateLeg("expiration", event.target.value, index);
+    }
+
     switch (legs[index].type) {
         case "option":
             return (
                 <>
-                    <Row>
+                    <Row className="mb-3">
                         <Col>
                             <Form>
                                 <Form.Row>
-                                    <Col sm="3" xs="6">
+                                    <Col sm="2" xs="3">
                                         <Badge variant="secondary">Position</Badge>
                                         <Form.Control as="select" value={legs[index].action} onChange={(e) => updateLeg("action", e.target.value, index)} disabled={selectedStrategy.legs[index].action}>
                                             <option value="long" key="long">Long</option>
                                             <option value="short" key="short">Short</option>
                                         </Form.Control>
                                     </Col>
-                                    <Col sm="3" xs="6">
+                                    <Col sm="2" xs="3">
                                         <Badge variant="secondary">Option Type</Badge>
                                         <Form.Control as="select" value={legs[index].optionType} onChange={(e) => updateLeg("optionType", e.target.value, index)} disabled={selectedStrategy.legs[index].optionType}>
                                             <option value="call" key="call">Call</option>
                                             <option value="put" key="put">Put</option>
                                         </Form.Control>
                                     </Col>
-                                    <Col sm="3" xs="6">
+                                    <Col sm="4" xs="6">
                                         <Badge variant="secondary">Expiration Date</Badge>
-                                        <Form.Control as="select" value={legs[index].expiration || 0} onChange={(e) => updateLeg("expiration", e.target.value, index)} disabled={selectedStrategy.legs[index].expiration}>
+                                        <Form.Control as="select" value={legs[index].expiration || 0} onChange={(e) => onExpirationChange(e)} disabled={selectedStrategy.legs[index].expiration}>
                                             {expirationTimestamps.map(val => {
                                                 return (<option value={val} key={val}>{new Date(val < 9999999999 ? val * 1000 : val).toLocaleDateString()}</option>);
                                             })}
                                             <option disabled value={0} key="blank">Select an expiration</option>
                                         </Form.Control>
                                     </Col>
-                                    <Col sm="3" xs="6">
+                                    <Col sm="4" xs="12">
                                         <Badge variant="secondary">Strike</Badge>
                                         <Select
                                             className="basic-single"
