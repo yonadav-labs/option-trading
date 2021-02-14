@@ -10,7 +10,7 @@ import filterFactory, { multiSelectFilter, numberFilter, Comparator } from 'reac
 import { BsArrowsExpand, BsArrowsCollapse } from 'react-icons/bs';
 
 import getApiUrl, {
-    PriceFormatter, TimestampDateFormatter, onLastTradedFilterChange,
+    PriceFormatter, PercentageFormatter, TimestampDateFormatter, onLastTradedFilterChange,
     PriceMovementFormatter, getTradeStrikeStr, getTradeTypeDisplay, getAllTradeTypes
 } from '../utils';
 import TickerTypeahead from '../components/TickerTypeahead';
@@ -82,7 +82,12 @@ export default function BestCallByPrice() {
             hidden: targetPriceLower == null,
             formatter: (cell, row, rowIndex, extraData) => {
                 if (cell != null) {
-                    return (<span>{PriceMovementFormatter(cell, row.target_price_profit)}</span>);
+                    return (
+                        <span>
+                            {cell >= 0 ? '+' : '-'}{PercentageFormatter(Math.abs(cell))}<br />
+                            <small>{PriceFormatter(row.target_price_profit)}</small>
+                        </span >
+                    );
                 } else {
                     return (<span></span>);
                 }
@@ -94,8 +99,9 @@ export default function BestCallByPrice() {
             text: "Break-even",
             formatter: (cell, row, rowIndex, extraData) => (
                 <span>
-                    At {PriceMovementFormatter(cell, row.break_even_price)}
-                </span>
+                    {cell >= 0 ? '+' : '-'}{PercentageFormatter(Math.abs(cell))}<br />
+                    <small>At {PriceFormatter(row.break_even_price)}</small>
+                </span >
             ),
             sort: true,
             headerSortingStyle,
@@ -112,7 +118,12 @@ export default function BestCallByPrice() {
             text: "Max profit",
             formatter: (cell, row, rowIndex, extraData) => (
                 cell != null ?
-                    (<span>{PriceMovementFormatter(cell, row.profit_cap)}</span>) : (<span>Unlimited</span>)
+                    (
+                        <span>
+                            {cell >= 0 ? '+' : '-'}{PercentageFormatter(Math.abs(cell))}<br />
+                            <small>{PriceFormatter(row.profit_cap)}</small>
+                        </span >
+                    ) : (<span>Unlimited</span>)
             ),
             sort: true,
             headerSortingStyle,
