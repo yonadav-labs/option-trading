@@ -4,7 +4,7 @@ import { MdTrendingFlat, MdArrowUpward, MdArrowDownward, MdShowChart } from 'rea
 import 'react-bootstrap-typeahead/css/Typeahead.css';
 import './StrategyComposer.css';
 import { strategies } from '../blobs/Strategies';
-import { cloneDeep, constant, get, isEmpty, throttle } from 'lodash';
+import { cloneDeep, constant, get, isEmpty, property, throttle } from 'lodash';
 import TickerTypeahead from '../components/TickerTypeahead';
 import ModalSpinner from '../components/ModalSpinner';
 import TickerSummary from '../components/TickerSummary';
@@ -38,9 +38,19 @@ import { useSearch } from '../components/querying';
 // }
 
 export default function StrategyComposer() {
+    const premiumPriceOptions = [{ value: "market", label: "Market price" }, { value: "mid", label: "Mid/Mark price" }];
+    const operators = {
+        "<": (a, aProperty, b, bProperty) => { return get(a, aProperty) < get(b, bProperty) },
+        "<=": (a, aProperty, b, bProperty) => { return get(a, aProperty) <= get(b, bProperty) },
+        ">": (a, aProperty, b, bProperty) => { return get(a, aProperty) > get(b, bProperty) },
+        ">=": (a, aProperty, b, bProperty) => { return get(a, aProperty) >= get(b, bProperty) },
+        "*": (a, aProperty, aPropertyDefaultVal, b, bProperty, bPropertyDefaultVal) => { return get(a, aProperty, aPropertyDefaultVal) * get(b, bProperty, bPropertyDefaultVal) },
+        "-": (a, aProperty, aPropertyDefaultVal, b, bProperty, bPropertyDefaultVal) => { return get(a, aProperty, aPropertyDefaultVal) - get(b, bProperty, bPropertyDefaultVal) }
+    }
+
     const [inputText, setInputText] = useState("");
     const [selectedTicker, setSelectedTicker] = useState("");
-    const [selectedPremiumType, setSelectedPremiumType] = useState({ value: "market", label: "Market" });
+    const [selectedPremiumType, setSelectedPremiumType] = useState(premiumPriceOptions[0]);
     const [selectedStrategy, setSelectedStrategy] = useState(null);
     const [legs, setLegs] = useState([]);
     const [basicInfo, setbasicInfo] = useState({});
@@ -55,13 +65,6 @@ export default function StrategyComposer() {
     const { authState } = useOktaAuth();
     const location = useLocation();
     const querySymbol = useSearch(location, 'symbol');
-    const operators = {
-        "<": (a, aProperty, b, bProperty) => { return get(a, aProperty) < get(b, bProperty) },
-        "<=": (a, aProperty, b, bProperty) => { return get(a, aProperty) <= get(b, bProperty) },
-        ">": (a, aProperty, b, bProperty) => { return get(a, aProperty) > get(b, bProperty) },
-        ">=": (a, aProperty, b, bProperty) => { return get(a, aProperty) >= get(b, bProperty) },
-        "*": (obj, property, num) => { return get(obj, property) * num }
-    }
 
     const applyStrategy = (strategy) => {
         setStrategyDetails(null);
@@ -80,24 +83,26 @@ export default function StrategyComposer() {
             // set value for all legs
             setLegs(prevState => {
                 const newState = prevState.map(val => { val[key] = value; return val });
-                if (prevState[index][key]) {
-                    // console.log(prevState[index][key]);
-                    enforceRules(selectedStrategy.rules, newState);
-                }
-                // calculate relationships
-                selectedStrategy.relationships.map(relation => newState[relation.legAIndex][relation.legAProperty] = operators[relation.operator](newState[relation.legBIndex], relation.legBProperty, relation.constant));
-                return newState;
+                return checkRulesAndRelationships(prevState, newState, index, key);
             });
         } else {
             setLegs(prevState => {
                 const newState = [...prevState.slice(0, index), { ...prevState[index], [key]: value }, ...prevState.slice(index + 1)];
-                if (prevState[index][key]) {
-                    enforceRules(selectedStrategy.rules, newState);
-                }
-                selectedStrategy.relationships.map(relation => newState[relation.legAIndex][relation.legAProperty] = operators[relation.operator](newState[relation.legBIndex], relation.legBProperty, relation.constant));
-                return newState;
+                return checkRulesAndRelationships(prevState, newState, index, key);
             });
         }
+        setStrategyDetails(null);
+    }
+
+    const checkRulesAndRelationships = (prevState, newState, index, key) => {
+        if (prevState[index][key]) {
+            enforceRules(selectedStrategy.rules, newState);
+        }
+        selectedStrategy.relationships.map(relation => {
+            const operation = operators[relation.operator];
+            newState[relation.legAIndex][relation.legAProperty] = operation(newState[relation.legBIndex], relation.legBProperty, relation.legBPropertyDefaultVal, newState[relation.legCIndex], relation.legCProperty, relation.legCPropertyDefaultVal);
+        });
+        return newState;
     }
 
     const enforceRules = (rules, legs) => {
@@ -321,13 +326,13 @@ export default function StrategyComposer() {
                                                     return null;
                                             }
                                         })}
-                                        <Col lg="3" className="mb-3">
-                                            <Badge variant="secondary">Premium Price</Badge>
+                                        <Col lg="4" className="mb-3">
+                                            <Badge variant="secondary">Premium Price to Use</Badge>
                                             <Select
                                                 className="basic-single"
                                                 isSearchable
                                                 isClearable
-                                                options={[{ value: "market", label: "Market order price" }, { value: "Mid/Mark price", label: "Mid" }]}
+                                                options={premiumPriceOptions}
                                                 placeholder="Premium type..."
                                                 value={selectedPremiumType}
                                                 onChange={(val) => setSelectedPremiumType(val)}

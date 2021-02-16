@@ -84,20 +84,26 @@ class Relation {
     operator = '';
     legBIndex = 0;
     legBProperty = '';
-    constant = 0;
+    legBPropertyDefaultVal = null;
+    legCIndex = 0;
+    legCProperty = '';
+    legCPropertyDefaultVal = null;
 
-    constructor(legAIndex, legAProperty, operator, legBIndex, legBProperty, constant) {
+    constructor(legAIndex, legAProperty, operator, legBIndex, legBProperty, legBPropertyDefaultVal, legCIndex, legCProperty, legCPropertyDefaultVal) {
         this.legAIndex = legAIndex;
         this.legAProperty = legAProperty;
         this.operator = operator;
         this.legBIndex = legBIndex;
         this.legBProperty = legBProperty;
-        this.constant = constant;
+        this.legbPropertyDefaultVal = legBPropertyDefaultVal;
+        this.legCIndex = legCIndex;
+        this.legCProperty = legCProperty;
+        this.legCPropertyDefaultVal = legCPropertyDefaultVal;
     }
 
 }
 
-export const strategies = [    
+export const strategies = [
     new Strategy(
         {
             name: "Long Call",
@@ -115,25 +121,25 @@ export const strategies = [
         }
     ),
     new Strategy({
-            name: "Covered Call",
-            description: "Receive a premium to allow your shares of the stock to be sold at the strike price until the expiration",
-            sentiment: ["flat, bear"],
-            legs: [
-                new OptionLeg(
-                    {
-                        action: "short",
-                        expiration: 0,
-                        optionType: "call"
-                    }
-                ),
-                new StockLeg(
-                    {
-                        ticker: "",
-                        shares: 100
-                    }
-                )
-            ]
-        }
+        name: "Covered Call",
+        description: "Receive a premium to allow your shares of the stock to be sold at the strike price until the expiration",
+        sentiment: ["flat, bear"],
+        legs: [
+            new OptionLeg(
+                {
+                    action: "short",
+                    expiration: 0,
+                    optionType: "call"
+                }
+            ),
+            new StockLeg(
+                {
+                    ticker: "",
+                    shares: 100
+                }
+            )
+        ]
+    }
     ),
     new Strategy(
         {
@@ -156,7 +162,7 @@ export const strategies = [
             name: "Cash Secured Put",
             description: "Receive a premium to allow your cash to be exchanged for shares of the stock at the strike price until the expiration",
             sentiment: ["flat, bull"],
-            relationships: [new Relation(1, "value", "*", 0, "contract.strike", 100)],
+            relationships: [new Relation(1, "value", "*", 0, "contract.strike", null, null, null, 100)],
             legs: [
                 new OptionLeg(
                     {
@@ -205,6 +211,10 @@ export const strategies = [
             sentiment: ["bear", "flat"],
             linkedProperties: ["expiration"],
             rules: [new Rule(0, "contract.strike", ">", 1, "contract.strike")],
+            relationships: [
+                new Relation(2, "value", "-", 0, "contract.strike", null, 1, "contract.strike", null),
+                new Relation(2, "value", "*", 2, "value", null, null, null, 100)
+            ],
             legs: [
                 new OptionLeg(
                     {
@@ -218,6 +228,11 @@ export const strategies = [
                         action: "short",
                         expiration: 0,
                         optionType: "call"
+                    }
+                ),
+                new CashLeg(
+                    {
+                        value: 0
                     }
                 )
             ]
@@ -255,6 +270,10 @@ export const strategies = [
             sentiment: ["bull", "flat"],
             linkedProperties: ["expiration"],
             rules: [new Rule(0, "contract.strike", "<", 1, "contract.strike")],
+            relationships: [
+                new Relation(2, "value", "-", 1, "contract.strike", null, 0, "contract.strike", null),
+                new Relation(2, "value", "*", 2, "value", null, null, null, 100)
+            ],
             legs: [
                 new OptionLeg(
                     {
@@ -268,6 +287,11 @@ export const strategies = [
                         action: "short",
                         expiration: 0,
                         optionType: "put"
+                    }
+                ),
+                new CashLeg(
+                    {
+                        value: 0
                     }
                 )
             ]
