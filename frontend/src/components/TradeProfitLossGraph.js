@@ -1,7 +1,7 @@
 import React from "react";
 import Highcharts from "highcharts";
 import HighchartsReact from "highcharts-react-official";
-import { Button, Row, Col } from "react-bootstrap";
+import { Row, Col } from "react-bootstrap";
 
 export default function TradeProfitLossGraph(props) {
     const { trade } = props;
@@ -67,7 +67,7 @@ export default function TradeProfitLossGraph(props) {
             enabled: false
         },
         chart: {
-            type: "line",
+            type: "area",
             zoomType: "xy",
             panning: true,
             panKey: "shift",
@@ -154,10 +154,33 @@ export default function TradeProfitLossGraph(props) {
                 marker: {
                     enabled: false,
                 },
-                color: "#00ff50",
-                negativeColor: "#ff0050",
+                color: {
+                    // change x gradient based on +/- slope
+                    linearGradient: {
+                        x1: 0,
+                        x2: 0,
+                        y1: 0,
+                        y2: 1
+                    },
+                    stops: [
+                        [0, Highcharts.color("#008000").setOpacity(0.5).get('rgba')],
+                        [1, Highcharts.color("#008000").setOpacity(0.01).get('rgba')],
+                    ]
+                },
+                negativeColor: {
+                    linearGradient: {
+                        x1: 0,
+                        x2: 0,
+                        y1: 1,
+                        y2: 0
+                    },
+                    stops: [
+                        [0, Highcharts.color("#FF0000").setOpacity(0.5).get('rgba')],
+                        [1, Highcharts.color("#FF0000").setOpacity(0.01).get('rgba')],
+                    ]
+                }
             },
-        ],
+        ]
     };
 
     return (
