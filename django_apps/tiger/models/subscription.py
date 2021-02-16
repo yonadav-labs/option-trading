@@ -39,20 +39,6 @@ class Subscription(BaseModel):
         response.raise_for_status()
         return response
 
-    def get_status(self):
-        # if an hour has passed since last check call paypal to update status
-        if ((get_now() - self.last_checked).total_seconds() / 3600 > 1) or self.status == '':
-            # call paypal api get subscription status
-            try:
-                response = self.get_detail()
-                if response.status_code == 200:
-                    self.status = response.json().get("status")
-                    self.last_checked = get_now()
-                    self.save()
-            except requests.exceptions.RequestException as e:
-                raise e
-        return self.status
-
     def cancel(self, reason):
         # make api call to cancel subscription
         data = {"reason": reason}
@@ -61,11 +47,8 @@ class Subscription(BaseModel):
                 f'{settings.PAYPAL_ENDPOINT}/v1/billing/subscriptions/{self.paypal_subscription_id}/cancel',
                 data=json.dumps(data), headers=self.get_paypal_headers())
             response.raise_for_status()
-            if response.status_code == 204:
-                self.status = 'INACTIVE'
-                self.last_checked = get_now()
-                self.cancellation_reason = reason
-                self.save()
+            self.cancellation_reason = reason
+            self.save()
         except requests.exceptions.RequestException as e:
             raise e
         return self.status

@@ -5,7 +5,7 @@ import { useOktaAuth } from '@okta/okta-react';
 import { useHistory } from 'react-router-dom';
 import { getPaypalPlanId } from '../utils';
 
-export default function Subscribe() {
+export default function Subscribe({username}) {
     const { authState, authService } = useOktaAuth();
     const API_URL = getApiUrl();
     const history = useHistory();
@@ -15,6 +15,11 @@ export default function Subscribe() {
             'plan_id': getPaypalPlanId(),
             application_context: {
                 shipping_preference: 'NO_SHIPPING'
+            },
+            subscriber: {
+                name: {
+                    surname: username
+                }
             }
         });
     };
@@ -24,30 +29,7 @@ export default function Subscribe() {
     const paypalOnApprove = (data, detail) => {
         // call the backend api to store transaction details
         console.log("Payapl approved");
-        console.log(data, detail);
-        const { accessToken } = authState;
-        fetch(`${API_URL}/subscription/update`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                Authorization: `Bearer ${accessToken}`,
-            },
-            body: JSON.stringify(data)
-        })
-            .then((response) => {
-                if (!response.ok) {
-                    return Promise.reject();
-                }
-                return response.json();
-            })
-            .then((data) => {
-                // console.log(data);
-                history.go(0);
-            })
-            .catch((err) => {
-                /* eslint-disable no-console */
-                console.error(err);
-            });
+        history.go(0);
     };
 
     return (

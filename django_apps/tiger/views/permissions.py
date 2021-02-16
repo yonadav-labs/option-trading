@@ -8,6 +8,6 @@ class IsSubscribed(permissions.BasePermission):
             subscription = request.user.get_subscription()
 
             if subscription:
-                return subscription.get_status() == 'ACTIVE'
+                return subscription.status == 'ACTIVE'
 
         return False

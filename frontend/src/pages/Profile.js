@@ -107,7 +107,7 @@ const Profile = () => {
           <Modal.Title>Subscribe</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <Subscribe></Subscribe>
+          <Subscribe username={user.username}></Subscribe>
         </Modal.Body>
       </Modal>
 

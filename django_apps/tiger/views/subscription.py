@@ -3,20 +3,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import status
 
-
-@api_view(['POST'])
-@permission_classes([IsAuthenticated])
-def update_subscription(request):
-    if request.method == 'POST':
-        subscription_id = request.data.get("subscriptionID")
-        if not subscription_id:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
-
-        subscription, created = request.user.subscriptions.update_or_create(
-            paypal_subscription_id=subscription_id)
-        r = subscription.get_status()
-
-        return Response(r)
+from tiger.models import User, Subscription
 
 
 @api_view(['POST'])
@@ -27,6 +14,49 @@ def cancel_subscription(request):
         if not subscription:
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
-        new_status = subscription.cancel(request.data.get("reason"))
+        new_status = subscription.cancel(request.data.get('reason'))
 
         return Response(new_status)
+
+
+@api_view(['POST'])
+def hook_create_subscription(request):
+    if request.method == 'POST':
+        try:
+            subscription_id = request.data['resource']['id']
+            username = request.data['resource']['subscriber']['name']['surname']
+
+            user = User.objects.get(username=username)
+            user.subscriptions.create(paypal_subscription_id=subscription_id)
+
+            return Response()
+        except Exception as e:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['POST'])
+def hook_activate_subscription(request):
+    if request.method == 'POST':
+        try:
+            subscription_id = request.data['resource']['id']
+            subscription = Subscription.objects.get(paypal_subscription_id=subscription_id)
+            subscription.status = 'ACTIVE'
+            subscription.save()
+
+            return Response()
+        except Exception as e:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['POST'])
+def hook_cancel_subscription(request):
+    if request.method == 'POST':
+        try:
+            subscription_id = request.data['resource']['id']
+            subscription = Subscription.objects.get(paypal_subscription_id=subscription_id)
+            subscription.status = 'INACTIVE'
+            subscription.save()
+
+            return Response()
+        except Exception as e:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
