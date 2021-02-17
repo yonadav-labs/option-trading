@@ -40,8 +40,8 @@ export default function Home() {
                         <div className="center-buttons">
                             {/* <a class="btn btn-lg btn-primary mr-3" href="signin/register" role="button">Sign Up, It’s Free</a>
                             <a class="btn btn-lg btn-secondary ml-3" href="#" role="button">Our Product</a> */}
-                            <Link className="btn btn-lg btn-secondary ml-3" to="/strategy-screener" role="button">Strategy Screener</Link>
-                            <Link className="btn btn-lg btn-primary mr-3" to="/option-screener" role="button">Option Screener</Link>
+                            <Link className="btn btn-lg btn-primary ml-3" to="/strategy-screener" role="button">Strategy Screener</Link>
+                            <Link className="btn btn-lg btn-secondary mr-3" to="/option-screener" role="button">Option Screener</Link>
                         </div>
                     </div>
                 </div>
