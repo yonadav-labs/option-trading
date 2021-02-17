@@ -234,7 +234,7 @@ export default function StrategyComposer() {
                     {(!selectedStrategy) ?
                         <Row className="mb-3">
                             <Col className="d-flex justify-content-center">
-                                <ToggleButtonGroup type="radio" name="options" defaultValue={sentiment} size="lg" onChange={(e) => setSentiment(e)}>
+                                <ToggleButtonGroup type="radio" name="options" style={{zIndex:0}} defaultValue={sentiment} size="lg" onChange={(e) => setSentiment(e)}>
                                     <ToggleButton variant="secondary" value={"all"}>all</ToggleButton>
                                     <ToggleButton variant="secondary" value={"bull"}><MdArrowUpward /></ToggleButton>
                                     <ToggleButton variant="secondary" value={"bear"}><MdArrowDownward /></ToggleButton>
