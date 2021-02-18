@@ -1,17 +1,20 @@
-import React from "react";
+import React, {useState, useRef} from "react";
 import Highcharts from "highcharts";
 import HighchartsReact from "highcharts-react-official";
-import { Row, Col } from "react-bootstrap";
+import { Row, Col, Button } from "react-bootstrap";
 
 export default function TradeProfitLossGraph(props) {
     const { trade } = props;
-    let priceMarks = [trade.break_even_price, trade.stock.stock_price];
+    const chartComponent = useRef(null);
+    
+    let priceMarks = [trade.break_even_price, trade.stock.stock_price]
     if (trade.target_price_lower !== null) {
         priceMarks.push(trade.target_price_lower);
     }
     if (trade.target_price_upper !== null) {
         priceMarks.push(trade.target_price_upper);
     }
+
     let xMin = Math.min(...priceMarks) * 0.9;
     let xMax = Math.max(...priceMarks) * 1.1;
     let lowerTargetAnnotation = {};
@@ -76,6 +79,52 @@ export default function TradeProfitLossGraph(props) {
         };
     }
 
+    // FUNCTIONS FOR BUTTONS
+    const resetZoom = () => {
+        if (chartComponent.current) {
+            chartComponent.current.chart.xAxis[0].setExtremes();
+            chartComponent.current.chart.yAxis[0].setExtremes();
+        }
+    };
+    
+    const zoomOut = () => {
+        if (chartComponent.current) {
+            let zoom = chartComponent.current.chart.xAxis[0].getExtremes();
+            let zoomMin = zoom.min
+            let zoomMax = zoom.max
+            if (zoomMin < trade.stock.stock_price * 0.1) {
+                zoomMin = 0
+            } else {
+                zoomMin = zoomMin - trade.stock.stock_price * 0.1
+            }
+            if (zoomMax > trade.stock.stock_price * 1.9) {
+                zoomMax = trade.stock.stock_price * 2
+            } else {
+                zoomMax = zoomMax + trade.stock.stock_price * 0.1
+            }
+
+            chartComponent.current.chart.xAxis[0].setExtremes(zoomMin, zoomMax);
+        }
+    };
+
+    const zoomIn = () => {
+        if (chartComponent.current) {
+            let zoom = chartComponent.current.chart.xAxis[0].getExtremes();
+            let zoomMin = zoom.min
+            let zoomMax = zoom.max
+            if (zoomMin < trade.stock.stock_price * 0.9) {
+                zoomMin = zoomMin + trade.stock.stock_price * 0.1
+            } 
+            if (zoomMax > trade.stock.stock_price * 1.1) {
+                zoomMax = zoomMax - trade.stock.stock_price * 0.1
+            } 
+
+            chartComponent.current.chart.xAxis[0].setExtremes(zoomMin, zoomMax);
+        }
+    };
+    // END OF FUNCTIONS FOR BUTTONS
+
+
     // chart options
     const options = {
         credits: {
@@ -83,9 +132,14 @@ export default function TradeProfitLossGraph(props) {
         },
         chart: {
             type: "area",
-            zoomType: "xy",
+            zoomType: "x",
             panning: true,
             panKey: "shift",
+            resetZoomButton: {
+                theme: {
+                    display: 'none'
+                }
+            }
         },
         title: {
             text: "Profit/Loss at expiry",
@@ -253,7 +307,14 @@ export default function TradeProfitLossGraph(props) {
     return (
         <Row className="row justify-content-center">
             <Col className="mixed-chart">
-                <HighchartsReact highcharts={Highcharts} options={options} />
+                <Button style={{position:'relative', top:50, left:100, zIndex:100}} onClick={zoomOut}>-</Button>
+                <Button style={{position:'relative', top:50, left:102, zIndex:100}} onClick={zoomIn}>+</Button>
+                <Button style={{position:'relative', top:50, zIndex:100}} className="float-right" onClick={resetZoom}>Reset Zoom</Button>
+                <HighchartsReact 
+                    ref={chartComponent}
+                    highcharts={Highcharts} 
+                    options={options} 
+                />
             </Col>
         </Row>
     );
