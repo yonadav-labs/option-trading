@@ -50,3 +50,7 @@
 .scrolling-wrapper-flexbox::-webkit-scrollbar {
     display: none;
 }
+
+.z0 {
+  z-index: 0 !important;
+}
