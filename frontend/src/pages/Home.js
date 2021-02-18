@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import { Link } from "react-router-dom";
 import { Row, Col } from 'react-bootstrap';
 import './Home.css';
@@ -22,7 +22,7 @@ export default function Home() {
             case 'trade select':
                 setPictureState('slider4.png')
                 break;
-        
+
             default:
                 break;
         }
@@ -33,21 +33,19 @@ export default function Home() {
             <div className="container-fluid">
                 {/* <img src={HeroRight} alt="hero-right" /> */}
                 <Row className="mt-5 mb-5 mx-3 top-container">
-                <div className="col-md-6 top-left">
-                    <div className="text-center my-auto">
-                        <h1>We do the math, so you don't have to.</h1>
-                        <h4>Find your next options trading opportunity in one glance.</h4>
-                        <div className="center-buttons">
-                            {/* <a class="btn btn-lg btn-primary mr-3" href="signin/register" role="button">Sign Up, It’s Free</a>
-                            <a class="btn btn-lg btn-secondary ml-3" href="#" role="button">Our Product</a> */}
-                            <Link className="btn btn-lg btn-primary ml-3" to="/strategy-screener" role="button">Strategy Screener</Link>
-                            <Link className="btn btn-lg btn-secondary mr-3" to="/option-screener" role="button">Option Screener</Link>
+                    <div className="col-md-6 top-left">
+                        <div className="text-center my-auto">
+                            <h1>We do the math, so you don't have to.</h1>
+                            <h4>Find your next options trading opportunity in one glance.</h4>
+                            <div className="center-buttons">
+                                <Link className="btn btn-lg btn-primary ml-3" to="/strategy-screener" role="button">Strategy Screener</Link>
+                                <Link className="btn btn-lg btn-secondary mr-3" to="/strategy-composer" role="button">Strategy Composer</Link>
+                            </div>
                         </div>
                     </div>
-                </div>
-                <div className="col-md-6 top-right">
-                    <img className="ml-5" src="home-person.png"></img>
-                </div>     
+                    <div className="col-md-6 top-right">
+                        <img className="ml-5" src="home-person.png"></img>
+                    </div>
                 </Row>
 
                 <Row className="p-5">
