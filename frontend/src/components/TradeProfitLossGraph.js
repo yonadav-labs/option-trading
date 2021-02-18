@@ -100,6 +100,13 @@ export default function TradeProfitLossGraph(props) {
             type: "numeric",
             min: xMin,
             max: xMax,
+            labels: {
+                formatter: function() {
+                    var percentage = `${((this.value-trade.stock.stock_price)/trade.stock.stock_price * 100).toFixed(2)}%`
+                    var value = `$${this.value}`
+                    return value + '<br/>' + percentage
+                }
+            },
             title: {
                 text: "Stock Price",
             },
@@ -141,23 +148,37 @@ export default function TradeProfitLossGraph(props) {
                 upperTargetAnnotation,
             ],
         },
-        yAxis: {
-            title: {
-                text: "Profit/Loss at expiry",
-            },
-            labels: {
-                format: "${value}",
-            },
-            plotLines: [
-                // annotation for 0
-                {
-                    color: "black",
-                    width: 2,
-                    value: 0,
-                    zIndex: 100,
+        yAxis: [
+            {
+                title: {
+                    text: "$ Value"
                 },
-            ],
-        },
+                labels: {
+                    format: "${value}",
+                },
+                opposite: true,
+                plotLines: [
+                    // annotation for 0
+                    {
+                        color: "black",
+                        width: 2,
+                        value: 0,
+                        zIndex: 100,
+                    },
+                ]
+            },
+            {
+                title: {
+                    text: "Profit/Loss at Expiry",
+                },
+                labels:{
+                    formatter: function() {
+                        return ((this.value/trade.cost)*100).toFixed(2) + ' %';
+                    }
+                },
+                linkedTo:0,
+            },
+        ],
         tooltip: {
             headerFormat: "Stock Price: ${point.x:,.2f} <br/>",
             pointFormat: "Profit/Loss: ${point.y:,.2f}",
