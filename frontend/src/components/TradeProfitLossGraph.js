@@ -5,7 +5,7 @@ import { Row, Col } from "react-bootstrap";
 
 export default function TradeProfitLossGraph(props) {
     const { trade } = props;
-    let priceMarks = [trade.break_even_price, trade.stock.stock_price]
+    let priceMarks = [trade.break_even_price, trade.stock.stock_price];
     if (trade.target_price_lower !== null) {
         priceMarks.push(trade.target_price_lower);
     }
@@ -14,8 +14,8 @@ export default function TradeProfitLossGraph(props) {
     }
     let xMin = Math.min(...priceMarks) * 0.9;
     let xMax = Math.max(...priceMarks) * 1.1;
-    let lowerTargetAnnotation = {}
-    let upperTargetAnnotation = {}
+    let lowerTargetAnnotation = {};
+    let upperTargetAnnotation = {};
     let data = [];
 
     trade.graph_x_points.forEach((x, i) => {
@@ -24,6 +24,21 @@ export default function TradeProfitLossGraph(props) {
         point.y = trade.graph_y_points[i];
         data.push(point);
     });
+
+    // Share profit/loss data
+    let lastPrice = trade.stock.stock_price;
+    let cost = trade.cost;
+    let totalShares = cost / lastPrice;
+    let shareData = [];
+    let shareX = 0;
+    while (shareX < lastPrice * 2) {
+        shareX = shareX + lastPrice * 0.02;
+        let point = {};
+        point.x = shareX;
+        point.y = totalShares * shareX - cost;
+        shareData.push(point);
+    }
+    // share profit/loss end
 
     // set annotations for target price if the exist
     if (trade.target_price_lower !== null) {
@@ -64,7 +79,7 @@ export default function TradeProfitLossGraph(props) {
     // chart options
     const options = {
         credits: {
-            enabled: false
+            enabled: false,
         },
         chart: {
             type: "area",
@@ -79,7 +94,7 @@ export default function TradeProfitLossGraph(props) {
             text: "Click and drag to zoom in. Hold down shift key to pan.",
         },
         legend: {
-            enabled: false,
+            enabled: true,
         },
         xAxis: {
             type: "numeric",
@@ -149,7 +164,6 @@ export default function TradeProfitLossGraph(props) {
         },
         series: [
             {
-                name: "Profit",
                 data: data,
                 marker: {
                     enabled: false,
@@ -160,27 +174,59 @@ export default function TradeProfitLossGraph(props) {
                         x1: 0,
                         x2: 0,
                         y1: 0,
-                        y2: 1
+                        y2: 1,
                     },
                     stops: [
-                        [0, Highcharts.color("#008000").setOpacity(0.5).get('rgba')],
-                        [1, Highcharts.color("#008000").setOpacity(0.01).get('rgba')],
-                    ]
+                        [
+                            0,
+                            Highcharts.color("#008000")
+                                .setOpacity(0.5)
+                                .get("rgba"),
+                        ],
+                        [
+                            1,
+                            Highcharts.color("#008000")
+                                .setOpacity(0.01)
+                                .get("rgba"),
+                        ],
+                    ],
                 },
                 negativeColor: {
                     linearGradient: {
                         x1: 0,
                         x2: 0,
                         y1: 1,
-                        y2: 0
+                        y2: 0,
                     },
                     stops: [
-                        [0, Highcharts.color("#FF0000").setOpacity(0.5).get('rgba')],
-                        [1, Highcharts.color("#FF0000").setOpacity(0.01).get('rgba')],
-                    ]
-                }
+                        [
+                            0,
+                            Highcharts.color("#FF0000")
+                                .setOpacity(0.5)
+                                .get("rgba"),
+                        ],
+                        [
+                            1,
+                            Highcharts.color("#FF0000")
+                                .setOpacity(0.01)
+                                .get("rgba"),
+                        ],
+                    ],
+                },
+                showInLegend: false,
             },
-        ]
+            // line for shares
+            {
+                name: "Profit/Loss of Equal Value of Shares",
+                type: "line",
+                data: shareData,
+                marker: {
+                    enabled: false,
+                },
+                color: "#d3d3d3",
+                description: "Shares",
+            },
+        ],
     };
 
     return (
