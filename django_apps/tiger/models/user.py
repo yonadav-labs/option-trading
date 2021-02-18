@@ -8,6 +8,9 @@ class User(AbstractUser):
     class Meta:
         app_label = 'tiger'
 
+    def __str__(self):
+        return self.email
+
     def get_subscription(self):
         # return the active subscription for the user if exists
         subscription = self.subscriptions.filter(status='ACTIVE').first()

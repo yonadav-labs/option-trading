@@ -18,7 +18,7 @@ class Subscription(BaseModel):
     )
 
     paypal_subscription_id = models.CharField(max_length=200, unique=True)
-    # plan id? plan model?
+    paypal_plan_id = models.CharField(max_length=200, null=True, blank=True)
     status = models.CharField("Subscription status", max_length=200, default='', choices=STATUS_CHOICES)
     last_checked = models.DateTimeField(auto_now_add=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='subscriptions')

@@ -17,9 +17,14 @@ export function getPaypalClientId() {
     return REACT_APP_PAYPAL_CLIENT_ID
 };
 
-export function getPaypalPlanId() {
-    const { REACT_APP_PAYPAL_PLAN_ID } = process.env;
-    return REACT_APP_PAYPAL_PLAN_ID
+export function getPaypalMonthlyPlanId() {
+    const { REACT_APP_PAYPAL_MONTHLY_PLAN_ID } = process.env;
+    return REACT_APP_PAYPAL_MONTHLY_PLAN_ID
+};
+
+export function getPaypalYearlyPlanId() {
+    const { REACT_APP_PAYPAL_YEARLY_PLAN_ID } = process.env;
+    return REACT_APP_PAYPAL_YEARLY_PLAN_ID
 };
 
 export function NumberRoundFormatter(num) {

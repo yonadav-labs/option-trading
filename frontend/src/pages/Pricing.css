@@ -37,6 +37,14 @@
     font-weight: bold;
 }
 
+.btn-login {
+    padding-top: 12px;
+}
+
+.highlighted {
+    border: solid 15px #f90a6cd1 !important;
+}
+
 /* Badge */
 .card-body-right {
     position: relative;

@@ -3,12 +3,10 @@ import React from 'react';
 import { getPaypalClientId } from '../utils';
 
 export default function PayPalBtn(props) {
-    const { amount, currency, createSubscription, onApprove, catchError, onError, onCancel } = props;
+    const { createSubscription, onApprove, catchError, onError, onCancel } = props;
     return (
         // TODO: add venmo.
         <PayPalButton
-            amount={amount}
-            currency={currency}
             createSubscription={(data, details) => createSubscription(data, details)}
             onApprove={(data, details) => onApprove(data, details)}
             onError={(err) => onError(err)}

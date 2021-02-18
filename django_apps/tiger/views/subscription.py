@@ -24,10 +24,14 @@ def hook_create_subscription(request):
     if request.method == 'POST':
         try:
             subscription_id = request.data['resource']['id']
+            plan_id = request.data['resource']['plan_id']
             username = request.data['resource']['subscriber']['name']['surname']
 
             user = User.objects.get(username=username)
-            user.subscriptions.create(paypal_subscription_id=subscription_id)
+            user.subscriptions.create(
+                paypal_subscription_id=subscription_id,
+                paypal_plan_id=plan_id
+            )
 
             return Response()
         except Exception as e:

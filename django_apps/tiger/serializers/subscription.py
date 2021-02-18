@@ -11,4 +11,4 @@ class SubscriptionSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Subscription
-        fields = ('paypal_subscription_id', 'user', 'status', 'last_checked', 'detail')
+        fields = ('paypal_subscription_id', 'paypal_plan_id', 'user', 'status', 'last_checked', 'detail')
