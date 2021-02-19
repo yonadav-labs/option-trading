@@ -197,6 +197,7 @@ export default function StrategyComposer() {
                         setExpirationTimestamps={setExpirationTimestamps}
                         setbasicInfo={setbasicInfo}
                         setModalActive={setModalActive}
+                        resetStates={setSelectedTicker}
                     />
                 </Col>
                 <Col md="7">
