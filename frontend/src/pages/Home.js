@@ -38,8 +38,8 @@ export default function Home() {
                             <h1>We do the math, so you don't have to.</h1>
                             <h4>Find your next options trading opportunity in one glance.</h4>
                             <div className="center-buttons">
-                                <Link className="btn btn-lg btn-primary ml-3" to="/strategy-screener" role="button">Strategy Screener</Link>
-                                <Link className="btn btn-lg btn-secondary mr-3" to="/strategy-composer" role="button">Strategy Composer</Link>
+                                <Link className="btn btn-lg btn-primary ml-3 btn-gradient" to="/strategy-screener" role="button">Strategy Screener</Link>
+                                <Link className="btn btn-lg btn-secondary mr-3 btn-white" to="/strategy-composer" role="button">Strategy Composer</Link>
                             </div>
                         </div>
                     </div>
