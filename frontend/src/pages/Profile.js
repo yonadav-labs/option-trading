@@ -20,7 +20,7 @@ const Profile = () => {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                Authorization: `Bearer ${accessToken}`,
+                Authorization: `Bearer ${accessToken.accessToken}`,
             },
             body: JSON.stringify({ 'reason': reason.current.value !== "" ? "Reason: " + reason.current.value : "User cancelled with no reason" })
         })
@@ -28,7 +28,7 @@ const Profile = () => {
                 if (!response.ok) {
                     return Promise.reject();
                 }
-                return response.json();
+                return response;
             })
             .then((data) => {
                 // console.log(data);

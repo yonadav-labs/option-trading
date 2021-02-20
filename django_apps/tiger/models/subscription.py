@@ -42,13 +42,8 @@ class Subscription(BaseModel):
     def cancel(self, reason):
         # make api call to cancel subscription
         data = {"reason": reason}
-        try:
-            response = requests.post(
-                f'{settings.PAYPAL_ENDPOINT}/v1/billing/subscriptions/{self.paypal_subscription_id}/cancel',
-                data=json.dumps(data), headers=self.get_paypal_headers())
-            response.raise_for_status()
-            self.cancellation_reason = reason
-            self.save()
-        except requests.exceptions.RequestException as e:
-            raise e
-        return self.status
+        url = f'{settings.PAYPAL_ENDPOINT}/v1/billing/subscriptions/{self.paypal_subscription_id}/cancel'
+        response = requests.post(url, data=json.dumps(data), headers=self.get_paypal_headers())
+        response.raise_for_status()
+        self.cancellation_reason = reason
+        self.save()

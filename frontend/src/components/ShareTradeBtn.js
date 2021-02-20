@@ -55,7 +55,7 @@ export default function ShareTradeBtn(props) {
             }
             if (authState.isAuthenticated) {
                 const { accessToken } = authState;
-                headers['Authorization'] = `Bearer ${accessToken}`
+                headers['Authorization'] = `Bearer ${accessToken.accessToken}`
             }
             const response = await Axios.post(url, tradeSnapshot, {
                 headers: headers

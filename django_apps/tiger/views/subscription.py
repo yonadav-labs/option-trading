@@ -1,3 +1,4 @@
+from django.db import transaction
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -14,9 +15,9 @@ def cancel_subscription(request):
         if not subscription:
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
-        new_status = subscription.cancel(request.data.get('reason'))
+        subscription.cancel(request.data.get('reason'))
 
-        return Response(new_status)
+        return Response()
 
 
 @api_view(['POST'])
@@ -44,8 +45,13 @@ def hook_activate_subscription(request):
         try:
             subscription_id = request.data['resource']['id']
             subscription = Subscription.objects.get(paypal_subscription_id=subscription_id)
+            prev_subscription = subscription.user.get_subscription()
             subscription.status = 'ACTIVE'
             subscription.save()
+
+            if prev_subscription:
+                reason = f'Modify plan to {subscription.paypal_subscription_id}'
+                prev_subscription.cancel(reason)
 
             return Response()
         except Exception as e:

@@ -20,7 +20,7 @@ export default function SingleTrade() {
                 const { accessToken } = authState;
                 headers = {
                     'Content-Type': 'application/json',
-                    Authorization: `Bearer ${accessToken}`,
+                    Authorization: `Bearer ${accessToken.accessToken}`,
                 };
             }
 

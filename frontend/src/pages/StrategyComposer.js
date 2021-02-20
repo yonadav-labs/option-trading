@@ -169,7 +169,7 @@ export default function StrategyComposer() {
             }
             if (authState.isAuthenticated) {
                 const { accessToken } = authState;
-                headers['Authorization'] = `Bearer ${accessToken}`
+                headers['Authorization'] = `Bearer ${accessToken.accessToken}`
             }
 
             let url = `${API_URL}/trade_snapshots`;
