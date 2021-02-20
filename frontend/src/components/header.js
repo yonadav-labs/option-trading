@@ -8,7 +8,7 @@ import UserContext from '../UserContext';
 import getApiUrl from '../utils';
 
 function Header() {
-    const { authState, authService } = useOktaAuth();
+    const { oktaAuth, authState } = useOktaAuth();
     const { user, setUser } = useContext(UserContext);
     const API_URL = getApiUrl();
     const history = useHistory();
@@ -30,7 +30,7 @@ function Header() {
             const { accessToken } = authState;
             fetch(`${API_URL}/user`, {
                 headers: {
-                    Authorization: `Bearer ${accessToken}`,
+                    Authorization: `Bearer ${accessToken.accessToken}`,
                 },
             })
                 .then((response) => {
@@ -47,10 +47,10 @@ function Header() {
                     console.error(err);
                 });
         }
-    }, [authState, authService]); // Update if authState changes
+    }, [oktaAuth, authState]); // Update if authState changes
 
     async function logout() {
-        authService.logout('/');
+        oktaAuth.signOut();
     }
 
     return (

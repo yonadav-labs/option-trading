@@ -12,7 +12,7 @@ import Select from "react-select";
 import getApiUrl from '../utils';
 import Axios from 'axios';
 import LegCardDetails from '../components/LegCardDetails';
-import { useOktaAuth } from '@okta/okta-react/src/OktaContext';
+import { useOktaAuth } from '@okta/okta-react';
 import TradeDetailsCard from '../components/cards/TradeDetailsCard';
 import TradingViewWidget from 'react-tradingview-widget';
 import { useLocation } from 'react-router-dom';

@@ -27,9 +27,6 @@ export default function Pricing() {
     const isUserMonthlySubscribed = () => user && user.subscription && user.subscription.paypal_plan_id === getPaypalMonthlyPlanId();
     const isUserYearlySubscribed = () => user && user.subscription && user.subscription.paypal_plan_id === getPaypalYearlyPlanId();
 
-    useEffect(() => {
-    }, [user]);
-
     return (
         <>
             <div className="container-fluid pricing-background">

@@ -8,7 +8,7 @@ import getApiUrl from '../utils';
 
 export default function ShareTradeBtn(props) {
     const { trade } = props;
-    const { authState, authService } = useOktaAuth();
+    const { oktaAuth, authState } = useOktaAuth();
     const [shareLink, setShareLink] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const API_URL = getApiUrl();

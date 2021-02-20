@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { Route, withRouter, Switch } from 'react-router-dom';
+import { OktaAuth } from '@okta/okta-auth-js';
 import { Security, SecureRoute, LoginCallback } from '@okta/okta-react';
 import Profile from './pages/Profile';
 import Login from './components/Login';
@@ -15,6 +16,8 @@ import Pricing from './pages/Pricing';
 import StrategyComposer from './pages/StrategyComposer';
 import EmailVerified from './pages/EmailVerified';
 
+const oktaAuth = new OktaAuth(getOktaConfig().oidc);
+
 export default withRouter(class AppWithRouterAccess extends Component {
     constructor(props) {
         super(props);
@@ -28,7 +31,10 @@ export default withRouter(class AppWithRouterAccess extends Component {
     render() {
         return (
             <div className="d-flex flex-column min-vh-100">
-                <Security  {...(getOktaConfig().oidc)} onAuthRequired={this.onAuthRequired} >
+                <Security
+                    oktaAuth={oktaAuth}
+                    onAuthRequired={this.onAuthRequired}
+                >
                     <Header></Header>
                     <main role="main" className="mb-2">
                         <Switch>

@@ -10,7 +10,7 @@ import TradeDetailsCard from '../components/cards/TradeDetailsCard';
 export default function SingleTrade() {
     let { tradeId } = useParams();
     const [trade, setTrade] = useState(null);
-    const { authState, authService } = useOktaAuth();
+    const { oktaAuth, authState } = useOktaAuth();
     const API_URL = getApiUrl();
 
     const loadTrade = async () => {
@@ -35,7 +35,7 @@ export default function SingleTrade() {
 
     useEffect(() => {
         loadTrade();
-    }, [authState, authService]);
+    }, [oktaAuth, authState]);
 
     return (
         <div id="content" className="container min-vh-100" style={{ "marginTop": "4rem" }}>

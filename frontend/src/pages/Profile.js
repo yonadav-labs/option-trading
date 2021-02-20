@@ -7,7 +7,7 @@ import getApiUrl from '../utils';
 import { useHistory } from 'react-router-dom';
 
 const Profile = () => {
-    const { authState, authService } = useOktaAuth();
+    const { oktaAuth, authState } = useOktaAuth();
     const { user } = useContext(UserContext);
     const [showCancelSubscriptionModal, setShowCancelSubscriptionModal] = useState(false);
     const API_URL = getApiUrl();
@@ -41,7 +41,11 @@ const Profile = () => {
     }
 
     useEffect(() => {
-    }, [authState, authService]); // Update if authState changes
+        if (!authState.isAuthenticated) {
+            console.log('Token Expired!');
+            history.push('/signin');
+        }
+    }, [oktaAuth, authState]); // Update if authState changes
 
     if (!user) {
         return (
