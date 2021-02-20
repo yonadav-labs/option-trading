@@ -89,7 +89,6 @@ h2 {
   color: #FAFAFA;
   background: linear-gradient(90deg, #FF8F2B 0%, #FFD43A 100%);
   border-radius: 5px;
-  font-weight: bold;
 }
 
 .btn-white {
@@ -99,7 +98,6 @@ h2 {
     background: #FAFAFA;
     background-clip: padding-box;
     color:#333333;
-    font-weight: bold;
 }
 
 .btn-white::after {
