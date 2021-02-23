@@ -3,6 +3,7 @@ import Axios from 'axios';
 import { FaShare } from 'react-icons/fa';
 import { Link } from "react-router-dom";
 import { useOktaAuth } from '@okta/okta-react';
+import { FacebookShareButton, FacebookIcon, TwitterShareButton, TwitterIcon } from "react-share";
 
 import getApiUrl from '../utils';
 
@@ -69,7 +70,9 @@ export default function ShareTradeBtn(props) {
     }
 
     function ShareTrade(e) {
-        e.stopPropagation();
+        if (e) {
+            e.stopPropagation();
+        }
         if (isLoading) {
             // Prevent multiple clicks.
             return;
@@ -84,12 +87,30 @@ export default function ShareTradeBtn(props) {
             <div>
                 {
                     shareLink ?
-                        <span><FaShare /> Share:&nbsp;
-                        <Link style={{ "cursor": "pointer" }} to={shareLink} onClick={(e) => { e.stopPropagation() }} target="_blank">
+                        <span>
+                            <FaShare /> Share:&nbsp;
+                            <Link style={{ "cursor": "pointer" }} to={shareLink} onClick={(e) => { e.stopPropagation() }} target="_blank">
                                 www.tigerstance.com{shareLink}
                             </Link>
-                        </span> :
-                        <div style={{ "cursor": "pointer" }} onClick={ShareTrade}><FaShare /> Share</div>
+                            <br/>
+                            <TwitterShareButton 
+                                url={`www.tigerstance.com${shareLink}`}
+                                title={'Check this trade I found on #tigerstance!'}
+                                via={'EaseandExtra'}
+                            >
+                                <TwitterIcon size={32} round={true} />
+                            </TwitterShareButton>
+                            <FacebookShareButton 
+                                url={`www.tigerstance.com${shareLink}`}
+                                quote={'Check this trade I found on #tigerstance!'}
+                            >
+                                <FacebookIcon size={32} round={true} />
+                            </FacebookShareButton>
+                        </span> 
+                        :
+                        <div 
+                            style={{ "cursor": "pointer" }} onClick={ShareTrade}><FaShare /> Share
+                        </div>
                 }
             </div >
         )
