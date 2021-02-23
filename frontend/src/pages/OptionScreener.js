@@ -129,6 +129,11 @@ export default function SellCoveredCall() {
             ),
             sort: true,
             headerSortingStyle,
+        }, {
+            dataField: "open_interest",
+            text: "Open interest",
+            sort: true,
+            headerSortingStyle,
         },
         // Below fields are hidden and used for filtering only.
         {
