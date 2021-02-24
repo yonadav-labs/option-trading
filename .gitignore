@@ -8,3 +8,4 @@
 /.venv/
 django_apps/Pipfile
 django_apps/Pipfile.lock
+/tmp
