@@ -116,7 +116,7 @@ while [[ "$1" != '' ]] ; do
             IGNORE_UNCOMMITTED_FILES=Y
             ;;
 
-        --skip-latest )
+        --skip-latest-tag )
             USE_LATEST_TAG=N
             ;;
 
@@ -171,7 +171,7 @@ export IMAGE_TAG="$([[ -n "$REPLACEMENT_TAG" ]] && echo "$REPLACEMENT_TAG" || ec
 export TAGGED_IMAGE="$ECR_IMAGE_REPOSITORY":"$IMAGE_TAG"
 export DOCKER_IMAGES=( "$TAGGED_IMAGE" )
 
-if [[ "$USE_LATEST_TAG" != 'Y' ]] ; then
+if [[ "$USE_LATEST_TAG" = 'N' ]] ; then
     echo -e "${START_YELLOW_TEXT}WARNING: Skipping the 'latest' tag for the image${CLEAR_TEXT_COLOR}" 1>&2
 else
     export LATEST_TAGGED_IMAGE="$ECR_IMAGE_REPOSITORY":latest
@@ -191,7 +191,7 @@ echo
 
 build_image
 
-if [[ "$USE_LATEST_TAG" != 'Y' ]] ; then
+if [[ "$USE_LATEST_TAG" != 'N' ]] ; then
     docker tag "$TAGGED_IMAGE" "$LATEST_TAGGED_IMAGE"
 fi
 
