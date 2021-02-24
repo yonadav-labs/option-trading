@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+
+export CMD_NAME="$(basename "$0")"
+export BIN_DIR="$(cd $(dirname "$0") && pwd)"
+export APP_DIR="$(cd "$BIN_DIR"/../django_apps && pwd)"
+export IMAGE_NAME='options-ecs-backend'
+
+"$BIN_DIR"/build-ecs-common "$@"

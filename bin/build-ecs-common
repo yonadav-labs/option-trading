@@ -1,0 +1,212 @@
+#!/usr/bin/env bash
+
+set -e
+
+join_array() {
+    local DELIMITER="$1"
+    shift
+    local FIRST_ELEMENT="$1"
+    shift
+
+    # The '${@/#/$DELIMITER}' syntax requires some explanation. It is Bash array syntax for listing the elements
+    # of an array while performing substitutions on the elements. The format '${@}' would simply list out the
+    # parameters passed to this function. The addditional '/#/$DELIMITER' states replace the beginning of each
+    # entry (the '/#' section) with the provided string (the '/#$DELIMITER section).
+    printf '%s' "$FIRST_ELEMENT" "${@/#/$DELIMITER}"
+}
+
+get_current_branch() {
+    echo "$(git branch --show-current)"
+}
+
+on_main_branch() {
+    [[ "$(get_current_branch)" = "$MAIN_BRANCH_NAME" ]]
+    return $?
+}
+
+has_uncommitted_files() {
+    [[ "$(git status -s)" != '' ]]
+    return $?
+}
+
+perform_branch_check() {
+    if ! on_main_branch ; then
+        if [[ "$IGNORE_BRANCH_CHECK" = 'Y' ]] ; then
+            echo -e "${START_YELLOW_TEXT}WARNING: Ignoring branch check (currently on branch '$(get_current_branch)')${CLEAR_TEXT_COLOR}" 1>&2
+        else
+            echo -e "${START_RED_TEXT}ERROR: Not on the main branch (currently on branch '$(get_current_branch)' instead of branch '$MAIN_BRANCH_NAME'), unable to build image (use '--ignore-branch-check' to skip this check)${CLEAR_TEXT_COLOR}" 1>&2
+            exit 1
+        fi
+    fi
+}
+
+perform_uncommitted_files_check() {
+    if has_uncommitted_files ; then
+        if [[ "$IGNORE_UNCOMMITTED_FILES" = 'Y' ]] ; then
+            echo -e "${START_YELLOW_TEXT}WARNING: Building with uncommitted files${CLEAR_TEXT_COLOR}" 1>&2
+        else
+            echo -e "${START_RED_TEXT}ERROR: Uncommitted files detected, unable to build image (use '--ignore-uncommitted-files' to skip this check)${CLEAR_TEXT_COLOR}" 1>&2
+            exit 1
+        fi
+    fi
+}
+
+get_current_git_commit_hash() {
+    echo "$(git rev-parse --short HEAD)"
+}
+
+build_image() {
+    docker build \
+        --file "$APP_DIR"/Dockerfile.prod.ecs \
+        --tag "$TAGGED_IMAGE" \
+        "$APP_DIR"
+}
+
+aws_ecs_docker_login() {
+    echo '========================================'
+    echo 'Logging into AWS ECR'
+    echo '========================================'
+    echo
+
+    aws ecr get-login-password --region us-east-2 \
+        | docker login --username AWS --password-stdin 813539762970.dkr.ecr.us-east-2.amazonaws.com
+}
+
+push_images_to_ecr() {
+    echo
+    echo '========================================'
+    echo 'Pushing image(s) to AWS ECR...'
+    echo '========================================'
+    echo
+
+    for DOCKER_IMAGE in "$@" ; do
+        docker push "$DOCKER_IMAGE"
+        echo
+    done
+}
+
+# Bash escape sequences for changing the color of printed text.
+export START_YELLOW_TEXT='\033[0;33m'
+export START_RED_TEXT='\033[0;31m'
+export CLEAR_TEXT_COLOR='\033[0m'
+
+export MAIN_BRANCH_NAME='main'
+export ECR_REPOSITORY_LOCATION='813539762970.dkr.ecr.us-east-2.amazonaws.com'
+
+export PRINT_HELP=N
+export USE_LATEST_TAG=Y
+export UNKNOWN_OPTIONS=( )
+export IGNORE_BRANCH_CHECK=N
+export IGNORE_UNCOMMITTED_FILES=N
+export PUSH_IMAGES=N
+export REPLACEMENT_TAG=
+
+while [[ "$1" != '' ]] ; do
+    case "$1" in
+
+        -h | --help )
+            PRINT_HELP=Y
+            ;;
+
+        --ignore-branch-check )
+            IGNORE_BRANCH_CHECK=Y
+            ;;
+
+        --ignore-uncommitted-files )
+            IGNORE_UNCOMMITTED_FILES=Y
+            ;;
+
+        --skip-latest )
+            USE_LATEST_TAG=N
+            ;;
+
+        --tag )
+            shift
+            REPLACEMENT_TAG="$1"
+            ;;
+
+        --push )
+            PUSH_IMAGES=Y
+            ;;
+
+        * )
+            UNKNOWN_OPTIONS=( "${UNKNOWN_OPTIONS[@]}" "$1" )
+            ;;
+    esac
+
+    shift
+done
+
+if [[ "$PRINT_HELP" = 'Y' ]] ; then
+    cat > /dev/stderr << EOF
+
+Usage: $CMD_NAME [OPTIONS]
+
+  Builds the '$IMAGE_NAME' docker image.
+
+Options:
+  -h, --help                       Display this message
+      --ignore-branch-check        Ignore the fact that the current git branch is not '$MAIN_BRANCH_NAME' (USE WITH CAUTION!)
+      --ignore-uncommitted-files   Ignore the fact that the current git status is uncommitted file (USE WITH CAUTION!)
+      --skip-latest-tag            Skip the 'latest' tag for this image build
+      --tag TAG                    Override the git commit hash image tag for this build with the provided TAG
+      --push                       Push the built image(s) to the remote repository
+
+EOF
+    exit 1
+fi
+
+if [[ ${#UNKNOWN_OPTIONS[@]} -gt 0 ]] ; then
+    UNKNOWN_OPTIONS_LIST="$(join_array ', ' "${UNKNOWN_OPTIONS[@]}")"
+    echo -e "${START_RED_TEXT}ERROR: Unsupported option(s) provided: ${UNKNOWN_OPTIONS_LIST}${CLEAR_TEXT_COLOR}" 1>&2
+    exit 1
+fi
+
+perform_branch_check
+perform_uncommitted_files_check
+
+export ECR_IMAGE_REPOSITORY="$ECR_REPOSITORY_LOCATION"/"$IMAGE_NAME"
+export GIT_COMMIT_HASH="$(get_current_git_commit_hash)"
+export IMAGE_TAG="$([[ -n "$REPLACEMENT_TAG" ]] && echo "$REPLACEMENT_TAG" || echo "$GIT_COMMIT_HASH")"
+export TAGGED_IMAGE="$ECR_IMAGE_REPOSITORY":"$IMAGE_TAG"
+export DOCKER_IMAGES=( "$TAGGED_IMAGE" )
+
+if [[ "$USE_LATEST_TAG" != 'Y' ]] ; then
+    echo -e "${START_YELLOW_TEXT}WARNING: Skipping the 'latest' tag for the image${CLEAR_TEXT_COLOR}" 1>&2
+else
+    export LATEST_TAGGED_IMAGE="$ECR_IMAGE_REPOSITORY":latest
+    DOCKER_IMAGES=( "${DOCKER_IMAGES[@]}" "$LATEST_TAGGED_IMAGE" )
+fi
+
+echo
+echo '========================================'
+echo 'Building the image(s)...'
+
+for DOCKER_IMAGE in "${DOCKER_IMAGES[@]}" ; do
+    echo "    $DOCKER_IMAGE"
+done
+
+echo '========================================'
+echo
+
+build_image
+
+if [[ "$USE_LATEST_TAG" != 'Y' ]] ; then
+    docker tag "$TAGGED_IMAGE" "$LATEST_TAGGED_IMAGE"
+fi
+
+echo
+echo '========================================'
+echo 'Built the following image(s):'
+
+for DOCKER_IMAGE in "${DOCKER_IMAGES[@]}" ; do
+    echo "    $DOCKER_IMAGE"
+done
+
+echo '========================================'
+echo
+
+if [[ "$PUSH_IMAGES" = 'Y' ]] ; then
+    aws_ecs_docker_login
+    push_images_to_ecr "${DOCKER_IMAGES[@]}"
+fi
