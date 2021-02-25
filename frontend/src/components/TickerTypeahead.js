@@ -67,8 +67,9 @@ export default function TickerTypeahead({querySymbol, selectedTicker, setSelecte
 
     return (
         <Typeahead
-            minLengh={2}
+            minLength={2}
             highlightOnlyResult={true}
+            clearButton
             id="tickerTypeahead"
             labelKey="display_label"
             options={allTickers}
