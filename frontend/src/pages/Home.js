@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from "react-router-dom";
 import { Row, Col } from 'react-bootstrap';
-import { TwitterTimelineEmbed } from 'react-twitter-embed';
 import './Home.css';
 
 export default function Home() {
