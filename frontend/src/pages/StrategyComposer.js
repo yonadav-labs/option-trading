@@ -64,8 +64,9 @@ export default function StrategyComposer() {
     const [strategyDetails, setStrategyDetails] = useState(null);
     const [ruleMessage, setRuleMessage] = useState("");
     const [loadingStrategyDetails, setLoadingStrategyDetails] = useState(false);
+    const [headers, setHeaders] = useState(null);
+    const { oktaAuth, authState } = useOktaAuth();
     const API_URL = getApiUrl();
-    const { authState } = useOktaAuth();
 
     const history = useHistory();
     const location = useLocation();
@@ -73,15 +74,26 @@ export default function StrategyComposer() {
 
     const onTickerSelectionChange = (selected) => {
         if (selected.length > 0) {
-            loadExpirationDates(selected, setModalActive, setExpirationTimestamps, setbasicInfo, setSelectedTicker);
+            loadExpirationDates(headers, selected, setModalActive, setExpirationTimestamps, setbasicInfo, setSelectedTicker);
             addQuery(location, history, 'symbol', selected[0].symbol)
         }
         setSelectedTicker([]);
     };
 
     useEffect(() => {
-        loadTickers(setSelectedTicker, setAllTickers, querySymbol, onTickerSelectionChange);
-    }, []);
+        if (authState.isAuthenticated) {
+            const { accessToken } = authState;
+            setHeaders({Authorization: `Bearer ${accessToken.accessToken}`});
+        } else {
+            setHeaders({});
+        }
+    }, [oktaAuth, authState]);
+
+    useEffect(() => {
+        if (headers) {
+            loadTickers(headers, setSelectedTicker, setAllTickers, querySymbol, onTickerSelectionChange);
+        }
+    }, [headers]);
 
     const applyStrategy = (strategy) => {
         setStrategyDetails(null);

@@ -1,5 +1,7 @@
-from django.contrib.auth.models import AbstractUser
+from datetime import datetime
+
 from django.db import models
+from django.contrib.auth.models import AbstractUser
 
 
 class User(AbstractUser):
@@ -16,3 +18,11 @@ class User(AbstractUser):
         subscription = self.subscriptions.filter(status='ACTIVE').first()
 
         return subscription
+
+    def add_ticker_to_watchlist(self, name, ticker):
+        watchlist, _ = self.watchlists.get_or_create(name=name)
+        item, created = watchlist.watchlist_items.get_or_create(ticker=ticker)
+
+        if not created:  # modify last_updated_time
+            item.last_updated_time = datetime.now()
+            item.save()

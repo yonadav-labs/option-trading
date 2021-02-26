@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 
 from .models import User, Ticker, ExternalRequestCache, Subscription, StockSnapshot, OptionContractSnapshot, \
-    LegSnapshot, TradeSnapshot
+    LegSnapshot, TradeSnapshot, Watchlist, WatchlistItem
 
 DEFAULT_FIELDS = ['created_time', 'last_updated_time']
 
@@ -48,6 +48,17 @@ class TradeSnapshotAdmin(admin.ModelAdmin):
     search_fields = ['id', 'type', 'creator__id', 'is_public']
 
 
+class WatchlistAdmin(admin.ModelAdmin):
+    list_display = ['name', 'user'] + DEFAULT_FIELDS
+    list_filter = ['name', 'user']
+
+
+class WatchlistItemAdmin(admin.ModelAdmin):
+    list_display = ['ticker', 'watchlist'] + DEFAULT_FIELDS
+    list_filter = ['watchlist']
+    ordering = ['-last_updated_time']
+
+
 admin.site.register(User, UserAdmin)
 admin.site.register(Ticker, TickerAdmin)
 admin.site.register(ExternalRequestCache, ExternalRequestCacheAdmin)
@@ -56,3 +67,5 @@ admin.site.register(StockSnapshot, StockSnapshotAdmin)
 admin.site.register(OptionContractSnapshot, OptionContractSnapshotAdmin)
 admin.site.register(LegSnapshot, LegSnapshotAdmin)
 admin.site.register(TradeSnapshot, TradeSnapshotAdmin)
+admin.site.register(Watchlist, WatchlistAdmin)
+admin.site.register(WatchlistItem, WatchlistItemAdmin)

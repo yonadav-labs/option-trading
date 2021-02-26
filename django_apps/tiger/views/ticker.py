@@ -8,12 +8,30 @@ from tiger.serializers import TickerSerializer
 
 class TickerViewSet(viewsets.ModelViewSet):
     serializer_class = TickerSerializer
-    queryset = Ticker.objects.filter(status="unspecified")
     lookup_field = 'symbol'
+    watchlist_name = 'recent'
+
+    def get_queryset(self):
+        user = self.request.user
+        queryset = Ticker.objects.filter(status="unspecified").order_by('symbol')
+
+        if user.is_authenticated and self.action == 'list':
+            watchlist, _ = user.watchlists.get_or_create(name=self.watchlist_name)
+            watch_items = watchlist.watchlist_items.all().order_by('-last_updated_time')
+            watch_tickers = [ii.ticker for ii in watch_items]
+            watch_tickers_ids = [ii.id for ii in watch_tickers]
+            rest_tickers = [ii for ii in queryset if ii.id not in watch_tickers_ids]
+            queryset = watch_tickers + rest_tickers
+
+        return queryset
 
     @action(detail=True, methods=['GET'])
     def expire_dates(self, request, *args, **kwargs):
         ticker = self.get_object()
+
+        if request.user.is_authenticated:
+            request.user.add_ticker_to_watchlist(self.watchlist_name, ticker)
+
         expiration_timestamps = ticker.get_expiration_timestamps()
 
         if expiration_timestamps is None:

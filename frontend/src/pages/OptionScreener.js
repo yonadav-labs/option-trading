@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import TickerTypeahead from '../components/TickerTypeahead';
 import TickerSummary from '../components/TickerSummary.js';
 import Axios from 'axios';
+import { useOktaAuth } from '@okta/okta-react';
 import getApiUrl, {
     PriceFormatter, TimestampDateFormatter, InTheMoneyRowStyle,
     InTheMoneySign, onLastTradedFilterChange, PriceMovementFormatter, NumberRoundFormatter,
@@ -52,6 +53,8 @@ export default function SellCoveredCall() {
     const [selectedExpirationTimestamps, setSelectedExpirationTimestamps] = useState([]);
     const [modalActive, setModalActive] = useState(false);
     const [strikePrices, setStrikePrices] = useState([]);
+    const [headers, setHeaders] = useState(null);
+    const { oktaAuth, authState } = useOktaAuth();
 
     const resetStates = () => {
         setSelectedTicker([]);
@@ -65,7 +68,7 @@ export default function SellCoveredCall() {
 
     const onTickerSelectionChange = (selected) => {
         if (selected.length > 0) {
-            loadExpirationDates(selected, setModalActive, setExpirationTimestamps, setbasicInfo, setSelectedTicker);
+            loadExpirationDates(headers, selected, setModalActive, setExpirationTimestamps, setbasicInfo, setSelectedTicker);
             addQuery(location, history, 'symbol', selected[0].symbol)
         }
         if (resetStates) {
@@ -74,9 +77,19 @@ export default function SellCoveredCall() {
     };
 
     useEffect(() => {
-        loadTickers(setSelectedTicker, setAllTickers, querySymbol, onTickerSelectionChange);
-    }, []);
+        if (authState.isAuthenticated) {
+            const { accessToken } = authState;
+            setHeaders({Authorization: `Bearer ${accessToken.accessToken}`});
+        } else {
+            setHeaders({});
+        }
+    }, [oktaAuth, authState]);
 
+    useEffect(() => {
+        if (headers) {
+            loadTickers(headers, setSelectedTicker, setAllTickers, querySymbol, onTickerSelectionChange);
+        }
+    }, [headers]);
 
     const headerSortingStyle = { backgroundColor: '#FF8F2B' };
     const result_table_columns = [
