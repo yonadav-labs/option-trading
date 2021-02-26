@@ -1,5 +1,4 @@
-import React, { useState } from 'react';
-import { useLocation } from "react-router-dom";
+import React, { useState, useEffect } from 'react';
 import BootstrapTable from 'react-bootstrap-table-next';
 import paginationFactory from 'react-bootstrap-table2-paginator';
 import Axios from 'axios';
@@ -11,14 +10,19 @@ import { BsArrowsExpand, BsArrowsCollapse } from 'react-icons/bs';
 
 import getApiUrl, {
     PriceFormatter, PercentageFormatter, TimestampDateFormatter, onLastTradedFilterChange,
-    PriceMovementFormatter, getTradeStrikeStr, getTradeTypeDisplay, getAllTradeTypes
+    getTradeStrikeStr, getTradeTypeDisplay, getAllTradeTypes,
+    loadTickers, loadExpirationDates
 } from '../utils';
 import TickerTypeahead from '../components/TickerTypeahead';
 import TickerSummary from '../components/TickerSummary.js';
 import ModalSpinner from '../components/ModalSpinner';
-import { useSearch } from "../components/querying"
 import TradeDetailsCard from '../components/cards/TradeDetailsCard';
 import TargetPriceRangeSlider from '../components/TargetPriceRangeSlider';
+
+// url querying
+import { useLocation, useHistory } from "react-router-dom";
+import { addQuery } from '../components/querying'
+import { useSearch } from "../components/querying"
 
 
 let lastTradedFilter;
@@ -27,10 +31,12 @@ let minVolumeFilter;
 let minOpenInterestFilter;
 
 export default function BestCallByPrice() {
-    let location = useLocation()
+    const history = useHistory()
+    const location = useLocation()
     const querySymbol = useSearch(location, 'symbol')
-
     const API_URL = getApiUrl();
+
+    const [allTickers, setAllTickers] = useState([]);
     const [selectedTicker, setSelectedTicker] = useState([]);
     const [expirationTimestamps, setExpirationTimestamps] = useState([]);
     const [basicInfo, setbasicInfo] = useState({});
@@ -62,6 +68,20 @@ export default function BestCallByPrice() {
         setTargetPriceLower(null);
         setTargetPriceUpper(null);
     }
+
+    const onTickerSelectionChange = (selected) => {
+        if (selected.length > 0) {
+            loadExpirationDates(selected, setModalActive, setExpirationTimestamps, setbasicInfo, setSelectedTicker);
+            addQuery(location, history, 'symbol', selected[0].symbol)
+        }
+        if (resetStates) {
+            resetStates([]);
+        }
+    };
+
+    useEffect(() => {
+        loadTickers(setSelectedTicker, setAllTickers, querySymbol, onTickerSelectionChange);
+    }, []);
 
     const headerSortingStyle = { backgroundColor: '#FF8F2B' };
     const result_table_columns = [
@@ -309,13 +329,9 @@ export default function BestCallByPrice() {
                 <Form.Group>
                     <Form.Label className="requiredField"><h4>Enter ticker symbol:</h4></Form.Label>
                     <TickerTypeahead
-                        querySymbol={querySymbol}
                         selectedTicker={selectedTicker}
-                        setSelectedTicker={setSelectedTicker}
-                        setExpirationTimestamps={setExpirationTimestamps}
-                        setbasicInfo={setStockInfo}
-                        resetStates={resetStates}
-                        setModalActive={setModalActive}
+                        allTickers={allTickers}
+                        onTickerSelectionChange={onTickerSelectionChange}
                     />
                 </Form.Group>
             </Form>

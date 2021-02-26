@@ -1,18 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import { useHistory, useLocation } from "react-router-dom";
 import TickerTypeahead from '../components/TickerTypeahead';
 import TickerSummary from '../components/TickerSummary.js';
 import Axios from 'axios';
 import getApiUrl, {
     PriceFormatter, TimestampDateFormatter, InTheMoneyRowStyle,
-    InTheMoneySign, onLastTradedFilterChange, PriceMovementFormatter, NumberRoundFormatter
+    InTheMoneySign, onLastTradedFilterChange, PriceMovementFormatter, NumberRoundFormatter,
+    loadTickers, loadExpirationDates
 } from '../utils';
 import { BsArrowsExpand, BsArrowsCollapse } from 'react-icons/bs';
 import ModalSpinner from '../components/ModalSpinner';
 import ContractDetailsCard from '../components/cards/ContractDetailsCard';
 import Select from "react-select";
 import TradingViewWidget from 'react-tradingview-widget';
-import { useSearch } from "../components/querying"
 
 // Bootstrap
 import BootstrapTable from 'react-bootstrap-table-next';
@@ -23,6 +22,10 @@ import { Form, Button, Alert, Container, Row, Col, Accordion, Card } from 'react
 // Filters
 import StrikeRangeSliderFilter from "../components/filters/StrikeRangeSliderFilter";
 import ButtonToggleFilter from '../components/filters/ButtonToggleFilter';
+
+// url querying
+import { useHistory, useLocation } from "react-router-dom";
+import { addQuery, useSearch } from '../components/querying'
 
 let putCallFilter;
 let inTheMoneyFilter;
@@ -35,10 +38,12 @@ let minStrikeFilter;
 let maxStrikeFilter;
 
 export default function SellCoveredCall() {
-    let history = useHistory()
-    let location = useLocation()
+    const API_URL = getApiUrl();
+    const history = useHistory()
+    const location = useLocation()
     const querySymbol = useSearch(location, 'symbol')
 
+    const [allTickers, setAllTickers] = useState([]);
     const [selectedTicker, setSelectedTicker] = useState([]);
     const [expirationTimestamps, setExpirationTimestamps] = useState([]);
     const [basicInfo, setbasicInfo] = useState({});
@@ -58,7 +63,20 @@ export default function SellCoveredCall() {
         setSelectedExpirationTimestamps([]);
     }
 
-    const API_URL = getApiUrl();
+    const onTickerSelectionChange = (selected) => {
+        if (selected.length > 0) {
+            loadExpirationDates(selected, setModalActive, setExpirationTimestamps, setbasicInfo, setSelectedTicker);
+            addQuery(location, history, 'symbol', selected[0].symbol)
+        }
+        if (resetStates) {
+            resetStates([]);
+        }
+    };
+
+    useEffect(() => {
+        loadTickers(setSelectedTicker, setAllTickers, querySymbol, onTickerSelectionChange);
+    }, []);
+
 
     const headerSortingStyle = { backgroundColor: '#FF8F2B' };
     const result_table_columns = [
@@ -363,13 +381,9 @@ export default function SellCoveredCall() {
                         <Form.Group>
                             <Form.Label className="requiredField"><h4>Enter ticker symbol:</h4></Form.Label>
                             <TickerTypeahead
-                                querySymbol={querySymbol}
                                 selectedTicker={selectedTicker}
-                                setSelectedTicker={setSelectedTicker}
-                                setExpirationTimestamps={setExpirationTimestamps}
-                                setbasicInfo={setbasicInfo}
-                                resetStates={resetStates}
-                                setModalActive={setModalActive}
+                                allTickers={allTickers}
+                                onTickerSelectionChange={onTickerSelectionChange}
                             />
                         </Form.Group>
                     </Form>

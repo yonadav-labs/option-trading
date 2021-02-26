@@ -1,22 +1,24 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { Alert, Badge, Button, Card, CardColumns, Col, Container, Form, Row, Spinner, ToggleButton, ToggleButtonGroup } from 'react-bootstrap';
 import { MdTrendingFlat, MdArrowUpward, MdArrowDownward, MdShowChart } from 'react-icons/md';
 import 'react-bootstrap-typeahead/css/Typeahead.css';
 import './StrategyComposer.css';
 import { strategies } from '../blobs/Strategies';
-import { cloneDeep, constant, get, isEmpty, property, throttle } from 'lodash';
+import { cloneDeep, get, isEmpty, throttle } from 'lodash';
 import TickerTypeahead from '../components/TickerTypeahead';
 import ModalSpinner from '../components/ModalSpinner';
 import TickerSummary from '../components/TickerSummary';
 import Select from "react-select";
-import getApiUrl from '../utils';
+import getApiUrl, { loadTickers, loadExpirationDates } from '../utils';
 import Axios from 'axios';
 import LegCardDetails from '../components/LegCardDetails';
 import { useOktaAuth } from '@okta/okta-react';
 import TradeDetailsCard from '../components/cards/TradeDetailsCard';
 import TradingViewWidget from 'react-tradingview-widget';
-import { useLocation } from 'react-router-dom';
-import { useSearch } from '../components/querying';
+
+// url querying
+import { useLocation, useHistory } from 'react-router-dom';
+import { useSearch, addQuery } from '../components/querying';
 
 // export function useHorizontalScroll() {
 //     const elRef = useRef();
@@ -48,6 +50,7 @@ export default function StrategyComposer() {
         "-": (a, aProperty, aPropertyDefaultVal, b, bProperty, bPropertyDefaultVal) => { return get(a, aProperty, aPropertyDefaultVal) - get(b, bProperty, bPropertyDefaultVal) }
     }
 
+    const [allTickers, setAllTickers] = useState([]);
     const [inputText, setInputText] = useState("");
     const [selectedTicker, setSelectedTicker] = useState("");
     const [selectedPremiumType, setSelectedPremiumType] = useState(premiumPriceOptions[0]);
@@ -63,8 +66,22 @@ export default function StrategyComposer() {
     const [loadingStrategyDetails, setLoadingStrategyDetails] = useState(false);
     const API_URL = getApiUrl();
     const { authState } = useOktaAuth();
+
+    const history = useHistory();
     const location = useLocation();
     const querySymbol = useSearch(location, 'symbol');
+
+    const onTickerSelectionChange = (selected) => {
+        if (selected.length > 0) {
+            loadExpirationDates(selected, setModalActive, setExpirationTimestamps, setbasicInfo, setSelectedTicker);
+            addQuery(location, history, 'symbol', selected[0].symbol)
+        }
+        setSelectedTicker([]);
+    };
+
+    useEffect(() => {
+        loadTickers(setSelectedTicker, setAllTickers, querySymbol, onTickerSelectionChange);
+    }, []);
 
     const applyStrategy = (strategy) => {
         setStrategyDetails(null);
@@ -191,13 +208,9 @@ export default function StrategyComposer() {
                 <Col md="4">
                     <Badge variant="secondary">Ticker</Badge>
                     <TickerTypeahead
-                        querySymbol={querySymbol}
                         selectedTicker={selectedTicker}
-                        setSelectedTicker={setSelectedTicker}
-                        setExpirationTimestamps={setExpirationTimestamps}
-                        setbasicInfo={setbasicInfo}
-                        setModalActive={setModalActive}
-                        resetStates={setSelectedTicker}
+                        allTickers={allTickers}
+                        onTickerSelectionChange={onTickerSelectionChange}
                     />
                 </Col>
                 <Col md="7">

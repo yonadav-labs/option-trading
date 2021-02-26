@@ -2,6 +2,7 @@ import React from 'react';
 import NumberFormat from 'react-number-format';
 import { Comparator } from 'react-bootstrap-table2-filter';
 import { Col, Row } from 'react-bootstrap';
+import Axios from 'axios';
 
 // Returns the backend API base url.
 export default function getApiUrl() {
@@ -208,3 +209,43 @@ export function getTradeStrikeStr(row) {
         }
     }
 }
+
+// fetch tickers
+export async function loadTickers(setSelectedTicker, setAllTickers, querySymbol, onTickerSelectionChange) {
+    try {
+        const response = await Axios.get(`${getApiUrl()}/tickers/`);
+        let tickers = response.data;
+        tickers.map((ticker) => {
+            if (ticker.full_name) {
+                ticker.display_label = ticker.symbol + ' - ' + ticker.full_name;
+            } else {
+                ticker.display_label = ticker.symbol;
+            }
+
+            if (querySymbol && ticker.symbol === querySymbol) {
+                setSelectedTicker([ticker], onTickerSelectionChange([ticker]));
+            }
+
+            return ticker;
+        });
+        setAllTickers(tickers);
+    } catch (error) {
+        console.error(error);
+    }
+};
+
+// fetch expiration dates
+export async function loadExpirationDates(selected, setModalActive, setExpirationTimestamps, setbasicInfo, setSelectedTicker) {
+    try {
+        setModalActive(true);
+        const response = await Axios.get(`${getApiUrl()}/tickers/${selected[0].symbol}/expire_dates/`);
+        setExpirationTimestamps(response.data.expiration_timestamps);
+        setbasicInfo(response.data.quote)
+        selected[0].external_cache_id = response.data.external_cache_id;
+        setSelectedTicker(selected);
+        setModalActive(false);
+    } catch (error) {
+        console.error(error);
+        setModalActive(false);
+    }
+};
