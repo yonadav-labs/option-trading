@@ -62,7 +62,7 @@ export default function ShareTradeBtn(props) {
             const response = await Axios.post(url, tradeSnapshot, {
                 headers: headers
             });
-            setShareLink('www.tigerstance.com/t/' + response.data.id);
+            setShareLink('/t/' + response.data.id);
             navigator.clipboard.writeText('www.tigerstance.com/t/' + response.data.id)
             setIsLoading(false);
         } catch (error) {
@@ -92,28 +92,28 @@ export default function ShareTradeBtn(props) {
                         <span>
                             <FaShare /> Share:&nbsp;
                             <Link style={{ "cursor": "pointer" }} to={shareLink} onClick={(e) => { e.stopPropagation() }} target="_blank">
-                                {shareLink}
+                                www.tigerstance.com{shareLink}
                             </Link>
-                            <br/>
-                            <TwitterShareButton 
-                                url={`${shareLink}`}
+                            <br />
+                            <TwitterShareButton
+                                url={`www.tigerstance.com${shareLink}`}
                                 title={'Check this trade I found on #tigerstance!'}
                                 via={'EaseandExtra'}
                             >
                                 <TwitterIcon size={32} round={true} />
                             </TwitterShareButton>
-                            <FacebookShareButton 
-                                url={`${shareLink}`}
+                            <FacebookShareButton
+                                url={`www.tigerstance.com${shareLink}`}
                                 quote={'Check this trade I found on #tigerstance!'}
                             >
                                 <FacebookIcon size={32} round={true} />
                             </FacebookShareButton> {" "}
                             <Badge pill variant="success">
-                                Copied
+                                Copied to clipboard
                             </Badge>
-                        </span> 
+                        </span>
                         :
-                        <div 
+                        <div
                             style={{ "cursor": "pointer" }} onClick={ShareTrade}><FaShare /> Share
                         </div>
                 }
