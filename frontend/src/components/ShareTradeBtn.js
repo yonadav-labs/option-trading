@@ -4,6 +4,7 @@ import { FaShare } from 'react-icons/fa';
 import { Link } from "react-router-dom";
 import { useOktaAuth } from '@okta/okta-react';
 import { FacebookShareButton, FacebookIcon, TwitterShareButton, TwitterIcon } from "react-share";
+import { Badge } from 'react-bootstrap';
 
 import getApiUrl from '../utils';
 
@@ -61,7 +62,8 @@ export default function ShareTradeBtn(props) {
             const response = await Axios.post(url, tradeSnapshot, {
                 headers: headers
             });
-            setShareLink('/t/' + response.data.id);
+            setShareLink('www.tigerstance.com/t/' + response.data.id);
+            navigator.clipboard.writeText('www.tigerstance.com/t/' + response.data.id)
             setIsLoading(false);
         } catch (error) {
             console.error(error);
@@ -90,22 +92,25 @@ export default function ShareTradeBtn(props) {
                         <span>
                             <FaShare /> Share:&nbsp;
                             <Link style={{ "cursor": "pointer" }} to={shareLink} onClick={(e) => { e.stopPropagation() }} target="_blank">
-                                www.tigerstance.com{shareLink}
+                                {shareLink}
                             </Link>
                             <br/>
                             <TwitterShareButton 
-                                url={`www.tigerstance.com${shareLink}`}
+                                url={`${shareLink}`}
                                 title={'Check this trade I found on #tigerstance!'}
                                 via={'EaseandExtra'}
                             >
                                 <TwitterIcon size={32} round={true} />
                             </TwitterShareButton>
                             <FacebookShareButton 
-                                url={`www.tigerstance.com${shareLink}`}
+                                url={`${shareLink}`}
                                 quote={'Check this trade I found on #tigerstance!'}
                             >
                                 <FacebookIcon size={32} round={true} />
-                            </FacebookShareButton>
+                            </FacebookShareButton> {" "}
+                            <Badge pill variant="success">
+                                Copied
+                            </Badge>
                         </span> 
                         :
                         <div 
