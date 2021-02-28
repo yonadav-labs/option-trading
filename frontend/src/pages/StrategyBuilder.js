@@ -2,7 +2,7 @@ import React, { useState, useCallback, useEffect } from 'react';
 import { Alert, Badge, Button, Card, CardColumns, Col, Container, Form, Row, Spinner, ToggleButton, ToggleButtonGroup } from 'react-bootstrap';
 import { MdTrendingFlat, MdArrowUpward, MdArrowDownward, MdShowChart } from 'react-icons/md';
 import 'react-bootstrap-typeahead/css/Typeahead.css';
-import './StrategyComposer.css';
+import './StrategyBuilder.css';
 import { strategies } from '../blobs/Strategies';
 import { cloneDeep, get, isEmpty, throttle } from 'lodash';
 import TickerTypeahead from '../components/TickerTypeahead';
@@ -39,7 +39,7 @@ import { useSearch, addQuery } from '../components/querying';
 //     return elRef;
 // }
 
-export default function StrategyComposer() {
+export default function StrategyBuilder() {
     const premiumPriceOptions = [{ value: "market", label: "Market price" }, { value: "mid", label: "Mid/Mark price" }];
     const operators = {
         "<": (a, aProperty, b, bProperty) => { return get(a, aProperty) < get(b, bProperty) },
@@ -83,7 +83,7 @@ export default function StrategyComposer() {
     useEffect(() => {
         if (authState.isAuthenticated) {
             const { accessToken } = authState;
-            setHeaders({Authorization: `Bearer ${accessToken.accessToken}`});
+            setHeaders({ Authorization: `Bearer ${accessToken.accessToken}` });
         } else {
             setHeaders({});
         }

@@ -65,7 +65,7 @@ function Header() {
                 <Navbar.Collapse id="responsive-navbar-nav">
                     <Nav className="mr-auto justify-content-center" style={{ flex: 1 }}>
                         <Nav.Link eventKey={"1"} className="text-dark" as={Link} to="/strategy-screener">Strategy Screener</Nav.Link>
-                        <Nav.Link eventKey={"2"} className="text-dark" as={Link} to="/strategy-composer">Strategy Composer</Nav.Link>
+                        <Nav.Link eventKey={"2"} className="text-dark" as={Link} to="/strategy-builder">Strategy Builder</Nav.Link>
                         <Nav.Link eventKey={"3"} className="text-dark" as={Link} to="/option-screener">Options Screener</Nav.Link>
                         <Nav.Link eventKey={"4"} className="text-dark" as={Link} to="/pricing">Pricing</Nav.Link>
                         <Nav.Link eventKey={"5"} className="text-dark" href="#">Support</Nav.Link>

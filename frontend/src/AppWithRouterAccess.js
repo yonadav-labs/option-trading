@@ -13,7 +13,7 @@ import Disclaimer from './components/disclaimer';
 import StrategyScreener from './pages/StrategyScreener';
 import SingleTrade from './pages/SingleTrade';
 import Pricing from './pages/Pricing';
-import StrategyComposer from './pages/StrategyComposer';
+import StrategyBuilder from './pages/StrategyBuilder';
 import EmailVerified from './pages/EmailVerified';
 
 const oktaAuth = new OktaAuth(getOktaConfig().oidc);
@@ -42,7 +42,7 @@ export default withRouter(class AppWithRouterAccess extends Component {
                             <Route path='/option-screener' exact={true} component={OptionScreener} />
                             <Route path='/strategy-screener' exact={true} component={StrategyScreener} />
                             <Route path='/t/:tradeId' exact={true} component={SingleTrade} />
-                            <Route path='/strategy-composer' exact={true} component={StrategyComposer} />
+                            <Route path='/strategy-builder' exact={true} component={StrategyBuilder} />
                             <SecureRoute path='/profile' component={Profile} />
                             <Route path="/disclaimer" component={Disclaimer}></Route>
                             <Route path='/signin' component={Login} />
