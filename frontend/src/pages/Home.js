@@ -2,32 +2,10 @@ import React, { useState } from 'react';
 import { Link } from "react-router-dom";
 import { Row, Col } from 'react-bootstrap';
 import './Home.css';
+import VerticalCarousel from '../components/VerticalCarousel';
 
 export default function Home() {
-    const [sliderState, setSliderState] = useState("stock select")
-    const [pictureState, setPictureState] = useState('slider1.png')
-
-    const sliderSelectHandler = (select) => {
-        setSliderState(select)
-        switch (select) {
-            case 'stock select':
-                setPictureState('slider1.png')
-                break;
-            case 'expiration select':
-                setPictureState('slider2.png')
-                break;
-            case 'price select':
-                setPictureState('slider3.png')
-                break;
-            case 'trade select':
-                setPictureState('slider4.png')
-                break;
-
-            default:
-                break;
-        }
-    }
-
+    
     return (
         <div>
             <div className="container-fluid">
@@ -48,106 +26,73 @@ export default function Home() {
                     </div>
                 </Row>
 
-                <Row className="p-5">
-                    <div className="col-lg-12 text-center my-auto">
+                <Row className="p-5 min-vh-100">
+                    <Col lg="12" className="text-center my-auto">
                         <h4 className="text-primary">Strategy Screener: how it works</h4>
                         <h1 className="find-title">Find the right options trading ideas just for you</h1>
-                    </div>
-                    <div className="col-lg-5 mb-3">
-                        <img className="img-fluid mx-auto d-block" src={pictureState} width="400" height="400" />
-                    </div>
-                    <div className="col-lg-7">
-                        <Row className={sliderState === 'stock select' ? '' : "text-muted"} onMouseEnter={e => sliderSelectHandler('stock select')} onClick={e => sliderSelectHandler('stock select')}>
-                            <span className="col-lg-1">
-                                <h2 className="display-4 font-weight-bold">1</h2>
-                            </span>
-                            <span className="col-lg-11">
-                                <h2>Select a stock by its ticker.</h2>
-                                <p className="lead">AAPL, AMZN, TSLA...</p>
-                            </span>
-                        </Row>
-                        <Row className={sliderState === 'expiration select' ? '' : "text-muted"} onMouseEnter={e => sliderSelectHandler('expiration select')} onClick={e => sliderSelectHandler('expiration select')}>
-                            <span className="col-lg-1">
-                                <h2 className="display-4 font-weight-bold ">2</h2>
-                            </span>
-                            <span className="col-lg-11">
-                                <h2>Select an expiration date.</h2>
-                                <p className="lead">Timeframe for this trade.</p>
-                            </span>
-                        </Row>
-                        <Row className={sliderState === 'price select' ? '' : "text-muted"} onMouseEnter={e => sliderSelectHandler('price select')} onClick={e => sliderSelectHandler('price select')}>
-                            <span className="col-lg-1">
-                                <h2 className="display-4 font-weight-bold ">3</h2>
-                            </span>
-                            <span className="col-lg-11">
-                                <h2>Enter target stock price.</h2>
-                                <p className="lead">Where do you think the stock price will go?</p>
-                            </span>
-                        </Row>
-                        <Row className={sliderState === 'trade select' ? '' : "text-muted"} onMouseEnter={e => sliderSelectHandler('trade select')} onClick={e => sliderSelectHandler('trade select')}>
-                            <span className="col-lg-1">
-                                <h2 className="display-4 font-weight-bold ">4</h2>
-                            </span>
-                            <span className="col-lg-11">
-                                <h2>Get trading ideas.</h2>
-                                <p className="lead">We enumerate tens of thousands trading ideas and present the best ones to you.</p>
-                            </span>
-                        </Row>
-                    </div>
+                    </Col>
+                    <VerticalCarousel>
+                        <VerticalCarousel.Slide
+                            imgSrc="slider1.png"
+                            heading="Select a stock by its ticker."
+                            text="AAPL, AMZN, TSLA..."
+                        />
+                        <VerticalCarousel.Slide
+                            imgSrc="slider2.png"
+                            heading="Select an expiration date."
+                            text="Timeframe for this trade."
+                        />
+                        <VerticalCarousel.Slide
+                            imgSrc="slider3.png"
+                            heading="Enter target stock price."
+                            text="Where do you think the stock price will go?"
+                        />
+                        <VerticalCarousel.Slide
+                            imgSrc="slider4.png"
+                            heading="Get trading ideas."
+                            text="We enumerate tens of thousands trading ideas and present the best ones to you."
+                        />
+                    </VerticalCarousel>
                 </Row>
 
-                <Row className="p-5">
+                <Row className="p-5 min-vh-100">
                     <Col lg="12" className="text-center my-auto">
-                        <h3 className="text-primary">Supported options strategies</h3>
-                        <br />
+                        <h4 className="text-primary">Strategy Builder</h4>
+                        <h1 className="find-title">Build and visualize an option strategy</h1>
                     </Col>
-                    <Col lg="2" xs="6" className="text-center">
-                        <img className="rounded-circle mb-4" src="data:image/gif;base64,R0lGODlhAQABAIAAAHd3dwAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" width="100" height="100" />
-                        <h4>Long Call</h4>
-                        <p><Link className="btn btn-secondary" to="/strategy-screener" >Get Started</Link></p>
-                    </Col>
-                    <Col lg="2" xs="6" className="text-center">
-                        <img className="rounded-circle mb-4" src="data:image/gif;base64,R0lGODlhAQABAIAAAHd3dwAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" width="100" height="100" />
-                        <h4>Covered Call</h4>
-                        <p><Link className="btn btn-secondary" to="/strategy-screener" >Get Started</Link></p>
-                    </Col>
-                    <Col lg="2" xs="6" className="text-center">
-                        <img className="rounded-circle mb-4" src="data:image/gif;base64,R0lGODlhAQABAIAAAHd3dwAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" width="100" height="100" />
-                        <h4>Long Put</h4>
-                        <p><Link className="btn btn-secondary" to="/strategy-screener" >Get Started</Link></p>
-                    </Col>
-                    <Col lg="2" xs="6" className="text-center">
-                        <img className="rounded-circle mb-4" src="data:image/gif;base64,R0lGODlhAQABAIAAAHd3dwAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" width="100" height="100" />
-                        <h4>Cash Secured Put</h4>
-                        <p><Link className="btn btn-secondary" to="/strategy-screener" >Get Started</Link></p>
-                    </Col>
-                    <Col lg="2" xs="6" className="text-center">
-                        <img className="rounded-circle mb-4" src="data:image/gif;base64,R0lGODlhAQABAIAAAHd3dwAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" width="100" height="100" />
-                        <h4>Bull call spread</h4>
-                        <p><Link className="btn btn-secondary" to="/strategy-screener" >Get Started</Link></p>
-                    </Col>
-                    <Col lg="2" xs="6" className="text-center">
-                        <img className="rounded-circle mb-4" src="data:image/gif;base64,R0lGODlhAQABAIAAAHd3dwAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" width="100" height="100" />
-                        <h4>Bear call spread</h4>
-                        <p><Link className="btn btn-secondary" to="/strategy-screener" >Get Started</Link></p>
-                    </Col>
-                    <Col lg="2" xs="6" className="text-center">
-                        <img className="rounded-circle mb-4" src="data:image/gif;base64,R0lGODlhAQABAIAAAHd3dwAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" width="100" height="100" />
-                        <h4>Bear put spread</h4>
-                        <p><Link className="btn btn-secondary" to="/strategy-screener" >Get Started</Link></p>
-                    </Col>
-                    <Col lg="2" xs="6" className="text-center">
-                        <img className="rounded-circle mb-4" src="data:image/gif;base64,R0lGODlhAQABAIAAAHd3dwAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" width="100" height="100" />
-                        <h4>Bull put spread</h4>
-                        <p><Link className="btn btn-secondary" to="/strategy-screener" >Get Started</Link></p>
-                    </Col>
-                    <Col lg="2" xs="6" className="text-center">
-                        <img className="rounded-circle mb-4" src="data:image/gif;base64,R0lGODlhAQABAIAAAHd3dwAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" width="100" height="100" />
-                        <h4>More coming...</h4>
-                        <p><Link className="btn btn-secondary" to="/strategy-screener" >Get Started</Link></p>
-                    </Col>
+                    <VerticalCarousel>
+                        <VerticalCarousel.Slide
+                            className="w-100"
+                            imgSrc="sc_step_1.png"
+                            heading="Select a stock by its ticker."
+                            text="AAPL, AMZN, TSLA..."
+                        />
+                        <VerticalCarousel.Slide
+                            className="w-100"
+                            imgSrc="sc_step_2.png"
+                            heading="Select an option strategy"
+                            text="Search for a specific strategy or discover strategies based on your sentiment"
+                        />
+                        <VerticalCarousel.Slide
+                            className="w-100"
+                            imgSrc="sc_step_3.png"
+                            heading="Complete the legs"
+                            text="Build and tweak your strategy leg by leg"
+                        />
+                        <VerticalCarousel.Slide
+                            className="w-100"
+                            imgSrc="sc_step_4.png"
+                            heading="Receive feedback while you build"
+                            text="Not sure how to build the strategy? Informative hints are there to help guide you"
+                        />
+                        <VerticalCarousel.Slide
+                            className="w-75"
+                            imgSrc="sc_step_5.png"
+                            heading="Visualize and understand your strategy"
+                            text="Explore your strategy with the interactive graph and analyze the calculated details"
+                        />
+                    </VerticalCarousel>
                 </Row>
-
 
                 <Row className="p-5">
                     <Col lg="12" className="text-center my-auto">
@@ -177,6 +122,6 @@ export default function Home() {
                     </div> */}
                 </Row>
             </div>
-        </div>
+        </div >
     );
 }

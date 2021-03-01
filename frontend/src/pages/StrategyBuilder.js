@@ -52,7 +52,7 @@ export default function StrategyBuilder() {
 
     const [allTickers, setAllTickers] = useState([]);
     const [inputText, setInputText] = useState("");
-    const [selectedTicker, setSelectedTicker] = useState("");
+    const [selectedTicker, setSelectedTicker] = useState([]);
     const [selectedPremiumType, setSelectedPremiumType] = useState(premiumPriceOptions[0]);
     const [selectedStrategy, setSelectedStrategy] = useState(null);
     const [legs, setLegs] = useState([]);
