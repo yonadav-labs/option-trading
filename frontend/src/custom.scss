@@ -41,3 +41,16 @@ hr {
     background-color: $light;
     border-color: $primary;
 }
+
+@font-face {
+    font-family: 'HalyardDis-Regular';
+    src: local('HalyardDis-Regular'), url(./fonts/HalyardDis-Regular.otf) format('opentype');
+}
+
+body {
+    font-family: HalyardDis-Regular;
+}
+
+h1, h2, h3, h4{
+    font-family: HalyardDis-Regular;
+}
