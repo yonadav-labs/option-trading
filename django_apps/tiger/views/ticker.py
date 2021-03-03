@@ -35,7 +35,7 @@ class TickerViewSet(viewsets.ModelViewSet):
         expiration_timestamps = ticker.get_expiration_timestamps()
 
         if expiration_timestamps is None:
-            return Response(status=500)
+            return Response('No expiration timestamp is available', status=500)
 
         quote, external_cache_id = ticker.get_quote()
         resp = {

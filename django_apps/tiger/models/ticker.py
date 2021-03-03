@@ -39,3 +39,35 @@ class Ticker(BaseModel):
     def get_call_puts(self, expiration_timestamp):
         response, external_cache_id = self.get_request_cache(settings.USE_YAHOO, expiration_timestamp)
         return get_call_puts(self, response, settings.USE_YAHOO, expiration_timestamp, external_cache_id)
+
+
+class ExpirationDate(BaseModel):
+    ticker = models.ForeignKey(Ticker, on_delete=models.CASCADE, related_name="expiration_dates")
+    date = models.DateField()
+
+    class Meta:
+        ordering = ('date',)
+
+
+class TickerStats(BaseModel):
+    ticker = models.OneToOneField(Ticker, on_delete=models.CASCADE)
+    company_name = models.CharField(max_length=250)
+    market_cap = models.FloatField(blank=True, null=True)
+    week52_high = models.FloatField(blank=True, null=True)
+    week52_low = models.FloatField(blank=True, null=True)
+    week52_high_split_adjust_only = models.FloatField(blank=True, null=True)
+    week52_low_split_adjust_only = models.FloatField(blank=True, null=True)
+    shares_outstanding = models.FloatField(blank=True, null=True)
+    day200_moving_avg = models.FloatField(blank=True, null=True)
+    day50_moving_avg = models.FloatField(blank=True, null=True)
+    ttm_eps = models.FloatField(blank=True, null=True)
+    ttm_dividend_rate = models.FloatField(blank=True, null=True)
+    dividend_yield = models.FloatField(blank=True, null=True)
+    next_dividend_date = models.DateField(blank=True, null=True)
+    ex_dividend_date = models.DateField(blank=True, null=True)
+    next_earnings_date = models.DateField(blank=True, null=True)
+    pe_ratio = models.FloatField(blank=True, null=True)
+    beta = models.FloatField(blank=True, null=True)
+
+    class Meta:
+        verbose_name_plural = 'Ticker stats'

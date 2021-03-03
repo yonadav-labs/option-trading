@@ -2,15 +2,20 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 
 from .models import User, Ticker, ExternalRequestCache, Subscription, StockSnapshot, OptionContractSnapshot, \
-    LegSnapshot, TradeSnapshot, Watchlist, WatchlistItem
+    LegSnapshot, TradeSnapshot, Watchlist, WatchlistItem, TickerStats, ExpirationDate
 
 DEFAULT_FIELDS = ['created_time', 'last_updated_time']
 
 
+class ExpirationDateAdmin(admin.TabularInline):
+    model = ExpirationDate
+
+
 class TickerAdmin(admin.ModelAdmin):
-    list_display = ['id', 'symbol', 'full_name', 'status', ] + DEFAULT_FIELDS
+    list_display = ['symbol', 'full_name', 'status', ] + DEFAULT_FIELDS
     list_filter = ['status']
-    search_fields = ['id', 'symbol', 'full_name']
+    search_fields = ['symbol', 'full_name']
+    inlines = [ExpirationDateAdmin]
 
 
 class ExternalRequestCacheAdmin(admin.ModelAdmin):
@@ -59,6 +64,11 @@ class WatchlistItemAdmin(admin.ModelAdmin):
     ordering = ['-last_updated_time']
 
 
+class TickerStatsAdmin(admin.ModelAdmin):
+    list_display = ['ticker', 'company_name', 'market_cap', 'pe_ratio'] + DEFAULT_FIELDS
+    search_fields = ['ticker__symbol', 'company_name']
+
+
 admin.site.register(User, UserAdmin)
 admin.site.register(Ticker, TickerAdmin)
 admin.site.register(ExternalRequestCache, ExternalRequestCacheAdmin)
@@ -69,3 +79,4 @@ admin.site.register(LegSnapshot, LegSnapshotAdmin)
 admin.site.register(TradeSnapshot, TradeSnapshotAdmin)
 admin.site.register(Watchlist, WatchlistAdmin)
 admin.site.register(WatchlistItem, WatchlistItemAdmin)
+admin.site.register(TickerStats, TickerStatsAdmin)
