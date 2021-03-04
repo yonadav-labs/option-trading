@@ -32,7 +32,7 @@ class Command(BaseCommand):
 
             url = f'{settings.IEXCLOUD_BASE_URL}/stock/{ticker.symbol}/options'
             options_resp = requests.get(url, params=params)
-            if options_resp.status_code != 200:
+            if not options_resp.ok:
                 continue
 
             options = options_resp.json()
@@ -76,5 +76,21 @@ class Command(BaseCommand):
                 'pe_ratio': stats["peRatio"],
                 'beta': stats["beta"],
             }
+
+            period = '1m'  # default by api
+            url = f'{settings.IEXCLOUD_BASE_URL}/stock/{ticker.symbol}/dividends/{period}'
+            dividends_resp = requests.get(url, params=params)
+            if dividends_resp.ok:
+                dividends = dividends_resp.json()
+                if dividends:
+                    defaults['dividend_payment_amount'] = dividends[0]['amount']
+
+            url = f'{settings.IEXCLOUD_BASE_URL}/stock/{ticker.symbol}/splits'
+            splits_resp = requests.get(url, params=params)
+            if splits_resp.ok:
+                splits = splits_resp.json()
+                if splits:
+                    defaults['split_declaration_date'] = splits[0]['declaredDate']
+                    defaults['split_ex_date'] = splits[0]['exDate']
 
             TickerStats.objects.update_or_create(ticker=ticker, defaults=defaults)

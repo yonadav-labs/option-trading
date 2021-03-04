@@ -65,7 +65,8 @@ class WatchlistItemAdmin(admin.ModelAdmin):
 
 
 class TickerStatsAdmin(admin.ModelAdmin):
-    list_display = ['ticker', 'company_name', 'market_cap', 'pe_ratio'] + DEFAULT_FIELDS
+    list_display = ['ticker', 'company_name', 'dividend_payment_amount', 'split_declaration_date',
+                    'split_ex_date', 'market_cap'] + DEFAULT_FIELDS
     search_fields = ['ticker__symbol', 'company_name']
 
 

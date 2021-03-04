@@ -52,6 +52,7 @@ class ExpirationDate(BaseModel):
 class TickerStats(BaseModel):
     ticker = models.OneToOneField(Ticker, on_delete=models.CASCADE)
     company_name = models.CharField(max_length=250)
+    dividend_payment_amount = models.FloatField(blank=True, null=True)
     market_cap = models.FloatField(blank=True, null=True)
     week52_high = models.FloatField(blank=True, null=True)
     week52_low = models.FloatField(blank=True, null=True)
@@ -66,6 +67,8 @@ class TickerStats(BaseModel):
     next_dividend_date = models.DateField(blank=True, null=True)
     ex_dividend_date = models.DateField(blank=True, null=True)
     next_earnings_date = models.DateField(blank=True, null=True)
+    split_declaration_date = models.DateField(blank=True, null=True)
+    split_ex_date = models.DateField(blank=True, null=True)
     pe_ratio = models.FloatField(blank=True, null=True)
     beta = models.FloatField(blank=True, null=True)
 
