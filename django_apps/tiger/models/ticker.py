@@ -71,6 +71,10 @@ class TickerStats(BaseModel):
     split_ex_date = models.DateField(blank=True, null=True)
     pe_ratio = models.FloatField(blank=True, null=True)
     beta = models.FloatField(blank=True, null=True)
+    price_target_average = models.FloatField(blank=True, null=True)
+    price_target_high = models.FloatField(blank=True, null=True)
+    price_target_low = models.FloatField(blank=True, null=True)
+    number_of_analysts = models.FloatField(blank=True, null=True)
 
     class Meta:
         verbose_name_plural = 'Ticker stats'

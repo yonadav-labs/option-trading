@@ -1,8 +1,11 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 
-from .models import User, Ticker, ExternalRequestCache, Subscription, StockSnapshot, OptionContractSnapshot, \
-    LegSnapshot, TradeSnapshot, Watchlist, WatchlistItem, TickerStats, ExpirationDate
+from .models import (
+    User, Ticker, ExternalRequestCache, Subscription, StockSnapshot,
+    OptionContractSnapshot, LegSnapshot, TradeSnapshot, Watchlist,
+    WatchlistItem, TickerStats, ExpirationDate, MarketDate
+)
 
 DEFAULT_FIELDS = ['created_time', 'last_updated_time']
 
@@ -70,6 +73,12 @@ class TickerStatsAdmin(admin.ModelAdmin):
     search_fields = ['ticker__symbol', 'company_name']
 
 
+class MarketDateAdmin(admin.ModelAdmin):
+    list_display = ['date', 'type']
+    list_filter = ['type']
+    ordering = ['date']
+
+
 admin.site.register(User, UserAdmin)
 admin.site.register(Ticker, TickerAdmin)
 admin.site.register(ExternalRequestCache, ExternalRequestCacheAdmin)
@@ -81,3 +90,4 @@ admin.site.register(TradeSnapshot, TradeSnapshotAdmin)
 admin.site.register(Watchlist, WatchlistAdmin)
 admin.site.register(WatchlistItem, WatchlistItemAdmin)
 admin.site.register(TickerStats, TickerStatsAdmin)
+admin.site.register(MarketDate, MarketDateAdmin)

@@ -9,7 +9,7 @@ from tiger.models import Ticker, TickerStats
 
 
 class Command(BaseCommand):
-    help = 'Fetch data from IEX Cloud'
+    help = 'Fetch ticker data from IEX Cloud'
 
     def __init__(self):
         self.period = '1m'  # default by api
@@ -100,6 +100,19 @@ class Command(BaseCommand):
                 ticker.tickerstats.split_ex_date = splits[0]['exDate']
                 ticker.tickerstats.save()
 
+    def fetch_price_target(self, ticker):
+        url = f'{settings.IEXCLOUD_BASE_URL}/stock/{ticker.symbol}/price-target'
+        resp = requests.get(url, params=self.params)
+
+        if resp.ok:
+            info = resp.json()
+            if info:
+                ticker.tickerstats.price_target_average = info['priceTargetAverage']
+                ticker.tickerstats.price_target_high = info['priceTargetHigh']
+                ticker.tickerstats.price_target_low = info['priceTargetLow']
+                ticker.tickerstats.number_of_analysts = info['numberOfAnalysts']
+                ticker.tickerstats.save()
+
     def handle(self, *args, **options):
         ticker_infos = self.fetch_tickers()
 
@@ -115,5 +128,6 @@ class Command(BaseCommand):
             self.fetch_stats(ticker)
             self.fetch_dividends(ticker)
             self.fetch_splits(ticker)
+            # self.fetch_price_target(ticker)  # preminum data, will be enabled later
 
             print (ticker.symbol)

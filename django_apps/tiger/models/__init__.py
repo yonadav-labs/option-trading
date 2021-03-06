@@ -5,3 +5,4 @@ from .ticker import *
 from .trade_snapshot import *
 from .user import *
 from .watchlist import *
+from .market import *
