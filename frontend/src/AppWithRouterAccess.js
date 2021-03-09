@@ -16,6 +16,8 @@ import SingleTrade from './pages/SingleTrade';
 import Pricing from './pages/Pricing';
 import StrategyBuilder from './pages/StrategyBuilder';
 import EmailVerified from './pages/EmailVerified';
+import Blog from './pages/Blog';
+import BlogDetail from './pages/BlogDetail';
 
 const oktaAuth = new OktaAuth(getOktaConfig().oidc);
 
@@ -52,6 +54,8 @@ export default withRouter(class AppWithRouterAccess extends Component {
                             <Route path='/verify-email' component={EmailVerified} />
                             <Route path='/callback' component={LoginCallback} />
                             <Route path='/pricing' component={Pricing} />
+                            <SecureRoute path='/blogs/:blogId' exact={true} component={BlogDetail} />
+                            <Route path='/blogs' component={Blog} />
                         </Switch>
                     </main>
                     <Footer className="mt-auto"></Footer>

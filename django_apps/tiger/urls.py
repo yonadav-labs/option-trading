@@ -6,6 +6,7 @@ from tiger import views
 
 router = routers.SimpleRouter()
 router.register(r'tickers', views.TickerViewSet, basename='tickers')
+router.register(r'blogs', views.BlogViewSet, basename='blogs')
 
 restful_urlpatterns = [
     path('api/', include(router.urls)),

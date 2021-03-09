@@ -4,7 +4,7 @@ from django.contrib.auth.admin import UserAdmin
 from .models import (
     User, Ticker, ExternalRequestCache, Subscription, StockSnapshot,
     OptionContractSnapshot, LegSnapshot, TradeSnapshot, Watchlist,
-    WatchlistItem, TickerStats, ExpirationDate, MarketDate
+    WatchlistItem, TickerStats, ExpirationDate, MarketDate, Blog
 )
 
 DEFAULT_FIELDS = ['created_time', 'last_updated_time']
@@ -79,6 +79,12 @@ class MarketDateAdmin(admin.ModelAdmin):
     ordering = ['date']
 
 
+class BlogAdmin(admin.ModelAdmin):
+    list_display = ['title', 'slide_link', 'created_by']
+    search_fields = ['title', 'description']
+    ordering = ['last_updated_time']
+
+
 admin.site.register(User, UserAdmin)
 admin.site.register(Ticker, TickerAdmin)
 admin.site.register(ExternalRequestCache, ExternalRequestCacheAdmin)
@@ -91,3 +97,4 @@ admin.site.register(Watchlist, WatchlistAdmin)
 admin.site.register(WatchlistItem, WatchlistItemAdmin)
 admin.site.register(TickerStats, TickerStatsAdmin)
 admin.site.register(MarketDate, MarketDateAdmin)
+admin.site.register(Blog, BlogAdmin)

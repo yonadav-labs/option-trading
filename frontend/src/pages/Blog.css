@@ -1,0 +1,14 @@
+.blog-background {
+  background-image: url('../svg/Hero-Right-D.svg');
+  background-position: right top;
+  background-repeat: no-repeat;
+  background-size: 35vw;
+}
+
+.blog-description {
+  font-size: 18px;
+}
+
+.google-slide-iframe {
+  width: 960px;
+}
