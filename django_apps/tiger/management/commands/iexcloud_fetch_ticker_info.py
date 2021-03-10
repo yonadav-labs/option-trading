@@ -10,7 +10,6 @@ from django import db
 
 from tiger.models import Ticker, TickerStats
 
-
 request_params = {
     'token': settings.IEXCLOUD_TOKEN
 }
@@ -24,7 +23,9 @@ def fetch_tickers():
 
     ticker_infos = []
     for ixe_ticker_response in ixe_ticker_responses:
-        if ixe_ticker_response['region'] != 'US' or ixe_ticker_response['exchange'] not in ['NYS', 'USAMEX', 'NAS', 'USPAC'] or ixe_ticker_response['type'] not in ['ad', 're', 'cs', 'et']:
+        if ixe_ticker_response['region'] != 'US' or ixe_ticker_response['exchange'] not in ['NYS', 'USAMEX', 'NAS',
+                                                                                            'USPAC'] or \
+                ixe_ticker_response['type'] not in ['ad', 're', 'cs', 'et']:
             continue
 
         ticker_infos.append(ixe_ticker_response)
@@ -38,22 +39,25 @@ def fetch_expiration_dates(ticker):
 
     if not resp.ok:
         print(f'({ticker.symbol}) Error in fetching expiration dates:', resp.status_code, resp.content)
+        if resp.status_code == 404:
+            # disable the ticker
+            ticker.status = 'disabled'
+            ticker.save()
         return
 
-    options = resp.json()
-    if options:
-        # save expiration_dates
-        for option in options:
-            try:  # to handle invalid date format from api
-                date = datetime.datetime.strptime(option, '%Y%m%d').date()
-                ticker.expiration_dates.get_or_create(date=date)
-            except ValueError:
-                print(f'({ticker.symbol}) Invalid date format:', option)
-                continue
+    expiration_date_strs = resp.json()
+    ticker.status = 'unspecified' if expiration_date_strs else 'disabled'
+    ticker.save()
+    return
 
-        # enable the ticker
-        ticker.status = 'unspecified'
-        ticker.save()
+    # save expiration_dates
+    for expiration_date_str in expiration_date_strs:
+        try:  # to handle invalid date format from api
+            date = datetime.datetime.strptime(expiration_date_str, '%Y%m%d').date()
+            ticker.expiration_dates.get_or_create(date=date)
+        except ValueError:
+            print(f'({ticker.symbol}) Invalid date format:', expiration_date_str)
+            continue
 
 
 def fetch_stats(ticker):
@@ -138,7 +142,7 @@ def fetch_price_target(ticker):
 
 def fetch_ticker_info(ticker_id):
     ticker = Ticker.objects.get(id=ticker_id)
-    print (ticker.symbol)
+    print(ticker.symbol)
 
     fetch_expiration_dates(ticker)
     if ticker.status == 'unspecified':
@@ -152,16 +156,13 @@ class Command(BaseCommand):
     help = 'Fetch ticker data from IEX Cloud'
 
     def handle(self, *args, **options):
-        ticker_infos = fetch_tickers()
-
-        ticker_ids = []
-        for ticker_info in ticker_infos:
+        for ticker_info in fetch_tickers():
             defaults = {
                 "full_name": ticker_info['name'],
-                "status": "disabled"
             }
-            ticker, _ = Ticker.objects.update_or_create(symbol=ticker_info['symbol'], defaults=defaults)
-            ticker_ids.append(ticker.id)
+            Ticker.objects.update_or_create(symbol=ticker_info['symbol'], defaults=defaults)
+
+        ticker_ids = [ticker.id for ticker in Ticker.objects.all()]
 
         pool_size = min(mp.cpu_count() * 2, 16)
         print('pool_size:', pool_size)
