@@ -43,6 +43,7 @@ const BlogDetail = () => {
         <div className="blog-background">
             <div class="container justify-content-center min-vh-100 pt-5">
                 <h1 className="text-center mb-5">{blog.title}</h1>
+                <p>{blog.created_time}</p>
                 <p className="blog-description">{blog.description}</p>
                 <div className="p-5 mb-5">
                     <iframe src={blog.slide_link} frameborder="0" className="google-slide-iframe mx-auto" height="569" allowfullscreen="true" mozallowfullscreen="true" webkitallowfullscreen="true"></iframe>

@@ -1,5 +1,5 @@
-import React, { useContext, useEffect } from 'react'
-import { Link } from "react-router-dom"
+import React, { useContext, useEffect } from 'react';
+import { Link } from "react-router-dom";
 import { Navbar, Nav, Image } from 'react-bootstrap';
 import { useOktaAuth } from '@okta/okta-react';
 import { useHistory } from "react-router-dom";
@@ -67,8 +67,9 @@ function Header() {
                         <Nav.Link eventKey={"1"} className="text-dark" as={Link} to="/strategy-screener">Strategy Screener</Nav.Link>
                         <Nav.Link eventKey={"2"} className="text-dark" as={Link} to="/strategy-builder">Strategy Builder</Nav.Link>
                         <Nav.Link eventKey={"3"} className="text-dark" as={Link} to="/option-screener">Options Screener</Nav.Link>
-                        <Nav.Link eventKey={"4"} className="text-dark" as={Link} to="/pricing">Pricing</Nav.Link>
-                        <Nav.Link eventKey={"5"} className="text-dark" href="#">Support</Nav.Link>
+                        <Nav.Link eventKey={"4"} className="text-dark" as={Link} to="/blogs">Insights</Nav.Link>
+                        <Nav.Link eventKey={"5"} className="text-dark" as={Link} to="/pricing">Pricing</Nav.Link>
+                        <Nav.Link eventKey={"6"} className="text-dark" href="#">Support</Nav.Link>
                     </Nav>
                     {authState.isAuthenticated ?
                         <Nav>

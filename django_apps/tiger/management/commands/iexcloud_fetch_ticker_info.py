@@ -48,7 +48,6 @@ def fetch_expiration_dates(ticker):
     expiration_date_strs = resp.json()
     ticker.status = 'unspecified' if expiration_date_strs else 'disabled'
     ticker.save()
-    return
 
     # save expiration_dates
     for expiration_date_str in expiration_date_strs:
