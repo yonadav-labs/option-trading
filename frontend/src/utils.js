@@ -270,3 +270,53 @@ export async function loadExpirationDates(headers, selected, setModalActive, set
         setModalActive(false);
     }
 };
+
+// fetch expiration dates for new strategy screen and material ui
+export async function newLoadExpirationDates(headers, selected, setModalActive, setExpirationTimestamps, setBasicInfo, setSelectedTicker) {
+    try {
+        setModalActive(true);
+        saveRecent(selected.symbol);
+        const response = await Axios.get(`${getApiUrl()}/tickers/${selected.symbol}/expire_dates/`, {headers: headers});
+        setExpirationTimestamps(response.data.expiration_timestamps);
+        setBasicInfo(response.data.quote)
+        selected.external_cache_id = response.data.external_cache_id;
+        setSelectedTicker(selected);
+        setModalActive(false);
+    } catch (error) {
+        console.error(error);
+        setModalActive(false);
+    }
+};
+
+// fetch tickers for new strategy screen and material ui
+export async function newLoadTickers(headers, setAllTickers) {
+    try {
+        let recentTickers = localStorage.getItem('tigerstance-recent-tickers') || '';
+        recentTickers = recentTickers.split(' ');
+
+        const response = await Axios.get(`${getApiUrl()}/tickers/`, {headers: headers});
+        let visitedTickers = [];
+        let restTickers = [];
+
+        response.data.map((ticker) => {
+            if (ticker.full_name) {
+                ticker.display_label = ticker.symbol + ' - ' + ticker.full_name;
+            } else {
+                ticker.display_label = ticker.symbol;
+            }
+
+            if (recentTickers.indexOf(ticker.symbol) > -1) {
+                visitedTickers.push(ticker);
+            } else {
+                restTickers.push(ticker);
+            }
+
+            return ticker;
+        });
+
+        visitedTickers.sort((a, b) => (recentTickers.indexOf(a.symbol) - recentTickers.indexOf(b.symbol)));
+        setAllTickers(visitedTickers.concat(restTickers));
+    } catch (error) {
+        console.error(error);
+    }
+};

@@ -11,7 +11,7 @@ import Footer from './components/footer'
 import OptionScreener from './pages/OptionScreener'
 import Disclaimer from './components/disclaimer';
 import StrategyScreener from './pages/StrategyScreener';
-import NewStrategyScreener from './pages/strategyScreener/NewStrategyScreener';
+import NewStrategyScreener from './pages/strategy_screener/NewStrategyScreener';
 import SingleTrade from './pages/SingleTrade';
 import Pricing from './pages/Pricing';
 import StrategyBuilder from './pages/StrategyBuilder';
