@@ -75,7 +75,7 @@ ListboxComponent.propTypes = {
 };
 
 export default function TickerAutocomplete(props) {
-    const { tickers, onChange } = props;
+    const { tickers, onChange, size } = props;
 
     return (
         <Autocomplete
@@ -84,6 +84,7 @@ export default function TickerAutocomplete(props) {
             disableListWrap
             ListboxComponent={ListboxComponent}
             options={tickers}
+            size={size}
             getOptionLabel={(option) => option.display_label}
             renderInput={(params) => <TextField {...params} variant="outlined" label="Enter a ticker symbol: TSLA, AAPL, GOOG..." />}
             renderOption={(option) => <Typography noWrap>{option.display_label}</Typography>}

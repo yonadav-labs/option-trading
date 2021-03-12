@@ -1,11 +1,12 @@
 import React, {useState, useEffect} from "react";
-import {CssBaseline, Container } from "@material-ui/core";
+import {CssBaseline} from "@material-ui/core";
 import ModalSpinner from '../../components/ModalSpinner';
 import LandingView from "./LandingView";
 
 // utils
 import { newLoadTickers, newLoadExpirationDates } from "../../utils";
 import { useOktaAuth } from '@okta/okta-react';
+import MainView from "./MainView";
 
 export default function NewStrategyScreener() {
     // stock/ticker states
@@ -103,10 +104,10 @@ export default function NewStrategyScreener() {
     }
 
     return (
-        <Container className="min-vh-100">
+        <div>
             <CssBaseline />
             <ModalSpinner active={modalActive}></ModalSpinner>
-            <LandingView 
+            {/* <LandingView 
                 allTickers={allTickers} 
                 onTickerSelectionChange={onTickerSelectionChange} 
                 expirationTimestampsOptions={expirationTimestampsOptions}
@@ -114,8 +115,16 @@ export default function NewStrategyScreener() {
                 sentiment={sentiment}
                 onExpirationSelectionChange={onExpirationSelectionChange}
                 selectedExpirationTimestamp={selectedExpirationTimestamp}
+            /> */}
+            <MainView 
+                allTickers={allTickers} 
+                onTickerSelectionChange={onTickerSelectionChange}
+                expirationTimestampsOptions={expirationTimestampsOptions}
+                expirationDisabled={expirationDisabled}
+                onExpirationSelectionChange={onExpirationSelectionChange}
+                selectedExpirationTimestamp={selectedExpirationTimestamp}
                 setTargetPriceBySentiment={setTargetPriceBySentiment}
             />
-        </Container>
+        </div>
     );
 }

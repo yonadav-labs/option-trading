@@ -11,7 +11,7 @@ export default function LandingView({ allTickers, selectedExpirationTimestamp, o
     const handleSentiment = (event, newSentiment) => {
         setTargetPriceBySentiment(newSentiment)
     };
-
+    
     return (
         <Container className="min-vh-100">
             <Grid container direction="row" justify="center" alignItems="center" >
