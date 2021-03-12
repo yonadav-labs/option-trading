@@ -12,6 +12,8 @@ export default function NewStrategyScreener() {
     const [allTickers, setAllTickers] = useState([]);
     const [selectedTicker, setSelectedTicker] = useState();
     const [basicInfo, setBasicInfo] = useState({});
+    const [targetPriceLower, setTargetPriceLower] = useState(null);
+    const [targetPriceUpper, setTargetPriceUpper] = useState(null);
 
     // expiration date states
     const [expirationTimestamps, setExpirationTimestamps] = useState([]);
@@ -19,6 +21,7 @@ export default function NewStrategyScreener() {
     const [selectedExpirationTimestamp, setSelectedExpirationTimestamp] = useState([]);
 
     // component management states
+    const [sentiment, setSentiment] = useState('');
     const [modalActive, setModalActive] = useState(false);
     const [expirationDisabled, setExpirationDisabled] = useState(true)
 
@@ -33,6 +36,9 @@ export default function NewStrategyScreener() {
         setSelectedExpirationTimestamp([]);
         setBasicInfo({});
         setModalActive(false);
+        setSentiment('')
+        setTargetPriceLower(null)
+        setTargetPriceUpper(null)
     }
 
     const onTickerSelectionChange = (e, selected) => {
@@ -65,7 +71,6 @@ export default function NewStrategyScreener() {
 
     // when expiration dates are changed set new date options
     useEffect(() => {
-        console.log(expirationTimestamps)
         setExpirationDisabled(true)
         if (expirationTimestamps.length > 0) {
             let arr = []
@@ -80,6 +85,23 @@ export default function NewStrategyScreener() {
         }
     }, [expirationTimestamps])
 
+    // function to set upper and lower limit when selecting sentiment
+    const setTargetPriceBySentiment = (sentiment) => {
+        setSentiment(sentiment)
+        switch (sentiment) {
+            case 'bullish':
+                setTargetPriceLower(basicInfo.regularMarketPrice)
+                setTargetPriceUpper(basicInfo.regularMarketPrice * 1.1)
+                break;
+            case 'bearish':
+                setTargetPriceLower(basicInfo.regularMarketPrice * 0.9)
+                setTargetPriceUpper(basicInfo.regularMarketPrice)
+                break;
+            default:
+                break;
+        }
+    }
+
     return (
         <Container className="min-vh-100">
             <CssBaseline />
@@ -89,8 +111,10 @@ export default function NewStrategyScreener() {
                 onTickerSelectionChange={onTickerSelectionChange} 
                 expirationTimestampsOptions={expirationTimestampsOptions}
                 expirationDisabled={expirationDisabled}
+                sentiment={sentiment}
                 onExpirationSelectionChange={onExpirationSelectionChange}
                 selectedExpirationTimestamp={selectedExpirationTimestamp}
+                setTargetPriceBySentiment={setTargetPriceBySentiment}
             />
         </Container>
     );

@@ -7,11 +7,9 @@ import {
 } from "@material-ui/lab/";
 import TickerAutocomplete from "../../components/TickerAutocomplete";
 
-export default function LandingView({ allTickers, selectedExpirationTimestamp, onTickerSelectionChange, expirationTimestampsOptions, expirationDisabled, onExpirationSelectionChange }) {
-    const [sentiment, setSentiment] = useState('bullish');
-
+export default function LandingView({ allTickers, selectedExpirationTimestamp, onTickerSelectionChange, expirationTimestampsOptions, expirationDisabled, sentiment, onExpirationSelectionChange, setTargetPriceBySentiment }) {
     const handleSentiment = (event, newSentiment) => {
-        setSentiment(newSentiment);
+        setTargetPriceBySentiment(newSentiment)
     };
 
     return (
@@ -84,10 +82,10 @@ export default function LandingView({ allTickers, selectedExpirationTimestamp, o
                                         onChange={handleSentiment}
                                         size="large"
                                     >
-                                        <ToggleButton value="bullish">
+                                        <ToggleButton value="bullish" disabled={expirationDisabled}>
                                             Bullish
                                         </ToggleButton>
-                                        <ToggleButton value="bearish">
+                                        <ToggleButton value="bearish" disabled={expirationDisabled}>
                                             Bearish
                                         </ToggleButton>
                                     </ToggleButtonGroup>
