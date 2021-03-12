@@ -75,6 +75,7 @@ class TickerStats(BaseModel):
     price_target_high = models.FloatField(blank=True, null=True)
     price_target_low = models.FloatField(blank=True, null=True)
     number_of_analysts = models.FloatField(blank=True, null=True)
+    historical_volatility = models.FloatField(blank=True, null=True)
 
     class Meta:
         verbose_name_plural = 'Ticker stats'

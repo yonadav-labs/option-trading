@@ -10,14 +10,14 @@ from django import db
 
 from tiger.models import Ticker, TickerStats
 
-request_params = {
+DEFAULT_QUERY_PARAMS = {
     'token': settings.IEXCLOUD_TOKEN
 }
 
 
 def fetch_tickers():
     url = f'{settings.IEXCLOUD_BASE_URL}/ref-data/symbols'
-    resp = requests.get(url, params=request_params)
+    resp = requests.get(url, params=DEFAULT_QUERY_PARAMS)
     resp.raise_for_status()
     ixe_ticker_responses = resp.json()
 
@@ -35,7 +35,7 @@ def fetch_tickers():
 
 def fetch_expiration_dates(ticker):
     url = f'{settings.IEXCLOUD_BASE_URL}/stock/{ticker.symbol}/options'
-    resp = requests.get(url, params=request_params)
+    resp = requests.get(url, params=DEFAULT_QUERY_PARAMS)
 
     if not resp.ok:
         print(f'({ticker.symbol}) Error in fetching expiration dates:', resp.status_code, resp.content)
@@ -61,7 +61,7 @@ def fetch_expiration_dates(ticker):
 
 def fetch_stats(ticker):
     url = f'{settings.IEXCLOUD_BASE_URL}/stock/{ticker.symbol}/stats'
-    resp = requests.get(url, params=request_params)
+    resp = requests.get(url, params=DEFAULT_QUERY_PARAMS)
 
     if not resp.ok:
         print('Error in fetching stats:', resp.status_code, resp.content)
@@ -95,7 +95,7 @@ def fetch_stats(ticker):
 def fetch_dividends(ticker):
     period = '1m'  # default by api
     url = f'{settings.IEXCLOUD_BASE_URL}/stock/{ticker.symbol}/dividends/{period}'
-    resp = requests.get(url, params=request_params)
+    resp = requests.get(url, params=DEFAULT_QUERY_PARAMS)
 
     if not resp.ok:
         print('Error in fetching dividends:', resp.status_code, resp.content)
@@ -109,7 +109,7 @@ def fetch_dividends(ticker):
 
 def fetch_splits(ticker):
     url = f'{settings.IEXCLOUD_BASE_URL}/stock/{ticker.symbol}/splits'
-    resp = requests.get(url, params=request_params)
+    resp = requests.get(url, params=DEFAULT_QUERY_PARAMS)
 
     if not resp.ok:
         print('Error in fetching splits:', resp.status_code, resp.content)
@@ -124,7 +124,7 @@ def fetch_splits(ticker):
 
 def fetch_price_target(ticker):
     url = f'{settings.IEXCLOUD_BASE_URL}/stock/{ticker.symbol}/price-target'
-    resp = requests.get(url, params=request_params)
+    resp = requests.get(url, params=DEFAULT_QUERY_PARAMS)
 
     if not resp.ok:
         print('Error in fetching price target:', resp.status_code, resp.content)
@@ -139,6 +139,21 @@ def fetch_price_target(ticker):
         ticker.tickerstats.save()
 
 
+def fetch_historical_volatility(ticker):
+    '''Context: https://www.profitspi.com/stock/view.aspx?v=stock-chart&uv=100585'''
+    url = f'{settings.IEXCLOUD_BASE_URL}/stock/{ticker.symbol}/indicator/volatility'
+    resp = requests.get(url, params={**DEFAULT_QUERY_PARAMS, 'indicatorOnly': True, 'range': '35d', 'input1': 20})
+
+    if not resp.ok:
+        print('Error in fetching historical volatility:', resp.status_code, resp.content)
+        return
+
+    result = resp.json()
+    if len(result.get('indicator', [])) > 0 and len(result.get('indicator')[0]) > 0:
+        ticker.tickerstats.historical_volatility = result.get('indicator')[0][-1]
+        ticker.tickerstats.save()
+
+
 def fetch_ticker_info(ticker_id):
     ticker = Ticker.objects.get(id=ticker_id)
     print(ticker.symbol)
@@ -149,6 +164,7 @@ def fetch_ticker_info(ticker_id):
         fetch_dividends(ticker)
         fetch_splits(ticker)
         # fetch_price_target(ticker)  # preminum data, will be enabled later
+        fetch_historical_volatility(ticker)
 
 
 class Command(BaseCommand):
