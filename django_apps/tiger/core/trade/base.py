@@ -59,6 +59,22 @@ class Trade(ABC):
             cost_sum += leg.cost
         return cost_sum
 
+    @property
+    def notional_value(self):
+        notional_value = 0.0
+        for leg in self.legs:
+            if leg.contract:
+                notional_value = leg.contract.notional_value * leg.units
+                break
+
+        return notional_value
+
+    @property
+    def leverage(self):
+        if not self.cost or self.notional_value is None:
+            return
+        return self.notional_value / self.cost
+
     def _get_aggr_contract_attribute(self, attribute_name, use_min):
         attributes = [getattr(leg.contract, attribute_name) for leg in self.legs if leg.contract]
         if None in attributes or not attributes:

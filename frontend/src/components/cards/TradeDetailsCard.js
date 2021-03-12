@@ -18,22 +18,20 @@ export default function TradeDetailsCard(props) {
                     {hideShareButton ? null : <div className="col-md-6"><span style={{ float: 'right' }}><ShareTradeBtn trade={trade} /></span></div>}
                 </Row>
                 <Card.Text>
-                    {trade.target_price_lower ?
-                        (<Row>
-                            <Col sm="3" xs="6">
+                    <Row>
+                        {trade.target_price_lower ?
+                            (<Col sm="3" xs="6">
                                 <Badge variant="secondary">Target Price Range</Badge>
                                 <br />
                                 {PriceFormatter(trade.target_price_lower)}({ProfitFormatter(trade.to_target_price_lower_ratio)})
-                                - {PriceFormatter(trade.target_price_upper)}({ProfitFormatter(trade.to_target_price_upper_ratio)})
-                            </Col>
-                            <Col sm="3" xs="6">
+                        - {PriceFormatter(trade.target_price_upper)}({ProfitFormatter(trade.to_target_price_upper_ratio)})
+                            </Col>) : null}
+                        {trade.target_price_lower ?
+                            (<Col sm="3" xs="6">
                                 <Badge variant="secondary">Hypothetical Profit</Badge>
                                 <br />
                                 {PriceFormatter(trade.target_price_profit)} ({ProfitFormatter(trade.target_price_profit_ratio)})
-                            </Col>
-                        </Row>) : null}
-
-                    <Row>
+                            </Col>) : null}
                         <Col sm="3" xs="6">
                             <Badge variant="secondary">Break-Even At</Badge>
                             <br />
@@ -50,12 +48,23 @@ export default function TradeDetailsCard(props) {
                                 )
                                 : (<span>Unlimited</span>)}
                         </Col>
+                    </Row>
+                    <Row>
                         <Col sm="3" xs="6">
-                            <Badge variant="secondary">Cost / Max Loss</Badge>
+                            <Badge variant="secondary">Cost</Badge>
                             <br />
                             {PriceFormatter(trade.cost)}
                         </Col>
-                        <Col sm="3" xs="6"></Col>
+                        <Col sm="3" xs="6">
+                            <Badge variant="secondary">Notional Value</Badge>
+                            <br />
+                            {PriceFormatter(trade.notional_value)}
+                        </Col>
+                        <Col sm="3" xs="6">
+                            <Badge variant="secondary">Leverage</Badge>
+                            <br />
+                            {PercentageFormatter(trade.leverage)}
+                        </Col>
                     </Row>
                     <br />
                     <TradeProfitLossGraph trade={trade} />

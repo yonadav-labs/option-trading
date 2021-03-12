@@ -67,6 +67,7 @@ class OptionContractSerializer(serializers.Serializer):
     mark = DollarDecimalField()
     break_even_price = DollarDecimalField()
     to_break_even_ratio = RatioDecimalField()
+    notional_value = DollarDecimalField()
 
 
 class LegSerializer(serializers.Serializer):
@@ -109,6 +110,8 @@ class TradeSerializer(serializers.Serializer):
     profit_cap_ratio = RatioDecimalField()
     graph_x_points = serializers.ListField(child=DollarDecimalField())
     graph_y_points = serializers.ListField(child=DollarDecimalField())
+    notional_value = DollarDecimalField()
+    leverage = RatioDecimalField()
 
     # TODO: re-consider those metrics.
     # premium_profit = serializers.FloatField(allow_null=True)  # CoveredCall, CashSecuredPut only

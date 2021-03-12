@@ -139,6 +139,7 @@ class OptionContract(Security):
         # Non-contract data.
         self.ticker = ticker
         self.stock_price = stock_price
+        self.notional_value = stock_price * 100
         self.days_till_expiration = days_from_timestamp(self.expiration)
         # Validation.
         self.mark

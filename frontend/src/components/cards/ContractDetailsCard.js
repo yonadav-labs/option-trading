@@ -99,6 +99,10 @@ export default function ContractDetailsCard(props) {
                                         <Row><Col><Badge variant="secondary">Quoted at</Badge></Col></Row>
                                         <Row><Col>{TimestampTimeFormatter(contract.quote_time)}</Col></Row>
                                     </Col>
+                                    <Col sm="3" xs="6">
+                                        <Row><Col><Badge variant="secondary">Notional Value</Badge></Col></Row>
+                                        <Row><Col>{PriceFormatter(contract.notional_value)}</Col></Row>
+                                    </Col>
                                 </Row>
                                 <a className="read-more-link" style={{ cursor: 'pointer' }} onClick={() => { setReadMore(!readMore) }}>{linkName}</a>
                             </> : <a className="read-more-link" style={{ cursor: 'pointer' }} onClick={() => { setReadMore(!readMore) }}>{linkName}</a>}
