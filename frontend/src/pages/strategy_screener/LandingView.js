@@ -7,7 +7,18 @@ import {
 } from "@material-ui/lab/";
 import TickerAutocomplete from "../../components/TickerAutocomplete";
 
-export default function LandingView({ allTickers, selectedExpirationTimestamp, onTickerSelectionChange, expirationTimestampsOptions, expirationDisabled, sentiment, onExpirationSelectionChange, setTargetPriceBySentiment }) {
+export default function LandingView(props) {
+    const { allTickers, 
+        selectedExpirationTimestamp, 
+        onTickerSelectionChange, 
+        expirationTimestampsOptions, 
+        expirationDisabled, 
+        sentiment, 
+        onExpirationSelectionChange, 
+        setTargetPriceBySentiment, 
+        getBestStrategies, 
+        bestStrategies } = props
+
     const handleSentiment = (event, newSentiment) => {
         setTargetPriceBySentiment(newSentiment)
     };
@@ -94,8 +105,8 @@ export default function LandingView({ allTickers, selectedExpirationTimestamp, o
                             <br />
                             <Grid container direction="row" justify="center" spacing={3} >
                                 <Grid item xs={4}>
-                                    <Button variant="contained" color="primary" size="large">
-                                        Search
+                                    <Button variant="contained" color="primary" size="large" onClick={getBestStrategies}>
+                                        Analyze
                                     </Button>
                                 </Grid>
                             </Grid>

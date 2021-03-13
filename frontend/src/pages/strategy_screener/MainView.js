@@ -1,11 +1,22 @@
-import React from "react";
+import React, {useState, useEffect} from "react";
 import { Grid, Paper, Button, TextField, Box } from "@material-ui/core";
 import { Autocomplete, Pagination } from "@material-ui/lab/";
 import TuneIcon from '@material-ui/icons/Tune';
 import NewTradeCard from "../../components/NewTradeCard";
 import TickerAutocomplete from "../../components/TickerAutocomplete";
 
-export default function MainView({allTickers, selectedExpirationTimestamp, onTickerSelectionChange, expirationTimestampsOptions, expirationDisabled, onExpirationSelectionChange}) {
+export default function MainView({allTickers, onTickerSelectionChange, bestStrategies }) {
+    const [renderedStrategies, setRenderedStrategies] = useState([])
+    const [noOfPages, setNoOfPages] = useState(null)
+
+    const pageChangeHandler = (event, page) => {
+        setRenderedStrategies(bestStrategies.slice((10 * (page-1)), (10 * page)))
+    }
+
+    useEffect(() => {
+        setRenderedStrategies(bestStrategies.slice(0,10))
+        setNoOfPages(Math.ceil(bestStrategies.length / 10))
+    }, [bestStrategies])
 
     return (
         <div>
@@ -114,25 +125,15 @@ export default function MainView({allTickers, selectedExpirationTimestamp, onTic
                             <Grid item><Button>View Chart</Button></Grid>
                         </Grid>
                     </Box>
-                    <br />
                     <Box p={5} bgcolor='#F2F2F2' minHeight="100vh" height="100%">
                         <Grid container spacing={2} direction="column" justify="center" alignItems="stretch">
-                            <NewTradeCard/>
-                            <NewTradeCard/>
-                            <NewTradeCard/>
-                            <NewTradeCard/>
-                            <NewTradeCard/>
-                            <NewTradeCard/>
-                            <NewTradeCard/>
-                            <NewTradeCard/>
-                            <NewTradeCard/>
-                            <NewTradeCard/>
+                            {renderedStrategies.map(strategy => <NewTradeCard strategy={strategy}/>)}
                         </Grid>
                     </Box>
                 </Grid>
             </Grid>
             <Grid container justify="flex-end">
-                <Pagination count={10} color="primary" />
+                <Pagination count={noOfPages} color="primary" onChange={pageChangeHandler}/>
             </Grid>
         </div>
     );

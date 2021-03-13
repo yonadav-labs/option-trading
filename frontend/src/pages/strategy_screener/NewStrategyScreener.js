@@ -1,20 +1,24 @@
 import React, {useState, useEffect} from "react";
+import Axios from 'axios';
 import {CssBaseline} from "@material-ui/core";
 import ModalSpinner from '../../components/ModalSpinner';
 import LandingView from "./LandingView";
 
 // utils
-import { newLoadTickers, newLoadExpirationDates } from "../../utils";
+import getApiUrl, { newLoadTickers, newLoadExpirationDates } from "../../utils";
 import { useOktaAuth } from '@okta/okta-react';
 import MainView from "./MainView";
 
 export default function NewStrategyScreener() {
+    const API_URL = getApiUrl();
+
     // stock/ticker states
     const [allTickers, setAllTickers] = useState([]);
     const [selectedTicker, setSelectedTicker] = useState();
     const [basicInfo, setBasicInfo] = useState({});
     const [targetPriceLower, setTargetPriceLower] = useState(null);
     const [targetPriceUpper, setTargetPriceUpper] = useState(null);
+    const [bestStrategies, setBestStrategies] = useState(null);
 
     // expiration date states
     const [expirationTimestamps, setExpirationTimestamps] = useState([]);
@@ -25,6 +29,7 @@ export default function NewStrategyScreener() {
     const [sentiment, setSentiment] = useState('');
     const [modalActive, setModalActive] = useState(false);
     const [expirationDisabled, setExpirationDisabled] = useState(true)
+    const [pageState, setPageState] = useState(true)
 
     // okta states
     const [headers, setHeaders] = useState(null);
@@ -103,28 +108,60 @@ export default function NewStrategyScreener() {
         }
     }
 
+    const getBestStrategies = async () => {
+        try {
+            let url = `${API_URL}/tickers/${selectedTicker.symbol}/trades/?`;
+            url += `expiration_timestamps=${selectedExpirationTimestamp[0].value}&`;
+            url += `target_price_lower=${targetPriceLower}&target_price_upper=${targetPriceUpper}&`;
+            url += `premium_type=market&`
+            setModalActive(true);
+            const response = await Axios.get(url);
+            let trades = response.data.trades;
+            trades.map((val, index) => {
+                val.type2 = val.type;
+                val.min_last_trade_date2 = val.min_last_trade_date;
+                val.min_volume2 = val.min_volume;
+                val.id = index;
+                return val;
+            })
+            setBestStrategies(trades);
+            setPageState(false)
+            setModalActive(false);
+        } catch (error) {
+            console.error(error);
+            setModalActive(false);
+        }
+    };
+
     return (
         <div>
             <CssBaseline />
             <ModalSpinner active={modalActive}></ModalSpinner>
-            {/* <LandingView 
-                allTickers={allTickers} 
-                onTickerSelectionChange={onTickerSelectionChange} 
-                expirationTimestampsOptions={expirationTimestampsOptions}
-                expirationDisabled={expirationDisabled}
-                sentiment={sentiment}
-                onExpirationSelectionChange={onExpirationSelectionChange}
-                selectedExpirationTimestamp={selectedExpirationTimestamp}
-            /> */}
-            <MainView 
-                allTickers={allTickers} 
-                onTickerSelectionChange={onTickerSelectionChange}
-                expirationTimestampsOptions={expirationTimestampsOptions}
-                expirationDisabled={expirationDisabled}
-                onExpirationSelectionChange={onExpirationSelectionChange}
-                selectedExpirationTimestamp={selectedExpirationTimestamp}
-                setTargetPriceBySentiment={setTargetPriceBySentiment}
-            />
+            {
+                pageState ? 
+                    <LandingView 
+                        allTickers={allTickers} 
+                        onTickerSelectionChange={onTickerSelectionChange} 
+                        expirationTimestampsOptions={expirationTimestampsOptions}
+                        expirationDisabled={expirationDisabled}
+                        sentiment={sentiment}
+                        onExpirationSelectionChange={onExpirationSelectionChange}
+                        selectedExpirationTimestamp={selectedExpirationTimestamp}
+                        setTargetPriceBySentiment={setTargetPriceBySentiment}
+                        getBestStrategies={getBestStrategies}
+                        bestStrategies={bestStrategies}
+                    />
+                    :
+                    <MainView 
+                        allTickers={allTickers} 
+                        onTickerSelectionChange={onTickerSelectionChange}
+                        expirationTimestampsOptions={expirationTimestampsOptions}
+                        expirationDisabled={expirationDisabled}
+                        onExpirationSelectionChange={onExpirationSelectionChange}
+                        selectedExpirationTimestamp={selectedExpirationTimestamp}
+                        bestStrategies={bestStrategies}
+                    />
+            }
         </div>
     );
 }
