@@ -1,4 +1,4 @@
-import datetime
+from datetime import datetime, timedelta
 import multiprocessing as mp
 from multiprocessing import Pool
 
@@ -7,12 +7,15 @@ import requests
 from django.conf import settings
 from django.core.management.base import BaseCommand
 from django import db
+from django.utils import timezone
 
 from tiger.models import Ticker, TickerStats
 
 DEFAULT_QUERY_PARAMS = {
     'token': settings.IEXCLOUD_TOKEN
 }
+
+CACHE_LIFETIME = 2  # hours
 
 
 def fetch_tickers():
@@ -34,6 +37,15 @@ def fetch_tickers():
 
 
 def fetch_expiration_dates(ticker):
+    ran_recently = ticker.expiration_dates.filter(last_updated_time__gte=timezone.now()+timedelta(hours=-CACHE_LIFETIME)) \
+                                          .exists()
+
+    if ran_recently:
+        print(f'{ticker.symbol}: cached')
+        return ran_recently
+
+    print(f'{ticker.symbol}: fetching')
+
     url = f'{settings.IEXCLOUD_BASE_URL}/stock/{ticker.symbol}/options'
     resp = requests.get(url, params=DEFAULT_QUERY_PARAMS)
 
@@ -52,8 +64,8 @@ def fetch_expiration_dates(ticker):
     # save expiration_dates
     for expiration_date_str in expiration_date_strs:
         try:  # to handle invalid date format from api
-            date = datetime.datetime.strptime(expiration_date_str, '%Y%m%d').date()
-            ticker.expiration_dates.get_or_create(date=date)
+            date = datetime.strptime(expiration_date_str, '%Y%m%d').date()
+            ticker.expiration_dates.update_or_create(date=date)
         except ValueError:
             print(f'({ticker.symbol}) Invalid date format:', expiration_date_str)
             continue
@@ -156,10 +168,9 @@ def fetch_historical_volatility(ticker):
 
 def fetch_ticker_info(ticker_id):
     ticker = Ticker.objects.get(id=ticker_id)
-    print(ticker.symbol)
 
-    fetch_expiration_dates(ticker)
-    if ticker.status == 'unspecified':
+    ran_recently = fetch_expiration_dates(ticker)
+    if ticker.status == 'unspecified' and not ran_recently:
         fetch_stats(ticker)
         fetch_dividends(ticker)
         fetch_splits(ticker)
