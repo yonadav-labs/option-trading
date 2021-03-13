@@ -1,15 +1,18 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, Link } from "react-router-dom";
+import { Card } from 'react-bootstrap';
 import Axios from 'axios';
 import { useOktaAuth } from '@okta/okta-react';
 
 import getApiUrl from '../utils';
 import TradeDetailsCard from '../components/cards/TradeDetailsCard';
+import TickerSummary from '../components/TickerSummary.js';
 
 
 export default function SingleTrade() {
     let { tradeId } = useParams();
     const [trade, setTrade] = useState(null);
+    const [basicInfo, setbasicInfo] = useState(null);
     const { oktaAuth, authState } = useOktaAuth();
     const API_URL = getApiUrl();
 
@@ -24,10 +27,11 @@ export default function SingleTrade() {
                 };
             }
 
-            const response = await Axios.get(`${API_URL}/trade_snapshots/${tradeId}`, {
+            const response = await Axios.get(`${API_URL}/trade_snapshots/${tradeId}/`, {
                 headers: headers
             });
             setTrade(response.data.trade_snapshot);
+            setbasicInfo(response.data.quote);
         } catch (error) {
             console.error(error);
         }
@@ -46,7 +50,17 @@ export default function SingleTrade() {
                     <TradeDetailsCard trade={trade} hideShareButton={true} hideTitle={true} ></TradeDetailsCard>
                 </div>
             ) : 'Loading...'}
-
+            {
+                basicInfo && 
+                <>
+                    <h4 className="mt-4">{trade.stock.ticker.symbol} details</h4>
+                    <Card className="mb-4 mt-3">
+                        <Card.Body>
+                            <TickerSummary basicInfo={basicInfo} />
+                        </Card.Body>
+                    </Card>
+                </>
+            }
         </div>
     );
 }

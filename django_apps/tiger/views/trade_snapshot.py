@@ -1,10 +1,11 @@
+import json
 import logging
 
 from django.shortcuts import get_object_or_404
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from tiger.core import Trade
+from tiger.blob_reader import get_quote
 from tiger.core.trade.trade_factory import TradeFactory
 from tiger.models import TradeSnapshot
 from tiger.serializers import TradeSerializer, TradeSnapshotSerializer
@@ -22,7 +23,16 @@ def trade_snapshot_detail(request, pk):
 
         trade = TradeFactory.from_snapshot(trade_snapshot)
         trade_serializer = TradeSerializer(trade)
-        return Response({'trade_snapshot': trade_serializer.data})
+
+        response = json.loads(trade_snapshot.stock_snapshot.external_cache.response_blob)
+        quote = get_quote(response, True)
+
+        resp = {
+            'trade_snapshot': trade_serializer.data,
+            'quote': quote
+        }
+
+        return Response(resp)
 
 
 @api_view(['POST'])
