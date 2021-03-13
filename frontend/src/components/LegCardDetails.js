@@ -59,7 +59,7 @@ export default function LegCardDetails(props) {
                             <Form>
                                 <Form.Row>
                                     <Col sm="2" xs="3">
-                                        <Badge variant="secondary">Position</Badge>
+                                        <Badge variant="secondary">Action</Badge>
                                         <Form.Control as="select" value={legs[index].action} onChange={(e) => updateLeg("action", e.target.value, index)} disabled={selectedStrategy.legs[index].action}>
                                             <option value="long" key="long">Long</option>
                                             <option value="short" key="short">Short</option>

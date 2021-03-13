@@ -5,15 +5,13 @@ import ContractDetailsCard from './ContractDetailsCard';
 import { PriceFormatter } from '../../utils';
 
 export default function LegDetailsCard(props) {
-    const { leg, position_num } = props;
-
-    // console.log(leg, position_num)
+    const { leg, leg_num } = props;
 
     if (leg.contract) {
         return (
             <Card>
                 <Card.Header>
-                    {position_num ? `Position #${position_num}: ` : null} {leg.display_name}
+                    {leg_num ? `Leg ${leg_num}: ` : null} {leg.display_name}
                 </Card.Header>
                 <ContractDetailsCard contract={leg.contract} hideTitle={true} />
             </Card>
@@ -22,7 +20,7 @@ export default function LegDetailsCard(props) {
         return (
             <Card>
                 <Card.Header>
-                    {position_num ? `Position #${position_num}: ` : null} {leg.display_name}
+                    {leg_num ? `Leg ${leg_num}: ` : null} {leg.display_name}
                 </Card.Header>
             </Card>
         );
@@ -30,7 +28,7 @@ export default function LegDetailsCard(props) {
         return (
             <Card>
                 <Card.Header>
-                    {position_num ? `Position #${position_num}: ` : null} {leg.display_name}
+                    {leg_num ? `Leg ${leg_num}: ` : null} {leg.display_name}
                 </Card.Header>
             </Card>
         );

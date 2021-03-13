@@ -73,7 +73,7 @@ export default function TradeDetailsCard(props) {
                         trade.legs.map((leg, index) => {
                             return (
                                 <div key={"leg_" + index + "_details"}>
-                                    <LegDetailsCard key={index} leg={leg} position_num={index + 1}></LegDetailsCard>
+                                    <LegDetailsCard key={index} leg={leg} leg_num={index + 1}></LegDetailsCard>
                                     {index < trade.legs.length - 1 ? <br /> : null}
                                 </div>
                             );
