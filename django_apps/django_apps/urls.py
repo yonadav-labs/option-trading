@@ -5,5 +5,5 @@ admin.site.site_title = admin.site.site_header = "Tigerstane Administration"
 
 urlpatterns = [
     path('', include('tiger.urls')),
-    path('api/admin/', admin.site.urls),
+    path('api/mshwjdbhtlktfpan/', admin.site.urls),
 ]
