@@ -11,14 +11,24 @@ class Trade(ABC):
         :param target_price_lower: lower bound of target stock price in the future. Optional.
         :param target_price_upper: upper bound of target stock price in the future. Optional.
         '''
-        if target_price_lower is not None and target_price_upper is not None:
-            assert target_price_lower <= target_price_upper
         self.type = type
         self.stock = stock
         self.legs = legs
         self.target_price_lower = target_price_lower
         self.target_price_upper = target_price_upper
         self.premium_type = premium_type
+
+        self.common_validate()
+
+    def common_validate(self):
+        if self.target_price_lower is not None and self.target_price_upper is not None:
+            assert self.target_price_lower <= self.target_price_upper
+        self.validate()
+
+    @abstractmethod
+    def validate(self):
+        '''Custom validation logic per strategy type.'''
+        pass
 
     def get_leg(self, is_long, type, is_call=None):
         assert type in ('cash', 'stock', 'option')

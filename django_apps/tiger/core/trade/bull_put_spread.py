@@ -6,9 +6,21 @@ from .base import Trade
 
 class BullPutSpread(Trade):
     def __init__(self, stock, legs, premium_type, target_price_lower=None, target_price_upper=None):
-        # TODO: add validation.
-        assert len(legs) == 3
         super().__init__('bull_put_spread', stock, legs, premium_type, target_price_lower, target_price_upper)
+
+    def validate(self):
+        assert len(self.legs) == 3
+
+        long_put_leg = self.get_long_put_leg()
+        short_put_leg = self.get_short_put_leg()
+        long_cash_leg = self.get_long_cash_leg()
+
+        assert long_put_leg is not None
+        assert short_put_leg is not None
+        assert long_cash_leg is not None
+        assert long_put_leg.contract.expiration == short_put_leg.contract.expiration
+        assert long_put_leg.contract.strike < short_put_leg.contract.strike
+        assert self.stock.ticker.id == long_put_leg.contract.ticker.id == short_put_leg.contract.ticker.id
 
     @staticmethod
     def build(stock, put_contract_1, put_contract_2, premium_type, target_price_lower=None, target_price_upper=None,

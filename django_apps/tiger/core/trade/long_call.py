@@ -6,8 +6,15 @@ from .base import Trade
 
 class LongCall(Trade):
     def __init__(self, stock, legs, premium_type, target_price_lower=None, target_price_upper=None):
-        # TODO: add validation.
         super().__init__('long_call', stock, legs, premium_type, target_price_lower, target_price_upper)
+
+    def validate(self):
+        assert len(self.legs) == 1
+
+        long_call_leg = self.get_long_call_leg()
+
+        assert long_call_leg is not None
+        assert self.stock.ticker.id == long_call_leg.contract.ticker.id
 
     @staticmethod
     def build(stock, call_contract, premium_type, target_price_lower=None, target_price_upper=None,

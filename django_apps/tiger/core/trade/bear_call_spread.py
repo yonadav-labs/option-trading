@@ -6,9 +6,21 @@ from .base import Trade
 
 class BearCallSpread(Trade):
     def __init__(self, stock, legs, premium_type, target_price_lower=None, target_price_upper=None):
-        # TODO: add validation.
-        assert len(legs) == 3
         super().__init__('bear_call_spread', stock, legs, premium_type, target_price_lower, target_price_upper)
+
+    def validate(self):
+        assert len(self.legs) == 3
+
+        long_call_leg = self.get_long_call_leg()
+        short_call_leg = self.get_short_call_leg()
+        long_cash_leg = self.get_long_cash_leg()
+
+        assert long_call_leg is not None
+        assert short_call_leg is not None
+        assert long_cash_leg is not None
+        assert long_call_leg.contract.expiration == short_call_leg.contract.expiration
+        assert long_call_leg.contract.strike > short_call_leg.contract.strike
+        assert self.stock.ticker.id == long_call_leg.contract.ticker.id == short_call_leg.contract.ticker.id
 
     @staticmethod
     def build(stock, call_contract_1, call_contract_2, premium_type, target_price_lower=None, target_price_upper=None,

@@ -6,8 +6,18 @@ from .base import Trade
 
 class CoveredCall(Trade):
     def __init__(self, stock, legs, premium_type, target_price_lower=None, target_price_upper=None):
-        # TODO: add validation.
         super().__init__('covered_call', stock, legs, premium_type, target_price_lower, target_price_upper)
+
+    def validate(self):
+        assert len(self.legs) == 2
+
+        short_call_leg = self.get_short_call_leg()
+        long_stock_leg = self.get_long_stock_leg()
+
+        assert short_call_leg is not None
+        assert long_stock_leg is not None
+
+        assert self.stock.ticker.id == long_stock_leg.stock.ticker.id == short_call_leg.contract.ticker.id
 
     @staticmethod
     def build(stock, call_contract, premium_type, target_price_lower=None, target_price_upper=None,

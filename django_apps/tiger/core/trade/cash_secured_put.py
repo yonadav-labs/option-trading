@@ -6,8 +6,17 @@ from .base import Trade
 
 class CashSecuredPut(Trade):
     def __init__(self, stock, legs, premium_type, target_price_lower=None, target_price_upper=None):
-        # TODO: add validation.
         super().__init__('cash_secured_put', stock, legs, premium_type, target_price_lower, target_price_upper)
+
+    def validate(self):
+        assert len(self.legs) == 2
+
+        short_put_leg = self.get_short_put_leg()
+        long_cash_leg = self.get_long_cash_leg()
+
+        assert short_put_leg is not None
+        assert long_cash_leg is not None
+        assert self.stock.ticker.id == short_put_leg.contract.ticker.id
 
     @staticmethod
     def build(stock, put_contract, premium_type, target_price_lower=None, target_price_upper=None, available_cash=None):

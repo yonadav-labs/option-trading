@@ -6,8 +6,15 @@ from .base import Trade
 
 class LongPut(Trade):
     def __init__(self, stock, legs, premium_type, target_price_lower=None, target_price_upper=None):
-        # TODO: add validation.
         super().__init__('long_put', stock, legs, premium_type, target_price_lower, target_price_upper)
+
+    def validate(self):
+        assert len(self.legs) == 1
+
+        long_put_leg = self.get_long_put_leg()
+
+        assert long_put_leg is not None
+        assert self.stock.ticker.id == long_put_leg.contract.ticker.id
 
     @staticmethod
     def build(stock, put_contract, premium_type, target_price_lower=None, target_price_upper=None, available_cash=None):
