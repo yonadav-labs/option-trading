@@ -22,9 +22,12 @@ export default function LegCardDetails(props) {
         if (leg.type === "option" && leg.action && leg.optionType && leg.expiration) {
             // call api to get option chain
             try {
-                let url = `${API_URL}/tickers/${selectedTicker[0].symbol}/contracts/?`;
-                url += `expiration_timestamps=${leg.expiration}&`
-                const response = await Axios.get(url);
+                let url = `${API_URL}/tickers/${selectedTicker[0].symbol}/contracts/`;
+                let body = {
+                    expiration_timestamps: [leg.expiration],
+                    filters: {}
+                };
+                const response = await Axios.post(url, body);
                 const filteredContracts = response.data.contracts.filter(contract => (leg.optionType === "call" && contract.is_call) || (leg.optionType === "put" && !contract.is_call));
                 let strikes = filteredContracts.map(val => {
                     const percentageChange = ((props.atmPrice - val.strike) / props.atmPrice) * -1;

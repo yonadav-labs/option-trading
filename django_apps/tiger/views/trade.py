@@ -90,8 +90,7 @@ def get_best_trades(request, ticker_symbol):
 
     long_call_trades = []
     covered_call_trades = []
-    call_contract_lists, put_contract_lists = get_valid_contracts(ticker, request, all_expiration_timestamps,
-                                                                  filter_low_liquidity=True)
+    call_contract_lists, put_contract_lists = get_valid_contracts(ticker, request, all_expiration_timestamps, filter_low_liquidity=True)
     for calls_per_exp in call_contract_lists:
         for call in calls_per_exp:
             # Reduce response size.

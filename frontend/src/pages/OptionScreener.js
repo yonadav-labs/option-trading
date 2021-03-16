@@ -332,10 +332,13 @@ export default function SellCoveredCall() {
 
     const getContracts = async (selectedExpirationTimestamps) => {
         try {
-            let url = `${API_URL}/tickers/${selectedTicker[0].symbol}/contracts/?`;
-            selectedExpirationTimestamps.map((timestamp) => { url += `expiration_timestamps=${timestamp.value}&` });
+            let url = `${API_URL}/tickers/${selectedTicker[0].symbol}/contracts/`;
+            let body = {
+                expiration_timestamps: selectedExpirationTimestamps.reduce((a, b) => a.concat(b.value), []),
+                filters: {}
+            };
             setModalActive(true);
-            const response = await Axios.get(url);
+            const response = await Axios.post(url, body);
             let contracts = response.data.contracts;
             let strikes = [];
             contracts.forEach(function (part, index, theArray) {
