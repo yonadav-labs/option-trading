@@ -1,8 +1,15 @@
 #!/usr/bin/env bash
 
-export CMD_NAME="$(basename "$0")"
-export BIN_DIR="$(cd $(dirname "$0") && pwd)"
-export APP_DIR="$(cd "$BIN_DIR"/../frontend && pwd)"
-export IMAGE_NAME='options-ecs-frontend'
+export BUILD_SCRIPT_NAME
+export BUILD_SCRIPT_DIR
+export CONTAINER_APP_DIR
+export DOCKER_FILE_PATH
+export IMAGE_NAME
 
-"$BIN_DIR"/build-ecs-common "$@"
+BUILD_SCRIPT_NAME="$(basename "$0")"
+BUILD_SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+CONTAINER_APP_DIR="$(cd "$BUILD_SCRIPT_DIR"/../frontend && pwd)"
+DOCKER_FILE_PATH="$CONTAINER_APP_DIR"/Dockerfile.prod.ecs
+IMAGE_NAME='options-ecs-frontend'
+
+"$BUILD_SCRIPT_DIR"/build-ecs-common "$@"

@@ -2,145 +2,166 @@
 
 set -e
 
-join_array() {
-    local DELIMITER="$1"
-    shift
-    local FIRST_ELEMENT="$1"
-    shift
+MAIN_BRANCH_NAME='main'
+ECR_REPOSITORY_LOCATION='813539762970.dkr.ecr.us-east-2.amazonaws.com'
 
-    # The '${@/#/$DELIMITER}' syntax requires some explanation. It is Bash array syntax for listing the elements
-    # of an array while performing substitutions on the elements. The format '${@}' would simply list out the
-    # parameters passed to this function. The addditional '/#/$DELIMITER' states replace the beginning of each
-    # entry (the '/#' section) with the provided string (the '/#$DELIMITER section).
-    printf '%s' "$FIRST_ELEMENT" "${@/#/$DELIMITER}"
+# Bash escape sequences for changing the color of printed text.
+START_YELLOW_TEXT='\033[0;33m'
+START_RED_TEXT='\033[0;31m'
+CLEAR_TEXT_COLOR='\033[0m'
+
+join_array() {
+  local DELIMITER="$1"
+  shift
+
+  local FIRST_ELEMENT="$1"
+  shift
+
+  # The '${@/#/$DELIMITER}' syntax requires some explanation. It is Bash array syntax for listing the elements
+  # of an array while performing substitutions on the elements. The format '${@}' would simply list out the
+  # parameters passed to this function. The additional '/#/$DELIMITER' states replace the beginning of each
+  # entry (the '/#' section) with the provided string (the '/#$DELIMITER section).
+  printf '%s' "$FIRST_ELEMENT" "${@/#/$DELIMITER}"
 }
 
 get_current_branch() {
-    echo "$(git branch --show-current)"
+  git branch --show-current
 }
 
 on_main_branch() {
-    [[ "$(get_current_branch)" = "$MAIN_BRANCH_NAME" ]]
-    return $?
+  [[ "$(get_current_branch)" = "$MAIN_BRANCH_NAME" ]]
+  return $?
 }
 
 has_uncommitted_files() {
-    [[ "$(git status -s)" != '' ]]
-    return $?
+  [[ "$(git status -s)" != '' ]]
+  return $?
 }
 
 perform_branch_check() {
-    if ! on_main_branch ; then
-        if [[ "$IGNORE_BRANCH_CHECK" = 'Y' ]] ; then
-            echo -e "${START_YELLOW_TEXT}WARNING: Ignoring branch check (currently on branch '$(get_current_branch)')${CLEAR_TEXT_COLOR}" 1>&2
-        else
-            echo -e "${START_RED_TEXT}ERROR: Not on the main branch (currently on branch '$(get_current_branch)' instead of branch '$MAIN_BRANCH_NAME'), unable to build image (use '--ignore-branch-check' to skip this check)${CLEAR_TEXT_COLOR}" 1>&2
-            exit 1
-        fi
+  if ! on_main_branch ; then
+    if [[ "$IGNORE_BRANCH_CHECK" = 'Y' ]] ; then
+      COMMAND_LINE_WARNINGS=( "${COMMAND_LINE_WARNINGS[@]}" \
+        "Ignoring branch check (currently on branch '$(get_current_branch)')" \
+      )
+    else
+      COMMAND_LINE_ERRORS=( "${COMMAND_LINE_ERRORS[@]}" \
+        "Not on the main branch (currently on branch '$(get_current_branch)' instead of branch '$MAIN_BRANCH_NAME'), unable to build image (use '--ignore-branch-check' to skip this check)" \
+      )
     fi
+  fi
 }
 
 perform_uncommitted_files_check() {
-    if has_uncommitted_files ; then
-        if [[ "$IGNORE_UNCOMMITTED_FILES" = 'Y' ]] ; then
-            echo -e "${START_YELLOW_TEXT}WARNING: Building with uncommitted files${CLEAR_TEXT_COLOR}" 1>&2
-        else
-            echo -e "${START_RED_TEXT}ERROR: Uncommitted files detected, unable to build image (use '--ignore-uncommitted-files' to skip this check)${CLEAR_TEXT_COLOR}" 1>&2
-            exit 1
-        fi
+  if has_uncommitted_files ; then
+    if [[ "$IGNORE_UNCOMMITTED_FILES" = 'Y' ]] ; then
+      COMMAND_LINE_WARNINGS=( "${COMMAND_LINE_WARNINGS[@]}" \
+        "Building with uncommitted files" \
+      )
+    else
+      COMMAND_LINE_ERRORS=( "${COMMAND_LINE_ERRORS[@]}" \
+        "Uncommitted files detected, unable to build image (use '--ignore-uncommitted-files' to skip this check)" \
+      )
     fi
+  fi
 }
 
 get_current_git_commit_hash() {
-    echo "$(git rev-parse --short HEAD)"
+  git rev-parse --short HEAD
 }
 
 build_image() {
-    docker build \
-        --file "$APP_DIR"/Dockerfile.prod.ecs \
-        --tag "$TAGGED_IMAGE" \
-        "$APP_DIR"
+  local TMP_IMAGE_ID_FILE
+  TMP_IMAGE_ID_FILE="$( mktemp )"
+  docker build --iidfile "$TMP_IMAGE_ID_FILE" --file "$DOCKER_FILE_PATH" "$CONTAINER_APP_DIR"
+  IMAGE_ID="$( cat "$TMP_IMAGE_ID_FILE" )"
+}
+
+tag_image() {
+  for IMAGE_TAG in "${IMAGE_TAGS[@]}" ; do
+    docker tag "$IMAGE_ID" "${ECR_IMAGE_REPOSITORY}:${IMAGE_TAG}"
+  done
 }
 
 aws_ecs_docker_login() {
-    echo '========================================'
-    echo 'Logging into AWS ECR'
-    echo '========================================'
-    echo
+  echo '========================================'
+  echo 'Logging into AWS ECR'
+  echo '========================================'
+  echo
 
-    aws ecr get-login-password --region us-east-2 \
-        | docker login --username AWS --password-stdin 813539762970.dkr.ecr.us-east-2.amazonaws.com
+  aws ecr get-login-password --region us-east-2 \
+    | docker login --username AWS --password-stdin 813539762970.dkr.ecr.us-east-2.amazonaws.com
 }
 
 push_images_to_ecr() {
-    echo
-    echo '========================================'
-    echo 'Pushing image(s) to AWS ECR...'
-    echo '========================================'
-    echo
+  echo
+  echo '========================================'
+  echo 'Pushing image(s) to AWS ECR...'
+  echo '========================================'
+  echo
 
-    for DOCKER_IMAGE in "$@" ; do
-        docker push "$DOCKER_IMAGE"
-        echo
-    done
+  for IMAGE_TAG in "${IMAGE_TAGS[@]}" ; do
+    docker push "${ECR_IMAGE_REPOSITORY}:${IMAGE_TAG}"
+    echo
+  done
 }
 
-# Bash escape sequences for changing the color of printed text.
-export START_YELLOW_TEXT='\033[0;33m'
-export START_RED_TEXT='\033[0;31m'
-export CLEAR_TEXT_COLOR='\033[0m'
+PRINT_HELP=N
+USE_LATEST_TAG=N
+USE_GIT_COMMIT_HASH_TAG=N
+IGNORE_BRANCH_CHECK=N
+IGNORE_UNCOMMITTED_FILES=N
+PUSH_IMAGES=N
+ADDITIONAL_TAGS=( )
+IMAGE_TAGS=
 
-export MAIN_BRANCH_NAME='main'
-export ECR_REPOSITORY_LOCATION='813539762970.dkr.ecr.us-east-2.amazonaws.com'
-
-export PRINT_HELP=N
-export USE_LATEST_TAG=Y
-export UNKNOWN_OPTIONS=( )
-export IGNORE_BRANCH_CHECK=N
-export IGNORE_UNCOMMITTED_FILES=N
-export PUSH_IMAGES=N
-export REPLACEMENT_TAG=
+COMMAND_LINE_WARNINGS=( )
+COMMAND_LINE_ERRORS=( )
+UNKNOWN_OPTIONS=( )
 
 while [[ "$1" != '' ]] ; do
-    case "$1" in
+  case "$1" in
+    -h | --help )
+      PRINT_HELP=Y
+      ;;
 
-        -h | --help )
-            PRINT_HELP=Y
-            ;;
+    --ignore-branch-check )
+      IGNORE_BRANCH_CHECK=Y
+      ;;
 
-        --ignore-branch-check )
-            IGNORE_BRANCH_CHECK=Y
-            ;;
+    --ignore-uncommitted-files )
+      IGNORE_UNCOMMITTED_FILES=Y
+      ;;
 
-        --ignore-uncommitted-files )
-            IGNORE_UNCOMMITTED_FILES=Y
-            ;;
+    --use-latest-tag )
+      USE_LATEST_TAG=Y
+      ;;
 
-        --skip-latest-tag )
-            USE_LATEST_TAG=N
-            ;;
+    --use-git-commit-hash-tag )
+      USE_GIT_COMMIT_HASH_TAG=Y
+      ;;
 
-        --tag )
-            shift
-            REPLACEMENT_TAG="$1"
-            ;;
+    --tags )
+      shift
+      ADDITIONAL_TAGS=( $(echo "$1" | sed -E 's/[[:space:]]*,[[:space:]]*/ /g' ) )
+      ;;
 
-        --push )
-            PUSH_IMAGES=Y
-            ;;
+    --push )
+      PUSH_IMAGES=Y
+      ;;
 
-        * )
-            UNKNOWN_OPTIONS=( "${UNKNOWN_OPTIONS[@]}" "$1" )
-            ;;
-    esac
+    * )
+      UNKNOWN_OPTIONS=( "${UNKNOWN_OPTIONS[@]}" "$1" )
+      ;;
+  esac
 
-    shift
+  shift
 done
 
 if [[ "$PRINT_HELP" = 'Y' ]] ; then
-    cat > /dev/stderr << EOF
+  cat > /dev/stderr << EOF
 
-Usage: $CMD_NAME [OPTIONS]
+Usage: $BUILD_SCRIPT_NAME [OPTIONS]
 
   Builds the '$IMAGE_NAME' docker image.
 
@@ -148,65 +169,109 @@ Options:
   -h, --help                       Display this message
       --ignore-branch-check        Ignore the fact that the current git branch is not '$MAIN_BRANCH_NAME' (USE WITH CAUTION!)
       --ignore-uncommitted-files   Ignore the fact that the current git status is uncommitted file (USE WITH CAUTION!)
-      --skip-latest-tag            Skip the 'latest' tag for this image build
-      --tag TAG                    Override the git commit hash image tag for this build with the provided TAG
+      --use-latest-tag             Tag this image as the 'latest' image
+      --use-git-commit-hash-tag    Use the git commit hash as a tag for this image build
+      --tags TAG[,TAG,...]         Provides a comma-delimited list of tags to apply to the built image
       --push                       Push the built image(s) to the remote repository
 
 EOF
-    exit 1
-fi
-
-if [[ ${#UNKNOWN_OPTIONS[@]} -gt 0 ]] ; then
-    UNKNOWN_OPTIONS_LIST="$(join_array ', ' "${UNKNOWN_OPTIONS[@]}")"
-    echo -e "${START_RED_TEXT}ERROR: Unsupported option(s) provided: ${UNKNOWN_OPTIONS_LIST}${CLEAR_TEXT_COLOR}" 1>&2
-    exit 1
+   exit 0
 fi
 
 perform_branch_check
 perform_uncommitted_files_check
 
-export ECR_IMAGE_REPOSITORY="$ECR_REPOSITORY_LOCATION"/"$IMAGE_NAME"
-export GIT_COMMIT_HASH="$(get_current_git_commit_hash)"
-export IMAGE_TAG="$([[ -n "$REPLACEMENT_TAG" ]] && echo "$REPLACEMENT_TAG" || echo "$GIT_COMMIT_HASH")"
-export TAGGED_IMAGE="$ECR_IMAGE_REPOSITORY":"$IMAGE_TAG"
-export DOCKER_IMAGES=( "$TAGGED_IMAGE" )
+if [[ ${#UNKNOWN_OPTIONS[@]} -gt 0 ]] ; then
+  UNKNOWN_OPTIONS_LIST="$(join_array ', ' "${UNKNOWN_OPTIONS[@]}")"
+  COMMAND_LINE_ERRORS=( "${COMMAND_LINE_ERRORS[@]}" "Unsupported option(s) provided: ${UNKNOWN_OPTIONS_LIST}" )
+fi
 
-if [[ "$USE_LATEST_TAG" = 'N' ]] ; then
-    echo -e "${START_YELLOW_TEXT}WARNING: Skipping the 'latest' tag for the image${CLEAR_TEXT_COLOR}" 1>&2
+IMAGE_TAGS=( "${ADDITIONAL_TAGS[@]}" )
+GIT_COMMIT_HASH="$(get_current_git_commit_hash)"
+
+if [[ "$USE_GIT_COMMIT_HASH_TAG" = 'Y' ]] ; then
+  IMAGE_TAGS=( "$GIT_COMMIT_HASH" "${IMAGE_TAGS[@]}" )
+fi
+
+if [[ "$USE_LATEST_TAG" = 'Y' ]] ; then
+  IMAGE_TAGS=( 'latest' "${IMAGE_TAGS[@]}" )
+fi
+
+if [[ ${#IMAGE_TAGS[@]} -eq 0 ]] ; then
+  TAGS_OPTIONS_MSG="use the option(s) --use-latest-tag, --use-git-commit-hash-tag, and/or --tags to specify tags"
+  if [[ "$PUSH_IMAGES" = 'Y' ]] ; then
+    COMMAND_LINE_ERRORS=( "${COMMAND_LINE_ERRORS[@]}" "No tags have been requested or provided for this image build... unable to push untagged images... $TAGS_OPTIONS_MSG")
+  else
+    COMMAND_LINE_WARNINGS=( "${COMMAND_LINE_WARNINGS[@]}" "No tags have been requested or provided for this image build... $TAGS_OPTIONS_MSG" )
+  fi
+fi
+
+if [[ ${#COMMAND_LINE_WARNINGS[@]} -gt 0 ]] ; then
+  for COMMAND_LINE_WARNING in "${COMMAND_LINE_WARNINGS[@]}" ; do
+    echo -e "${START_YELLOW_TEXT}WARNING: ${COMMAND_LINE_WARNING}${CLEAR_TEXT_COLOR}" 1>&2
+  done
+fi
+
+if [[ ${#COMMAND_LINE_ERRORS[@]} -gt 0 ]] ; then
+  for COMMAND_LINE_ERROR in "${COMMAND_LINE_ERRORS[@]}" ; do
+    echo -e "${START_RED_TEXT}ERROR: ${COMMAND_LINE_ERROR}${CLEAR_TEXT_COLOR}" 1>&2
+  done
+  exit 1
+fi
+
+ECR_IMAGE_REPOSITORY="$ECR_REPOSITORY_LOCATION"/"$IMAGE_NAME"
+
+echo
+echo '========================================'
+
+IMAGE_TAGS=( $(echo "${IMAGE_TAGS[@]}" | sort -u) )
+
+if [[ ${#IMAGE_TAGS[@]} -gt 0 ]] ; then
+  echo "Building the image$( [[ ${#IMAGE_TAGS[@]} -gt 1 ]] && echo 's' )..."
+  for IMAGE_TAG in "${IMAGE_TAGS[@]}" ; do
+    echo "    ${ECR_IMAGE_REPOSITORY}:${IMAGE_TAG}"
+  done
 else
-    export LATEST_TAGGED_IMAGE="$ECR_IMAGE_REPOSITORY":latest
-    DOCKER_IMAGES=( "${DOCKER_IMAGES[@]}" "$LATEST_TAGGED_IMAGE" )
+  echo "Building the image..."
 fi
 
-echo
-echo '========================================'
-echo 'Building the image(s)...'
-
-for DOCKER_IMAGE in "${DOCKER_IMAGES[@]}" ; do
-    echo "    $DOCKER_IMAGE"
-done
-
 echo '========================================'
 echo
 
+IMAGE_ID=
 build_image
-
-if [[ "$USE_LATEST_TAG" != 'N' ]] ; then
-    docker tag "$TAGGED_IMAGE" "$LATEST_TAGGED_IMAGE"
-fi
+tag_image
 
 echo
 echo '========================================'
-echo 'Built the following image(s):'
 
-for DOCKER_IMAGE in "${DOCKER_IMAGES[@]}" ; do
-    echo "    $DOCKER_IMAGE"
-done
+if [[ ${#IMAGE_TAGS[@]} -eq 0 ]] ; then
+  echo "Built the image '$IMAGE_ID'"
+else
+  echo "Built the following image$( [[ ${#IMAGE_TAGS[@]} -gt 1 ]] && echo 's' ):"
+
+  for IMAGE_TAG in "${IMAGE_TAGS[@]}" ; do
+    echo "    ${ECR_IMAGE_REPOSITORY}:${IMAGE_TAG}"
+  done
+fi
 
 echo '========================================'
 echo
 
 if [[ "$PUSH_IMAGES" = 'Y' ]] ; then
-    aws_ecs_docker_login
-    push_images_to_ecr "${DOCKER_IMAGES[@]}"
+  AND_PUSHED=" and pushed"
+  aws_ecs_docker_login
+  push_images_to_ecr
 fi
+
+echo
+echo '========================================'
+
+if [[ ${#IMAGE_TAGS[@]} -gt 0 ]] ; then
+  echo "Built${AND_PUSHED} the following image$( [[ ${#IMAGE_TAGS[@]} -gt 1 ]] && echo 's' )..."
+  for IMAGE_TAG in "${IMAGE_TAGS[@]}" ; do
+    echo "    ${ECR_IMAGE_REPOSITORY}:${IMAGE_TAG}"
+  done
+fi
+echo '========================================'
+echo
