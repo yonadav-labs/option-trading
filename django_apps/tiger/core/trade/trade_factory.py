@@ -13,29 +13,51 @@ from .long_put import LongPut
 
 class TradeFactory:
     @staticmethod
-    def from_snapshot(trade_snapshot):
-        stock = Stock.from_snapshot(trade_snapshot.stock_snapshot)
-        legs = [Leg.from_snapshot(leg_snapshot, trade_snapshot.premium_type) for leg_snapshot in
-                trade_snapshot.leg_snapshots.all()]
+    def initiate_trade(trade_type, stock_snapshot, leg_snapshots, premium_type, target_price_lower, target_price_upper):
+        stock = Stock.from_snapshot(stock_snapshot)
+        legs = [Leg.from_snapshot(leg_snapshot, premium_type) for leg_snapshot in leg_snapshots]
 
-        if trade_snapshot.type == 'long_call':
+        if trade_type == 'long_call':
             trade_class = LongCall
-        elif trade_snapshot.type == 'long_put':
+        elif trade_type == 'long_put':
             trade_class = LongPut
-        elif trade_snapshot.type == 'covered_call':
+        elif trade_type == 'covered_call':
             trade_class = CoveredCall
-        elif trade_snapshot.type == 'cash_secured_put':
+        elif trade_type == 'cash_secured_put':
             trade_class = CashSecuredPut
-        elif trade_snapshot.type == 'bull_call_spread':
+        elif trade_type == 'bull_call_spread':
             trade_class = BullCallSpread
-        elif trade_snapshot.type == 'bear_call_spread':
+        elif trade_type == 'bear_call_spread':
             trade_class = BearCallSpread
-        elif trade_snapshot.type == 'bear_put_spread':
+        elif trade_type == 'bear_put_spread':
             trade_class = BearPutSpread
-        elif trade_snapshot.type == 'bull_put_spread':
+        elif trade_type == 'bull_put_spread':
             trade_class = BullPutSpread
 
-        new_trade = trade_class(stock, legs, premium_type=trade_snapshot.premium_type,
-                                target_price_lower=trade_snapshot.target_price_lower,
-                                target_price_upper=trade_snapshot.target_price_upper)
-        return new_trade
+        trade = trade_class(stock, legs, premium_type=premium_type,
+                            target_price_lower=target_price_lower,
+                            target_price_upper=target_price_upper)
+
+        return trade
+
+    @staticmethod
+    def from_snapshot(trade_snapshot):
+        trade = TradeFactory.initiate_trade(trade_snapshot.type,
+                                            trade_snapshot.stock_snapshot,
+                                            trade_snapshot.leg_snapshots.all(),
+                                            trade_snapshot.premium_type,
+                                            trade_snapshot.target_price_lower,
+                                            trade_snapshot.target_price_upper)
+
+        return trade
+
+    @staticmethod
+    def from_snapshot_dict(trade_snapshot):
+        trade = TradeFactory.initiate_trade(trade_snapshot['type'],
+                                            trade_snapshot['stock_snapshot'],
+                                            trade_snapshot['leg_snapshots'],
+                                            trade_snapshot['premium_type'],
+                                            trade_snapshot['target_price_lower'],
+                                            trade_snapshot['target_price_upper'])
+
+        return trade
