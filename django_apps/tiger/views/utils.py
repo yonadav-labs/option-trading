@@ -1,5 +1,13 @@
+from django.conf import settings
+
+from tiger.serializers import TradeSnapshotSerializer
+from tiger.core.trade.trade_factory import TradeFactory
+from tiger.utils import timedelta_from_timestamp
+
+
 def is_low_liquidity(contract):
     return contract.open_interest < 10 or contract.volume == 0
+
 
 def filter_contract_on_attribute(contract, filter_key, filter_value):
     """
@@ -33,6 +41,7 @@ def filter_contract_on_attribute(contract, filter_key, filter_value):
     
     return True
 
+
 def get_valid_contracts(ticker, request, all_expiration_timestamps, filter_low_liquidity=False, filters={}):
     if request.data.get('expiration_timestamps'):
         input_expiration_timestamps = set([int(ts) for ts in request.data.get('expiration_timestamps') if
@@ -59,4 +68,40 @@ def get_valid_contracts(ticker, request, all_expiration_timestamps, filter_low_l
         # filter out inactive contracts.
         call_lists.append(list(filter(lambda call: call.last_trade_date, calls)))
         put_lists.append(list(filter(lambda put: put.last_trade_date, puts)))
+
     return call_lists, put_lists
+
+
+def get_current_trade(trade_snapshot):
+    """
+    generates a new trade based on the historic trade snapshot
+    returns None if the trade is expired
+    """
+    trade_snapshot_serializer = TradeSnapshotSerializer(instance=trade_snapshot)
+    base_data = trade_snapshot_serializer.data
+
+    ticker = trade_snapshot.stock_snapshot.ticker
+    _, stock_cache_id = ticker.get_quote()
+    base_data['stock_snapshot']['external_cache_id'] = stock_cache_id
+
+    expired = False
+    for leg_snapshot in base_data['leg_snapshots']:
+        if leg_snapshot['stock_snapshot']:
+            leg_snapshot['stock_snapshot']['external_cache_id'] = stock_cache_id
+        elif leg_snapshot['contract_snapshot']:
+            expiration_timestamp = leg_snapshot['contract_snapshot']['expiration_timestamp']
+            if timedelta_from_timestamp(expiration_timestamp).days < 0:
+                expired = True
+                break
+            _, option_cache_id = ticker.get_request_cache(settings.USE_YAHOO, expiration_timestamp)
+            leg_snapshot['contract_snapshot']['external_cache_id'] = option_cache_id
+
+    if expired:
+        return None
+
+    trade_snapshot_serializer = TradeSnapshotSerializer(data=base_data)
+    trade_snapshot_serializer.is_valid()
+    current_data = trade_snapshot_serializer.validated_data
+    current_trade = TradeFactory.from_snapshot_dict(current_data)
+
+    return current_trade

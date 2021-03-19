@@ -29,8 +29,8 @@ class OptionContractSnapshotSerializer(serializers.ModelSerializer):
 
 
 class LegSnapshotSerializer(serializers.ModelSerializer):
-    stock_snapshot = StockSnapshotSerializer(required=False)
-    contract_snapshot = OptionContractSnapshotSerializer(required=False)
+    stock_snapshot = StockSnapshotSerializer(required=False, allow_null=True)
+    contract_snapshot = OptionContractSnapshotSerializer(required=False, allow_null=True)
 
     class Meta:
         model = LegSnapshot
@@ -53,10 +53,10 @@ class TradeSnapshotSerializer(serializers.ModelSerializer):
         for leg_snapshot_data in input_trade_data.get('leg_snapshots'):
             leg_snapshot_model_data = get_subdict_by_fields(leg_snapshot_data, ['is_long', 'units'])
 
-            if 'contract_snapshot' in leg_snapshot_data:
+            if leg_snapshot_data.get('contract_snapshot'):
                 contract_snapshot = OptionContractSnapshot(**leg_snapshot_data.get('contract_snapshot'))
                 leg_snapshot_model_data['contract_snapshot'] = contract_snapshot
-            elif 'stock_snapshot' in leg_snapshot_data:
+            elif leg_snapshot_data.get('stock_snapshot'):
                 stock_snapshot = StockSnapshot(**leg_snapshot_data.get('stock_snapshot'))
                 leg_snapshot_model_data['stock_snapshot'] = stock_snapshot
             elif 'cash_snapshot' in leg_snapshot_data:

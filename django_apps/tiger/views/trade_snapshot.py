@@ -5,10 +5,12 @@ from django.shortcuts import get_object_or_404
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
+
 from tiger.blob_reader import get_quote
 from tiger.core.trade.trade_factory import TradeFactory
 from tiger.models import TradeSnapshot
 from tiger.serializers import TradeSerializer, TradeSnapshotSerializer
+from tiger.views.utils import get_current_trade
 
 logger = logging.getLogger('console_info')
 
@@ -27,8 +29,16 @@ def trade_snapshot_detail(request, pk):
         response = json.loads(trade_snapshot.stock_snapshot.external_cache.response_blob)
         quote = get_quote(response, True)
 
+        current_trade = get_current_trade(trade_snapshot)
+        if current_trade:
+            current_trade_serializer = TradeSerializer(current_trade)
+            current_trade_snapshot = current_trade_serializer.data
+        else:
+            current_trade_snapshot = None
+
         resp = {
             'trade_snapshot': trade_serializer.data,
+            'current_trade_snapshot': current_trade_snapshot,
             'quote': quote
         }
 
@@ -47,4 +57,5 @@ def trade_snapshots(request):
             trade_serializer = TradeSerializer(trade)
             return Response({'id': trade_snapshot.id, 'trade_snapshot': trade_serializer.data},
                             status=status.HTTP_201_CREATED)
+
         return Response(trade_snapshot_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
