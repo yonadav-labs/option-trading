@@ -1,9 +1,10 @@
 import React, {useState, useEffect} from "react";
-import { Grid, Paper, Button, TextField, Box } from "@material-ui/core";
+import { Grid, Button, TextField, Box } from "@material-ui/core";
 import { Autocomplete, Pagination } from "@material-ui/lab/";
-import TuneIcon from '@material-ui/icons/Tune';
 import NewTradeCard from "../../components/NewTradeCard";
 import TickerAutocomplete from "../../components/TickerAutocomplete";
+import FilterContainer from "../../components/filters/FilterContainer";
+
 
 export default function MainView({allTickers, onTickerSelectionChange, bestStrategies }) {
     const [renderedStrategies, setRenderedStrategies] = useState([])
@@ -21,35 +22,15 @@ export default function MainView({allTickers, onTickerSelectionChange, bestStrat
     return (
         <div>
             <Grid container direction="row" justify="center" alignItems="stretch">
-                <Grid item sm={3}>
-                    <Box bgcolor='#333741' color="white" height="105%">
-                        <Grid container direction="column" justify="center" alignItems="center" >
-                            <Grid item>
-                                SETTINGS <TuneIcon/>
-                            </Grid>
-                            <Grid item>
-                                PRICE RANGE
-                            </Grid>
-                            <Grid item>
-                                CASH TO INVEST
-                            </Grid>
-                            <Grid item>
-                                STRATEGY TYPE
-                            </Grid>
-                            <Grid item>
-                                MIN VOLUME
-                            </Grid>
-                            <Grid item>
-                                MIN OPEN INTEREST
-                            </Grid>
-                            <Grid item>
-                                TIME SINCE LAST TRADED
-                            </Grid>
+                <Grid item sm={2}>
+                    <Box p={4} bgcolor='#333741' color="white" height="105%" style={{marginRight: '-2rem'}}>
+                        <Grid container direction="column" justify="center" >
+                            <FilterContainer/>
                         </Grid>
                     </Box>
                 </Grid>
-                <Grid item sm={9}>
-                    <Box p={2}>
+                <Grid item sm={10}>
+                    <Box p={2} style={{marginLeft: '2rem'}}>
                         <Grid container direction="row" justify="center" alignItems="center">
                             <Grid item sm={2}>
                                 <h5>ENTER TICKER SYMBOL</h5>
@@ -125,9 +106,9 @@ export default function MainView({allTickers, onTickerSelectionChange, bestStrat
                             <Grid item><Button>View Chart</Button></Grid>
                         </Grid>
                     </Box>
-                    <Box p={5} bgcolor='#F2F2F2' minHeight="100vh" height="100%">
+                    <Box p={5} bgcolor='#F2F2F2' minHeight="100vh" height="100%" style={{marginLeft: '2rem'}}>
                         <Grid container spacing={2} direction="column" justify="center" alignItems="stretch">
-                            {renderedStrategies.map(strategy => <NewTradeCard strategy={strategy}/>)}
+                            {renderedStrategies.map((strategy, index) => <NewTradeCard strategy={strategy} key={index}/>)}
                         </Grid>
                     </Box>
                 </Grid>
