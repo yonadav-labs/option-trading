@@ -57,7 +57,7 @@ class TradeFactory:
                                             trade_snapshot['stock_snapshot'],
                                             trade_snapshot['leg_snapshots'],
                                             trade_snapshot['premium_type'],
-                                            trade_snapshot['target_price_lower'],
-                                            trade_snapshot['target_price_upper'])
+                                            trade_snapshot.get('target_price_lower'),
+                                            trade_snapshot.get('target_price_upper'))
 
         return trade
