@@ -35,10 +35,9 @@ class CoveredCall(Trade):
         short_call_leg = self.get_short_call_leg()
         expiration_date_str = timestamp_to_datetime_with_default_tz(short_call_leg.contract.expiration) \
             .strftime("%m/%d/%Y")
-        return '[{}][Covered call] {} {} strike ${} - ${} at ${:.2f} per position' \
+        return '[{}][Covered call] {} {} strike ${} at ${:.2f} per position' \
             .format(self.stock.ticker.symbol, '{}X'.format(short_call_leg.units) if short_call_leg.units > 1 else '',
-                    expiration_date_str, short_call_leg.contract.strike, short_call_leg.contract.strike,
-                    self.cost / short_call_leg.units)
+                    expiration_date_str, short_call_leg.contract.strike, self.cost / short_call_leg.units)
 
     @property
     def break_even_price(self):
