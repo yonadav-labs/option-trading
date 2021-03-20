@@ -10,6 +10,10 @@ const Profile = () => {
     const { oktaAuth, authState } = useOktaAuth();
     const { user } = useContext(UserContext);
     const [showCancelSubscriptionModal, setShowCancelSubscriptionModal] = useState(false);
+    const [brokers, setBrokers] = useState([]);
+    const [choosenBrokers, setChoosenBrokers] = useState([]);
+    const [resultMsg, setResultMsg] = useState("");
+
     const API_URL = getApiUrl();
     const reason = useRef("");
     const history = useHistory();
@@ -31,7 +35,6 @@ const Profile = () => {
                 return response;
             })
             .then((data) => {
-                // console.log(data);
                 history.go(0);
             })
             .catch((err) => {
@@ -40,10 +43,72 @@ const Profile = () => {
             });
     }
 
+    const onChangeBrokers = (event) => {
+        let selected = [];
+        let selected_opt=(event.target.selectedOptions);
+
+        setResultMsg("");
+        for (let i = 0; i < selected_opt.length; i++){
+            selected.push(selected_opt.item(i).value)
+        }
+
+        setChoosenBrokers(selected);
+    };
+
+    const saveUpdates = (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+
+        const { accessToken } = authState;
+
+        fetch(`${API_URL}/user/set-brokers`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${accessToken.accessToken}`,
+            },
+            body: JSON.stringify({ 'brokers': choosenBrokers })
+        })
+            .then((response) => {
+                if (!response.ok) {
+                    return Promise.reject();
+                }
+                return response;
+            })
+            .then((data) => {
+                setResultMsg("Saved successfully!");
+            })
+            .catch((err) => {
+                /* eslint-disable no-console */
+                console.error(err);
+            });
+    };
+
     useEffect(() => {
         if (!authState.isAuthenticated) {
             console.log('Token Expired!');
             history.push('/signin');
+        } else {
+            const { accessToken } = authState;
+
+            fetch(`${API_URL}/brokers/`, {
+                headers: {
+                    Authorization: `Bearer ${accessToken.accessToken}`,
+                },
+            })
+                .then((response) => {
+                    if (!response.ok) {
+                        return Promise.reject();
+                    }
+                    return response.json();
+                })
+                .then((data) => {
+                    setBrokers(data);
+                })
+                .catch((err) => {
+                    /* eslint-disable no-console */
+                    console.error(err);
+                });
         }
     }, [oktaAuth, authState]); // Update if authState changes
 
@@ -76,22 +141,44 @@ const Profile = () => {
                         <div className="col-md-8">
                             <div className="card-block">
                                 <h6 className="b-b-default f-w-600">Information</h6>
-                                <div className="row">
-                                    <div className="col-md-6">
-                                        <p className="f-w-600">Email</p>
-                                        <h6 className="text-muted">{user.email}</h6>
-                                        {user.subscription &&
-                                            <>
-                                                <p className="f-w-600 mt-4">Next Billing Time</p>
-                                                <h6 className="text-muted">{user.subscription.detail.next_billing_time}</h6>
-                                            </>
-                                        }
+                                <Form onSubmit={saveUpdates}>
+                                    <div className="row">
+                                        <div className="col-md-12">
+                                            <p className="f-w-600">Email</p>
+                                            <h6 className="text-muted">{user.email}</h6>
+                                            {user.subscription && 
+                                                <>
+                                                    <p className="f-w-600 mt-4">Next Billing Time</p>
+                                                    <h6 className="text-muted">{user.subscription.detail.next_billing_time}</h6>
+                                                </>
+                                            }
+                                        </div>
+                                        <div className="col-md-12 mt-4">
+                                            <Form.Group controlId="id-brokers">
+                                                <Form.Label className="d-block">Stock Brokerage</Form.Label>
+                                                <small className="d-block mb-2">This setting will be used to estimate commission costs.</small>
+                                                <Form.Control
+                                                    as="select"
+                                                    htmlSize={1}
+                                                    defaultValue={user.brokers[0]}
+                                                    onChange={onChangeBrokers}
+                                                >
+                                                    {
+                                                        brokers.map(broker => (
+                                                            <option key={broker.id} value={broker.id}>{broker.name}</option>
+                                                        ))
+                                                    }
+                                                </Form.Control>
+                                            </Form.Group>
+                                            <div className="text-success mb-2 mt-0">{resultMsg}</div>
+                                        </div>
                                     </div>
-                                    {/* <div className="col-md-6">
-                                    <p className="f-w-600">???</p>
-                                    <h6 className="text-muted">???</h6>
-                                </div> */}
-                                </div>
+                                    <div className="row">
+                                        <div className="col-md-6">
+                                            <Button type="submit" variant="primary">Save Updates</Button>
+                                        </div>
+                                    </div>
+                                </Form>
                             </div>
                         </div>
                     </div>

@@ -7,3 +7,4 @@ from .user import *
 from .watchlist import *
 from .market import *
 from .blog import Blog
+from .broker import Broker

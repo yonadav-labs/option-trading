@@ -15,4 +15,4 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ('username', 'email', 'id', 'okta_id', 'subscription')
+        fields = ('username', 'email', 'id', 'okta_id', 'subscription', 'brokers')

@@ -4,7 +4,7 @@ from django.contrib.auth.admin import UserAdmin
 from .models import (
     User, Ticker, ExternalRequestCache, Subscription, StockSnapshot,
     OptionContractSnapshot, LegSnapshot, TradeSnapshot, Watchlist,
-    WatchlistItem, TickerStats, ExpirationDate, MarketDate, Blog
+    WatchlistItem, TickerStats, ExpirationDate, MarketDate, Blog, Broker
 )
 
 DEFAULT_FIELDS = ['created_time', 'last_updated_time']
@@ -85,7 +85,20 @@ class BlogAdmin(admin.ModelAdmin):
     ordering = ['last_updated_time']
 
 
-admin.site.register(User, UserAdmin)
+class BrokerAdmin(admin.ModelAdmin):
+    list_display = ['name', 'options_open_commission', 'options_close_commission', 'stock_commission', 'is_active', 'is_default']
+    search_fields = ['name']
+    ordering = ['name']
+    list_filter = ['is_active', 'is_default']
+
+
+class CustomUserAdmin(UserAdmin):
+    fieldsets = UserAdmin.fieldsets + (
+            (None, {'fields': ('brokers',)}),
+    )
+
+
+admin.site.register(User, CustomUserAdmin)
 admin.site.register(Ticker, TickerAdmin)
 admin.site.register(ExternalRequestCache, ExternalRequestCacheAdmin)
 admin.site.register(Subscription, SubscriptionAdmin)
@@ -98,3 +111,4 @@ admin.site.register(WatchlistItem, WatchlistItemAdmin)
 admin.site.register(TickerStats, TickerStatsAdmin)
 admin.site.register(MarketDate, MarketDateAdmin)
 admin.site.register(Blog, BlogAdmin)
+admin.site.register(Broker, BrokerAdmin)

@@ -4,3 +4,4 @@ from .trade_snapshot import *
 from .user import *
 from .ticker import *
 from .blog import *
+from .broker import *
