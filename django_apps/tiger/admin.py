@@ -9,6 +9,7 @@ from .models import (
 
 DEFAULT_FIELDS = ['created_time', 'last_updated_time']
 
+UserAdmin.list_display += ('id', 'okta_id', 'date_joined')
 
 class ExpirationDateAdmin(admin.TabularInline):
     model = ExpirationDate
