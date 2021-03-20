@@ -4,6 +4,7 @@ import { Autocomplete, Pagination } from "@material-ui/lab/";
 import NewTradeCard from "../../components/NewTradeCard";
 import TickerAutocomplete from "../../components/TickerAutocomplete";
 import FilterContainer from "../../components/filters/FilterContainer";
+import ZoomInIcon from '@material-ui/icons/ZoomIn';
 
 
 export default function MainView({allTickers, onTickerSelectionChange, bestStrategies }) {
@@ -24,87 +25,91 @@ export default function MainView({allTickers, onTickerSelectionChange, bestStrat
             <Grid container direction="row" justify="center" alignItems="stretch">
                 <Grid item sm={2}>
                     <Box p={4} bgcolor='#333741' color="white" height="105%" style={{marginRight: '-2rem'}}>
-                        <Grid container direction="column" justify="center" >
+                        <Grid container direction="column" justify="center" className="filter-label">
                             <FilterContainer/>
                         </Grid>
                     </Box>
                 </Grid>
                 <Grid item sm={10}>
-                    <Box p={2} style={{marginLeft: '2rem'}}>
-                        <Grid container direction="row" justify="center" alignItems="center">
-                            <Grid item sm={2}>
-                                <h5>ENTER TICKER SYMBOL</h5>
+                    <Box boxShadow={4} p={2} style={{marginLeft: '2rem'}}>
+                        <Box py={2}>
+                            <Grid container direction="row" justify="center" alignItems="center">
+                                <Grid item sm={2}>
+                                    <span className="main-selection">ENTER TICKER SYMBOL</span>
+                                </Grid>
+                                <Grid item sm={6}>
+                                    <TickerAutocomplete 
+                                        tickers={allTickers}
+                                        onChange={onTickerSelectionChange}
+                                        size={'small'}
+                                    />
+                                </Grid>
+                                <Grid item sm={2} style={{paddingLeft: '1rem'}}>
+                                    <span className="main-selection">EXPIRATION DATE</span>
+                                </Grid>
+                                <Grid item sm={2}>
+                                    <Autocomplete
+                                        id="expiration-dates"
+                                        multiple
+                                        options={options}
+                                        size="small"
+                                        fullWidth
+                                        renderInput={(params) => (
+                                            <TextField
+                                                {...params}
+                                                variant="outlined"
+                                                placeholder="Select an expiration date"
+                                            />
+                                        )}
+                                    />
+                                </Grid>
                             </Grid>
-                            <Grid item sm={5}>
-                                <TickerAutocomplete 
-                                    tickers={allTickers}
-                                    onChange={onTickerSelectionChange}
-                                    size={'small'}
-                                />
+                        </Box>
+                        <Box py={3}>
+                            <Grid container direction="row" justify="space-between" alignItems="center">
+                                <Grid item> 
+                                    <span className='stock-summary-title'>LAST PRICE</span>
+                                    <br/>
+                                    <span className="stock-summary-information">$133.19</span>
+                                </Grid>
+                                <Grid item>
+                                    <span className='stock-summary-title'>DAY RANGE</span>
+                                    <br/>
+                                    <span className="stock-summary-information">132.81 - 145.09</span>
+                                </Grid>
+                                <Grid item>
+                                    <span className='stock-summary-title'>52 WEEK RANGE</span>
+                                    <br/>
+                                    <span className="stock-summary-information">53.15 - 145.09</span>
+                                </Grid>
+                                <Grid item>
+                                    <span className='stock-summary-title'>MARKET CAP</span>
+                                    <br/>
+                                    <span className="stock-summary-information">$2.24T</span>
+                                </Grid>
+                                <Grid item>
+                                    <span className='stock-summary-title'>P/E RATIO</span>
+                                    <br/>
+                                    <span className="stock-summary-information">36.12</span>
+                                </Grid>
+                                <Grid item>
+                                    <span className='stock-summary-title'>EPS</span>
+                                    <br/>
+                                    <span className="stock-summary-information">$3.69</span>
+                                </Grid>
+                                <Grid item>
+                                    <span className='stock-summary-title'>EARNING DATE</span>
+                                    <br/>
+                                    <span className="stock-summary-information">N/A</span>
+                                </Grid>
+                                <Grid item>
+                                    <span className='stock-summary-title'>DIVIDEND DATE</span>
+                                    <br/>
+                                    <span className="stock-summary-information">N/A</span>
+                                </Grid>
+                                <Grid item><Button size="large" variant="outlined"><ZoomInIcon style={{color: "#FF8F2B"}}/> <span className='stock-summary-title'>View Chart</span></Button></Grid>
                             </Grid>
-                            <Grid item sm={2}>
-                                <h5>EXPIRATION DATES</h5>
-                            </Grid>
-                            <Grid item sm={3}>
-                                <Autocomplete
-                                    id="expiration-dates"
-                                    multiple
-                                    options={options}
-                                    size="small"
-                                    fullWidth
-                                    renderInput={(params) => (
-                                        <TextField
-                                            {...params}
-                                            variant="outlined"
-                                            placeholder="Select an expiration date"
-                                        />
-                                    )}
-                                />
-                            </Grid>
-                        </Grid>
-                        <Grid container direction="row" justify="space-between" alignItems="center">
-                            <Grid item> 
-                                LAST PRICE
-                                <br/>
-                                $133.19
-                            </Grid>
-                            <Grid item>
-                                DAY Range
-                                <br/>
-                                132.81 - 145.09
-                            </Grid>
-                            <Grid item>
-                                52 WEEK RANGE
-                                <br/>
-                                53.15 - 145.09
-                            </Grid>
-                            <Grid item>
-                                Market Cap
-                                <br/>
-                                $2.24T
-                            </Grid>
-                            <Grid item>
-                                P/E Ratio
-                                <br/>
-                                36.12
-                            </Grid>
-                            <Grid item>
-                                EPS
-                                <br/>
-                                $3.69
-                            </Grid>
-                            <Grid item>
-                                Earning Date
-                                <br/>
-                                N/A
-                            </Grid>
-                            <Grid item>
-                                Dividend Date
-                                <br/>
-                                N/A
-                            </Grid>
-                            <Grid item><Button>View Chart</Button></Grid>
-                        </Grid>
+                        </Box>
                     </Box>
                     <Box p={5} bgcolor='#F2F2F2' minHeight="100vh" height="100%" style={{marginLeft: '2rem'}}>
                         <Grid container spacing={2} direction="column" justify="center" alignItems="stretch">

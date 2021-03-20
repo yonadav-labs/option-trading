@@ -3,11 +3,12 @@ import Axios from 'axios';
 import {CssBaseline} from "@material-ui/core";
 import ModalSpinner from '../../components/ModalSpinner';
 import LandingView from "./LandingView";
+import MainView from "./MainView";
+import './StrategyScreen.css'
 
 // utils
 import getApiUrl, { newLoadTickers, newLoadExpirationDates } from "../../utils";
 import { useOktaAuth } from '@okta/okta-react';
-import MainView from "./MainView";
 
 export default function NewStrategyScreener() {
     const API_URL = getApiUrl();
@@ -134,7 +135,7 @@ export default function NewStrategyScreener() {
     };
 
     return (
-        <div>
+        <div className="strategy-screener">
             <CssBaseline />
             <ModalSpinner active={modalActive}></ModalSpinner>
             {

@@ -16,7 +16,7 @@ export default function FilterContainer() {
             </Grid>
             </Box>
             <Box p={4} py={3} bgcolor='#14161b' mx={-4}>
-                <Grid item>
+                <Grid item style={{paddingBottom: '0.3rem'}}>
                     PRICE RANGE ON EXP DAY
                 </Grid>
                 <Grid item style={{paddingBottom: '0.5rem'}}>
@@ -27,7 +27,7 @@ export default function FilterContainer() {
                 </Grid>
             </Box>
             <Box py={2}>
-                <Grid item>
+                <Grid item style={{paddingBottom: '0.3rem'}}>
                     PREMIUM PRICE OPTIONS
                 </Grid>
                 <Grid item>
@@ -35,7 +35,7 @@ export default function FilterContainer() {
                 </Grid>
             </Box>
             <Box py={2}>
-                <Grid item>
+                <Grid item style={{paddingBottom: '0.3rem'}}>
                     CASH TO INVEST
                 </Grid>
                 <Grid item>
@@ -43,7 +43,7 @@ export default function FilterContainer() {
                 </Grid>
             </Box>
             <Box py={2}>
-                <Grid item>
+                <Grid item style={{paddingBottom: '0.3rem'}}>
                     STRATEGY TYPE
                 </Grid>
                 <Grid item>
@@ -51,7 +51,7 @@ export default function FilterContainer() {
                 </Grid>
             </Box>
             <Box py={2}>
-                <Grid item>
+                <Grid item style={{paddingBottom: '0.3rem'}}>
                     MIN VOLUME
                 </Grid>
                 <Grid item>
@@ -59,7 +59,7 @@ export default function FilterContainer() {
                 </Grid>
             </Box>
             <Box py={2}>
-                <Grid item>
+                <Grid item style={{paddingBottom: '0.3rem'}}>
                     MIN OPEN INTEREST
                 </Grid>
                 <Grid item>
@@ -67,7 +67,7 @@ export default function FilterContainer() {
                 </Grid>
             </Box>
             <Box py={2}>
-                <Grid item>
+                <Grid item style={{paddingBottom: '0.3rem'}}>
                     TIME SINCE LAST TRADED
                 </Grid>
                 <Grid item>

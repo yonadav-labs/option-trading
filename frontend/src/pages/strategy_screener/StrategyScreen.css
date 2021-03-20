@@ -1,0 +1,33 @@
+.strategy-screener {
+    font-family: 'Roboto', sans-serif;
+    font-size: 1rem;
+}
+
+.landing-view-label{
+    font-size: 1rem;
+    font-weight: bold;
+}
+
+.main-selection {
+    font-weight: bold;
+    letter-spacing: 0.25px;
+    font-size: 1rem;
+}
+
+.stock-summary-title {
+    color: #FF8F2B;
+    font-size: 0.85rem;
+    font-weight: bold;
+}
+
+.stock-summary-information {
+    font-size: 1rem;
+    font-weight: 100;
+}
+
+.filter-label {
+    font-weight: bold;
+    letter-spacing: 0.25px;
+    font-size: 0.75rem;
+}
+

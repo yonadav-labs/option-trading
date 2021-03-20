@@ -4,7 +4,7 @@ import { Grid, Paper, Box } from "@material-ui/core";
 export default function NewTradeCard({strategy}) {
 
     return (
-        <Grid item xs={12}>
+        <Grid item sm={12}>
             <Paper elevation={2}>
                 <Box p={2}>
                     <Grid
@@ -13,12 +13,14 @@ export default function NewTradeCard({strategy}) {
                         justify="space-between"
                         alignItems="center"
                     >
-                        <Grid item>
-                            {strategy.type.toUpperCase().replace(/_/g,' ')} <br />
-                            04/16/2021: $1000 <br />
-                            04/23/2021: $1100 <br />
-                            Debit
-                        </Grid>
+                        <Box p={2} m={-2} bgcolor="#FFF1E4">
+                            <Grid item>
+                                {strategy.type.toUpperCase().replace(/_/g,' ')} <br />
+                                04/16/2021: $1000 <br />
+                                04/23/2021: $1100 <br />
+                                Debit
+                            </Grid>
+                        </Box>
                         <Grid item>
                             HYPOTHETICAL PROFIT <br />
                             +31X <br />

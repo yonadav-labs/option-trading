@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { Container, Grid, Paper, TextField, Box, Button } from "@material-ui/core";
 import {
     Autocomplete,
@@ -17,7 +17,7 @@ export default function LandingView(props) {
         onExpirationSelectionChange, 
         setTargetPriceBySentiment, 
         getBestStrategies, 
-        bestStrategies } = props
+        } = props
 
     const handleSentiment = (event, newSentiment) => {
         setTargetPriceBySentiment(newSentiment)
@@ -45,12 +45,12 @@ export default function LandingView(props) {
             </Grid>
             <br />
             <Grid container direction="row" justify="center" alignItems="center" >
-                <Grid item xs={6} align="center">
+                <Grid item xs={5} align="center">
                     <Paper elevation={3}>
                         <Box p={4}>
                             <Grid container>
-                                <Grid item>
-                                    <h4> Enter Ticker Symbol </h4>
+                                <Grid item style={{paddingBottom: '0.5rem'}}>
+                                    <span className="landing-view-label"> Enter Ticker Symbol </span>
                                 </Grid>
                             </Grid>
                             <Grid container>
@@ -62,9 +62,16 @@ export default function LandingView(props) {
                                 </Grid>
                             </Grid>
                             <br />
+                            <Grid container direction="row" justify="flex-start" alignItems="flex-start" spacing={3} >
+                                <Grid item xs={6} alignItems="flex-start">
+                                    <span className="landing-view-label">Option Expiration Date</span>
+                                </Grid>
+                                <Grid item xs={6} alignItems="flex-start">
+                                    <span className="landing-view-label">How are you feeling?</span>
+                                </Grid>
+                            </Grid>
                             <Grid container direction="row" justify="center" spacing={3} >
                                 <Grid item xs={6}>
-                                    <h4>Option Expiration Date</h4>
                                     <Autocomplete
                                         id="expiration-dates"
                                         multiple
@@ -86,7 +93,6 @@ export default function LandingView(props) {
                                     />
                                 </Grid>
                                 <Grid item xs={6}>
-                                    <h4>How are you feeling?</h4>
                                     <ToggleButtonGroup
                                         value={sentiment}
                                         exclusive
