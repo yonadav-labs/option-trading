@@ -9,6 +9,23 @@ from tiger.models import User, Subscription
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
+def create_subscription(request):
+    if request.method == 'POST':
+        subscription_id = request.data.get("subscriptionID")
+
+        if not subscription_id:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
+        subscription, created = request.user.subscriptions.update_or_create(
+            paypal_subscription_id=subscription_id
+        )
+        r = subscription.fetch_and_save_latest_status()
+
+        return Response(r)
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
 def cancel_subscription(request):
     if request.method == 'POST':
         subscription = request.user.get_subscription()
@@ -29,9 +46,9 @@ def hook_create_subscription(request):
             username = request.data['resource']['subscriber']['name']['surname']
 
             user = User.objects.get(username=username)
-            user.subscriptions.create(
+            user.subscriptions.update_or_create(
                 paypal_subscription_id=subscription_id,
-                paypal_plan_id=plan_id
+                defaults={'paypal_plan_id': plan_id}
             )
 
             return Response()
@@ -49,7 +66,7 @@ def hook_activate_subscription(request):
             subscription.status = 'ACTIVE'
             subscription.save()
 
-            if prev_subscription:
+            if prev_subscription and prev_subscription.paypal_subscription_id != subscription_id:
                 reason = f'Modify plan to {subscription.paypal_subscription_id}'
                 prev_subscription.cancel(reason)
 

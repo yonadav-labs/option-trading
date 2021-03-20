@@ -49,47 +49,47 @@ const Profile = () => {
 
     if (!user) {
         return (
-            <div class="container justify-content-center">
+            <div className="container justify-content-center">
                 <p>Fetching user profile...</p>
             </div>
         );
     }
 
     return (
-        <>
-            <div class="container justify-content-center">
-                <div class="card">
-                    <div class="row">
-                        <div class="col-md-4 bg-gradient user-profile">
-                            <div class="card-block text-center text-white">
-                                <h6 class="f-w-600">{user.email}</h6>
+        <div className="min-vh-100">
+            <div className="container justify-content-center">
+                <div className="card">
+                    <div className="row">
+                        <div className="col-md-4 bg-gradient user-profile">
+                            <div className="card-block text-center text-white">
+                                <h6 className="f-w-600">{user.email}</h6>
                                 {user.subscription ?
                                     <div>
                                         <p>Member</p>
                                         <Button onClick={() => setShowCancelSubscriptionModal(true)} >Cancel Subscription</Button>
                                     </div>
                                     :
-                                    <a href="/pricing" class="btn-block btn-light btn-login">Subscribe</a>
+                                    <a href="/pricing" className="btn-block btn-light btn-login">Subscribe</a>
                                 }
                             </div>
                         </div>
-                        <div class="col-md-8">
-                            <div class="card-block">
-                                <h6 class="b-b-default f-w-600">Information</h6>
-                                <div class="row">
-                                    <div class="col-md-6">
-                                        <p class="f-w-600">Email</p>
-                                        <h6 class="text-muted">{user.email}</h6>
-                                        {user.subscription && 
+                        <div className="col-md-8">
+                            <div className="card-block">
+                                <h6 className="b-b-default f-w-600">Information</h6>
+                                <div className="row">
+                                    <div className="col-md-6">
+                                        <p className="f-w-600">Email</p>
+                                        <h6 className="text-muted">{user.email}</h6>
+                                        {user.subscription &&
                                             <>
-                                                <p class="f-w-600 mt-4">Next Billing Time</p>
-                                                <h6 class="text-muted">{user.subscription.detail.next_billing_time}</h6>
+                                                <p className="f-w-600 mt-4">Next Billing Time</p>
+                                                <h6 className="text-muted">{user.subscription.detail.next_billing_time}</h6>
                                             </>
                                         }
                                     </div>
-                                    {/* <div class="col-md-6">
-                                    <p class="f-w-600">???</p>
-                                    <h6 class="text-muted">???</h6>
+                                    {/* <div className="col-md-6">
+                                    <p className="f-w-600">???</p>
+                                    <h6 className="text-muted">???</h6>
                                 </div> */}
                                 </div>
                             </div>
@@ -124,7 +124,7 @@ const Profile = () => {
                     <Button variant="primary" onClick={cancelSubscription} >Submit</Button>
                 </Modal.Footer>
             </Modal>
-        </>
+        </div>
     );
 }
 

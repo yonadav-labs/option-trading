@@ -69,7 +69,6 @@ function Header() {
                         <Nav.Link eventKey={"3"} className="text-dark" as={Link} to="/option-screener">Options Screener</Nav.Link>
                         <Nav.Link eventKey={"4"} className="text-dark" as={Link} to="/blogs">Insights</Nav.Link>
                         <Nav.Link eventKey={"5"} className="text-dark" as={Link} to="/pricing">Pricing</Nav.Link>
-                        <Nav.Link eventKey={"6"} className="text-dark" href="#">Support</Nav.Link>
                     </Nav>
                     {authState.isAuthenticated ?
                         <Nav>

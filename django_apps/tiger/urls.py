@@ -15,6 +15,7 @@ restful_urlpatterns = [
     path('api/tickers/<str:ticker_symbol>/trades/', views.get_best_trades, name='get_best_trades'),
     path('api/trade_snapshots/<int:pk>/', views.trade_snapshot_detail, name='trade_snapshot_detail'),
     path('api/trade_snapshots', views.trade_snapshots, name='trade_snapshots'),
+    path('api/subscription/update', views.create_subscription),
     path('api/subscription/cancel', views.cancel_subscription),
     path('api/subscription/webhook/create', views.hook_create_subscription),
     path('api/subscription/webhook/activate', views.hook_activate_subscription),
