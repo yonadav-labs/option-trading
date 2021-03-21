@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+import math
 
 
 class Trade(ABC):
@@ -201,6 +202,37 @@ class Trade(ABC):
     @property
     def graph_y_points(self):
         return [self.get_profit_in_price_range(price, price) for price in self.graph_x_points]
+
+    def get_sigma_prices(self, sigma_num):
+        '''Returns 2 prices, -X * sigma, X * sigma, based on historical volatility.'''
+        # TODO: historical_volatility is not saved as snapshot.
+        historical_volatility = self.stock.historical_volatility
+        if not historical_volatility:
+            return []
+        # TODO: change to count actual trading days.
+        trading_days_till_exp = int(self.min_days_till_expiration * 5.0 / 7.0)  # Estimation to exclude weekends.
+        daily_volatility = historical_volatility / math.sqrt(253)
+        sigma = daily_volatility * math.sqrt(trading_days_till_exp)
+        return [max(0.0, self.stock.stock_price * (1 + n * sigma)) for n in (-sigma_num, sigma_num)]
+
+    @property
+    def two_sigma_prices(self):
+        return self.get_sigma_prices(2)
+
+    @property
+    def two_sigma_profit_lower(self):
+        # TODO: change to a function that can handle peek/valley. Currently all strategies are monotonic.
+        if not self.two_sigma_prices:
+            return None
+        lower_price, higher_price = self.two_sigma_prices
+        return max(-self.cost, min(self.get_profit_in_price_range(lower_price, lower_price),
+                                   self.get_profit_in_price_range(higher_price, higher_price)))
+
+    @property
+    def two_sigma_profit_lower_ratio(self):
+        if self.two_sigma_profit_lower is None:
+            return None
+        return self.two_sigma_profit_lower / self.cost
 
     def get_profit_in_price_range(self, price_lower, price_upper):
         profit_sum = 0.0

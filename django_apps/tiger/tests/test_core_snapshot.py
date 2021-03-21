@@ -3,12 +3,13 @@ from django.test import TestCase
 from tiger.core import Stock, OptionContract, Leg, Trade
 from tiger.core.trade.trade_factory import TradeFactory
 from tiger.models import ExternalRequestCache, Ticker, StockSnapshot, OptionContractSnapshot, LegSnapshot, \
-    TradeSnapshot, User
+    TradeSnapshot, User, TickerStats
 
 
 class LoadFromSnapshotTestCase(TestCase):
     def setUp(self):
         self.ticker = Ticker.objects.create(symbol='QQQE')
+        self.ticker.tickerstats = TickerStats(self.ticker, historical_volatility=0.3)
         self.external_cache = ExternalRequestCache.objects.create(
             request_url='https://query1.finance.yahoo.com/v7/finance/options/QQQE',
             response_blob='{"optionChain":{"result":[{"underlyingSymbol":"QQQE","expirationDates":[1610668800,1613692800,1616112000,1623974400],"strikes":[65.0,68.0,69.0,70.0,71.0,72.0,73.0,74.0,75.0,76.0,77.0,78.0],"hasMiniOptions":false,"quote":{"language":"en-US","region":"US","quoteType":"ETF","quoteSourceName":"Delayed Quote","triggerable":true,"currency":"USD","fiftyTwoWeekLowChange":34.01,"fiftyTwoWeekLowChangePercent":0.84749556,"fiftyTwoWeekRange":"40.13 - 75.52","fiftyTwoWeekHighChange":-1.3799973,"fiftyTwoWeekHighChangePercent":-0.01827327,"fiftyTwoWeekLow":40.13,"fiftyTwoWeekHigh":75.52,"ytdReturn":15.27,"trailingThreeMonthReturns":0.74,"trailingThreeMonthNavReturns":0.69,"fiftyDayAverage":72.69875,"fiftyDayAverageChange":1.441246,"fiftyDayAverageChangePercent":0.019824907,"twoHundredDayAverage":65.8727,"twoHundredDayAverageChange":8.267296,"twoHundredDayAverageChangePercent":0.12550412,"sourceInterval":15,"exchangeDataDelayedBy":0,"tradeable":false,"marketState":"POST","firstTradeDateMilliseconds":1332336600000,"priceHint":2,"regularMarketChange":-1.0200043,"regularMarketChangePercent":-1.3571105,"regularMarketTime":1609794000,"regularMarketPrice":74.14,"regularMarketDayHigh":75.52,"regularMarketDayRange":"73.25 - 75.52","regularMarketDayLow":73.25,"regularMarketVolume":58589,"regularMarketPreviousClose":75.16,"bid":72.65,"ask":74.54,"bidSize":10,"askSize":10,"fullExchangeName":"NYSEArca","regularMarketOpen":75.52,"averageDailyVolume3Month":45200,"averageDailyVolume10Day":41900,"exchange":"PCX","shortName":"Direxion NASDAQ-100 Equal Weigh","longName":"Direxion NASDAQ-100 Equal Weighted Index Shares","messageBoardId":"finmb_182590799","exchangeTimezoneName":"America/New_York","exchangeTimezoneShortName":"EST","gmtOffSetMilliseconds":-18000000,"market":"us_market","esgPopulated":false,"symbol":"QQQE"}}]}}'

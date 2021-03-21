@@ -6,7 +6,7 @@ from django.utils.timezone import make_aware, get_default_timezone
 from tiger.core import Cash, Stock, OptionContract, OptionLeg
 from tiger.core.trade import LongCall, LongPut, CoveredCall, CashSecuredPut, BullPutSpread, BullCallSpread, \
     BearCallSpread, BearPutSpread, TradeFactory
-from tiger.models import Ticker
+from tiger.models import Ticker, TickerStats
 
 MOCK_NOW_TIMESTAMP = 1609664400  # 01/03/2021
 
@@ -50,7 +50,8 @@ class CallTradesTestCase(TestCase):
             "inTheMoney": False
         }
         self.stock_price = 420.0
-        self.ticker = Ticker(id=1)
+        self.ticker = Ticker(id=1, symbol='TSLA')
+        self.ticker.tickerstats = TickerStats(self.ticker, historical_volatility=0.8)
         self.stock = Stock(self.ticker, self.stock_price)
 
     @mock.patch('django.utils.timezone.now')
@@ -79,6 +80,9 @@ class CallTradesTestCase(TestCase):
         self.assertAlmostEqual(long_call.target_price_profit_ratio, 0.9294990723562)
         self.assertAlmostEqual(long_call.break_even_price, 449.7)
         self.assertAlmostEqual(long_call.to_break_even_ratio, 0.07071428571)
+        self.assertAlmostEqual(long_call.stock.historical_volatility, 0.8)
+        self.assertSequenceEqual(long_call.two_sigma_prices, [0.0, 918.0998518877443])
+        self.assertAlmostEqual(long_call.two_sigma_profit_lower, -16170)
 
         self.assertAlmostEqual(LongCall.build(self.stock, call_contract, 'mid', 580, 620).target_price_profit,
                                15030)
@@ -255,7 +259,8 @@ class PutTradesTestCase(TestCase):
         }
 
         self.stock_price = 73.55
-        self.ticker = Ticker(id=1)
+        self.ticker = Ticker(id=2, symbol='QQQE')
+        self.ticker.tickerstats = TickerStats(self.ticker, historical_volatility=0.3)
         self.stock = Stock(self.ticker, self.stock_price)
 
     @mock.patch('django.utils.timezone.now')
@@ -396,7 +401,8 @@ class TdTestCase(TestCase):
             "mini": False
         }
         self.stock_price = 210.0
-        self.ticker = Ticker(id=1)
+        self.ticker = Ticker(id=3, symbol='MSFT')
+        self.ticker.tickerstats = TickerStats(self.ticker, historical_volatility=0.4)
         self.stock = Stock(self.ticker, self.stock_price)
 
     @mock.patch('django.utils.timezone.now')

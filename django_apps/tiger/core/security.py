@@ -42,16 +42,15 @@ class Stock(Security):
         super().__init__(external_cache_id)
         self.ticker = ticker
         self.stock_price = stock_price
+        self.historical_volatility = ticker.tickerstats.historical_volatility
 
     @classmethod
     def from_snapshot(cls, stock_snapshot):
         cache = stock_snapshot.external_cache
         if 'yahoo' in cache.request_url:
-            stock_price = blob_reader.get_quote(cache.json_response, True).get(
-                'regularMarketPrice')
+            stock_price = blob_reader.get_quote(cache.json_response, True).get('regularMarketPrice')
         else:
-            stock_price = blob_reader.get_quote(cache.json_response, False).get(
-                'last')
+            stock_price = blob_reader.get_quote(cache.json_response, False).get('last')
         return cls(stock_snapshot.ticker, stock_price, stock_snapshot.external_cache_id)
 
     @property

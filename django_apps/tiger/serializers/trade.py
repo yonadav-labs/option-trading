@@ -1,7 +1,7 @@
 from rest_framework import serializers
 
 from tiger.models import Ticker
-from .custom_fields import RatioDecimalField, DollarDecimalField
+from .custom_fields import ReadOnlyRatioDecimalField, ReadOnlyDollarDecimalField
 
 '''
 The following serializer is for display-only!
@@ -17,7 +17,7 @@ class TickerSerializer(serializers.HyperlinkedModelSerializer):
 class StockSerializer(serializers.Serializer):
     ticker = TickerSerializer()
     external_cache_id = serializers.IntegerField(allow_null=True)
-    stock_price = DollarDecimalField()
+    stock_price = ReadOnlyDollarDecimalField()
     display_name = serializers.ReadOnlyField()
 
 
@@ -25,49 +25,49 @@ class OptionContractSerializer(serializers.Serializer):
     ticker = TickerSerializer()
     external_cache_id = serializers.IntegerField(allow_null=True)
     is_call = serializers.BooleanField(allow_null=False)
-    ask = DollarDecimalField()
-    bid = DollarDecimalField()
+    ask = ReadOnlyDollarDecimalField()
+    bid = ReadOnlyDollarDecimalField()
     contract_symbol = serializers.CharField(max_length=100)
     expiration = serializers.IntegerField(min_value=0)
-    strike = DollarDecimalField()
-    change = DollarDecimalField()
+    strike = ReadOnlyDollarDecimalField()
+    change = ReadOnlyDollarDecimalField()
     contract_size = serializers.CharField()
     currency = serializers.CharField()
-    implied_volatility = RatioDecimalField()
+    implied_volatility = ReadOnlyRatioDecimalField()
     in_the_money = serializers.BooleanField()
-    last_price = DollarDecimalField()
+    last_price = ReadOnlyDollarDecimalField()
     last_trade_date = serializers.IntegerField(min_value=0)
     open_interest = serializers.IntegerField(min_value=0)
-    percent_change = RatioDecimalField()
+    percent_change = ReadOnlyRatioDecimalField()
     volume = serializers.IntegerField(allow_null=True)
     days_till_expiration = serializers.IntegerField(min_value=0)
 
-    high_price = DollarDecimalField()
-    low_price = DollarDecimalField()
-    open_price = DollarDecimalField()
-    close_price = DollarDecimalField()
-    time_value = DollarDecimalField()
+    high_price = ReadOnlyDollarDecimalField()
+    low_price = ReadOnlyDollarDecimalField()
+    open_price = ReadOnlyDollarDecimalField()
+    close_price = ReadOnlyDollarDecimalField()
+    time_value = ReadOnlyDollarDecimalField()
     bid_size = serializers.IntegerField()
     ask_size = serializers.IntegerField()
-    delta = RatioDecimalField()
-    gamma = RatioDecimalField()
-    theta = RatioDecimalField()
-    vega = RatioDecimalField()
-    rho = RatioDecimalField()
-    theoretical_volatility = RatioDecimalField()
-    theoretical_option_value = DollarDecimalField()
+    delta = ReadOnlyRatioDecimalField()
+    gamma = ReadOnlyRatioDecimalField()
+    theta = ReadOnlyRatioDecimalField()
+    vega = ReadOnlyRatioDecimalField()
+    rho = ReadOnlyRatioDecimalField()
+    theoretical_volatility = ReadOnlyRatioDecimalField()
+    theoretical_option_value = ReadOnlyDollarDecimalField()
     quote_time = serializers.IntegerField(min_value=0)
 
-    stock_price = DollarDecimalField()
+    stock_price = ReadOnlyDollarDecimalField()
 
     display_name = serializers.ReadOnlyField()
-    bid_ask_spread = DollarDecimalField()
-    to_strike = DollarDecimalField()
-    to_strike_ratio = RatioDecimalField()
-    mark = DollarDecimalField()
-    break_even_price = DollarDecimalField()
-    to_break_even_ratio = RatioDecimalField()
-    notional_value = DollarDecimalField()
+    bid_ask_spread = ReadOnlyDollarDecimalField()
+    to_strike = ReadOnlyDollarDecimalField()
+    to_strike_ratio = ReadOnlyRatioDecimalField()
+    mark = ReadOnlyDollarDecimalField()
+    break_even_price = ReadOnlyDollarDecimalField()
+    to_break_even_ratio = ReadOnlyRatioDecimalField()
+    notional_value = ReadOnlyDollarDecimalField()
 
 
 class LegSerializer(serializers.Serializer):
@@ -79,7 +79,7 @@ class LegSerializer(serializers.Serializer):
     contract = OptionContractSerializer(allow_null=True)
     premium_type = serializers.ReadOnlyField()
     premium_used = serializers.ReadOnlyField()
-    cost = DollarDecimalField()
+    cost = ReadOnlyDollarDecimalField()
     display_name = serializers.ReadOnlyField()
 
 
@@ -89,29 +89,33 @@ class TradeSerializer(serializers.Serializer):
     stock = StockSerializer()  # The underlying.
     legs = LegSerializer(required=True, many=True)
     premium_type = serializers.ReadOnlyField()
-    target_price_lower = DollarDecimalField()
-    target_price_upper = DollarDecimalField()
+    target_price_lower = ReadOnlyDollarDecimalField()
+    target_price_upper = ReadOnlyDollarDecimalField()
 
-    break_even_price = DollarDecimalField()
-    to_break_even_ratio = RatioDecimalField()
+    break_even_price = ReadOnlyDollarDecimalField()
+    to_break_even_ratio = ReadOnlyRatioDecimalField()
     display_name = serializers.ReadOnlyField()
-    cost = DollarDecimalField()
+    cost = ReadOnlyDollarDecimalField()
     min_expiration = serializers.ReadOnlyField()
     min_days_till_expiration = serializers.ReadOnlyField()
     min_last_trade_date = serializers.ReadOnlyField()
     min_open_interest = serializers.ReadOnlyField()
     min_volume = serializers.ReadOnlyField()
-    max_bid_ask_spread = DollarDecimalField()
-    to_target_price_lower_ratio = RatioDecimalField()
-    to_target_price_upper_ratio = RatioDecimalField()
-    target_price_profit = DollarDecimalField()
-    target_price_profit_ratio = RatioDecimalField()
-    profit_cap = DollarDecimalField()
-    profit_cap_ratio = RatioDecimalField()
-    graph_x_points = serializers.ListField(child=DollarDecimalField())
-    graph_y_points = serializers.ListField(child=DollarDecimalField())
-    notional_value = DollarDecimalField()
-    leverage = RatioDecimalField()
+    max_bid_ask_spread = ReadOnlyDollarDecimalField()
+    to_target_price_lower_ratio = ReadOnlyRatioDecimalField()
+    to_target_price_upper_ratio = ReadOnlyRatioDecimalField()
+    target_price_profit = ReadOnlyDollarDecimalField()
+    target_price_profit_ratio = ReadOnlyRatioDecimalField()
+    profit_cap = ReadOnlyDollarDecimalField()
+    profit_cap_ratio = ReadOnlyRatioDecimalField()
+    graph_x_points = serializers.ListField(child=ReadOnlyDollarDecimalField())
+    graph_y_points = serializers.ListField(child=ReadOnlyDollarDecimalField())
+    notional_value = ReadOnlyDollarDecimalField()
+    leverage = ReadOnlyRatioDecimalField()
+
+    two_sigma_prices = serializers.ListField(child=ReadOnlyDollarDecimalField())
+    two_sigma_profit_lower = ReadOnlyDollarDecimalField()
+    two_sigma_profit_lower_ratio = ReadOnlyRatioDecimalField()
 
     # TODO: re-consider those metrics.
     # premium_profit = serializers.FloatField(allow_null=True)  # CoveredCall, CashSecuredPut only

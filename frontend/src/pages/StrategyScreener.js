@@ -85,7 +85,7 @@ export default function BestCallByPrice() {
     useEffect(() => {
         if (authState.isAuthenticated) {
             const { accessToken } = authState;
-            setHeaders({Authorization: `Bearer ${accessToken.accessToken}`});
+            setHeaders({ Authorization: `Bearer ${accessToken.accessToken}` });
         } else {
             setHeaders({});
         }
@@ -141,7 +141,7 @@ export default function BestCallByPrice() {
             headerSortingStyle,
         }, {
             dataField: "cost",
-            text: "Cost / Max loss",
+            text: "Cost",
             formatter: (cell, row, rowIndex, extraData) => (
                 PriceFormatter(cell)
             ),

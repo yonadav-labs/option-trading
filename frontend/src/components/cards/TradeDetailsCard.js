@@ -7,7 +7,6 @@ import TradeProfitLossGraph from '../TradeProfitLossGraph.js';
 
 export default function TradeDetailsCard(props) {
     const { trade, hideShareButton, hideDisclaimer, hideTitle } = props;
-    // console.log(trade)
 
     return (
         <Card>
@@ -23,8 +22,8 @@ export default function TradeDetailsCard(props) {
                             (<Col sm="3" xs="6">
                                 <Badge variant="secondary">Target Price Range</Badge>
                                 <br />
-                                {PriceFormatter(trade.target_price_lower)}({ProfitFormatter(trade.to_target_price_lower_ratio)})
-                        - {PriceFormatter(trade.target_price_upper)}({ProfitFormatter(trade.to_target_price_upper_ratio)})
+                                {PriceFormatter(trade.target_price_lower)} ({ProfitFormatter(trade.to_target_price_lower_ratio)})
+                        - {PriceFormatter(trade.target_price_upper)} ({ProfitFormatter(trade.to_target_price_upper_ratio)})
                             </Col>) : null}
                         {trade.target_price_lower ?
                             (<Col sm="3" xs="6">
@@ -65,6 +64,19 @@ export default function TradeDetailsCard(props) {
                             <br />
                             {PercentageFormatter(trade.leverage)}
                         </Col>
+                        {trade.two_sigma_profit_lower != null ?
+                            (
+                                <Col sm="3" xs="6">
+                                    <Badge variant="secondary">5% chance wrost case loss</Badge>
+                                    <br />
+                                    <span>
+                                        {PriceFormatter(trade.two_sigma_profit_lower)}&nbsp;
+                                ({trade.two_sigma_profit_lower_ratio >= 0 ? '+' : '-'}
+                                        {PercentageFormatter(Math.abs(trade.two_sigma_profit_lower_ratio))})&nbsp;
+                                <small>if stock price at {PriceFormatter(trade.two_sigma_prices[0])}</small>
+                                    </span >
+                                </Col>
+                            ) : null}
                     </Row>
                     <br />
                     <TradeProfitLossGraph trade={trade} />
