@@ -110,13 +110,24 @@ export default function NewStrategyScreener() {
     }
 
     const getBestStrategies = async () => {
+        console.log(selectedExpirationTimestamp)
         try {
-            let url = `${API_URL}/tickers/${selectedTicker.symbol}/trades/?`;
-            url += `expiration_timestamps=${selectedExpirationTimestamp[0].value}&`;
-            url += `target_price_lower=${targetPriceLower}&target_price_upper=${targetPriceUpper}&`;
-            url += `premium_type=market&`
+            let url = `${API_URL}/dev/tickers/${selectedTicker.symbol}/trades/`;
+            let body = {
+                "expiration_timestamps": [selectedExpirationTimestamp[0].value],
+                "contract_filters": {
+                    "min.open_interest": 10,
+                    "min.volume": 1,
+                    "min.last_trade_date": -7
+                },
+                "strategy_settings": {
+                    "premium_type": "market",
+                    "target_price_lower": targetPriceLower,
+                    "target_price_upper": targetPriceUpper
+                }
+            }
             setModalActive(true);
-            const response = await Axios.get(url);
+            const response = await Axios.post(url, body);
             let trades = response.data.trades;
             trades.map((val, index) => {
                 val.type2 = val.type;

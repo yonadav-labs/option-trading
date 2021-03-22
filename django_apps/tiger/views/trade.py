@@ -1,4 +1,5 @@
 import logging
+import itertools
 
 from django.shortcuts import get_object_or_404
 from rest_framework.decorators import api_view
@@ -10,7 +11,7 @@ from tiger.core.trade import LongCall, LongPut, CoveredCall, CashSecuredPut, Bul
 from tiger.models import Ticker
 from tiger.serializers import TradeSerializer
 from tiger.utils import days_from_timestamp
-from tiger.views.utils import get_valid_contracts
+from tiger.views.utils import get_valid_contracts, get_filtered_contracts
 
 logger = logging.getLogger('console_info')
 
@@ -21,6 +22,58 @@ def filter_and_sort_trades(input_trades):
         filter(lambda trade: trade is not None and trade.target_price_profit > 0.0 and trade.cost > 0.1, input_trades))
     return sorted(output_trades, key=lambda trade: -trade.target_price_profit_ratio)
 
+
+def save_best_trade_by_type(best_trade_dict, strategy_type, trade):
+    if trade.cost < 0.1:
+        return
+    if strategy_type not in best_trade_dict or best_trade_dict[strategy_type].target_price_profit_ratio < trade.target_price_profit_ratio:
+        best_trade_dict[strategy_type] = trade
+
+
+def build_trades(stock, call_contract_lists, put_contract_lists, strategy_settings):
+    premium_type = strategy_settings.get('premium_type', 'market')
+    target_price_lower = strategy_settings.get('target_price_lower', None)
+    target_price_upper = strategy_settings.get('target_price_upper', None)
+    available_cash = strategy_settings.get('available_cash',  None)
+    best_trade_dict = {}
+
+    for calls_per_exp in call_contract_lists:
+        call_pairs = itertools.combinations(calls_per_exp, 2)
+
+        for call in calls_per_exp:
+            long_call = LongCall.build(stock, call, premium_type, target_price_lower, target_price_upper, available_cash)
+            save_best_trade_by_type(best_trade_dict, 'long_call', long_call)
+
+            covered_call = CoveredCall.build(stock, call, premium_type, target_price_lower, target_price_upper, available_cash)
+            save_best_trade_by_type(best_trade_dict, 'covered_call', covered_call)
+            
+        for call1, call2 in call_pairs:
+            if call1.strike < call2.strike:
+                bull_call_spread = BullCallSpread.build(stock, call1, call2, premium_type, target_price_lower, target_price_upper, available_cash)
+                save_best_trade_by_type(best_trade_dict, 'bull_call_spread', bull_call_spread)
+
+                bear_call_spread = BearCallSpread.build(stock, call1, call2, premium_type, target_price_lower, target_price_upper, available_cash)
+                save_best_trade_by_type(best_trade_dict, 'bear_call_spread', bear_call_spread)
+
+    for puts_per_exp in put_contract_lists:
+        put_pairs = itertools.combinations(puts_per_exp, 2)
+
+        for put in puts_per_exp:
+            long_put = LongPut.build(stock, put, premium_type, target_price_lower, target_price_upper, available_cash)
+            save_best_trade_by_type(best_trade_dict, 'long_put', long_put)
+            
+            cash_secured_put = CashSecuredPut.build(stock, put, premium_type, target_price_lower, target_price_upper, available_cash)
+            save_best_trade_by_type(best_trade_dict, 'cash_secured_put', cash_secured_put)
+
+        for put1, put2 in put_pairs:
+            if put1.strike < put2.strike:
+                bear_put_spread = BearPutSpread.build(stock, put1, put2, premium_type, target_price_lower, target_price_upper, available_cash)
+                save_best_trade_by_type(best_trade_dict, 'bear_put_spread', bear_put_spread)
+
+                bull_put_spread = BullPutSpread.build(stock, put1, put2, premium_type, target_price_lower, target_price_upper, available_cash)
+                save_best_trade_by_type(best_trade_dict, 'bull_put_spread', bull_put_spread)
+
+    return list(best_trade_dict.values())
 
 def get_call_spreads(stock, call_contract_lists, premium_type, target_price_lower, target_price_upper, available_cash):
     bull_call_spread_trades = []
@@ -133,4 +186,29 @@ def get_best_trades(request, ticker_symbol):
 
     all_trades = long_call_trades + covered_call_trades + long_put_trades + cash_secured_put_trades + \
                  bull_call_spread_trades + bear_call_spread_trades + bear_put_spread_trades + bull_put_spread_trades
+    return Response({'trades': TradeSerializer(all_trades, many=True).data})
+
+@api_view(['POST'])
+def get_top_trades(request, ticker_symbol):
+    ticker = get_object_or_404(Ticker, symbol=ticker_symbol.upper(), status="unspecified")
+    # Check if option is available for this ticker.
+    all_expiration_timestamps = ticker.get_expiration_timestamps()
+    if all_expiration_timestamps is None:
+        raise APIException('No contracts found.')
+
+    try:
+        expiration_timestamps = request.data.get('expiration_timestamps')
+        strategy_settings = request.data.get('strategy_settings')
+        contract_filters = request.data.get('contract_filters')
+        assert strategy_settings['target_price_lower'] <= strategy_settings['target_price_upper']
+    except Exception:
+        raise APIException('Invalid request body.')
+
+    quote, external_cache_id = ticker.get_quote()
+    stock_price = quote.get('regularMarketPrice')  # This is from Yahoo.
+    stock = Stock(ticker, stock_price, external_cache_id)
+
+    call_contract_lists, put_contract_lists = get_filtered_contracts(ticker, expiration_timestamps, contract_filters)
+    all_trades = build_trades(stock, call_contract_lists, put_contract_lists, strategy_settings)
+    
     return Response({'trades': TradeSerializer(all_trades, many=True).data})

@@ -71,6 +71,25 @@ def get_valid_contracts(ticker, request, all_expiration_timestamps, filter_low_l
 
     return call_lists, put_lists
 
+def get_filtered_contracts(ticker, expiration_timestamps, filters={}):
+    call_lists = []
+    put_lists = []
+    all_expiration_timestamps = ticker.get_expiration_timestamps()
+    expiration_timestamps = set([int(ts) for ts in expiration_timestamps if int(ts) in all_expiration_timestamps])
+
+    for ts in expiration_timestamps:
+        calls, puts = ticker.get_call_puts(ts)
+
+        # apply all filters
+        if filters is not None:
+            for key, value in filters.items():
+                calls = list(filter(lambda call: filter_contract_on_attribute(call, key, value), calls))
+                puts = list(filter(lambda put: filter_contract_on_attribute(put, key, value), puts))
+
+        # filter out inactive contracts.
+        call_lists.append(list(filter(lambda call: call.last_trade_date, calls)))
+        put_lists.append(list(filter(lambda put: put.last_trade_date, puts)))
+    return call_lists, put_lists
 
 def get_current_trade(trade_snapshot):
     """
