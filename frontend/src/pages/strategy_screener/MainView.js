@@ -1,13 +1,14 @@
 import React, {useState, useEffect} from "react";
 import { Grid, Button, TextField, Box } from "@material-ui/core";
 import { Autocomplete, Pagination } from "@material-ui/lab/";
+import { TimestampDateFormatter, formatLargeNumber } from '../../utils';
 import NewTradeCard from "../../components/NewTradeCard";
 import TickerAutocomplete from "../../components/TickerAutocomplete";
 import FilterContainer from "../../components/filters/FilterContainer";
 import ZoomInIcon from '@material-ui/icons/ZoomIn';
 
 
-export default function MainView({allTickers, onTickerSelectionChange, bestStrategies }) {
+export default function MainView({allTickers, onTickerSelectionChange, bestStrategies, basicInfo }) {
     const [renderedStrategies, setRenderedStrategies] = useState([])
     const [noOfPages, setNoOfPages] = useState(null)
 
@@ -70,42 +71,60 @@ export default function MainView({allTickers, onTickerSelectionChange, bestStrat
                                 <Grid item> 
                                     <span className='stock-summary-title'>LAST PRICE</span>
                                     <br/>
-                                    <span className="stock-summary-information">$133.19</span>
+                                    <span className="stock-summary-information">
+                                        {basicInfo.regularMarketPrice ? `$${basicInfo.regularMarketPrice}` : "N/A"}
+                                    </span>
                                 </Grid>
                                 <Grid item>
                                     <span className='stock-summary-title'>DAY RANGE</span>
                                     <br/>
-                                    <span className="stock-summary-information">132.81 - 145.09</span>
+                                    <span className="stock-summary-information">
+                                        {basicInfo.regularMarketDayLow && basicInfo.regularMarketDayHigh ?
+                                        `${basicInfo.regularMarketDayLow.toFixed(2)} - ${basicInfo.regularMarketDayHigh.toFixed(2)}` : "N/A"}
+                                    </span>
                                 </Grid>
                                 <Grid item>
                                     <span className='stock-summary-title'>52 WEEK RANGE</span>
                                     <br/>
-                                    <span className="stock-summary-information">53.15 - 145.09</span>
+                                    <span className="stock-summary-information">
+                                        {basicInfo.fiftyTwoWeekLow && basicInfo.fiftyTwoWeekHigh ?
+                                        `${basicInfo.fiftyTwoWeekLow.toFixed(2)} - ${basicInfo.fiftyTwoWeekHigh.toFixed(2)}` : "N/A"}
+                                    </span>
                                 </Grid>
                                 <Grid item>
                                     <span className='stock-summary-title'>MARKET CAP</span>
                                     <br/>
-                                    <span className="stock-summary-information">$2.24T</span>
+                                    <span className="stock-summary-information">
+                                        {basicInfo.marketCap ? `$${formatLargeNumber(basicInfo.marketCap, 1)}` : "N/A"}
+                                    </span>
                                 </Grid>
                                 <Grid item>
                                     <span className='stock-summary-title'>P/E RATIO</span>
                                     <br/>
-                                    <span className="stock-summary-information">36.12</span>
+                                    <span className="stock-summary-information">
+                                        {basicInfo.trailingPE ? basicInfo.trailingPE.toFixed(2) : "N/A"}
+                                    </span>
                                 </Grid>
                                 <Grid item>
                                     <span className='stock-summary-title'>EPS</span>
                                     <br/>
-                                    <span className="stock-summary-information">$3.69</span>
+                                    <span className="stock-summary-information">
+                                        {basicInfo.epsTrailingTwelveMonths ? `$${basicInfo.epsTrailingTwelveMonths.toFixed(2)}` : "N/A"}
+                                    </span>
                                 </Grid>
                                 <Grid item>
                                     <span className='stock-summary-title'>EARNING DATE</span>
                                     <br/>
-                                    <span className="stock-summary-information">N/A</span>
+                                    <span className="stock-summary-information">
+                                        {basicInfo.earningsTimestamp && basicInfo.earningsTimestamp > Date.now() / 1000 ? TimestampDateFormatter(basicInfo.earningsTimestamp) : "N/A"}
+                                    </span>
                                 </Grid>
                                 <Grid item>
                                     <span className='stock-summary-title'>DIVIDEND DATE</span>
                                     <br/>
-                                    <span className="stock-summary-information">N/A</span>
+                                    <span className="stock-summary-information">
+                                        {basicInfo.dividendDate && basicInfo.earningsTimestamp > Date.now() / 1000 ? TimestampDateFormatter(basicInfo.dividendDate) : "N/A"}
+                                    </span>
                                 </Grid>
                                 <Grid item><Button size="large" variant="outlined"><ZoomInIcon style={{color: "#FF8F2B"}}/> <span className='stock-summary-title'>View Chart</span></Button></Grid>
                             </Grid>

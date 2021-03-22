@@ -172,6 +172,7 @@ export default function NewStrategyScreener() {
                         onExpirationSelectionChange={onExpirationSelectionChange}
                         selectedExpirationTimestamp={selectedExpirationTimestamp}
                         bestStrategies={bestStrategies}
+                        basicInfo={basicInfo}
                     />
             }
         </div>
