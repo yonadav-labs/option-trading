@@ -2,7 +2,7 @@ from django.db import models
 
 from .base import BaseModel
 from .cache import ExternalRequestCache
-from .ticker import Ticker
+from .ticker import Ticker, TickerStats
 from .user import User
 
 
@@ -15,9 +15,10 @@ class SecuritySnapshot(BaseModel):
 
 class StockSnapshot(SecuritySnapshot):
     ticker = models.ForeignKey(Ticker, on_delete=models.CASCADE)
+    ticker_stats = models.ForeignKey(TickerStats, on_delete=models.CASCADE, default=None, null=True, blank=True)
 
     def __str__(self):
-        return "({}) {}-{}".format(self.id, self.ticker.symbol, self.external_cache.id)
+        return "({}) {}".format(self.id, self.ticker.symbol)
 
 
 class OptionContractSnapshot(SecuritySnapshot):

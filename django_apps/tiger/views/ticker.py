@@ -3,7 +3,7 @@ from rest_framework.response import Response
 from rest_framework.decorators import action
 
 from tiger.models import Ticker
-from tiger.serializers import TickerSerializer
+from tiger.serializers import TickerSerializer, TickerStatsSerializer
 
 
 class TickerViewSet(viewsets.ModelViewSet):
@@ -41,7 +41,8 @@ class TickerViewSet(viewsets.ModelViewSet):
         resp = {
             'quote': quote,
             'expiration_timestamps': expiration_timestamps,
-            'external_cache_id': external_cache_id
+            'external_cache_id': external_cache_id,
+            'ticker_stats': TickerStatsSerializer(ticker.get_latest_stats()).data,
         }
 
         return Response(resp)

@@ -18,7 +18,11 @@ export default function ShareTradeBtn(props) {
     function ConvertToTradeSnapshot() {
         let tradeSnapshot = {
             type: trade.type,
-            stock_snapshot: { ticker_id: trade.stock.ticker.id, external_cache_id: trade.stock.external_cache_id },
+            stock_snapshot: {
+                ticker_id: trade.stock.ticker.id,
+                external_cache_id: trade.stock.external_cache_id,
+                ticker_stats_id: trade.stock.ticker_stats_id
+            },
             leg_snapshots: [],
             is_public: true,
             premium_type: trade.premium_type,

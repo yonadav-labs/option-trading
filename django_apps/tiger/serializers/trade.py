@@ -17,6 +17,7 @@ class TickerSerializer(serializers.HyperlinkedModelSerializer):
 class StockSerializer(serializers.Serializer):
     ticker = TickerSerializer()
     external_cache_id = serializers.IntegerField(allow_null=True)
+    ticker_stats_id = serializers.IntegerField(allow_null=True)
     stock_price = ReadOnlyDollarDecimalField()
     display_name = serializers.ReadOnlyField()
 

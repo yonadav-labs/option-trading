@@ -139,11 +139,12 @@ def get_best_trades(request, ticker_symbol):
 
     quote, external_cache_id = ticker.get_quote()
     stock_price = quote.get('regularMarketPrice')  # This is from Yahoo.
-    stock = Stock(ticker, stock_price, external_cache_id)
+    stock = Stock(ticker, stock_price, external_cache_id, ticker.get_latest_stats())
 
     long_call_trades = []
     covered_call_trades = []
-    call_contract_lists, put_contract_lists = get_valid_contracts(ticker, request, all_expiration_timestamps, filter_low_liquidity=True)
+    call_contract_lists, put_contract_lists = get_valid_contracts(ticker, request, all_expiration_timestamps,
+                                                                  filter_low_liquidity=True)
     for calls_per_exp in call_contract_lists:
         for call in calls_per_exp:
             # Reduce response size.

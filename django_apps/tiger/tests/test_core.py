@@ -51,8 +51,8 @@ class CallTradesTestCase(TestCase):
         }
         self.stock_price = 420.0
         self.ticker = Ticker(id=1, symbol='TSLA')
-        self.ticker.tickerstats = TickerStats(self.ticker, historical_volatility=0.8)
-        self.stock = Stock(self.ticker, self.stock_price)
+        self.tickerstats = TickerStats(self.ticker, historical_volatility=0.8)
+        self.stock = Stock(self.ticker, self.stock_price, None, self.tickerstats)
 
     @mock.patch('django.utils.timezone.now')
     def test_initialization(self, mock_now):
@@ -260,8 +260,8 @@ class PutTradesTestCase(TestCase):
 
         self.stock_price = 73.55
         self.ticker = Ticker(id=2, symbol='QQQE')
-        self.ticker.tickerstats = TickerStats(self.ticker, historical_volatility=0.3)
-        self.stock = Stock(self.ticker, self.stock_price)
+        self.tickerstats = TickerStats(self.ticker, historical_volatility=0.3)
+        self.stock = Stock(self.ticker, self.stock_price, None, self.tickerstats)
 
     @mock.patch('django.utils.timezone.now')
     def test_sell_put(self, mock_now):
@@ -402,8 +402,8 @@ class TdTestCase(TestCase):
         }
         self.stock_price = 210.0
         self.ticker = Ticker(id=3, symbol='MSFT')
-        self.ticker.tickerstats = TickerStats(self.ticker, historical_volatility=0.4)
-        self.stock = Stock(self.ticker, self.stock_price)
+        self.tickerstats = TickerStats(self.ticker, historical_volatility=0.4)
+        self.stock = Stock(self.ticker, self.stock_price, None, self.tickerstats)
 
     @mock.patch('django.utils.timezone.now')
     def test_initialization(self, mock_now):

@@ -1,21 +1,15 @@
-from datetime import datetime, timedelta
 import multiprocessing as mp
-from multiprocessing import Pool
+from datetime import datetime
 
 import requests
-
+from django import db
 from django.conf import settings
 from django.core.management.base import BaseCommand
-from django import db
-from django.utils import timezone
-
 from tiger.models import Ticker, TickerStats
 
 DEFAULT_QUERY_PARAMS = {
     'token': settings.IEXCLOUD_TOKEN
 }
-
-CACHE_LIFETIME = 2  # hours
 
 
 def fetch_tickers():
@@ -37,15 +31,6 @@ def fetch_tickers():
 
 
 def fetch_expiration_dates(ticker):
-    ran_recently = ticker.expiration_dates.filter(last_updated_time__gte=timezone.now()+timedelta(hours=-CACHE_LIFETIME)) \
-                                          .exists()
-
-    if ran_recently:
-        print(f'{ticker.symbol}: cached')
-        return ran_recently
-
-    print(f'{ticker.symbol}: fetching')
-
     url = f'{settings.IEXCLOUD_BASE_URL}/stock/{ticker.symbol}/options'
     resp = requests.get(url, params=DEFAULT_QUERY_PARAMS)
 
@@ -71,7 +56,7 @@ def fetch_expiration_dates(ticker):
             continue
 
 
-def fetch_stats(ticker):
+def fetch_stats(ticker, new_stats):
     url = f'{settings.IEXCLOUD_BASE_URL}/stock/{ticker.symbol}/stats'
     resp = requests.get(url, params=DEFAULT_QUERY_PARAMS)
 
@@ -81,30 +66,26 @@ def fetch_stats(ticker):
 
     stats = resp.json()
     if stats:
-        defaults = {
-            'company_name': stats["companyName"],
-            'market_cap': stats["marketcap"],
-            'week52_high': stats["week52high"],
-            'week52_low': stats["week52low"],
-            'week52_high_split_adjust_only': stats["week52highSplitAdjustOnly"],
-            'week52_low_split_adjust_only': stats["week52lowSplitAdjustOnly"],
-            'shares_outstanding': stats["sharesOutstanding"],
-            'day200_moving_avg': stats["day200MovingAvg"],
-            'day50_moving_avg': stats["day50MovingAvg"],
-            'ttm_eps': stats["ttmEPS"],
-            'ttm_dividend_rate': stats["ttmDividendRate"],
-            'dividend_yield': stats["dividendYield"],
-            'next_dividend_date': stats["nextDividendDate"] if stats.get("nextDividendDate") else None,
-            'ex_dividend_date': stats["exDividendDate"] if stats.get("exDividendDate") else None,
-            'next_earnings_date': stats["nextEarningsDate"] if stats.get("nextEarningsDate") else None,
-            'pe_ratio': stats["peRatio"],
-            'beta': stats["beta"],
-        }
-
-        TickerStats.objects.update_or_create(ticker=ticker, defaults=defaults)
+        new_stats.company_name = stats.get('companyName')
+        new_stats.market_cap = stats.get('marketcap')
+        new_stats.week52_high = stats.get('week52high')
+        new_stats.week52_low = stats.get('week52low')
+        new_stats.week52_high_split_adjust_only = stats.get('week52highSplitAdjustOnly')
+        new_stats.week52_low_split_adjust_only = stats.get('week52lowSplitAdjustOnly')
+        new_stats.shares_outstanding = stats.get('sharesOutstanding')
+        new_stats.day200_moving_avg = stats.get('day200MovingAvg')
+        new_stats.day50_moving_avg = stats.get('day50MovingAvg')
+        new_stats.ttm_eps = stats.get('ttmEPS')
+        new_stats.ttm_dividend_rate = stats.get('ttmDividendRate')
+        new_stats.dividend_yield = stats.get('dividendYield')
+        new_stats.next_dividend_date = stats.get('nextDividendDate') if stats.get('nextDividendDate') else None
+        new_stats.ex_dividend_date = stats.get('exDividendDate') if stats.get('exDividendDate') else None
+        new_stats.next_earnings_date = stats.get('nextEarningsDate') if stats.get('nextEarningsDate') else None
+        new_stats.pe_ratio = stats.get('peRatio')
+        new_stats.beta = stats.get('beta')
 
 
-def fetch_dividends(ticker):
+def fetch_dividends(ticker, new_stats):
     period = '1m'  # default by api
     url = f'{settings.IEXCLOUD_BASE_URL}/stock/{ticker.symbol}/dividends/{period}'
     resp = requests.get(url, params=DEFAULT_QUERY_PARAMS)
@@ -115,11 +96,10 @@ def fetch_dividends(ticker):
 
     dividends = resp.json()
     if dividends:
-        ticker.tickerstats.dividend_payment_amount = dividends[0]['amount']
-        ticker.tickerstats.save()
+        new_stats.dividend_payment_amount = dividends[0].get('amount')
 
 
-def fetch_splits(ticker):
+def fetch_splits(ticker, new_stats):
     url = f'{settings.IEXCLOUD_BASE_URL}/stock/{ticker.symbol}/splits'
     resp = requests.get(url, params=DEFAULT_QUERY_PARAMS)
 
@@ -129,12 +109,11 @@ def fetch_splits(ticker):
 
     splits = resp.json()
     if splits:
-        ticker.tickerstats.split_declaration_date = splits[0]['declaredDate']
-        ticker.tickerstats.split_ex_date = splits[0]['exDate']
-        ticker.tickerstats.save()
+        new_stats.split_declaration_date = splits[0].get('declaredDate')
+        new_stats.split_ex_date = splits[0].get('exDate')
 
 
-def fetch_price_target(ticker):
+def fetch_price_target(ticker, new_stats):
     url = f'{settings.IEXCLOUD_BASE_URL}/stock/{ticker.symbol}/price-target'
     resp = requests.get(url, params=DEFAULT_QUERY_PARAMS)
 
@@ -144,14 +123,13 @@ def fetch_price_target(ticker):
 
     info = resp.json()
     if info:
-        ticker.tickerstats.price_target_average = info['priceTargetAverage']
-        ticker.tickerstats.price_target_high = info['priceTargetHigh']
-        ticker.tickerstats.price_target_low = info['priceTargetLow']
-        ticker.tickerstats.number_of_analysts = info['numberOfAnalysts']
-        ticker.tickerstats.save()
+        new_stats.price_target_average = info.get('priceTargetAverage')
+        new_stats.price_target_high = info.get('priceTargetHigh')
+        new_stats.price_target_low = info.get('priceTargetLow')
+        new_stats.number_of_analysts = info.get('numberOfAnalysts')
 
 
-def fetch_historical_volatility(ticker):
+def fetch_historical_volatility(ticker, new_stats):
     '''Context: https://www.profitspi.com/stock/view.aspx?v=stock-chart&uv=100585'''
     url = f'{settings.IEXCLOUD_BASE_URL}/stock/{ticker.symbol}/indicator/volatility'
     resp = requests.get(url, params={**DEFAULT_QUERY_PARAMS, 'indicatorOnly': True, 'range': '35d', 'input1': 20})
@@ -162,20 +140,31 @@ def fetch_historical_volatility(ticker):
 
     result = resp.json()
     if len(result.get('indicator', [])) > 0 and len(result.get('indicator')[0]) > 0:
-        ticker.tickerstats.historical_volatility = result.get('indicator')[0][-1]
-        ticker.tickerstats.save()
+        new_stats.historical_volatility = result.get('indicator')[0][-1]
 
 
 def fetch_ticker_info(ticker_id):
     ticker = Ticker.objects.get(id=ticker_id)
 
-    ran_recently = fetch_expiration_dates(ticker)
-    if ticker.status == 'unspecified' and not ran_recently:
-        fetch_stats(ticker)
-        fetch_dividends(ticker)
-        fetch_splits(ticker)
-        # fetch_price_target(ticker)  # preminum data, will be enabled later
-        fetch_historical_volatility(ticker)
+    # Fetch expiration dates.
+    if ticker.need_refresh_expiration_dates():
+        print(f'Fetching exp dates: {ticker.symbol}')
+        fetch_expiration_dates(ticker)
+    else:
+        print(f'Exp dates cached: {ticker.symbol}')
+
+    # Fetch stats.
+    if ticker.need_refresh_stats():
+        print(f'Fetching stats: {ticker.symbol}')
+        new_stats = TickerStats(ticker=ticker)
+        fetch_stats(ticker, new_stats)
+        fetch_dividends(ticker, new_stats)
+        fetch_splits(ticker, new_stats)
+        # fetch_price_target(ticker, new_stats)  # preminum data, will be enabled later
+        fetch_historical_volatility(ticker, new_stats)
+        new_stats.save()
+    else:
+        print(f'Stats cached: {ticker.symbol}')
 
 
 class Command(BaseCommand):

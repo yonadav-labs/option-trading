@@ -159,7 +159,11 @@ export default function StrategyBuilder() {
         setLoadingStrategyDetails(true);
         let strategy = {
             type: selectedStrategy.id,
-            stock_snapshot: { ticker_id: selectedTicker[0].id, external_cache_id: selectedTicker[0].external_cache_id },
+            stock_snapshot: {
+                ticker_id: selectedTicker[0].id,
+                external_cache_id: selectedTicker[0].external_cache_id,
+                ticker_stats_id: selectedTicker[0].ticker_stats_id,
+            },
             leg_snapshots: [],
             is_public: false,
             // target_price_lower: 0, // there is no target price

@@ -13,10 +13,11 @@ The following serializer is for write-only!
 class StockSnapshotSerializer(serializers.ModelSerializer):
     ticker_id = serializers.IntegerField()
     external_cache_id = serializers.IntegerField()
+    ticker_stats_id = serializers.IntegerField(required=False, allow_null=True)
 
     class Meta:
         model = StockSnapshot
-        fields = ('ticker_id', 'external_cache_id')
+        fields = ('ticker_id', 'external_cache_id', 'ticker_stats_id')
 
 
 class OptionContractSnapshotSerializer(serializers.ModelSerializer):

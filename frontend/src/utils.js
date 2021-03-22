@@ -216,7 +216,7 @@ export async function loadTickers(headers, setSelectedTicker, setAllTickers, que
         let recentTickers = localStorage.getItem('tigerstance-recent-tickers') || '';
         recentTickers = recentTickers.split(' ');
 
-        const response = await Axios.get(`${getApiUrl()}/tickers/`, {headers: headers});
+        const response = await Axios.get(`${getApiUrl()}/tickers/`, { headers: headers });
         let visitedTickers = [];
         let restTickers = [];
 
@@ -259,10 +259,11 @@ export async function loadExpirationDates(headers, selected, setModalActive, set
     try {
         setModalActive(true);
         saveRecent(selected[0].symbol);
-        const response = await Axios.get(`${getApiUrl()}/tickers/${selected[0].symbol}/expire_dates/`, {headers: headers});
+        const response = await Axios.get(`${getApiUrl()}/tickers/${selected[0].symbol}/expire_dates/`, { headers: headers });
         setExpirationTimestamps(response.data.expiration_timestamps);
         setbasicInfo(response.data.quote)
         selected[0].external_cache_id = response.data.external_cache_id;
+        selected[0].ticker_stats_id = response.data.ticker_stats.id;
         setSelectedTicker(selected);
         setModalActive(false);
     } catch (error) {
@@ -276,7 +277,7 @@ export async function newLoadExpirationDates(headers, selected, setModalActive, 
     try {
         setModalActive(true);
         saveRecent(selected.symbol);
-        const response = await Axios.get(`${getApiUrl()}/tickers/${selected.symbol}/expire_dates/`, {headers: headers});
+        const response = await Axios.get(`${getApiUrl()}/tickers/${selected.symbol}/expire_dates/`, { headers: headers });
         setExpirationTimestamps(response.data.expiration_timestamps);
         setBasicInfo(response.data.quote)
         selected.external_cache_id = response.data.external_cache_id;
@@ -294,7 +295,7 @@ export async function newLoadTickers(headers, setAllTickers) {
         let recentTickers = localStorage.getItem('tigerstance-recent-tickers') || '';
         recentTickers = recentTickers.split(' ');
 
-        const response = await Axios.get(`${getApiUrl()}/tickers/`, {headers: headers});
+        const response = await Axios.get(`${getApiUrl()}/tickers/`, { headers: headers });
         let visitedTickers = [];
         let restTickers = [];
 

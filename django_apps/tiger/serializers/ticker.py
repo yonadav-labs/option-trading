@@ -3,6 +3,7 @@ from rest_framework import serializers
 from tiger.models import TickerStats
 from .custom_fields import ReadOnlyRatioDecimalField, ReadOnlyDollarDecimalField
 
+
 class TickerStatsSerializer(serializers.ModelSerializer):
     symbol = serializers.SerializerMethodField()
     pe_ratio = ReadOnlyRatioDecimalField()
@@ -22,6 +23,7 @@ class TickerStatsSerializer(serializers.ModelSerializer):
     price_target_average = ReadOnlyDollarDecimalField()
     price_target_high = ReadOnlyDollarDecimalField()
     price_target_low = ReadOnlyDollarDecimalField()
+    historical_volatility = ReadOnlyRatioDecimalField()
 
     def get_symbol(self, obj):
         return obj.ticker.symbol

@@ -38,11 +38,12 @@ class Cash(Security):
 
 
 class Stock(Security):
-    def __init__(self, ticker, stock_price, external_cache_id=None):
+    def __init__(self, ticker, stock_price, external_cache_id=None, ticker_stats=None):
         super().__init__(external_cache_id)
         self.ticker = ticker
         self.stock_price = stock_price
-        self.historical_volatility = ticker.tickerstats.historical_volatility
+        self.ticker_stats_id = ticker_stats.id if ticker_stats else None
+        self.historical_volatility = ticker_stats.historical_volatility if ticker_stats else None
 
     @classmethod
     def from_snapshot(cls, stock_snapshot):
@@ -51,7 +52,7 @@ class Stock(Security):
             stock_price = blob_reader.get_quote(cache.json_response, True).get('regularMarketPrice')
         else:
             stock_price = blob_reader.get_quote(cache.json_response, False).get('last')
-        return cls(stock_snapshot.ticker, stock_price, stock_snapshot.external_cache_id)
+        return cls(stock_snapshot.ticker, stock_price, stock_snapshot.external_cache_id, stock_snapshot.ticker_stats)
 
     @property
     def display_name(self):

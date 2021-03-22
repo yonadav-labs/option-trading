@@ -1,7 +1,9 @@
 import json
+from datetime import timedelta
 
 from django.conf import settings
 from django.db import models
+from django.utils import timezone
 from tiger.blob_reader import get_expiration_timestamps, get_call_puts, get_quote
 from tiger.fetcher import get_yahoo_option_url, get_td_option_url
 
@@ -40,9 +42,19 @@ class Ticker(BaseModel):
         response, external_cache_id = self.get_request_cache(settings.USE_YAHOO, expiration_timestamp)
         return get_call_puts(self, response, settings.USE_YAHOO, expiration_timestamp, external_cache_id)
 
+    def get_latest_stats(self):
+        return self.stats.order_by('-created_time').first()
+
+    def need_refresh_stats(self):
+        return not self.stats.filter(created_time__gte=timezone.now() + timedelta(hours=-12)).exists()
+
+    def need_refresh_expiration_dates(self):
+        return not self.expiration_dates.filter(last_updated_time__gte=timezone.now() + timedelta(hours=-12)) \
+            .exists()
+
 
 class ExpirationDate(BaseModel):
-    ticker = models.ForeignKey(Ticker, on_delete=models.CASCADE, related_name="expiration_dates")
+    ticker = models.ForeignKey(Ticker, on_delete=models.CASCADE, related_name='expiration_dates')
     date = models.DateField()
 
     class Meta:
@@ -50,7 +62,7 @@ class ExpirationDate(BaseModel):
 
 
 class TickerStats(BaseModel):
-    ticker = models.OneToOneField(Ticker, on_delete=models.CASCADE)
+    ticker = models.ForeignKey(Ticker, on_delete=models.CASCADE, related_name='stats')
     company_name = models.CharField(max_length=250)
     dividend_payment_amount = models.FloatField(blank=True, null=True)
     market_cap = models.FloatField(blank=True, null=True)
@@ -79,3 +91,6 @@ class TickerStats(BaseModel):
 
     class Meta:
         verbose_name_plural = 'Ticker stats'
+
+    def __str__(self):
+        return '({}) {}'.format(self.id, self.ticker.symbol)

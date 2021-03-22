@@ -34,7 +34,7 @@ class SubscriptionAdmin(admin.ModelAdmin):
 
 
 class StockSnapshotAdmin(admin.ModelAdmin):
-    list_display = ['id', 'ticker', 'external_cache', ] + DEFAULT_FIELDS
+    list_display = ['id', 'ticker', 'external_cache', 'ticker_stats'] + DEFAULT_FIELDS
     search_fields = ['id', 'ticker__symbol']
 
 
@@ -69,7 +69,7 @@ class WatchlistItemAdmin(admin.ModelAdmin):
 
 
 class TickerStatsAdmin(admin.ModelAdmin):
-    list_display = [field.name for field in TickerStats._meta.get_fields()]
+    list_display = [field.name for field in TickerStats._meta.get_fields() if field.name != 'stocksnapshot']
     search_fields = ['ticker__symbol', 'company_name']
 
 
