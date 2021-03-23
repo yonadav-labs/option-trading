@@ -1,6 +1,6 @@
-import React, {useState, useEffect} from "react";
+import React, { useState, useEffect } from "react";
 import Axios from 'axios';
-import {CssBaseline} from "@material-ui/core";
+import { CssBaseline } from "@material-ui/core";
 import ModalSpinner from '../../components/ModalSpinner';
 import LandingView from "./LandingView";
 import MainView from "./MainView";
@@ -52,8 +52,8 @@ export default function NewStrategyScreener() {
         resetStates()
         if (selected) {
             newLoadExpirationDates(headers, selected, setModalActive, setExpirationTimestamps, setBasicInfo, setSelectedTicker);
-        } else { 
-            setExpirationDisabled(true) 
+        } else {
+            setExpirationDisabled(true)
         }
     };
 
@@ -64,7 +64,7 @@ export default function NewStrategyScreener() {
     useEffect(() => {
         if (authState.isAuthenticated) {
             const { accessToken } = authState;
-            setHeaders({Authorization: `Bearer ${accessToken.accessToken}`});
+            setHeaders({ Authorization: `Bearer ${accessToken.accessToken}` });
         } else {
             setHeaders({});
         }
@@ -84,7 +84,7 @@ export default function NewStrategyScreener() {
             expirationTimestamps.map((timestamp, index) => {
                 // Yahoo's timestamp * 1000 = TD's timestamp.
                 const date = new Date(timestamp < 9999999999 ? timestamp * 1000 : timestamp)
-                .toLocaleDateString('en-US');
+                    .toLocaleDateString('en-US');
                 arr.push({ value: timestamp, label: date });
             })
             setExpirationTimestampsOptions(arr)
@@ -150,10 +150,10 @@ export default function NewStrategyScreener() {
             <CssBaseline />
             <ModalSpinner active={modalActive}></ModalSpinner>
             {
-                pageState ? 
-                    <LandingView 
-                        allTickers={allTickers} 
-                        onTickerSelectionChange={onTickerSelectionChange} 
+                pageState ?
+                    <LandingView
+                        allTickers={allTickers}
+                        onTickerSelectionChange={onTickerSelectionChange}
                         expirationTimestampsOptions={expirationTimestampsOptions}
                         expirationDisabled={expirationDisabled}
                         sentiment={sentiment}
@@ -164,8 +164,8 @@ export default function NewStrategyScreener() {
                         bestStrategies={bestStrategies}
                     />
                     :
-                    <MainView 
-                        allTickers={allTickers} 
+                    <MainView
+                        allTickers={allTickers}
                         onTickerSelectionChange={onTickerSelectionChange}
                         expirationTimestampsOptions={expirationTimestampsOptions}
                         expirationDisabled={expirationDisabled}

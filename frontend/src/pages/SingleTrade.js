@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, Link } from "react-router-dom";
-import { Card, Row, Col, Badge } from 'react-bootstrap';
+import { Card, Row, Col } from 'react-bootstrap';
 import Axios from 'axios';
 import { useOktaAuth } from '@okta/okta-react';
 
-import getApiUrl, { PriceFormatter, ProfitFormatter, PercentageFormatter } from '../utils';
+import getApiUrl, { PriceFormatter, ProfitFormatter } from '../utils';
 import TradeDetailsCard from '../components/cards/TradeDetailsCard';
 import TickerSummary from '../components/TickerSummary.js';
+import MetricLabel from '../components/MetricLabel.js';
 
 export default function SingleTrade() {
     let { tradeId } = useParams();
@@ -80,15 +81,15 @@ export default function SingleTrade() {
                         <Card.Body>
                             <Row md="4">
                                 <Col sm={3} xs={6}>
-                                    <Badge variant="secondary">Current profit/loss</Badge>
+                                    <MetricLabel label="current profit/loss" />
                                     <div> {PriceFormatter(profitLoss.profit)} ({ProfitFormatter(profitLoss.profit_rate)})</div>
                                 </Col>
                                 <Col sm={3} xs={6}>
-                                    <Badge variant="secondary">Initial Value</Badge>
+                                    <MetricLabel label="initial Value" />
                                     <div> {PriceFormatter(trade.cost)} </div>
                                 </Col>
                                 <Col sm={3} xs={6}>
-                                    <Badge variant="secondary">Current Value</Badge>
+                                    <MetricLabel label="current Value" />
                                     <div> {PriceFormatter(currentTrade.cost)} </div>
                                 </Col>
                             </Row>

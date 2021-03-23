@@ -2,9 +2,10 @@ import React, { useEffect, useState } from 'react';
 import getApiUrl, { PercentageFormatter, PriceFormatter } from '../utils';
 import Axios from 'axios';
 import ContractDetailsCard from './cards/ContractDetailsCard';
-import { Badge, Col, Form, Row } from 'react-bootstrap';
+import { Col, Form, Row } from 'react-bootstrap';
 import { isEmpty } from 'lodash';
 import Select from 'react-select';
+import MetricLabel from './MetricLabel.js';
 
 export default function LegCardDetails(props) {
     const { legs, index, selectedTicker, updateLeg, selectedStrategy, expirationTimestamps } = props;
@@ -62,21 +63,21 @@ export default function LegCardDetails(props) {
                             <Form>
                                 <Form.Row>
                                     <Col sm="2" xs="3">
-                                        <Badge variant="secondary">Action</Badge>
+                                        <MetricLabel label="Action" />
                                         <Form.Control as="select" value={legs[index].action} onChange={(e) => updateLeg("action", e.target.value, index)} disabled={selectedStrategy.legs[index].action}>
                                             <option value="long" key="long">Long</option>
                                             <option value="short" key="short">Short</option>
                                         </Form.Control>
                                     </Col>
                                     <Col sm="2" xs="3">
-                                        <Badge variant="secondary">Option Type</Badge>
+                                        <MetricLabel label="Option Type" />
                                         <Form.Control as="select" value={legs[index].optionType} onChange={(e) => updateLeg("optionType", e.target.value, index)} disabled={selectedStrategy.legs[index].optionType}>
                                             <option value="call" key="call">Call</option>
                                             <option value="put" key="put">Put</option>
                                         </Form.Control>
                                     </Col>
                                     <Col sm="4" xs="6">
-                                        <Badge variant="secondary">Expiration Date</Badge>
+                                        <MetricLabel label="Expiration Date" />
                                         <Form.Control as="select" value={legs[index].expiration || 0} onChange={(e) => onExpirationChange(e)} disabled={selectedStrategy.legs[index].expiration}>
                                             {expirationTimestamps.map(val => {
                                                 return (<option value={val} key={val}>{new Date(val < 9999999999 ? val * 1000 : val).toLocaleDateString()}</option>);
@@ -85,7 +86,7 @@ export default function LegCardDetails(props) {
                                         </Form.Control>
                                     </Col>
                                     <Col sm="4" xs="12">
-                                        <Badge variant="secondary">Strike</Badge>
+                                        <MetricLabel label="Strike" />
                                         <Select
                                             className="basic-single"
                                             isSearchable
@@ -98,8 +99,8 @@ export default function LegCardDetails(props) {
                                     </Col>
                                 </Form.Row>
                             </Form>
-                        </Col>
-                    </Row>
+                        </Col >
+                    </Row >
                     <Row>
                         <Col>
                             <ContractDetailsCard contract={!isEmpty(legs[index].contract) ? legs[index].contract : null} />

@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
-import { Row, Col, Badge, Card } from 'react-bootstrap';
+import { Row, Col, Card } from 'react-bootstrap';
 
 import {
     PriceFormatter, PercentageFormatter, TimestampTimeFormatter,
     NumberRoundFormatter
 } from '../../utils';
+import MetricLabel from '../MetricLabel.js';
 
 export default function ContractDetailsCard(props) {
     const { contract, hideTitle } = props;
@@ -19,89 +20,89 @@ export default function ContractDetailsCard(props) {
                         <Card.Text>
                             <Row>
                                 <Col sm="3" xs="6">
-                                    <Row><Col><Badge variant="secondary">Mid/mark</Badge></Col></Row>
-                                    <Row><Col>{PriceFormatter(contract.mark)}</Col></Row>
+                                    <MetricLabel label="mid/mark" />
+                                    {PriceFormatter(contract.mark)}
                                 </Col>
                                 <Col sm="3" xs="6">
-                                <Row><Col><Badge variant="secondary">Bid</Badge></Col></Row>
-                                <Row><Col>{PriceFormatter(contract.bid)} X {NumberRoundFormatter(contract.bid_size)}</Col></Row>
+                                    <MetricLabel label="bid" />
+                                    {PriceFormatter(contract.bid)} X {NumberRoundFormatter(contract.bid_size)}
                                 </Col>
                                 <Col sm="3" xs="6">
-                                <Row><Col><Badge variant="secondary">Ask</Badge></Col></Row>
-                                <Row><Col>{PriceFormatter(contract.ask)} X {NumberRoundFormatter(contract.ask_size)}</Col></Row>
+                                    <MetricLabel label="ask" />
+                                    {PriceFormatter(contract.ask)} X {NumberRoundFormatter(contract.ask_size)}
                                 </Col>
                                 <Col sm="3" xs="6">
-                                <Row><Col><Badge variant="secondary">Last</Badge></Col></Row>
-                                <Row><Col>{PriceFormatter(contract.last_price)}</Col></Row>
+                                    <MetricLabel label="last" />
+                                    {PriceFormatter(contract.last_price)}
                                 </Col>
                             </Row>
                             <Row>
                                 <Col sm="3" xs="6">
-                                <Row><Col><Badge variant="secondary">Change</Badge></Col></Row>
-                                <Row><Col>{PriceFormatter(contract.change)} ({NumberRoundFormatter(contract.percent_change)}%)</Col></Row>
+                                    <MetricLabel label="change" />
+                                    {PriceFormatter(contract.change)} ({NumberRoundFormatter(contract.percent_change)}%)
                                 </Col>
                                 <Col sm="3" xs="6">
-                                <Row><Col><Badge variant="secondary">Range</Badge></Col></Row>
-                                <Row><Col>{PriceFormatter(contract.low_price)} - {PriceFormatter(contract.high_price)}</Col></Row>
+                                    <MetricLabel label="range" />
+                                    {PriceFormatter(contract.low_price)} - {PriceFormatter(contract.high_price)}
                                 </Col>
                                 <Col sm="3" xs="6">
-                                <Row><Col><Badge variant="secondary">Open interest</Badge></Col></Row>
-                                <Row><Col>{contract.open_interest}</Col></Row>
+                                    <MetricLabel label="open interest" />
+                                    {contract.open_interest}
                                 </Col>
                                 <Col sm="3" xs="6">
-                                <Row><Col><Badge variant="secondary">Volume</Badge></Col></Row>
-                                <Row><Col>{contract.volume}</Col></Row>
+                                    <MetricLabel label="volume" />
+                                    {contract.volume}
                                 </Col>
                             </Row>
                             {readMore ? <>
                                 <Row>
                                     <Col sm="3" xs="6">
-                                        <Row><Col><Badge variant="secondary">Delta</Badge></Col></Row>
-                                        <Row><Col>{NumberRoundFormatter(contract.delta)}</Col></Row>
+                                        <MetricLabel label="delta" />
+                                        {NumberRoundFormatter(contract.delta)}
                                     </Col>
                                     <Col sm="3" xs="6">
-                                        <Row><Col><Badge variant="secondary">Gamma</Badge></Col></Row>
-                                        <Row><Col>{NumberRoundFormatter(contract.gamma)}</Col></Row>
+                                        <MetricLabel label="gamma" />
+                                        {NumberRoundFormatter(contract.gamma)}
                                     </Col>
                                     <Col sm="3" xs="6">
-                                        <Row><Col><Badge variant="secondary">Theta</Badge></Col></Row>
-                                        <Row><Col>{NumberRoundFormatter(contract.theta)}</Col></Row>
+                                        <MetricLabel label="theta" />
+                                        {NumberRoundFormatter(contract.theta)}
                                     </Col>
                                     <Col sm="3" xs="6">
-                                        <Row><Col><Badge variant="secondary">Vega</Badge></Col></Row>
-                                        <Row><Col>{NumberRoundFormatter(contract.vega)}</Col></Row>
+                                        <MetricLabel label="vega" />
+                                        {NumberRoundFormatter(contract.vega)}
                                     </Col>
                                 </Row>
                                 <Row>
                                     <Col sm="3" xs="6">
-                                        <Row><Col><Badge variant="secondary">Rho</Badge></Col></Row>
-                                        <Row><Col>{NumberRoundFormatter(contract.rho)}</Col></Row>
+                                        <MetricLabel label="rho" />
+                                        {NumberRoundFormatter(contract.rho)}
                                     </Col>
                                     <Col sm="3" xs="6">
-                                        <Row><Col><Badge variant="secondary">Implied volatility</Badge></Col></Row>
-                                        <Row><Col>{PercentageFormatter(contract.implied_volatility)}</Col></Row>
+                                        <MetricLabel label="implied volatility" />
+                                        {PercentageFormatter(contract.implied_volatility)}
                                     </Col>
                                     <Col sm="3" xs="6">
-                                        <Row><Col><Badge variant="secondary">Break-even at</Badge></Col></Row>
-                                        <Row><Col>{PriceFormatter(contract.break_even_price)}</Col></Row>
+                                        <MetricLabel label="break-even at" />
+                                        {PriceFormatter(contract.break_even_price)}
                                     </Col>
                                     <Col sm="3" xs="6">
-                                        <Row><Col><Badge variant="secondary">To expiration</Badge></Col></Row>
-                                        <Row><Col>{contract.days_till_expiration} days</Col></Row>
+                                        <MetricLabel label="to expiration" />
+                                        {contract.days_till_expiration} days
                                     </Col>
                                 </Row>
                                 <Row>
                                     <Col sm="3" xs="12">
-                                        <Row><Col><Badge variant="secondary">Last traded</Badge></Col></Row>
-                                        <Row><Col>{TimestampTimeFormatter(contract.last_trade_date)}</Col></Row>
+                                        <MetricLabel label="last traded" />
+                                        {TimestampTimeFormatter(contract.last_trade_date)}
                                     </Col>
                                     <Col sm="3" xs="12">
-                                        <Row><Col><Badge variant="secondary">Quoted at</Badge></Col></Row>
-                                        <Row><Col>{TimestampTimeFormatter(contract.quote_time)}</Col></Row>
+                                        <MetricLabel label="quoted at" />
+                                        {TimestampTimeFormatter(contract.quote_time)}
                                     </Col>
                                     <Col sm="3" xs="6">
-                                        <Row><Col><Badge variant="secondary">Notional Value</Badge></Col></Row>
-                                        <Row><Col>{PriceFormatter(contract.notional_value)}</Col></Row>
+                                        <MetricLabel label="notional Value" />
+                                        {PriceFormatter(contract.notional_value)}
                                     </Col>
                                 </Row>
                                 <a className="read-more-link" style={{ cursor: 'pointer' }} onClick={() => { setReadMore(!readMore) }}>{linkName}</a>

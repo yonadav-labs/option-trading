@@ -4,6 +4,7 @@ import UserContext from '../UserContext';
 import getApiUrl, { TimestampDateFormatter, formatLargeNumber } from '../utils';
 import Axios from 'axios';
 import TradingWidget from './TradingWidget';
+import MetricLabel from './MetricLabel.js';
 
 // Bootstrap
 import ToggleButton from 'react-bootstrap/ToggleButton'
@@ -36,61 +37,49 @@ export default function TickerSummary({ basicInfo, from }) {
     */
 
     return (
-        <div>
-            <div className="row">
-                {/* <ButtonGroup toggle className="mb-2 ml-auto">
-                    <ToggleButton
-                        type="checkbox"
-                        variant="outline-primary"
-                        size="sm"
-                        checked={onWatchlist}
-                        value={basicInfo.symbol}
-                        onChange={(e) => updateWatchlist()}
-                    >
-                        {onWatchlist ? "-" : "+"}
-                    </ToggleButton>
-                </ButtonGroup> */}
-            </div>
+        <>
             <Row md={from === 'option' ? 2 : 4}>
                 <Col sm={3} xs={6}>
-                    <Badge variant="secondary">Last Price</Badge>
-                    <div> {basicInfo.regularMarketPrice ? `$${basicInfo.regularMarketPrice}` : "N/A"} </div>
+                    <MetricLabel label="last price" />
+                    {basicInfo.regularMarketPrice ? `$${basicInfo.regularMarketPrice}` : "N/A"}
                 </Col>
                 <Col sm={3} xs={6}>
-                    <Badge variant="secondary">Day Range</Badge>
-                    <div>
-                        {basicInfo.regularMarketDayLow && basicInfo.regularMarketDayHigh ?
-                            `${basicInfo.regularMarketDayLow.toFixed(2)}-${basicInfo.regularMarketDayHigh.toFixed(2)}` : "N/A"}
-                    </div>
+                    <MetricLabel label="day range" />
+
+                    {basicInfo.regularMarketDayLow && basicInfo.regularMarketDayHigh ?
+                        `${basicInfo.regularMarketDayLow.toFixed(2)}-${basicInfo.regularMarketDayHigh.toFixed(2)}` : "N/A"}
+
                 </Col>
                 <Col sm={3} xs={6}>
-                    <Badge variant="secondary">52 Week Range</Badge>
-                    <div> {basicInfo.fiftyTwoWeekLow && basicInfo.fiftyTwoWeekHigh ?
-                        `${basicInfo.fiftyTwoWeekLow.toFixed(2)}-${basicInfo.fiftyTwoWeekHigh.toFixed(2)}` : "N/A"} </div>
+                    <MetricLabel label="52 week range" />
+                    {basicInfo.fiftyTwoWeekLow && basicInfo.fiftyTwoWeekHigh ?
+                        `${basicInfo.fiftyTwoWeekLow.toFixed(2)}-${basicInfo.fiftyTwoWeekHigh.toFixed(2)}` : "N/A"}
                 </Col>
                 <Col sm={3} xs={6}>
-                    <Badge variant="secondary">Market Cap</Badge>
-                    <div> {basicInfo.marketCap ? `$${formatLargeNumber(basicInfo.marketCap, 1)}` : "N/A"} </div>
+                    <MetricLabel label="market cap" />
+                    {basicInfo.marketCap ? `$${formatLargeNumber(basicInfo.marketCap, 1)}` : "N/A"}
                 </Col>
             </Row>
             <Row md={from === 'option' ? 2 : 4}>
                 <Col sm={3} xs={6}>
-                    <Badge variant="secondary">P/E Ratio</Badge>
-                    <div> {basicInfo.trailingPE ? basicInfo.trailingPE.toFixed(2) : "N/A"} </div>
+                    <MetricLabel label="p/e ratio" />
+                    {basicInfo.trailingPE ? basicInfo.trailingPE.toFixed(2) : "N/A"}
                 </Col>
                 <Col sm={3} xs={6}>
-                    <Badge variant="secondary">EPS</Badge>
-                    <div> {basicInfo.epsTrailingTwelveMonths ? `$${basicInfo.epsTrailingTwelveMonths.toFixed(2)}` : "N/A"} </div>
+                    <MetricLabel label="eps" />
+                    {basicInfo.epsTrailingTwelveMonths ? `$${basicInfo.epsTrailingTwelveMonths.toFixed(2)}` : "N/A"}
                 </Col>
                 <Col sm={3} xs={6}>
-                    <Badge variant="secondary">Earnings date</Badge>
-                    <div> {basicInfo.earningsTimestamp && basicInfo.earningsTimestamp > Date.now() / 1000 ? TimestampDateFormatter(basicInfo.earningsTimestamp) : "N/A"} </div>
+                    <MetricLabel label="earnings date" />
+                    {basicInfo.earningsTimestamp && basicInfo.earningsTimestamp > Date.now() / 1000 ?
+                        TimestampDateFormatter(basicInfo.earningsTimestamp) : "N/A"}
                 </Col>
                 <Col sm={3} xs={6}>
-                    <Badge variant="secondary">Dividend date</Badge>
-                    <div> {basicInfo.dividendDate && basicInfo.earningsTimestamp > Date.now() / 1000 ? TimestampDateFormatter(basicInfo.dividendDate) : "N/A"} </div>
+                    <MetricLabel label="dividend date" />
+                    {basicInfo.dividendDate && basicInfo.earningsTimestamp > Date.now() / 1000 ?
+                        TimestampDateFormatter(basicInfo.dividendDate) : "N/A"}
                 </Col>
             </Row>
-        </div >
+        </>
     );
 }

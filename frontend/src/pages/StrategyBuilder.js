@@ -15,6 +15,7 @@ import LegCardDetails from '../components/LegCardDetails';
 import { useOktaAuth } from '@okta/okta-react';
 import TradeDetailsCard from '../components/cards/TradeDetailsCard';
 import TradingViewWidget from 'react-tradingview-widget';
+import MetricLabel from '../components/MetricLabel.js';
 
 // url querying
 import { useLocation, useHistory } from 'react-router-dom';
@@ -222,7 +223,7 @@ export default function StrategyBuilder() {
             <ModalSpinner active={modalActive}></ModalSpinner>
             <Row className="justify-content-md-center">
                 <Col md="4">
-                    <Badge variant="secondary">Ticker</Badge>
+                    <MetricLabel label="Ticker" />
                     <TickerTypeahead
                         selectedTicker={selectedTicker}
                         allTickers={allTickers}
@@ -230,7 +231,7 @@ export default function StrategyBuilder() {
                     />
                 </Col>
                 <Col md="7">
-                    <Badge variant="secondary">Strategy Type</Badge>
+                    <MetricLabel label="Strategy Type" />
                     <Select
                         className="basic-single"
                         isSearchable
@@ -328,7 +329,7 @@ export default function StrategyBuilder() {
                                                             <Card.Body>
                                                                 <Row>
                                                                     <Col>
-                                                                        <Badge variant="secondary">Shares</Badge>
+                                                                        <MetricLabel label="Shares" />
                                                                     </Col>
                                                                 </Row>
                                                                 <LegCardDetails legs={legs} index={idx} selectedTicker={selectedTicker} updateLeg={updateLeg} />
@@ -346,7 +347,7 @@ export default function StrategyBuilder() {
                                                             <Card.Body>
                                                                 <Row>
                                                                     <Col>
-                                                                        <Badge variant="secondary">Cash</Badge>
+                                                                        <MetricLabel label="Cash" />
                                                                     </Col>
                                                                 </Row>
                                                                 <LegCardDetails legs={legs} index={idx} selectedTicker={selectedTicker} updateLeg={updateLeg} />
@@ -358,7 +359,7 @@ export default function StrategyBuilder() {
                                             }
                                         })}
                                         <Col lg="4" className="mb-3">
-                                            <Badge variant="secondary">Premium Price to Use</Badge>
+                                            <MetricLabel label="Premium Price to Use" />
                                             <Select
                                                 className="basic-single"
                                                 isSearchable

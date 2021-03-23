@@ -1,9 +1,10 @@
 import React from 'react';
-import { Card, Badge, Row, Col } from 'react-bootstrap';
+import { Card, Row, Col } from 'react-bootstrap';
 import ShareTradeBtn from '../ShareTradeBtn.js';
 import { PriceFormatter, ProfitFormatter, PercentageFormatter } from '../../utils';
 import LegDetailsCard from './LegDetailsCard.js';
 import TradeProfitLossGraph from '../TradeProfitLossGraph.js';
+import MetricLabel from '../MetricLabel.js';
 
 export default function TradeDetailsCard(props) {
     const { trade, hideShareButton, hideDisclaimer, hideTitle } = props;
@@ -20,25 +21,21 @@ export default function TradeDetailsCard(props) {
                     <Row>
                         {trade.target_price_lower ?
                             (<Col sm="3" xs="6">
-                                <Badge variant="secondary">Target Price Range</Badge>
-                                <br />
+                                <MetricLabel label="target price range" />
                                 {PriceFormatter(trade.target_price_lower)} ({ProfitFormatter(trade.to_target_price_lower_ratio)})
                         - {PriceFormatter(trade.target_price_upper)} ({ProfitFormatter(trade.to_target_price_upper_ratio)})
                             </Col>) : null}
                         {trade.target_price_lower ?
                             (<Col sm="3" xs="6">
-                                <Badge variant="secondary">Hypothetical Profit</Badge>
-                                <br />
+                                <MetricLabel label="hypothetical profit" />
                                 {PriceFormatter(trade.target_price_profit)} ({ProfitFormatter(trade.target_price_profit_ratio)})
                             </Col>) : null}
                         <Col sm="3" xs="6">
-                            <Badge variant="secondary">Break-Even At</Badge>
-                            <br />
+                            <MetricLabel label="break-even at" />
                             {PriceFormatter(trade.break_even_price)} ({ProfitFormatter(trade.to_break_even_ratio)})
                         </Col>
                         <Col sm="3" xs="6">
-                            <Badge variant="secondary">Profit Limit</Badge>
-                            <br />
+                            <MetricLabel label="profit limit" />
                             {trade.profit_cap != null ?
                                 (
                                     <span>
@@ -50,25 +47,21 @@ export default function TradeDetailsCard(props) {
                     </Row>
                     <Row>
                         <Col sm="3" xs="6">
-                            <Badge variant="secondary">Cost</Badge>
-                            <br />
+                            <MetricLabel label="cost" />
                             {PriceFormatter(trade.cost)}
                         </Col>
                         <Col sm="3" xs="6">
-                            <Badge variant="secondary">Notional Value</Badge>
-                            <br />
+                            <MetricLabel label="notional value" />
                             {PriceFormatter(trade.notional_value)}
                         </Col>
                         <Col sm="3" xs="6">
-                            <Badge variant="secondary">Leverage</Badge>
-                            <br />
+                            <MetricLabel label="leverage" />
                             {PercentageFormatter(trade.leverage)}
                         </Col>
                         {trade.two_sigma_profit_lower != null ?
                             (
                                 <Col sm="3" xs="6">
-                                    <Badge variant="secondary">5% chance wrost case loss</Badge>
-                                    <br />
+                                    <MetricLabel label="5% chance wrost case loss" />
                                     <span>
                                         {PriceFormatter(trade.two_sigma_profit_lower)}&nbsp;
                                 ({trade.two_sigma_profit_lower_ratio >= 0 ? '+' : '-'}
