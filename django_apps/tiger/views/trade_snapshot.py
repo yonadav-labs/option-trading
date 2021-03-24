@@ -72,3 +72,16 @@ def trade_snapshots(request):
             return Response(response, status=status.HTTP_201_CREATED)
 
         return Response(trade_snapshot_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['POST'])
+def trade_snapshots_on_the_fly(request):
+    if request.method == 'POST':
+        trade_snapshot_serializer = TradeSnapshotSerializer(data=request.data)
+        if trade_snapshot_serializer.is_valid():
+            trade = TradeFactory.from_snapshot_dict(trade_snapshot_serializer.validated_data)
+            trade_serializer = TradeSerializer(trade)
+            return Response({'trade_snapshot': trade_serializer.data},
+                            status=status.HTTP_201_CREATED)
+
+        return Response(trade_snapshot_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
