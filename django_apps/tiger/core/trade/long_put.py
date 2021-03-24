@@ -17,8 +17,8 @@ class LongPut(Trade):
         assert self.stock.ticker.id == long_put_leg.contract.ticker.id
 
     @staticmethod
-    def build(stock, put_contract, premium_type, target_price_lower=None, target_price_upper=None, available_cash=None):
-        long_put_leg = OptionLeg(True, 1, put_contract, premium_type)
+    def build(stock, put_contract, premium_type, broker_settings, target_price_lower=None, target_price_upper=None, available_cash=None):
+        long_put_leg = OptionLeg(True, 1, put_contract, premium_type, broker_settings)
         new_trade = LongPut(stock, [long_put_leg], premium_type, target_price_lower=target_price_lower,
                             target_price_upper=target_price_upper)
         if available_cash and not new_trade.max_out(available_cash):

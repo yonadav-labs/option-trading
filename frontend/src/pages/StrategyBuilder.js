@@ -63,6 +63,7 @@ export default function StrategyBuilder() {
     const [modalActive, setModalActive] = useState(false);
     const [sentiment, setSentiment] = useState("all");
     const [strategyDetails, setStrategyDetails] = useState(null);
+    const [broker, setBroker] = useState(null);
     const [ruleMessage, setRuleMessage] = useState("");
     const [loadingStrategyDetails, setLoadingStrategyDetails] = useState(false);
     const [headers, setHeaders] = useState(null);
@@ -212,6 +213,7 @@ export default function StrategyBuilder() {
             });
 
             setStrategyDetails(response.data.trade_snapshot);
+            setBroker(response.data.broker);
         } catch (error) {
             console.error(error);
         }
@@ -384,6 +386,7 @@ export default function StrategyBuilder() {
                                     {strategyDetails ?
                                         <TradeDetailsCard
                                             trade={strategyDetails}
+                                            broker={broker}
                                         />
                                         :
                                         <Alert hidden={!ruleMessage} variant='danger' onClose={() => setRuleMessage("")} dismissible>{ruleMessage}</Alert>

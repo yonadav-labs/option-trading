@@ -13,9 +13,9 @@ from .long_put import LongPut
 
 class TradeFactory:
     @staticmethod
-    def initiate_trade(trade_type, stock_snapshot, leg_snapshots, premium_type, target_price_lower, target_price_upper):
+    def initiate_trade(trade_type, stock_snapshot, leg_snapshots, premium_type, broker_settings, target_price_lower, target_price_upper):
         stock = Stock.from_snapshot(stock_snapshot)
-        legs = [Leg.from_snapshot(leg_snapshot, premium_type) for leg_snapshot in leg_snapshots]
+        legs = [Leg.from_snapshot(leg_snapshot, premium_type, broker_settings) for leg_snapshot in leg_snapshots]
 
         if trade_type == 'long_call':
             trade_class = LongCall
@@ -41,22 +41,24 @@ class TradeFactory:
         return trade
 
     @staticmethod
-    def from_snapshot(trade_snapshot):
+    def from_snapshot(trade_snapshot, broker_settings):
         trade = TradeFactory.initiate_trade(trade_snapshot.type,
                                             trade_snapshot.stock_snapshot,
                                             trade_snapshot.leg_snapshots.all(),
                                             trade_snapshot.premium_type,
+                                            broker_settings,
                                             trade_snapshot.target_price_lower,
                                             trade_snapshot.target_price_upper)
 
         return trade
 
     @staticmethod
-    def from_snapshot_dict(trade_snapshot):
+    def from_snapshot_dict(trade_snapshot, broker_settings):
         trade = TradeFactory.initiate_trade(trade_snapshot['type'],
                                             trade_snapshot['stock_snapshot'],
                                             trade_snapshot['leg_snapshots'],
                                             trade_snapshot['premium_type'],
+                                            broker_settings,
                                             trade_snapshot.get('target_price_lower'),
                                             trade_snapshot.get('target_price_upper'))
 

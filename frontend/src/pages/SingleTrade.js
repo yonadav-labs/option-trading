@@ -12,6 +12,7 @@ import MetricLabel from '../components/MetricLabel.js';
 export default function SingleTrade() {
     let { tradeId } = useParams();
     const [trade, setTrade] = useState(null);
+    const [broker, setBroker] = useState(null);
     const [currentTrade, setCurrentTrade] = useState(null);
     const [basicInfo, setbasicInfo] = useState(null);
     const [profitLoss, setProfitLoss] = useState(null);
@@ -34,6 +35,7 @@ export default function SingleTrade() {
             });
 
             setTrade(response.data.trade_snapshot);
+            setBroker(response.data.broker);
             setbasicInfo(response.data.quote);
             setCurrentTrade(response.data.current_trade_snapshot);
         } catch (error) {
@@ -59,7 +61,7 @@ export default function SingleTrade() {
                 <div>
                     <h4>{trade.display_name}</h4>
                     <p>Find your own options trading ideas through our <Link to="/strategy-screener" role="button">Strategy Screener</Link> now!</p>
-                    <TradeDetailsCard trade={trade} hideShareButton={true} hideTitle={true} ></TradeDetailsCard>
+                    <TradeDetailsCard trade={trade} hideShareButton={true} hideTitle={true} broker={broker} />
                 </div>
             ) : 'Loading...'}
             {

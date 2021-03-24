@@ -3,6 +3,7 @@ from django.conf import settings
 from tiger.serializers import TradeSnapshotSerializer
 from tiger.core.trade.trade_factory import TradeFactory
 from tiger.utils import timedelta_from_timestamp
+from tiger.models import Broker
 
 
 def is_low_liquidity(contract):
@@ -71,6 +72,7 @@ def get_valid_contracts(ticker, request, all_expiration_timestamps, filter_low_l
 
     return call_lists, put_lists
 
+
 def get_filtered_contracts(ticker, expiration_timestamps, filters={}):
     call_lists = []
     put_lists = []
@@ -91,7 +93,8 @@ def get_filtered_contracts(ticker, expiration_timestamps, filters={}):
         put_lists.append(list(filter(lambda put: put.last_trade_date, puts)))
     return call_lists, put_lists
 
-def get_current_trade(trade_snapshot):
+
+def get_current_trade(trade_snapshot, broker_settings):
     """
     generates a new trade based on the historic trade snapshot
     returns None if the trade is expired
@@ -121,6 +124,17 @@ def get_current_trade(trade_snapshot):
     trade_snapshot_serializer = TradeSnapshotSerializer(data=base_data)
     trade_snapshot_serializer.is_valid()
     current_data = trade_snapshot_serializer.validated_data
-    current_trade = TradeFactory.from_snapshot_dict(current_data)
+    current_trade = TradeFactory.from_snapshot_dict(current_data, broker_settings)
 
     return current_trade
+
+
+def get_broker(user=None):
+    broker = None
+    if user and user.is_authenticated:
+        broker = user.get_broker()
+
+    if not broker:
+        broker = Broker.objects.filter(is_default=True).first()
+
+    return broker

@@ -48,6 +48,8 @@ class TradeSnapshotSerializer(serializers.ModelSerializer):
     leg_snapshots = LegSnapshotSerializer(many=True)
 
     def validate(self, input_trade_data):
+        from tiger.views.utils import get_broker
+
         stock_snapshot = StockSnapshot(**input_trade_data.get('stock_snapshot'))
 
         leg_snapshots = []
@@ -69,7 +71,11 @@ class TradeSnapshotSerializer(serializers.ModelSerializer):
         input_trade_data['leg_snapshots'] = leg_snapshots
 
         try:
-            trade = TradeFactory.from_snapshot_dict(input_trade_data)
+            request = self.context.get('request')
+            user = request.user if request else None
+            broker = get_broker(user)
+            broker_settings = broker.get_broker_settings()
+            trade = TradeFactory.from_snapshot_dict(input_trade_data, broker_settings)
         except AssertionError:
             raise serializers.ValidationError("Invalid Trade")
 

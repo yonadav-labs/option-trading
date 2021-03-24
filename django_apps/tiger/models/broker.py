@@ -15,3 +15,11 @@ class Broker(BaseModel):
 
     def __str__(self):
         return self.name
+
+    def get_broker_settings(self):
+        broker_settings = {
+            'open_commission': self.options_open_commission,
+            'close_commission': self.options_close_commission,
+        }
+
+        return broker_settings

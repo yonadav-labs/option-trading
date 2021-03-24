@@ -20,6 +20,10 @@ class LoadFromSnapshotTestCase(TestCase):
                           '"putExpDateMap":{"2021-01-15:11":{"65.0":[{"putCall":"PUT","symbol":"QQQE_011521P65","description":"QQQE Jan 15 2021 65 Put","exchangeName":"OPR","bid":0.1,"ask":0.75,"last":0.93,"mark":0.38,"bidSize":0,"askSize":283,"bidAskSize":"0X283","lastSize":0,"highPrice":0.0,"lowPrice":0.0,"openPrice":0.0,"closePrice":0.58,"totalVolume":0,"tradeDate":null,"tradeTimeInLong":1607612099235,"quoteTimeInLong":1609783859300,"netChange":0.35,"volatility":59.48,"delta":-0.097,"gamma":0.022,"theta":-0.057,"vega":0.023,"rho":-0.002,"openInterest":1,"timeValue":0.93,"theoreticalOptionValue":0.375,"theoreticalVolatility":29.0,"optionDeliverablesList":null,"strikePrice":65.0,"expirationDate":1610744400000,"daysToExpiration":11,"expirationType":"R","lastTradingDay":1610758800000,"multiplier":100.0,"settlementType":" ","deliverableNote":"","isIndexOption":null,"percentChange":59.52,"markChange":-0.21,"markPercentChange":-35.68,"mini":false,"inTheMoney":false,"nonStandard":false}],'
                           '"66.0":[{"putCall":"PUT","symbol":"QQQE_011521P66","description":"QQQE Jan 15 2021 66 Put","exchangeName":"OPR","bid":0.0,"ask":0.25,"last":0.0,"mark":0.13,"bidSize":0,"askSize":15,"bidAskSize":"0X15","lastSize":0,"highPrice":0.0,"lowPrice":0.0,"openPrice":0.0,"closePrice":0.59,"totalVolume":0,"tradeDate":null,"tradeTimeInLong":0,"quoteTimeInLong":1609792393294,"netChange":0.0,"volatility":41.455,"delta":-0.053,"gamma":0.02,"theta":-0.025,"vega":0.014,"rho":-0.001,"openInterest":0,"timeValue":0.13,"theoreticalOptionValue":0.125,"theoreticalVolatility":29.0,"optionDeliverablesList":null,"strikePrice":66.0,"expirationDate":1610744400000,"daysToExpiration":11,"expirationType":"R","lastTradingDay":1610758800000,"multiplier":100.0,"settlementType":" ","deliverableNote":"","isIndexOption":null,"percentChange":0.0,"markChange":-0.46,"markPercentChange":-78.78,"mini":false,"inTheMoney":false,"nonStandard":false}]}}}'
         )
+        self.broker_settings = {
+            'open_commission': 0.65,
+            'close_commission': 0.65
+        }
 
     def testLoadStockFromSnapshot(self):
         stock_snapshot = StockSnapshot.objects.create(ticker=self.ticker, external_cache=self.external_cache)
@@ -52,7 +56,7 @@ class LoadFromSnapshotTestCase(TestCase):
     def testLoadStockLegFromSnapshot(self):
         stock_snapshot = StockSnapshot.objects.create(ticker=self.ticker, external_cache=self.external_cache)
         stock_leg_snapshot = LegSnapshot.objects.create(is_long=True, units=1, stock_snapshot=stock_snapshot)
-        stock_leg = Leg.from_snapshot(stock_leg_snapshot, 'mid')
+        stock_leg = Leg.from_snapshot(stock_leg_snapshot, 'mid', self.broker_settings)
         self.assertEqual(stock_leg.name, 'long_stock_leg')
         self.assertEqual(stock_leg.is_long, True)
         self.assertEqual(stock_leg.units, 1)
@@ -65,22 +69,22 @@ class LoadFromSnapshotTestCase(TestCase):
                                                                      external_cache=self.external_cache_td)
         contract_leg_snapshot = LegSnapshot.objects.create(is_long=True, units=2,
                                                            contract_snapshot=contract_snapshot_td)
-        contract_leg = Leg.from_snapshot(contract_leg_snapshot, 'mid')
+        contract_leg = Leg.from_snapshot(contract_leg_snapshot, 'mid', self.broker_settings)
         self.assertEqual(contract_leg.name, 'long_put_leg')
         self.assertEqual(contract_leg.is_long, True)
         self.assertEqual(contract_leg.units, 2)
         self.assertEqual(contract_leg.contract.stock_price, 74.13)
         self.assertEqual(contract_leg.contract.is_call, False)
         self.assertEqual(contract_leg.contract.mark, 0.25)
-        self.assertEqual(contract_leg.cost, 25 * 2)
+        self.assertEqual(contract_leg.cost, 25 * 2 + 1.3)
 
         contract_snapshot_td2 = OptionContractSnapshot.objects.create(ticker=self.ticker, is_call=False, strike=65.0,
                                                                       expiration_timestamp=1610744400,
                                                                       external_cache=self.external_cache_td)
         contract_leg_snapshot2 = LegSnapshot.objects.create(is_long=True, units=2,
                                                             contract_snapshot=contract_snapshot_td2)
-        self.assertEqual(Leg.from_snapshot(contract_leg_snapshot2, 'mid').cost, 42.5 * 2)
-        self.assertEqual(Leg.from_snapshot(contract_leg_snapshot2, 'market').cost, 75 * 2)
+        self.assertAlmostEqual(Leg.from_snapshot(contract_leg_snapshot2, 'mid', self.broker_settings).cost, 42.5 * 2 + 1.3)
+        self.assertAlmostEqual(Leg.from_snapshot(contract_leg_snapshot2, 'market', self.broker_settings).cost, 75 * 2 + 1.3)
 
     def testLoadTradeFromSnapshot(self):
         creator = User.objects.create_user(username='testuser', password='12345')
@@ -97,9 +101,9 @@ class LoadFromSnapshotTestCase(TestCase):
         trade_snapshot.leg_snapshots.add(contract_leg_snapshot)
         trade_snapshot.leg_snapshots.add(cash_leg_snapshot)
 
-        trade = TradeFactory.from_snapshot(trade_snapshot)
+        trade = TradeFactory.from_snapshot(trade_snapshot, self.broker_settings)
         self.assertEqual(trade.type, 'cash_secured_put')
         self.assertEqual(trade.target_price_lower, 100)
-        self.assertEqual(trade.cost, 7388)
-        self.assertEqual(trade.break_even_price, 65.75)
-        self.assertEqual(trade.target_price_profit, 25)
+        self.assertAlmostEqual(trade.cost, 7389.3)
+        self.assertAlmostEqual(trade.break_even_price, 65.75)
+        self.assertAlmostEqual(trade.target_price_profit, 23.7)

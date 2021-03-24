@@ -21,15 +21,15 @@ class BullCallSpread(Trade):
         assert self.stock.ticker.id == long_call_leg.contract.ticker.id == short_call_leg.contract.ticker.id
 
     @staticmethod
-    def build(stock, call_contract_1, call_contract_2, premium_type, target_price_lower=None, target_price_upper=None,
+    def build(stock, call_contract_1, call_contract_2, premium_type, broker_settings, target_price_lower=None, target_price_upper=None,
               available_cash=None):
         if call_contract_1.strike == call_contract_2.strike or call_contract_1.expiration != call_contract_2.expiration:
             return None
         lower_strike_call, higher_strike_call = (call_contract_1, call_contract_2) \
             if call_contract_1.strike < call_contract_2.strike else (call_contract_2, call_contract_1)
 
-        long_call_leg = OptionLeg(True, 1, lower_strike_call,premium_type)
-        short_call_leg = OptionLeg(False, 1, higher_strike_call, premium_type)
+        long_call_leg = OptionLeg(True, 1, lower_strike_call,premium_type, broker_settings)
+        short_call_leg = OptionLeg(False, 1, higher_strike_call, premium_type, broker_settings)
         new_trade = BullCallSpread(stock, [long_call_leg, short_call_leg], premium_type,
                                    target_price_lower=target_price_lower, target_price_upper=target_price_upper)
         # cost could be 0 or < 0 due to wide bid/ask spread.

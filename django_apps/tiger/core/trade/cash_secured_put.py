@@ -19,8 +19,8 @@ class CashSecuredPut(Trade):
         assert self.stock.ticker.id == short_put_leg.contract.ticker.id
 
     @staticmethod
-    def build(stock, put_contract, premium_type, target_price_lower=None, target_price_upper=None, available_cash=None):
-        short_put_leg = OptionLeg(False, 1, put_contract, premium_type)
+    def build(stock, put_contract, premium_type, broker_settings, target_price_lower=None, target_price_upper=None, available_cash=None):
+        short_put_leg = OptionLeg(False, 1, put_contract, premium_type, broker_settings)
         long_cash_leg = CashLeg(100 * put_contract.strike)
         new_trade = CashSecuredPut(stock, [short_put_leg, long_cash_leg], premium_type,
                                    target_price_lower=target_price_lower, target_price_upper=target_price_upper)

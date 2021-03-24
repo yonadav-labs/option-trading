@@ -7,7 +7,7 @@ import TradeProfitLossGraph from '../TradeProfitLossGraph.js';
 import MetricLabel from '../MetricLabel.js';
 
 export default function TradeDetailsCard(props) {
-    const { trade, hideShareButton, hideDisclaimer, hideTitle } = props;
+    const { trade, hideShareButton, hideDisclaimer, hideTitle, broker } = props;
 
     return (
         <Card>
@@ -71,6 +71,25 @@ export default function TradeDetailsCard(props) {
                                 </Col>
                             ) : null}
                     </Row>
+                    {broker &&
+                        <Row>
+                            <Col sm="3" xs="6">
+                                <Badge variant="secondary">Broker</Badge>
+                                <br />
+                                {broker.name}
+                            </Col>
+                            <Col sm="3" xs="6">
+                                <Badge variant="secondary">Open Commission</Badge>
+                                <br />
+                                {PriceFormatter(broker.options_open_commission)}
+                            </Col>
+                            <Col sm="3" xs="6">
+                                <Badge variant="secondary">Close Commission</Badge>
+                                <br />
+                                {PriceFormatter(broker.options_close_commission)}
+                            </Col>
+                        </Row>
+                    }
                     <br />
                     <TradeProfitLossGraph trade={trade} />
                     <Card.Title>Details</Card.Title>

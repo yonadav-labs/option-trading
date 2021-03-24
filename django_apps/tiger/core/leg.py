@@ -14,7 +14,7 @@ class Leg(ABC):
         self.contract = contract
 
     @classmethod
-    def from_snapshot(cls, leg_snapshot, premium_type):
+    def from_snapshot(cls, leg_snapshot, premium_type, broker_settings):
         if leg_snapshot.cash_snapshot:
             return CashLeg(leg_snapshot.units)
         elif leg_snapshot.stock_snapshot:
@@ -22,7 +22,7 @@ class Leg(ABC):
             return StockLeg(leg_snapshot.units, stock)
         elif leg_snapshot.contract_snapshot:
             contract = OptionContract.from_snapshot(leg_snapshot.contract_snapshot)
-            return OptionLeg(leg_snapshot.is_long, leg_snapshot.units, contract, premium_type)
+            return OptionLeg(leg_snapshot.is_long, leg_snapshot.units, contract, premium_type, broker_settings)
 
     @property
     def is_cash(self):
@@ -97,10 +97,12 @@ class StockLeg(Leg):
 
 # Represent `units` contract of option.
 class OptionLeg(Leg):
-    def __init__(self, is_long, units, contract, premium_type):
+    def __init__(self, is_long, units, contract, premium_type, broker_settings):
         assert premium_type in ('mid', 'market')
         super().__init__(is_long, units, contract=contract)
         self.premium_type = premium_type
+        self.open_commission = broker_settings['open_commission']
+        self.close_commission = broker_settings['close_commission']
 
     @property
     def name(self):
@@ -125,7 +127,8 @@ class OptionLeg(Leg):
 
     @property
     def cost(self):
-        return self.premium_used * 100 * (self.units if self.is_long else -self.units)
+        return self.premium_used * 100 * (self.units if self.is_long else -self.units) \
+             + self.open_commission + self.close_commission
 
     def get_value_in_price_range(self, price_lower, price_upper):
         return self.contract.get_value_in_price_range(price_lower, price_upper) * (

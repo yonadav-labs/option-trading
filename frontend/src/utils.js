@@ -229,7 +229,7 @@ export async function loadTickers(headers, setSelectedTicker, setAllTickers, que
         let recentTickers = localStorage.getItem('tigerstance-recent-tickers') || '';
         recentTickers = recentTickers.split(' ');
 
-        const response = await Axios.get(`${getApiUrl()}/tickers/`, { headers: headers });
+        const response = await Axios.get(`${getApiUrl()}/tickers/`, { headers });
         let visitedTickers = [];
         let restTickers = [];
 

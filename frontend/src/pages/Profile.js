@@ -160,9 +160,10 @@ const Profile = () => {
                                                 <Form.Control
                                                     as="select"
                                                     htmlSize={1}
-                                                    defaultValue={user.brokers[0]}
+                                                    defaultValue={user.brokers.length > 0 ? user.brokers[0].id : null}
                                                     onChange={onChangeBrokers}
                                                 >
+                                                    <option>Choose a broker</option>
                                                     {
                                                         brokers.map(broker => (
                                                             <option key={broker.id} value={broker.id}>{broker.name}</option>

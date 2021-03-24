@@ -21,15 +21,15 @@ class BearPutSpread(Trade):
         assert self.stock.ticker.id == long_put_leg.contract.ticker.id == short_put_leg.contract.ticker.id
 
     @staticmethod
-    def build(stock, put_contract_1, put_contract_2, premium_type, target_price_lower=None, target_price_upper=None,
+    def build(stock, put_contract_1, put_contract_2, premium_type, broker_settings, target_price_lower=None, target_price_upper=None,
               available_cash=None):
         if put_contract_1.strike == put_contract_2.strike or put_contract_1.expiration != put_contract_2.expiration:
             return None
         lower_strike_put, higher_strike_put = (put_contract_1, put_contract_2) \
             if put_contract_1.strike < put_contract_2.strike else (put_contract_2, put_contract_1)
 
-        long_put_leg = OptionLeg(True, 1, higher_strike_put, premium_type)
-        short_put_leg = OptionLeg(False, 1, lower_strike_put, premium_type)
+        long_put_leg = OptionLeg(True, 1, higher_strike_put, premium_type, broker_settings)
+        short_put_leg = OptionLeg(False, 1, lower_strike_put, premium_type, broker_settings)
         new_trade = BearPutSpread(stock, [long_put_leg, short_put_leg], premium_type,
                                   target_price_lower=target_price_lower, target_price_upper=target_price_upper)
         # cost could be 0 or < 0 due to wide bid/ask spread.

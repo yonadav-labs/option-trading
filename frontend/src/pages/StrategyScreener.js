@@ -50,6 +50,7 @@ export default function BestCallByPrice() {
     const [targetPriceLower, setTargetPriceLower] = useState(null);
     const [targetPriceUpper, setTargetPriceUpper] = useState(null);
     const [headers, setHeaders] = useState(null);
+    const [broker, setBroker] = useState(null);
     const { oktaAuth, authState } = useOktaAuth();
 
     const resetStates = () => {
@@ -291,7 +292,8 @@ export default function BestCallByPrice() {
                 url += `available_cash=${availableCash}&`;
             }
             setModalActive(true);
-            const response = await Axios.get(url);
+            const response = await Axios.get(url, { headers });
+            setBroker(response.data.broker);
             let trades = response.data.trades;
             trades.map((val, index) => {
                 val.type2 = val.type;
@@ -310,7 +312,7 @@ export default function BestCallByPrice() {
 
     const ExpandTradeRow = {
         renderer: (row) => (
-            <TradeDetailsCard trade={row} hideDisclaimer={true} />
+            <TradeDetailsCard trade={row} hideDisclaimer={true} broker={broker} />
         ),
         showExpandColumn: true,
         expandHeaderColumnRenderer: ({ isAnyExpands }) => {

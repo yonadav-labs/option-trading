@@ -29,3 +29,6 @@ class User(AbstractUser):
         if not created:  # modify last_updated_time
             item.last_updated_time = datetime.now()
             item.save()
+
+    def get_broker(self):
+        return self.brokers.first()

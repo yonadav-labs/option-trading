@@ -9,9 +9,9 @@ from tiger.core import Stock
 from tiger.core.trade import LongCall, LongPut, CoveredCall, CashSecuredPut, BullPutSpread, BullCallSpread, \
     BearCallSpread, BearPutSpread
 from tiger.models import Ticker
-from tiger.serializers import TradeSerializer
+from tiger.serializers import TradeSerializer, BrokerSerializer
 from tiger.utils import days_from_timestamp
-from tiger.views.utils import get_valid_contracts, get_filtered_contracts
+from tiger.views.utils import get_valid_contracts, get_filtered_contracts, get_broker
 
 logger = logging.getLogger('console_info')
 
@@ -30,7 +30,7 @@ def save_best_trade_by_type(best_trade_dict, strategy_type, trade):
         best_trade_dict[strategy_type] = trade
 
 
-def build_trades(stock, call_contract_lists, put_contract_lists, strategy_settings):
+def build_trades(stock, call_contract_lists, put_contract_lists, strategy_settings, broker_settings):
     premium_type = strategy_settings.get('premium_type', 'market')
     target_price_lower = strategy_settings.get('target_price_lower', None)
     target_price_upper = strategy_settings.get('target_price_upper', None)
@@ -41,41 +41,41 @@ def build_trades(stock, call_contract_lists, put_contract_lists, strategy_settin
         call_pairs = itertools.combinations(calls_per_exp, 2)
 
         for call in calls_per_exp:
-            long_call = LongCall.build(stock, call, premium_type, target_price_lower, target_price_upper, available_cash)
+            long_call = LongCall.build(stock, call, premium_type, broker_settings, target_price_lower, target_price_upper, available_cash)
             save_best_trade_by_type(best_trade_dict, 'long_call', long_call)
 
-            covered_call = CoveredCall.build(stock, call, premium_type, target_price_lower, target_price_upper, available_cash)
+            covered_call = CoveredCall.build(stock, call, premium_type, broker_settings, target_price_lower, target_price_upper, available_cash)
             save_best_trade_by_type(best_trade_dict, 'covered_call', covered_call)
             
         for call1, call2 in call_pairs:
             if call1.strike < call2.strike:
-                bull_call_spread = BullCallSpread.build(stock, call1, call2, premium_type, target_price_lower, target_price_upper, available_cash)
+                bull_call_spread = BullCallSpread.build(stock, call1, call2, premium_type, broker_settings, target_price_lower, target_price_upper, available_cash)
                 save_best_trade_by_type(best_trade_dict, 'bull_call_spread', bull_call_spread)
 
-                bear_call_spread = BearCallSpread.build(stock, call1, call2, premium_type, target_price_lower, target_price_upper, available_cash)
+                bear_call_spread = BearCallSpread.build(stock, call1, call2, premium_type, broker_settings, target_price_lower, target_price_upper, available_cash)
                 save_best_trade_by_type(best_trade_dict, 'bear_call_spread', bear_call_spread)
 
     for puts_per_exp in put_contract_lists:
         put_pairs = itertools.combinations(puts_per_exp, 2)
 
         for put in puts_per_exp:
-            long_put = LongPut.build(stock, put, premium_type, target_price_lower, target_price_upper, available_cash)
+            long_put = LongPut.build(stock, put, premium_type, broker_settings, target_price_lower, target_price_upper, available_cash)
             save_best_trade_by_type(best_trade_dict, 'long_put', long_put)
             
-            cash_secured_put = CashSecuredPut.build(stock, put, premium_type, target_price_lower, target_price_upper, available_cash)
+            cash_secured_put = CashSecuredPut.build(stock, put, premium_type, broker_settings, target_price_lower, target_price_upper, available_cash)
             save_best_trade_by_type(best_trade_dict, 'cash_secured_put', cash_secured_put)
 
         for put1, put2 in put_pairs:
             if put1.strike < put2.strike:
-                bear_put_spread = BearPutSpread.build(stock, put1, put2, premium_type, target_price_lower, target_price_upper, available_cash)
+                bear_put_spread = BearPutSpread.build(stock, put1, put2, premium_type, broker_settings, target_price_lower, target_price_upper, available_cash)
                 save_best_trade_by_type(best_trade_dict, 'bear_put_spread', bear_put_spread)
 
-                bull_put_spread = BullPutSpread.build(stock, put1, put2, premium_type, target_price_lower, target_price_upper, available_cash)
+                bull_put_spread = BullPutSpread.build(stock, put1, put2, premium_type, broker_settings, target_price_lower, target_price_upper, available_cash)
                 save_best_trade_by_type(best_trade_dict, 'bull_put_spread', bull_put_spread)
 
     return list(best_trade_dict.values())
 
-def get_call_spreads(stock, call_contract_lists, premium_type, target_price_lower, target_price_upper, available_cash):
+def get_call_spreads(stock, call_contract_lists, premium_type, target_price_lower, target_price_upper, available_cash, broker_settings):
     bull_call_spread_trades = []
     bear_call_spread_trades = []
     for calls_per_exp in call_contract_lists:
@@ -86,17 +86,17 @@ def get_call_spreads(stock, call_contract_lists, premium_type, target_price_lowe
                 if low_strike_call.strike >= high_strike_call.strike:
                     continue
                 bull_call_spread_trades.append(
-                    BullCallSpread.build(stock, low_strike_call, high_strike_call, premium_type, target_price_lower,
+                    BullCallSpread.build(stock, low_strike_call, high_strike_call, premium_type, broker_settings, target_price_lower,
                                          target_price_upper, available_cash=available_cash))
                 bear_call_spread_trades.append(
-                    BearCallSpread.build(stock, low_strike_call, high_strike_call, premium_type, target_price_lower,
+                    BearCallSpread.build(stock, low_strike_call, high_strike_call, premium_type, broker_settings, target_price_lower,
                                          target_price_upper, available_cash=available_cash))
     bull_call_spread_trades = filter_and_sort_trades(bull_call_spread_trades)[:50]
     bear_call_spread_trades = filter_and_sort_trades(bear_call_spread_trades)[:50]
     return bull_call_spread_trades, bear_call_spread_trades
 
 
-def get_put_spreads(stock, put_contract_lists, premium_type, target_price_lower, target_price_upper, available_cash):
+def get_put_spreads(stock, put_contract_lists, premium_type, target_price_lower, target_price_upper, available_cash, broker_settings):
     bear_put_spread_trades = []
     bull_put_spread_trades = []
     for puts_per_exp in put_contract_lists:
@@ -107,10 +107,10 @@ def get_put_spreads(stock, put_contract_lists, premium_type, target_price_lower,
                 if low_strike_put.strike >= high_strike_put.strike:
                     continue
                 bear_put_spread_trades.append(
-                    BearPutSpread.build(stock, low_strike_put, high_strike_put, premium_type, target_price_lower,
+                    BearPutSpread.build(stock, low_strike_put, high_strike_put, premium_type, broker_settings, target_price_lower,
                                         target_price_upper, available_cash=available_cash))
                 bull_put_spread_trades.append(
-                    BullPutSpread.build(stock, low_strike_put, high_strike_put, premium_type, target_price_lower,
+                    BullPutSpread.build(stock, low_strike_put, high_strike_put, premium_type, broker_settings, target_price_lower,
                                         target_price_upper, available_cash=available_cash))
     bear_put_spread_trades = filter_and_sort_trades(bear_put_spread_trades)[:50]
     bull_put_spread_trades = filter_and_sort_trades(bull_put_spread_trades)[:50]
@@ -141,6 +141,9 @@ def get_best_trades(request, ticker_symbol):
     stock_price = quote.get('regularMarketPrice')  # This is from Yahoo.
     stock = Stock(ticker, stock_price, external_cache_id, ticker.get_latest_stats())
 
+    broker = get_broker(request.user)
+    broker_settings = broker.get_broker_settings()
+
     long_call_trades = []
     covered_call_trades = []
     call_contract_lists, put_contract_lists = get_valid_contracts(ticker, request, all_expiration_timestamps,
@@ -151,10 +154,10 @@ def get_best_trades(request, ticker_symbol):
             if days_from_timestamp(call.last_trade_date) <= -7:
                 continue
             long_call_trades.append(
-                LongCall.build(stock, call, premium_type, target_price_lower, target_price_upper,
+                LongCall.build(stock, call, premium_type, broker_settings, target_price_lower, target_price_upper,
                                available_cash=available_cash))
             covered_call_trades.append(
-                CoveredCall.build(stock, call, premium_type, target_price_lower, target_price_upper,
+                CoveredCall.build(stock, call, premium_type, broker_settings, target_price_lower, target_price_upper,
                                   available_cash=available_cash))
     long_call_trades = filter_and_sort_trades(long_call_trades)[:25]
     covered_call_trades = filter_and_sort_trades(covered_call_trades)[:25]
@@ -167,10 +170,10 @@ def get_best_trades(request, ticker_symbol):
             if days_from_timestamp(put.last_trade_date) <= -7:
                 continue
             long_put_trades.append(
-                LongPut.build(stock, put, premium_type, target_price_lower, target_price_upper,
+                LongPut.build(stock, put, premium_type, broker_settings, target_price_lower, target_price_upper,
                               available_cash=available_cash))
             cash_secured_put_trades.append(
-                CashSecuredPut.build(stock, put, premium_type, target_price_lower, target_price_upper,
+                CashSecuredPut.build(stock, put, premium_type, broker_settings, target_price_lower, target_price_upper,
                                      available_cash=available_cash))
     long_put_trades = filter_and_sort_trades(long_put_trades)[:25]
     cash_secured_put_trades = filter_and_sort_trades(cash_secured_put_trades)[:25]
@@ -179,15 +182,22 @@ def get_best_trades(request, ticker_symbol):
     # TODO: add tests.
     bull_call_spread_trades, bear_call_spread_trades = get_call_spreads(stock, call_contract_lists, premium_type,
                                                                         target_price_lower, target_price_upper,
-                                                                        available_cash)
+                                                                        available_cash, broker_settings)
 
     bear_put_spread_trades, bull_put_spread_trades = get_put_spreads(stock, put_contract_lists, premium_type,
                                                                      target_price_lower, target_price_upper,
-                                                                     available_cash)
+                                                                     available_cash, broker_settings)
 
     all_trades = long_call_trades + covered_call_trades + long_put_trades + cash_secured_put_trades + \
                  bull_call_spread_trades + bear_call_spread_trades + bear_put_spread_trades + bull_put_spread_trades
-    return Response({'trades': TradeSerializer(all_trades, many=True).data})
+
+    response = {
+                  'trades': TradeSerializer(all_trades, many=True).data,
+                  'broker': BrokerSerializer(broker).data
+               }
+
+    return Response(response)
+
 
 @api_view(['POST'])
 def get_top_trades(request, ticker_symbol):
@@ -210,6 +220,14 @@ def get_top_trades(request, ticker_symbol):
     stock = Stock(ticker, stock_price, external_cache_id)
 
     call_contract_lists, put_contract_lists = get_filtered_contracts(ticker, expiration_timestamps, contract_filters)
-    all_trades = build_trades(stock, call_contract_lists, put_contract_lists, strategy_settings)
-    
-    return Response({'trades': TradeSerializer(all_trades, many=True).data})
+    broker = get_broker(request.user)
+    broker_settings = broker.get_broker_settings()
+
+    all_trades = build_trades(stock, call_contract_lists, put_contract_lists, strategy_settings, broker_settings)
+
+    response = {
+                  'trades': TradeSerializer(all_trades, many=True).data,
+                  'broker': BrokerSerializer(broker).data
+               }
+
+    return Response(response)
