@@ -74,18 +74,15 @@ export default function TradeDetailsCard(props) {
                     {broker &&
                         <Row>
                             <Col sm="3" xs="6">
-                                <Badge variant="secondary">Broker</Badge>
-                                <br />
+                                <MetricLabel label="broker" />
                                 {broker.name}
                             </Col>
                             <Col sm="3" xs="6">
-                                <Badge variant="secondary">Open Commission</Badge>
-                                <br />
+                                <MetricLabel label="open commission" />
                                 {PriceFormatter(broker.options_open_commission)}
                             </Col>
                             <Col sm="3" xs="6">
-                                <Badge variant="secondary">Close Commission</Badge>
-                                <br />
+                                <MetricLabel label="close commission" />
                                 {PriceFormatter(broker.options_close_commission)}
                             </Col>
                         </Row>
