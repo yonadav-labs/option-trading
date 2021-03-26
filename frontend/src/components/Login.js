@@ -1,9 +1,11 @@
 import React, { useEffect, useRef } from 'react';
 import { useOktaAuth } from '@okta/okta-react';
 import * as OktaSignIn from '@okta/okta-signin-widget';
+import { OktaAuth } from '@okta/okta-auth-js';
 import '@okta/okta-signin-widget/dist/css/okta-sign-in.min.css';
 
 import getOktaConfig from "./../oktaConfig";
+const oktaAuth = new OktaAuth(getOktaConfig().oidc);
 
 const Login = () => {
     const { oktaAuth } = useOktaAuth();
@@ -48,11 +50,15 @@ const Login = () => {
                 tokenManager.add('idToken', tokens.idToken);
                 tokenManager.add('accessToken', tokens.accessToken);
 
-                if (document.referrer === "" || document.referrer.includes("signin") || document.referrer.includes("verify-email")) {
-                    window.location.assign(window.location.origin);
+                // Return to the original URL (if auth was initiated from a secure route), falls back to the origin
+                const fromUri = oktaAuth.getOriginalUri();
+
+                if (fromUri !== window.location.origin || document.referrer === "" || document.referrer.includes("signin") || document.referrer.includes("verify-email")) {
+                    window.location.assign(fromUri);
                 } else {
                     window.location.assign(document.referrer);
                 }
+                oktaAuth.removeOriginalUri();
             }
         }).catch((err) => {
             throw err;
