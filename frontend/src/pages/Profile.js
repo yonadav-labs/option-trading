@@ -112,7 +112,7 @@ const Profile = () => {
         }
     }, [oktaAuth, authState]); // Update if authState changes
 
-    if (!user) {
+    if (!user || brokers.length == 0) {
         return (
             <div className="container justify-content-center">
                 <p>Fetching user profile...</p>
