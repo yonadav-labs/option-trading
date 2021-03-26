@@ -1,5 +1,6 @@
-import React from 'react'
-import { Link } from "react-router-dom"
+import React from 'react';
+import { Link } from 'react-router-dom';
+import { FaTwitter, FaFacebookSquare, FaInstagram, FaDiscord } from 'react-icons/fa';
 
 function Footer(props) {
     return (
@@ -14,6 +15,12 @@ function Footer(props) {
                         <p className="text-light">
                             Contact us at contact@tigerstance.com or through this <a href="https://forms.gle/qEqcKb1mtG8PJUWq6" target="_blank">google form</a>.
                         </p>
+                        <h4 className="text-light">
+                            <a href="https://twitter.com/EaseandExtra" target="_blank"><FaTwitter /></a>&nbsp;
+                            <a href="https://www.facebook.com/TigerStanceOfficial" target="_blank"><FaFacebookSquare /></a>&nbsp;
+                            <a href="https://www.instagram.com/tigerstance_official" target="_blank"><FaInstagram /></a>&nbsp;
+                            <a href="https://discord.gg/Zh9j3xyx" target="_blank"><FaDiscord /></a>
+                        </h4>
                     </div>
                     {/* <div className="col-md-2 col-6">
                         <h3 className="text-light">
