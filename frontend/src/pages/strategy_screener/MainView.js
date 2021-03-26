@@ -6,7 +6,7 @@ import TickerAutocomplete from "../../components/TickerAutocomplete";
 import FilterContainer from "../../components/filters/FilterContainer";
 import NewTickerSummary from "../../components/NewTickerSummary";
 
-export default function MainView({ allTickers, onTickerSelectionChange, bestStrategies, basicInfo }) {
+export default function MainView({ allTickers, onTickerSelectionChange, bestStrategies, basicInfo, onFilterChange, filters }) {
     const [renderedStrategies, setRenderedStrategies] = useState([])
     const [noOfPages, setNoOfPages] = useState(null)
 
@@ -25,7 +25,7 @@ export default function MainView({ allTickers, onTickerSelectionChange, bestStra
                 <Grid item sm={2}>
                     <Box p={4} boxShadow={3} bgcolor='#333741' color="white" height="105%" style={{marginRight: '-2rem'}}>
                         <Grid container direction="column" justify="center" className="filter-label">
-                            <FilterContainer />
+                            <FilterContainer onFilterChange={onFilterChange} filters={filters}/>
                         </Grid>
                     </Box>
                 </Grid>

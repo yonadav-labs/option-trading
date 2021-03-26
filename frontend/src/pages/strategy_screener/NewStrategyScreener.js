@@ -17,14 +17,24 @@ export default function NewStrategyScreener() {
     const [allTickers, setAllTickers] = useState([]);
     const [selectedTicker, setSelectedTicker] = useState();
     const [basicInfo, setBasicInfo] = useState({});
-    const [targetPriceLower, setTargetPriceLower] = useState(null);
-    const [targetPriceUpper, setTargetPriceUpper] = useState(null);
     const [bestStrategies, setBestStrategies] = useState(null);
-
+    
     // expiration date states
     const [expirationTimestamps, setExpirationTimestamps] = useState([]);
     const [expirationTimestampsOptions, setExpirationTimestampsOptions] = useState([])
     const [selectedExpirationTimestamp, setSelectedExpirationTimestamp] = useState([]);
+    
+    // filter states
+    const [targetPriceLower, setTargetPriceLower] = useState(null);
+    const [targetPriceUpper, setTargetPriceUpper] = useState(null);
+    const [filters, setFilters] = useState({
+        premiumType: 'market',
+        cashToInvest: null,
+        strategyType: 'all',
+        minVolume: 1,
+        minOpenInterest: 10,
+        lastTradedDate: -7
+    })
 
     // component management states
     const [sentiment, setSentiment] = useState('');
@@ -110,20 +120,20 @@ export default function NewStrategyScreener() {
     }
 
     const getBestStrategies = async () => {
-        console.log(selectedExpirationTimestamp)
         try {
             let url = `${API_URL}/dev/tickers/${selectedTicker.symbol}/trades/`;
             let body = {
                 "expiration_timestamps": [selectedExpirationTimestamp[0].value],
                 "contract_filters": {
-                    "min.open_interest": 10,
-                    "min.volume": 1,
-                    "min.last_trade_date": -7
+                    "min.open_interest": filters.minOpenInterest,
+                    "min.volume": filters.minVolume,
+                    "min.last_trade_date": filters.lastTradedDate
                 },
                 "strategy_settings": {
-                    "premium_type": "market",
+                    "premium_type": filters.premiumType,
                     "target_price_lower": targetPriceLower,
-                    "target_price_upper": targetPriceUpper
+                    "target_price_upper": targetPriceUpper,
+                    "cash_to_invest": filters.cashToInvest
                 }
             }
             setModalActive(true);
@@ -145,6 +155,44 @@ export default function NewStrategyScreener() {
         }
     };
 
+    // function to change filter states
+    const onFilterChange = (event, filterChoice) => {
+        switch (filterChoice) {
+            case 'premium':
+                setFilters({...filters, premiumType: event.target.value})
+                break;
+            case 'cash':
+                setFilters({...filters, cashToInvest: event})
+                break;
+            case 'strategy':
+                setFilters({...filters, strategyType: event.target.value})
+                break;
+            case 'volume':
+                setFilters({...filters, minVolume: event.target.value})
+                break;
+            case 'interest':
+                setFilters({...filters, minOpenInterest: event.target.value})
+                break;
+            case 'lastTraded':
+                setFilters({...filters, lastTradedDate: event.target.value})
+                break;
+            case 'lowerPrice':
+                setTargetPriceLower(event.target.value)
+                break;
+            case 'upperPrice':
+                setTargetPriceUpper(event.target.value)
+                break;
+        
+            default:
+                break;
+        }
+    }
+
+    // fetch new strategies when filter changes
+    useEffect(() => {
+        getBestStrategies()
+    }, [filters])
+
     return (
         <div className="strategy-screener">
             <CssBaseline />
@@ -161,7 +209,6 @@ export default function NewStrategyScreener() {
                         selectedExpirationTimestamp={selectedExpirationTimestamp}
                         setTargetPriceBySentiment={setTargetPriceBySentiment}
                         getBestStrategies={getBestStrategies}
-                        bestStrategies={bestStrategies}
                     />
                     :
                     <MainView
@@ -173,6 +220,8 @@ export default function NewStrategyScreener() {
                         selectedExpirationTimestamp={selectedExpirationTimestamp}
                         bestStrategies={bestStrategies}
                         basicInfo={basicInfo}
+                        onFilterChange={onFilterChange}
+                        filters={filters}
                     />
             }
         </div>
