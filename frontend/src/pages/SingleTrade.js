@@ -84,20 +84,20 @@ export default function SingleTrade() {
                         <Card.Body>
                             <Row md="4">
                                 <Col sm={3} xs={6}>
-                                    <MetricLabel label="current profit/loss" />
+                                    <MetricLabel label="latest return" />
                                     <div> {PriceFormatter(profitLoss.profit)} ({ProfitFormatter(profitLoss.profit_rate)})</div>
                                 </Col>
                                 <Col sm={3} xs={6}>
-                                    <MetricLabel label="stock profit/loss" />
-                                    <div> {ProfitFormatter(profitLoss.stock_profit_rate)}</div>
-                                </Col>
-                                <Col sm={3} xs={6}>
-                                    <MetricLabel label="initial Value" />
+                                    <MetricLabel label="initial value" />
                                     <div> {PriceFormatter(trade.cost)} </div>
                                 </Col>
                                 <Col sm={3} xs={6}>
-                                    <MetricLabel label="current Value" />
+                                    <MetricLabel label="latest value" />
                                     <div> {PriceFormatter(currentTrade.cost)} </div>
+                                </Col>
+                                <Col sm={3} xs={6}>
+                                    <MetricLabel label="latest stock return" />
+                                    <div> {ProfitFormatter(profitLoss.stock_profit_rate)}</div>
                                 </Col>
                             </Row>
                         </Card.Body>

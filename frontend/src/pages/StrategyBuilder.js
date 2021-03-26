@@ -225,7 +225,7 @@ export default function StrategyBuilder() {
             <ModalSpinner active={modalActive}></ModalSpinner>
             <Row className="justify-content-md-center">
                 <Col md="4">
-                    <MetricLabel label="Ticker" />
+                    <MetricLabel label="ticker" />
                     <TickerTypeahead
                         selectedTicker={selectedTicker}
                         allTickers={allTickers}
@@ -233,7 +233,7 @@ export default function StrategyBuilder() {
                     />
                 </Col>
                 <Col md="7">
-                    <MetricLabel label="Strategy Type" />
+                    <MetricLabel label="strategy type" />
                     <Select
                         className="basic-single"
                         isSearchable
@@ -361,7 +361,7 @@ export default function StrategyBuilder() {
                                             }
                                         })}
                                         <Col lg="4" className="mb-3">
-                                            <MetricLabel label="Premium Price to Use" />
+                                            <MetricLabel label="premium price to use" />
                                             <Select
                                                 className="basic-single"
                                                 isSearchable

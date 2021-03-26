@@ -38,11 +38,11 @@ export default function ContractDetailsCard(props) {
                             </Row>
                             <Row>
                                 <Col sm="3" xs="6">
-                                    <MetricLabel label="change" />
+                                    <MetricLabel label="day's change" />
                                     {PriceFormatter(contract.change)} ({NumberRoundFormatter(contract.percent_change)}%)
                                 </Col>
                                 <Col sm="3" xs="6">
-                                    <MetricLabel label="range" />
+                                    <MetricLabel label="day range" />
                                     {PriceFormatter(contract.low_price)} - {PriceFormatter(contract.high_price)}
                                 </Col>
                                 <Col sm="3" xs="6">
@@ -61,12 +61,12 @@ export default function ContractDetailsCard(props) {
                                         {NumberRoundFormatter(contract.delta)}
                                     </Col>
                                     <Col sm="3" xs="6">
-                                        <MetricLabel label="gamma" />
-                                        {NumberRoundFormatter(contract.gamma)}
-                                    </Col>
-                                    <Col sm="3" xs="6">
                                         <MetricLabel label="theta" />
                                         {NumberRoundFormatter(contract.theta)}
+                                    </Col>
+                                    <Col sm="3" xs="6">
+                                        <MetricLabel label="gamma" />
+                                        {NumberRoundFormatter(contract.gamma)}
                                     </Col>
                                     <Col sm="3" xs="6">
                                         <MetricLabel label="vega" />
@@ -101,7 +101,7 @@ export default function ContractDetailsCard(props) {
                                         {TimestampTimeFormatter(contract.quote_time)}
                                     </Col>
                                     <Col sm="3" xs="6">
-                                        <MetricLabel label="notional Value" />
+                                        <MetricLabel label="notional value" />
                                         {PriceFormatter(contract.notional_value)}
                                     </Col>
                                 </Row>

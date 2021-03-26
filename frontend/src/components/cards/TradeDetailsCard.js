@@ -71,12 +71,8 @@ export default function TradeDetailsCard(props) {
                                 </Col>
                             ) : null}
                     </Row>
-                    {broker &&
-                        <Row>
-                            <Col sm="3" xs="6">
-                                <MetricLabel label="broker" />
-                                {broker.name}
-                            </Col>
+                    {broker && broker.options_open_commission + broker.options_close_commission > 0.0 &&
+                        < Row >
                             <Col sm="3" xs="6">
                                 <MetricLabel label="open commission" />
                                 {PriceFormatter(broker.options_open_commission)}
@@ -105,8 +101,7 @@ export default function TradeDetailsCard(props) {
                     null :
                     (<p>
                         *Option contract data on this page is frozen at "Quoted at" time.<br />
-                        *All data are based on estimated options value on expiration date.<br />
-                        *Hypothetical profit: average of possible profit outcomes if share price hits within the target price range.
+                        *All data are based on estimated options value on expiration date.
                     </p>)}
             </Card.Body>
         </Card >

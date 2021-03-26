@@ -79,7 +79,7 @@ export default function SellCoveredCall() {
     useEffect(() => {
         if (authState.isAuthenticated) {
             const { accessToken } = authState;
-            setHeaders({Authorization: `Bearer ${accessToken.accessToken}`});
+            setHeaders({ Authorization: `Bearer ${accessToken.accessToken}` });
         } else {
             setHeaders({});
         }
@@ -405,7 +405,7 @@ export default function SellCoveredCall() {
                     </Form>
                     {selectedTicker.length > 0 ?
                         <div>
-                            <TickerSummary basicInfo={basicInfo} from={'option'}/>
+                            <TickerSummary basicInfo={basicInfo} from={'option'} />
                         </div>
                         :
                         null
@@ -470,7 +470,7 @@ export default function SellCoveredCall() {
                             <Row md={2}>
                                 <Col sm="2" xs="12">
                                     <Form.Group>
-                                        <Form.Label className="font-weight-bold">Type:</Form.Label>
+                                        <Form.Label className="font-weight-bold">Call/Put:</Form.Label>
                                         <br />
                                         <ButtonToggleFilter
                                             choiceLabelMap={{ false: 'Put', true: 'Call' }}

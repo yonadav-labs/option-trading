@@ -428,7 +428,7 @@ export default function BestCallByPrice() {
                                         <Form.Control name="premium_type" as="select" defaultValue="market"
                                             onChange={handlePremiumTypeChange}>
                                             <option key="market" value="market">Market order price</option>
-                                            <option key="mid" value="mid">Mid/mark price</option>
+                                            <option key="mid" value="mid">Mid/Mark price</option>
                                         </Form.Control>
                                     </Form.Group>
                                 </Col>
@@ -530,8 +530,7 @@ export default function BestCallByPrice() {
                                     </Col>
                                 </Row>
                                 <p>
-                                    *All results are based on estimated options value on expiration date.<br />
-                                    *Hypothetical profit: average of possible profit outcomes under the assumption that {selectedTicker[0].symbol} share price will be within the target price range.
+                                    *All results are based on estimated options value on expiration date.
                                 </p>
                             </div>
                             :
