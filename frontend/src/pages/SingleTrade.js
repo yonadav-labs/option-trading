@@ -51,7 +51,8 @@ export default function SingleTrade() {
         if (currentTrade) {
             let profit = currentTrade.cost - trade.cost;
             let profit_rate = profit / trade.cost;
-            setProfitLoss({ profit, profit_rate });
+            let stock_profit_rate = currentTrade.stock.stock_price / trade.stock.stock_price - 1;
+            setProfitLoss({ profit, profit_rate, stock_profit_rate });
         }
     }, [trade, currentTrade]);
 
@@ -85,6 +86,10 @@ export default function SingleTrade() {
                                 <Col sm={3} xs={6}>
                                     <MetricLabel label="current profit/loss" />
                                     <div> {PriceFormatter(profitLoss.profit)} ({ProfitFormatter(profitLoss.profit_rate)})</div>
+                                </Col>
+                                <Col sm={3} xs={6}>
+                                    <MetricLabel label="stock profit/loss" />
+                                    <div> {ProfitFormatter(profitLoss.stock_profit_rate)}</div>
                                 </Col>
                                 <Col sm={3} xs={6}>
                                     <MetricLabel label="initial Value" />
