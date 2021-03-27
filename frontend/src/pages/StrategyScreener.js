@@ -338,9 +338,9 @@ export default function BestCallByPrice() {
     })
 
     return (
-        <div id="content" className="container min-vh-100" style={{ "marginTop": "4rem" }}>
+        <div id="content" className="container min-vh-100" style={{ "marginTop": "2rem" }} fluid>
             <ModalSpinner active={modalActive}></ModalSpinner>
-            <h1 className="text-center">Strategy Screener</h1>
+            <h2 className="text-center">Discover options strategies</h2>
             <Form>
                 <Form.Group>
                     <Form.Label className="requiredField"><h4>Enter ticker symbol:</h4></Form.Label>

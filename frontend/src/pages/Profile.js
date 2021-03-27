@@ -45,10 +45,10 @@ const Profile = () => {
 
     const onChangeBrokers = (event) => {
         let selected = [];
-        let selected_opt=(event.target.selectedOptions);
+        let selected_opt = (event.target.selectedOptions);
 
         setResultMsg("");
-        for (let i = 0; i < selected_opt.length; i++){
+        for (let i = 0; i < selected_opt.length; i++) {
             selected.push(selected_opt.item(i).value)
         }
 
@@ -130,7 +130,10 @@ const Profile = () => {
                                 <h6 className="f-w-600">{user.email}</h6>
                                 {user.subscription ?
                                     <div>
-                                        <p>Member</p>
+                                        <p>Pro member</p>
+                                        {user.subscription &&
+                                            <p ><span className="f-w-600">Next billing time: </span>{user.subscription.detail.next_billing_time}</p>
+                                        }
                                         <Button onClick={() => setShowCancelSubscriptionModal(true)} >Cancel Subscription</Button>
                                     </div>
                                     :
@@ -140,20 +143,18 @@ const Profile = () => {
                         </div>
                         <div className="col-md-8">
                             <div className="card-block">
-                                <h6 className="b-b-default f-w-600">Information</h6>
+                                <h6 className="b-b-default f-w-600">Profile</h6>
+                                <Form>
+                                    <div className="row">
+                                        <div className="col-md-12">
+                                            <p ><span className="f-w-600">Email: </span>{user.email}</p>
+                                        </div>
+                                    </div>
+                                </Form>
+                                <h6 className="b-b-default f-w-600">Settings</h6>
                                 <Form onSubmit={saveUpdates}>
                                     <div className="row">
                                         <div className="col-md-12">
-                                            <p className="f-w-600">Email</p>
-                                            <h6 className="text-muted">{user.email}</h6>
-                                            {user.subscription && 
-                                                <>
-                                                    <p className="f-w-600 mt-4">Next Billing Time</p>
-                                                    <h6 className="text-muted">{user.subscription.detail.next_billing_time}</h6>
-                                                </>
-                                            }
-                                        </div>
-                                        <div className="col-md-12 mt-4">
                                             <Form.Group controlId="id-brokers">
                                                 <Form.Label className="d-block">Stock Brokerage</Form.Label>
                                                 <small className="d-block mb-2">This setting will be used to estimate commission costs.</small>

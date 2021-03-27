@@ -388,9 +388,9 @@ export default function SellCoveredCall() {
     }
 
     return (
-        <Container id="content" className="min-vh-100" style={{ "marginTop": "4rem" }} fluid>
+        <Container id="content" className="min-vh-100" style={{ "marginTop": "2rem" }} fluid>
             <ModalSpinner active={modalActive}></ModalSpinner>
-            <h1 className="text-center">Option Screener</h1>
+            <h2 className="text-center">Browse option contracts</h2>
             <Row className="justify-content-md-center">
                 <Col md={4}>
                     <Form>

@@ -3,7 +3,6 @@ import { Grid, Paper, Box } from "@material-ui/core";
 import MetricLabel from './MetricLabel.js';
 
 export default function NewTradeCard({ strategy }) {
-
     return (
         <Grid item sm={12}>
             <Paper elevation={2}>

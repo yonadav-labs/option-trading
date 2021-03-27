@@ -221,8 +221,9 @@ export default function StrategyBuilder() {
     }
 
     return (
-        <Container fluid className="min-vh-100" style={{ "marginTop": "1rem" }}>
+        <Container className="min-vh-100" style={{ "marginTop": "2rem" }} fluid>
             <ModalSpinner active={modalActive}></ModalSpinner>
+            <h2 className="text-center" style={{ "paddingBottom": '2rem' }}>Build options strategies</h2>
             <Row className="justify-content-md-center">
                 <Col md="4">
                     <MetricLabel label="ticker" />
@@ -397,6 +398,6 @@ export default function StrategyBuilder() {
                     </Row>
                 </Col>
             </Row>
-        </Container>
+        </Container >
     )
 }

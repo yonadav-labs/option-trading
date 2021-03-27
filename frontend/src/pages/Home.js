@@ -5,7 +5,7 @@ import './Home.css';
 import VerticalCarousel from '../components/VerticalCarousel';
 
 export default function Home() {
-    
+
     return (
         <div>
             <div className="container-fluid">
@@ -16,8 +16,8 @@ export default function Home() {
                             <h1>We do the math, so you don't have to.</h1>
                             <h4>Find your next options trading opportunity in one glance.</h4>
                             <div className="center-buttons">
-                                <Link className="btn btn-lg btn-primary ml-3 btn-gradient" to="/strategy-screener" role="button">Strategy Screener</Link>
-                                <Link className="btn btn-lg btn-secondary mr-3 btn-white" to="/strategy-builder" role="button">Strategy Builder</Link>
+                                <Link className="btn btn-lg btn-primary ml-3 btn-gradient" to="/discover" role="button">Discover</Link>
+                                <Link className="btn btn-lg btn-secondary mr-3 btn-white" to="/build" role="button">Build</Link>
                             </div>
                         </div>
                     </div>
@@ -28,7 +28,7 @@ export default function Home() {
 
                 <Row className="p-5 min-vh-100">
                     <Col lg="12" className="text-center my-auto">
-                        <h4 className="text-primary">Strategy Screener: how it works</h4>
+                        <h4 className="text-primary">Discover: how it works</h4>
                         <h1 className="find-title">Find the right options trading ideas just for you</h1>
                     </Col>
                     <VerticalCarousel>

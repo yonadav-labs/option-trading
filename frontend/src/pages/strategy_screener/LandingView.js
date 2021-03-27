@@ -8,26 +8,26 @@ import {
 import TickerAutocomplete from "../../components/TickerAutocomplete";
 
 export default function LandingView(props) {
-    const { allTickers, 
-        selectedExpirationTimestamp, 
-        onTickerSelectionChange, 
-        expirationTimestampsOptions, 
-        expirationDisabled, 
-        sentiment, 
-        onExpirationSelectionChange, 
-        setTargetPriceBySentiment, 
-        getBestStrategies, 
-        } = props
+    const { allTickers,
+        selectedExpirationTimestamp,
+        onTickerSelectionChange,
+        expirationTimestampsOptions,
+        expirationDisabled,
+        sentiment,
+        onExpirationSelectionChange,
+        setTargetPriceBySentiment,
+        getBestStrategies,
+    } = props
 
     const handleSentiment = (event, newSentiment) => {
         setTargetPriceBySentiment(newSentiment)
     };
-    
+
     return (
         <Container className="min-vh-100">
             <Grid container direction="row" justify="center" alignItems="center" >
                 <Grid item>
-                    <h1>Strategy Screener</h1>
+                    <h1>Discover</h1>
                 </Grid>
             </Grid>
             <br />
@@ -49,13 +49,13 @@ export default function LandingView(props) {
                     <Paper elevation={3}>
                         <Box p={4}>
                             <Grid container>
-                                <Grid item style={{paddingBottom: '0.5rem'}}>
+                                <Grid item style={{ paddingBottom: '0.5rem' }}>
                                     <span className="landing-view-label"> Enter Ticker Symbol </span>
                                 </Grid>
                             </Grid>
                             <Grid container>
                                 <Grid item xs={12}>
-                                    <TickerAutocomplete 
+                                    <TickerAutocomplete
                                         tickers={allTickers}
                                         onChange={onTickerSelectionChange}
                                     />

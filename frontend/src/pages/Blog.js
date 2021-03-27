@@ -1,4 +1,4 @@
-import React, { useEffect, useContext, useState, useRef } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from "react-router-dom";
 import getApiUrl from '../utils';
 import { useHistory } from 'react-router-dom';
@@ -18,8 +18,8 @@ const Blog = () => {
 
     return (
         <div className="blog-background">
-            <div className="container justify-content-center min-vh-100">
-                <h1 className="text-center mt-4 mb-5">Market insights</h1>
+            <div id="content" className="container min-vh-100" style={{ "marginTop": "2rem" }} fluid>
+                <h2 className="text-center mt-4 mb-5">Tigerstance market reports</h2>
                 <ul>
                     {
                         blogs.map((blog, index) => (

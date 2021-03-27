@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect } from 'react';
+import React, { useContext, useState } from 'react';
 import { Card, CardDeck, Modal } from 'react-bootstrap';
 import { useOktaAuth } from '@okta/okta-react';
 import UserContext from '../UserContext';
@@ -56,7 +56,7 @@ export default function Pricing() {
                                     </ul>
                                 </div>
                                 {authState.isAuthenticated ?
-                                    isUserMonthlySubscribed() ? 
+                                    isUserMonthlySubscribed() ?
                                         <></>
                                         :
                                         <button type="button" class="btn btn-md btn-block btn-light" onClick={() => subscribeMonthly()}>GET STARTED</button>
