@@ -42,15 +42,10 @@ hr {
     border-color: $primary;
 }
 
-@font-face {
-    font-family: 'HalyardDis-Regular';
-    src: local('HalyardDis-Regular'), url(./fonts/HalyardDis-Regular.otf) format('opentype');
-}
-
 body {
-    font-family: HalyardDis-Regular;
+    font-family: 'Roboto';
 }
 
 h1, h2, h3, h4{
-    font-family: HalyardDis-Regular;
+    font-family: 'Roboto';
 }
