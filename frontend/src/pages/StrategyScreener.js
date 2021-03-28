@@ -164,15 +164,20 @@ export default function BestCallByPrice() {
             headerSortingStyle,
         }, {
             dataField: 'min_volume',
-            text: 'Liquidity',
-            formatter: (cell, row, rowIndex, extraData) => {
-                return (
-                    <span>
-                        Volume: {cell}<br />
-                        <small>Open: {row.min_open_interest}</small>
-                    </span>
-                );
-            },
+            text: 'Volume',
+            sort: true,
+            headerSortingStyle,
+        }, {
+            dataField: 'min_open_interest',
+            text: 'Open interest',
+            sort: true,
+            headerSortingStyle,
+        }, {
+            dataField: 'leverage',
+            text: 'Leverage',
+            formatter: (cell, row, rowIndex, extraData) => (
+                PercentageFormatter(cell)
+            ),
             sort: true,
             headerSortingStyle,
         },
@@ -210,8 +215,8 @@ export default function BestCallByPrice() {
                 }
             })
         }, {
-            dataField: "min_open_interest",
-            text: "min_open_interest",
+            dataField: "min_open_interest2",
+            text: "min_open_interest2",
             style: { 'display': 'none' },
             headerStyle: { 'display': 'none' },
             filter: numberFilter({
@@ -299,6 +304,7 @@ export default function BestCallByPrice() {
                 val.type2 = val.type;
                 val.min_last_trade_date2 = val.min_last_trade_date;
                 val.min_volume2 = val.min_volume;
+                val.min_open_interest2 = val.min_open_interest;
                 val.id = index;
                 return val;
             })
@@ -454,7 +460,7 @@ export default function BestCallByPrice() {
                                 <Row>
                                     <Col sm="3" xs="6">
                                         <Form.Group>
-                                            <Form.Label className="font-weight-bold">Strategy type:</Form.Label>
+                                            <Form.Label className="font-weight-bold">Strategy:</Form.Label>
                                             <Form.Control name="strategy" as="select" defaultValue="all"
                                                 onChange={(e) => onStrategyFilterChange(e, strategyFilter)}>
                                                 <option key="all" value="all">All</option>

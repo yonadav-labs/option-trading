@@ -1,4 +1,4 @@
-import React, {useState, useRef} from "react";
+import React, { useRef } from "react";
 import Highcharts from "highcharts";
 import HighchartsReact from "highcharts-react-official";
 import { Row, Col, Button } from "react-bootstrap";
@@ -6,7 +6,7 @@ import { Row, Col, Button } from "react-bootstrap";
 export default function TradeProfitLossGraph(props) {
     const { trade } = props;
     const chartComponent = useRef(null);
-    
+
     let priceMarks = [trade.break_even_price, trade.stock.stock_price]
     if (trade.target_price_lower !== null) {
         priceMarks.push(trade.target_price_lower);
@@ -86,7 +86,7 @@ export default function TradeProfitLossGraph(props) {
             chartComponent.current.chart.yAxis[0].setExtremes();
         }
     };
-    
+
     const zoomOut = () => {
         if (chartComponent.current) {
             let zoom = chartComponent.current.chart.xAxis[0].getExtremes();
@@ -114,10 +114,10 @@ export default function TradeProfitLossGraph(props) {
             let zoomMax = zoom.max
             if (zoomMin < trade.stock.stock_price * 0.9) {
                 zoomMin = zoomMin + trade.stock.stock_price * 0.1
-            } 
+            }
             if (zoomMax > trade.stock.stock_price * 1.1) {
                 zoomMax = zoomMax - trade.stock.stock_price * 0.1
-            } 
+            }
 
             chartComponent.current.chart.xAxis[0].setExtremes(zoomMin, zoomMax);
         }
@@ -142,7 +142,7 @@ export default function TradeProfitLossGraph(props) {
             }
         },
         title: {
-            text: "Profit/Loss at expiry",
+            text: "Return at expiration",
         },
         subtitle: {
             text: "Click and drag to zoom in. Hold down shift key to pan.",
@@ -155,8 +155,8 @@ export default function TradeProfitLossGraph(props) {
             min: xMin,
             max: xMax,
             labels: {
-                formatter: function() {
-                    var percentage = `${((this.value-trade.stock.stock_price)/trade.stock.stock_price * 100).toFixed(2)}%`
+                formatter: function () {
+                    var percentage = `${((this.value - trade.stock.stock_price) / trade.stock.stock_price * 100).toFixed(2)}%`
                     var value = `$${this.value}`
                     return value + '<br/>' + percentage
                 }
@@ -223,19 +223,19 @@ export default function TradeProfitLossGraph(props) {
             },
             {
                 title: {
-                    text: "Profit/Loss at Expiry",
+                    text: "Return at expiration",
                 },
-                labels:{
-                    formatter: function() {
-                        return ((this.value/trade.cost)*100).toFixed(2) + ' %';
+                labels: {
+                    formatter: function () {
+                        return ((this.value / trade.cost) * 100).toFixed(2) + ' %';
                     }
                 },
-                linkedTo:0,
+                linkedTo: 0,
             },
         ],
         tooltip: {
             headerFormat: "Stock Price: ${point.x:,.2f} <br/>",
-            pointFormat: "Profit/Loss: ${point.y:,.2f}",
+            pointFormat: "Return: ${point.y:,.2f}",
         },
         series: [
             {
@@ -292,7 +292,7 @@ export default function TradeProfitLossGraph(props) {
             },
             // line for shares
             {
-                name: "Profit/Loss of Equal Value of Shares",
+                name: "Return of Equal Value of Shares",
                 type: "line",
                 data: shareData,
                 marker: {
@@ -307,13 +307,13 @@ export default function TradeProfitLossGraph(props) {
     return (
         <Row className="row justify-content-center">
             <Col className="mixed-chart">
-                <Button style={{position:'relative', top:50, left:100, zIndex:100}} onClick={zoomOut}>-</Button>
-                <Button style={{position:'relative', top:50, left:102, zIndex:100}} onClick={zoomIn}>+</Button>
-                <Button style={{position:'relative', top:50, zIndex:100}} className="float-right" onClick={resetZoom}>Reset Zoom</Button>
-                <HighchartsReact 
+                <Button style={{ position: 'relative', top: 50, left: 100, zIndex: 100 }} onClick={zoomOut}>-</Button>
+                <Button style={{ position: 'relative', top: 50, left: 102, zIndex: 100 }} onClick={zoomIn}>+</Button>
+                <Button style={{ position: 'relative', top: 50, zIndex: 100 }} className="float-right" onClick={resetZoom}>Reset Zoom</Button>
+                <HighchartsReact
                     ref={chartComponent}
-                    highcharts={Highcharts} 
-                    options={options} 
+                    highcharts={Highcharts}
+                    options={options}
                 />
             </Col>
         </Row>

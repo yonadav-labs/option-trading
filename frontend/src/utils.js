@@ -37,7 +37,7 @@ export function PriceFormatter(num) {
 };
 
 export function PercentageFormatter(num, percentage_decimal = 2) {
-    if (num < 10) {
+    if (num < 100) {
         return (<NumberFormat value={num * 100} displayType={'text'} decimalScale={percentage_decimal} suffix={'%'} />);
     } else {
         const billion = 1000000000;

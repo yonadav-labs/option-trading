@@ -42,10 +42,13 @@ export default withRouter(class AppWithRouterAccess extends Component {
                     <main role="main" className="mb-2">
                         <Switch>
                             <Route path='/' exact={true} component={Home} />
+                            <Route path='/option-screener' exact={true} component={OptionScreener} />
                             <Route path='/browse' exact={true} component={OptionScreener} />
                             <Route path='/discover' exact={true} component={StrategyScreener} />
+                            <Route path='/strategy-screener' exact={true} component={StrategyScreener} />
                             <Route path='/new-discover' exact={true} component={NewStrategyScreener} />
                             <Route path='/t/:tradeId' exact={true} component={SingleTrade} />
+                            <Route path='/strategy-builder' exact={true} component={StrategyBuilder} />
                             <Route path='/build' exact={true} component={StrategyBuilder} />
                             <SecureRoute path='/profile' component={Profile} />
                             <Route path="/disclaimer" component={Disclaimer}></Route>

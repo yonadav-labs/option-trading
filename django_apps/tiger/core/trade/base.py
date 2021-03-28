@@ -252,4 +252,22 @@ class Trade(ABC):
     def has_target_prices(self):
         return self.target_price_lower is not None and self.target_price_upper is not None
 
+    @property
+    def quote_time(self):
+        for leg in self.legs:
+            if leg.contract and leg.contract.quote_time:
+                return leg.contract.quote_time
+        return None
+
+    @property
+    def net_debit_per_unit(self):
+        '''Nagtive number means net credit.'''
+        net_debit = 0.0
+        for leg in self.legs:
+            if leg.contract:
+                net_debit += leg.net_cost / leg.units
+            elif leg.stock:
+                net_debit += leg.cost * (leg.units / 100)
+        return net_debit
+
 # TODO: add a sell everything now and hold cash trade and a long stock trade.

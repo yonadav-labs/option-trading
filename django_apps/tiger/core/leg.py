@@ -125,10 +125,19 @@ class OptionLeg(Leg):
         else:
             return self.contract.ask if self.is_long else self.contract.bid
 
+    def get_cost(self, include_commission=True):
+        cost = self.premium_used * 100 * (self.units if self.is_long else -self.units)
+        if include_commission:
+            cost += (self.open_commission + self.close_commission)
+        return cost
+
     @property
     def cost(self):
-        return self.premium_used * 100 * (self.units if self.is_long else -self.units) \
-             + self.open_commission + self.close_commission
+        return self.get_cost()
+
+    @property
+    def net_cost(self):
+        return self.get_cost(False)
 
     def get_value_in_price_range(self, price_lower, price_upper):
         return self.contract.get_value_in_price_range(price_lower, price_upper) * (

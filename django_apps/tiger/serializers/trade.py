@@ -113,10 +113,11 @@ class TradeSerializer(serializers.Serializer):
     graph_y_points = serializers.ListField(child=ReadOnlyDollarDecimalField())
     notional_value = ReadOnlyDollarDecimalField()
     leverage = ReadOnlyRatioDecimalField()
-
     two_sigma_prices = serializers.ListField(child=ReadOnlyDollarDecimalField())
     two_sigma_profit_lower = ReadOnlyDollarDecimalField()
     two_sigma_profit_lower_ratio = ReadOnlyRatioDecimalField()
+    quote_time = serializers.ReadOnlyField()
+    net_debit_per_unit = ReadOnlyDollarDecimalField()
 
     # TODO: re-consider those metrics.
     # premium_profit = serializers.FloatField(allow_null=True)  # CoveredCall, CashSecuredPut only

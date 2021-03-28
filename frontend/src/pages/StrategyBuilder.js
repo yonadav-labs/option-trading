@@ -234,7 +234,7 @@ export default function StrategyBuilder() {
                     />
                 </Col>
                 <Col md="7">
-                    <MetricLabel label="strategy type" />
+                    <MetricLabel label="strategy" />
                     <Select
                         className="basic-single"
                         isSearchable
