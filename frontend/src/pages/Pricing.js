@@ -1,4 +1,5 @@
 import React, { useContext, useState } from 'react';
+import { Link } from "react-router-dom";
 import { Card, CardDeck, Modal } from 'react-bootstrap';
 import { useOktaAuth } from '@okta/okta-react';
 import UserContext from '../UserContext';
@@ -42,16 +43,43 @@ export default function Pricing() {
 
                 <div>
                     <CardDeck className="m-3 text-center text-white pricing-card-deck">
+                        <Card className={"mb-4 pricing-card pricing-card-background " + (authState.isAuthenticated ? 'highlighted' : '')}>
+                            <Card.Header className="pricing-card-header">
+                                <h6 class="mt-3 font-weight-bold">BASIC</h6>
+                            </Card.Header>
+                            <Card.Body>
+                                <Link className="text-white" to="/signin/register"><h3>Just sign up</h3></Link>
+                                <div className="pt-3 card-list-left">
+                                    <ul class="list-unstyled mt-3 mb-4">
+                                        <li>&#10003; Unlock 8 options trading strategies.</li>
+                                        <li>&#10003; Exclusive market <Link to="/blogs" className="text-white"><b>reports</b></Link>.</li>
+                                        {authState.isAuthenticated ?
+                                            <li>&#10003; Strategy <Link to="/profile" className="text-white"><b>personalization</b></Link>.</li>
+                                            : <li>&#10003; Strategy personalization.</li>}
+                                        {authState.isAuthenticated ?
+                                            <li>&#10003; Broker commission cost <Link to="/profile" className="text-white"><b>calculation</b></Link>.</li>
+                                            : <li>&#10003; Broker commission cost calculation.</li>}
+                                    </ul>
+                                </div>
+                                {authState.isAuthenticated ?
+                                    <></>
+                                    :
+                                    <Link class="btn-block btn-light btn-login" to="/signin/register">SIGN UP</Link>
+                                }
+                            </Card.Body>
+                        </Card>
+
                         <Card className={"mb-4 pricing-card pricing-card-background " + (isUserMonthlySubscribed() ? 'highlighted' : '')}>
                             <Card.Header className="pricing-card-header">
-                                <h6 class="mt-3 font-weight-bold">MONTHLY</h6>
+                                <h6 class="mt-3 font-weight-bold">PRO MONTHLY</h6>
                             </Card.Header>
                             <Card.Body>
                                 <h2>$5.69/mo</h2>
                                 <div className="pt-3 card-list-left">
                                     <ul class="list-unstyled mt-3 mb-4">
+                                        <li>&#10003; Everything in BASIC membership.</li>
                                         <li>&#10003; Unlimited usage for all features.</li>
-                                        <li>&#10003; Unlock all 22 options trading strategies.</li>
+                                        <li>&#10003; Unlock all 22 strategies.</li>
                                         <li>&#10003; More Pro member features to come!</li>
                                     </ul>
                                 </div>
@@ -59,16 +87,16 @@ export default function Pricing() {
                                     isUserMonthlySubscribed() ?
                                         <></>
                                         :
-                                        <button type="button" class="btn btn-md btn-block btn-light" onClick={() => subscribeMonthly()}>GET STARTED</button>
+                                        <button type="button" class="btn btn-md btn-block btn-light" onClick={() => subscribeMonthly()}>BECOME PRO</button>
                                     :
-                                    <a href="/signin" class="btn-block btn-light btn-login">GET STARTED</a>
+                                    <a href="/signin" class="btn-block btn-light btn-login">BECOME PRO</a>
                                 }
                             </Card.Body>
                         </Card>
 
                         <Card className={"mb-4 pricing-card pricing-card-background " + (isUserYearlySubscribed() ? 'highlighted' : '')}>
                             <Card.Header className="pricing-card-header">
-                                <h6 class="mt-3 font-weight-bold">ANNUALLY</h6>
+                                <h6 class="mt-3 font-weight-bold">PRO ANNUALLY</h6>
                             </Card.Header>
                             <Card.Body className="card-body-right">
                                 <div class="badge">MOST POPULAR</div>
@@ -76,7 +104,8 @@ export default function Pricing() {
                                 <h6>Save $9.28 annually</h6>
                                 <div className="pt-3 card-list-right">
                                     <ul class="list-unstyled mt-3 mb-4">
-                                        <li>&#10003; Includes everything in the monthly plan.</li>
+                                        <li>&#10003; Everything in the monthly plan.</li>
+                                        <li>&nbsp;</li>
                                         <li>&nbsp;</li>
                                         <li>&nbsp;</li>
                                     </ul>
@@ -85,9 +114,9 @@ export default function Pricing() {
                                     isUserYearlySubscribed() ?
                                         <></>
                                         :
-                                        <button type="button" class="btn btn-md btn-block btn-light" onClick={() => subscribeYearly()}>GET STARTED</button>
+                                        <button type="button" class="btn btn-md btn-block btn-light" onClick={() => subscribeYearly()}>BECOME PRO</button>
                                     :
-                                    <a href="/signin" class="btn-block btn-light btn-login">GET STARTED</a>
+                                    <a href="/signin" class="btn-block btn-light btn-login">BECOME PRO</a>
                                 }
                             </Card.Body>
                         </Card>

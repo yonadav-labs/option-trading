@@ -158,14 +158,21 @@ const Profile = () => {
                                 <h6 className="f-w-600">{user.email}</h6>
                                 {user.subscription ?
                                     <div>
-                                        <p>Pro member</p>
+                                        <p>Current plan: Pro member</p>
                                         {user.subscription &&
                                             <p ><span className="f-w-600">Next billing time: </span>{user.subscription.detail.next_billing_time}</p>
                                         }
                                         <Button onClick={() => setShowCancelSubscriptionModal(true)} >Cancel Subscription</Button>
                                     </div>
                                     :
-                                    <a href="/pricing" className="btn-block btn-light btn-login">Subscribe</a>
+                                    <div>
+                                        <p>Current plan: Basic member</p>
+                                        <a href="/pricing">
+                                            <button type="button" class="btn btn-md btn-block btn-light" style={{ width: '15rem' }}>
+                                                <h4>BECOME PRO</h4>
+                                            </button>
+                                        </a>
+                                    </div>
                                 }
                             </div>
                         </div>
@@ -259,7 +266,7 @@ const Profile = () => {
                     <Button variant="primary" onClick={cancelSubscription}>Submit</Button>
                 </Modal.Footer>
             </Modal>
-        </div>
+        </div >
     );
 }
 
