@@ -29,7 +29,7 @@ function Header() {
             setUser(null);
         } else {
             const { accessToken } = authState;
-            fetch(`${API_URL}/user`, {
+            fetch(`${API_URL}/users/me/`, {
                 headers: {
                     Authorization: `Bearer ${accessToken.accessToken}`,
                 },

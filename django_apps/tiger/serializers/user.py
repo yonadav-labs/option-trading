@@ -7,7 +7,7 @@ from .broker import BrokerSerializer
 
 class UserSerializer(serializers.ModelSerializer):
     subscription = serializers.SerializerMethodField()    
-    brokers = BrokerSerializer(many=True)
+    brokers_detail = serializers.SerializerMethodField()    
 
     def get_subscription(self, obj):
         subscription = obj.get_subscription()
@@ -15,6 +15,10 @@ class UserSerializer(serializers.ModelSerializer):
             serializer = SubscriptionSerializer(subscription)
             return serializer.data
 
+    def get_brokers_detail(self, obj):
+        serializer = BrokerSerializer(obj.brokers, many=True)
+        return serializer.data
+
     class Meta:
         model = User
-        fields = ('username', 'email', 'id', 'okta_id', 'subscription', 'brokers')
+        fields = ('username', 'email', 'id', 'okta_id', 'subscription', 'brokers', 'brokers_detail', 'disabled_strategies')

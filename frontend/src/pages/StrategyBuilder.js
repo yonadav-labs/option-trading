@@ -1,5 +1,5 @@
-import React, { useState, useCallback, useEffect } from 'react';
-import { Alert, Badge, Button, Card, CardColumns, Col, Container, Form, Row, Spinner, ToggleButton, ToggleButtonGroup } from 'react-bootstrap';
+import React, { useState, useContext, useCallback, useEffect } from 'react';
+import { Alert, Button, Card, CardColumns, Col, Container, Row, Spinner, ToggleButton, ToggleButtonGroup } from 'react-bootstrap';
 import { MdTrendingFlat, MdArrowUpward, MdArrowDownward, MdShowChart } from 'react-icons/md';
 import 'react-bootstrap-typeahead/css/Typeahead.css';
 import './StrategyBuilder.css';
@@ -16,6 +16,7 @@ import { useOktaAuth } from '@okta/okta-react';
 import TradeDetailsCard from '../components/cards/TradeDetailsCard';
 import TradingViewWidget from 'react-tradingview-widget';
 import MetricLabel from '../components/MetricLabel.js';
+import UserContext from '../UserContext';
 
 // url querying
 import { useLocation, useHistory } from 'react-router-dom';
@@ -65,11 +66,13 @@ export default function StrategyBuilder() {
     const [strategyDetails, setStrategyDetails] = useState(null);
     const [broker, setBroker] = useState(null);
     const [ruleMessage, setRuleMessage] = useState("");
+    const [availableStrategies, setAvailableStrategies] = useState(strategies);
     const [loadingStrategyDetails, setLoadingStrategyDetails] = useState(false);
     const [headers, setHeaders] = useState(null);
     const { oktaAuth, authState } = useOktaAuth();
     const API_URL = getApiUrl();
 
+    const { user } = useContext(UserContext);
     const history = useHistory();
     const location = useLocation();
     const querySymbol = useSearch(location, 'symbol');
@@ -81,6 +84,12 @@ export default function StrategyBuilder() {
         }
         setSelectedTicker([]);
     };
+
+    useEffect(() => {
+        if (user) {
+            setAvailableStrategies(strategies.filter(x => (!user.disabled_strategies || user.disabled_strategies.indexOf(x.type) === -1)));
+        }
+    }, [user]);
 
     useEffect(() => {
         if (authState.isAuthenticated) {
@@ -239,7 +248,7 @@ export default function StrategyBuilder() {
                         className="basic-single"
                         isSearchable
                         isClearable
-                        options={strategies}
+                        options={availableStrategies}
                         getOptionLabel={(option) => option.name}
                         isOptionSelected={(option, array) => array.some(strat => strat.name === option.name)}
                         placeholder="Select a strategy..."
@@ -285,7 +294,7 @@ export default function StrategyBuilder() {
                         <Col>
                             {(!selectedStrategy) ?
                                 <CardColumns>
-                                    {strategies.map(val => {
+                                    {availableStrategies.map(val => {
                                         if (val.name.toLowerCase().includes(inputText.toLowerCase()) && (sentiment === "all" || val.sentiment.includes(sentiment))) {
                                             return (
                                                 <Col key={val.id + "_col"}>

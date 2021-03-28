@@ -3,7 +3,7 @@ import { useOktaAuth } from '@okta/okta-react';
 import UserContext from '../UserContext';
 import './Profile.css';
 import { Button, Form, Modal } from 'react-bootstrap';
-import getApiUrl from '../utils';
+import getApiUrl, { getAllTradeTypes, getTradeTypeDisplay } from '../utils';
 import { useHistory } from 'react-router-dom';
 
 const Profile = () => {
@@ -12,6 +12,7 @@ const Profile = () => {
     const [showCancelSubscriptionModal, setShowCancelSubscriptionModal] = useState(false);
     const [brokers, setBrokers] = useState([]);
     const [choosenBrokers, setChoosenBrokers] = useState([]);
+    const [disabledStrategies, setDisabledStrategies] = useState([]);
     const [resultMsg, setResultMsg] = useState("");
 
     const API_URL = getApiUrl();
@@ -55,19 +56,39 @@ const Profile = () => {
         setChoosenBrokers(selected);
     };
 
+    const onChangeStrategy = (event) => {
+        let strategy = event.target.value;
+        let disabled_strategies = disabledStrategies.slice();
+
+        setResultMsg("");
+        if (event.target.checked) {  // enable -> remove
+            let idx = disabled_strategies.indexOf(strategy);
+            if (idx > -1) {
+                disabled_strategies.splice(idx, 1);
+            }
+        } else {  // add to disabled
+            disabled_strategies.push(strategy)
+        }
+        setDisabledStrategies(disabled_strategies);
+    };
+
     const saveUpdates = (event) => {
         event.preventDefault();
         event.stopPropagation();
 
         const { accessToken } = authState;
+        let data = { disabled_strategies: disabledStrategies };
+        if (choosenBrokers.length > 0) {
+            data.brokers = choosenBrokers;
+        }
 
-        fetch(`${API_URL}/user/set-brokers`, {
-            method: 'POST',
+        fetch(`${API_URL}/users/${user.id}/`, {
+            method: 'PATCH',
             headers: {
                 'Content-Type': 'application/json',
                 Authorization: `Bearer ${accessToken.accessToken}`,
             },
-            body: JSON.stringify({ 'brokers': choosenBrokers })
+            body: JSON.stringify(data)
         })
             .then((response) => {
                 if (!response.ok) {
@@ -112,6 +133,13 @@ const Profile = () => {
         }
     }, [oktaAuth, authState]); // Update if authState changes
 
+    useEffect(() => {
+        if (user) {
+            setChoosenBrokers(user.brokers);
+            setDisabledStrategies(user.disabled_strategies || []);
+        }
+    }, [user]);
+
     if (!user || brokers.length == 0) {
         return (
             <div className="container justify-content-center">
@@ -144,13 +172,11 @@ const Profile = () => {
                         <div className="col-md-8">
                             <div className="card-block">
                                 <h6 className="b-b-default f-w-600">Profile</h6>
-                                <Form>
-                                    <div className="row">
-                                        <div className="col-md-12">
-                                            <p ><span className="f-w-600">Email: </span>{user.email}</p>
-                                        </div>
+                                <div className="row">
+                                    <div className="col-md-12">
+                                        <p ><span className="f-w-600">Email: </span>{user.email}</p>
                                     </div>
-                                </Form>
+                                </div>
                                 <h6 className="b-b-default f-w-600">Settings</h6>
                                 <Form onSubmit={saveUpdates}>
                                     <div className="row">
@@ -161,7 +187,7 @@ const Profile = () => {
                                                 <Form.Control
                                                     as="select"
                                                     htmlSize={1}
-                                                    defaultValue={user.brokers.length > 0 ? user.brokers[0].id : null}
+                                                    defaultValue={user.brokers_detail.length > 0 ? user.brokers_detail[0].id : null}
                                                     onChange={onChangeBrokers}
                                                 >
                                                     <option>Choose a broker</option>
@@ -172,11 +198,31 @@ const Profile = () => {
                                                     }
                                                 </Form.Control>
                                             </Form.Group>
-                                            <div className="text-success mb-2 mt-0">{resultMsg}</div>
                                         </div>
                                     </div>
+
+
+                                    <Form.Label className="d-block">Enabled strategies</Form.Label>
                                     <div className="row">
-                                        <div className="col-md-6">
+                                        {getAllTradeTypes().map(type => (
+                                            <div className="col-lg-3 col-sm-6">
+                                                <Form.Check
+                                                    key={type}
+                                                    id={type}
+                                                    type="switch"
+                                                    label={getTradeTypeDisplay(type)}
+                                                    value={type}
+                                                    defaultChecked={!user.disabled_strategies || (user.disabled_strategies.indexOf(type) === -1)}
+                                                    onChange={onChangeStrategy}
+                                                />
+                                            </div>
+                                        ))}
+                                    </div>
+                                    <div className="row">
+                                        <div className="col-md-12">
+                                            <div className="text-success mb-2 mt-0">{resultMsg}</div>
+                                        </div>
+                                        <div className="col-md-12">
                                             <Button type="submit" variant="primary">Save Updates</Button>
                                         </div>
                                     </div>
@@ -210,7 +256,7 @@ const Profile = () => {
                     <Button variant="secondary" onClick={() => setShowCancelSubscriptionModal(false)}>
                         Cancel
                     </Button>
-                    <Button variant="primary" onClick={cancelSubscription} >Submit</Button>
+                    <Button variant="primary" onClick={cancelSubscription}>Submit</Button>
                 </Modal.Footer>
             </Modal>
         </div>

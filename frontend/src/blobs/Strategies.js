@@ -107,6 +107,7 @@ export const strategies = [
     new Strategy(
         {
             name: "Long Call",
+            type: "long_call",
             description: "Pay a premium to have the option to buy shares of the stock at the strike price until the expiration. \
                             You profit when the stock price moves above the: strike price + the premium.",
             sentiment: ["bull"],
@@ -123,6 +124,7 @@ export const strategies = [
     ),
     new Strategy({
         name: "Covered Call",
+        type: "covered_call",
         description: "Receive a premium to allow your shares of the stock to be sold at the strike price until the expiration. \
                         You profit when the stock price does not move below the: strike price - the premium.",
         sentiment: ["flat, bear"],
@@ -146,6 +148,7 @@ export const strategies = [
     new Strategy(
         {
             name: "Long Put",
+            type: "long_put",
             description: "Pay a premium to have the option to sell shares of the stock at the strike price until the expiration. \
                             You profit when the stock price does not move below the: strike price + the premium.",
             sentiment: ["bear"],
@@ -163,6 +166,7 @@ export const strategies = [
     new Strategy(
         {
             name: "Cash Secured Put",
+            type: "cash_secured_put",
             description: "Receive a premium to allow your cash to be exchanged for shares of the stock at the strike price until the expiration. \
                             You profit when the stock price does not move below: the strike price - the premium.",
             sentiment: ["flat, bull"],
@@ -186,6 +190,7 @@ export const strategies = [
     new Strategy(
         {
             name: "Bull Call Spread",
+            type: "bull_call_spread",
             description: "Pay a premium for buying a call and selling a call at a strike higher than from the call you bought. \
                             You profit when the stock price moves above the: strike of the call that you bought + (premium of the call you bought - premium of the call you sold).",
             sentiment: ["bull"],
@@ -212,6 +217,7 @@ export const strategies = [
     new Strategy(
         {
             name: "Bear Call Spread",
+            type: "bear_call_spread",
             description: "Receive a premium from buying a call and selling a call at a strike lower than from the call you bought. \
                             You profit when the stock price moves below the: strike price of the call you sold + (premium of the call you sold - premium of the call you bought).",
             sentiment: ["bear", "flat"],
@@ -247,6 +253,7 @@ export const strategies = [
     new Strategy(
         {
             name: "Bear Put Spread",
+            type: "bear_put_spread",
             description: "Pay a premium for buying a put and selling a put at a strike lower than from the put you bought. \
                             You profit when the stock price moves below the: strike of the put you bought - (premium of the put you bought - premium of the put you sold).",
             sentiment: ["bear"],
@@ -273,6 +280,7 @@ export const strategies = [
     new Strategy(
         {
             name: "Bull Put Spread",
+            type: "bull_put_spread",
             description: "Receive a premium from buying a put and selling a put at a strike higher than from the put you bought. \
                             You profit when the stock price moves above the: strike of the put you sold - (premium of the put you sold - premium of the put you bought).",
             sentiment: ["bull", "flat"],

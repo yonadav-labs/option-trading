@@ -8,11 +8,10 @@ router = routers.SimpleRouter()
 router.register(r'tickers', views.TickerViewSet, basename='tickers')
 router.register(r'blogs', views.BlogViewSet, basename='blogs')
 router.register(r'brokers', views.BrokerViewSet, basename='brokers')
+router.register(r'users', views.UserViewSet, basename='users')
 
 restful_urlpatterns = [
     path('api/', include(router.urls)),
-    path('api/user', views.user_detail),
-    path('api/user/set-brokers', views.set_brokers),
     path('api/tickers/<str:ticker_symbol>/contracts/', views.contracts, name='contracts'),
     path('api/tickers/<str:ticker_symbol>/trades/', views.get_best_trades, name='get_best_trades'),
     path('api/dev/tickers/<str:ticker_symbol>/trades/', views.get_top_trades, name='get_top_trades'),

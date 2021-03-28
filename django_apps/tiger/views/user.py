@@ -1,27 +1,23 @@
-from rest_framework.decorators import api_view, permission_classes
-from rest_framework.permissions import IsAuthenticated
+from rest_framework import viewsets, permissions
 from rest_framework.response import Response
-from django.shortcuts import get_object_or_404
+from rest_framework.decorators import action
 
 from tiger.serializers import UserSerializer
-from tiger.models import Broker
+from tiger.models import User
 
 
-@api_view(['GET'])
-@permission_classes([IsAuthenticated])
-def user_detail(request):
-    serializer = UserSerializer(request.user)
-    return Response(serializer.data)
+class UserViewSet(viewsets.ModelViewSet):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+    permission_classes = (permissions.IsAuthenticated,)
 
+    def get_queryset(self):
+        queryset = self.queryset.filter(pk=self.request.user.id)
 
-@api_view(['POST'])
-@permission_classes([IsAuthenticated])
-def set_brokers(request):
-    broker_ids = request.data.get('brokers')
-    request.user.brokers.clear()
+        return queryset
 
-    for broker_id in broker_ids:
-        broker = get_object_or_404(Broker, pk=broker_id)
-        request.user.brokers.add(broker)
+    @action(methods=['get'], detail=False)
+    def me(self, request, *args, **kwargs):
+        serializer = UserSerializer(request.user)
 
-    return Response('success')
+        return Response(serializer.data)

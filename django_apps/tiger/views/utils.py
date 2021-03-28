@@ -138,3 +138,12 @@ def get_broker(user=None):
         broker = Broker.objects.filter(is_default=True).first()
 
     return broker
+
+
+def user_disabled_strategy(user, strategy):
+    disabled_strategies = []
+
+    if user and user.is_authenticated:
+        disabled_strategies = user.disabled_strategies or []
+
+    return strategy in disabled_strategies

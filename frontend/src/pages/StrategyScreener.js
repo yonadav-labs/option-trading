@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import BootstrapTable from 'react-bootstrap-table-next';
 import paginationFactory from 'react-bootstrap-table2-paginator';
 import Axios from 'axios';
@@ -8,6 +8,7 @@ import TradingViewWidget from 'react-tradingview-widget';
 import { Form, Button, Alert, Row, Col, Accordion, Card } from 'react-bootstrap';
 import filterFactory, { multiSelectFilter, numberFilter, Comparator } from 'react-bootstrap-table2-filter';
 import { BsArrowsExpand, BsArrowsCollapse } from 'react-icons/bs';
+import UserContext from '../UserContext';
 
 import getApiUrl, {
     PriceFormatter, PercentageFormatter, TimestampDateFormatter, onLastTradedFilterChange,
@@ -36,6 +37,7 @@ export default function BestCallByPrice() {
     const location = useLocation()
     const querySymbol = useSearch(location, 'symbol')
     const API_URL = getApiUrl();
+    const { user } = useContext(UserContext);
 
     const [allTickers, setAllTickers] = useState([]);
     const [selectedTicker, setSelectedTicker] = useState([]);
@@ -49,6 +51,7 @@ export default function BestCallByPrice() {
     const [modalActive, setModalActive] = useState(false);
     const [targetPriceLower, setTargetPriceLower] = useState(null);
     const [targetPriceUpper, setTargetPriceUpper] = useState(null);
+    const [disabledStrategies, setDisabledStrategies] = useState([]);
     const [headers, setHeaders] = useState(null);
     const [broker, setBroker] = useState(null);
     const { oktaAuth, authState } = useOktaAuth();
@@ -97,6 +100,12 @@ export default function BestCallByPrice() {
             loadTickers(headers, setSelectedTicker, setAllTickers, querySymbol, onTickerSelectionChange);
         }
     }, [headers]);
+
+    useEffect(() => {
+        if (user) {
+            setDisabledStrategies(user.disabled_strategies || []);
+        }
+    }, [user]);
 
     const headerSortingStyle = { backgroundColor: '#FF8F2B' };
     const result_table_columns = [
@@ -465,9 +474,13 @@ export default function BestCallByPrice() {
                                                 onChange={(e) => onStrategyFilterChange(e, strategyFilter)}>
                                                 <option key="all" value="all">All</option>
                                                 {getAllTradeTypes().map((type, index) => {
-                                                    return (
-                                                        <option key={type} value={type}>{getTradeTypeDisplay(type)}</option>
-                                                    );
+                                                    if (disabledStrategies.indexOf(type) === -1) {
+                                                        return (
+                                                            <option key={type} value={type}>{getTradeTypeDisplay(type)}</option>
+                                                        );
+                                                    } else {
+                                                        return null;
+                                                    }
                                                 })}
                                             </Form.Control>
                                         </Form.Group>

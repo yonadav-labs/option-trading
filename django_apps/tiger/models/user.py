@@ -2,6 +2,7 @@ from datetime import datetime
 
 from django.db import models
 from django.contrib.auth.models import AbstractUser
+from django.contrib.postgres.fields import ArrayField
 
 from .broker import Broker
 
@@ -9,6 +10,7 @@ from .broker import Broker
 class User(AbstractUser):
     okta_id = models.CharField(max_length=200, null=True, blank=True)
     brokers = models.ManyToManyField(Broker)
+    disabled_strategies = ArrayField(models.CharField(max_length=50), blank=True, null=True)
 
     class Meta:
         app_label = 'tiger'
