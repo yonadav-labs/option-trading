@@ -33,7 +33,7 @@ export default function NewStrategyScreener() {
         strategyType: 'all',
         minVolume: 1,
         minOpenInterest: 10,
-        lastTradedDate: -7
+        lastTradedDate: null
     })
 
     // component management states

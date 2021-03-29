@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { Card, Row, Col } from 'react-bootstrap';
 import ShareTradeBtn from '../ShareTradeBtn.js';
 import { PriceFormatter, ProfitFormatter, PercentageFormatter, getTradeTypeDisplay, TimestampTimeFormatter } from '../../utils';

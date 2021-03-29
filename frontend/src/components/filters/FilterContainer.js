@@ -1,22 +1,11 @@
 import React from "react";
-import { Grid, Box, TextField, makeStyles } from "@material-ui/core";
+import { Grid, Box, makeStyles } from "@material-ui/core";
 import TuneIcon from '@material-ui/icons/Tune';
 import MaterialFilter from "./MaterialFilter";
 import MaterialTextField from "./MaterialTextField";
-
-const useStyles = makeStyles((theme) => ({
-    root: {
-        background: "#53555d",
-        borderRadius: 5
-      },
-      input: {
-        color: "white"
-      }
-}));
+import MetricLabel from "../MetricLabel";
 
 export default function FilterContainer({onFilterChange, filters}) {
-    const classes = useStyles();
-
     const premiumPriceFilter = [
         {label: "Market Order Price", value: "market"},
         {label: "Mid/Mark Price", value: 'mid'}
@@ -79,7 +68,7 @@ export default function FilterContainer({onFilterChange, filters}) {
             </Box>
             <Box p={4} py={3} bgcolor='#14161b' mx={-4}>
                 <Grid item style={{paddingBottom: '0.3rem'}}>
-                    PRICE RANGE ON EXP DAY
+                    <MetricLabel label={"price range on exp day"}/>
                 </Grid>
                 <Grid item style={{paddingBottom: '0.5rem'}}>
                     <MaterialTextField onFilterChange={onFilterChange}/>
@@ -87,7 +76,7 @@ export default function FilterContainer({onFilterChange, filters}) {
             </Box>
             <Box py={2}>
                 <Grid item style={{paddingBottom: '0.3rem'}}>
-                    PREMIUM PRICE OPTIONS
+                    <MetricLabel label={"premium price options"}/>
                 </Grid>
                 <Grid item>
                     <MaterialFilter onFilterChange={(event) => onFilterChange(event, 'premium')} options={premiumPriceFilter} defaultValue={"market"}/>
@@ -95,7 +84,7 @@ export default function FilterContainer({onFilterChange, filters}) {
             </Box>
             <Box py={2}>
                 <Grid item style={{paddingBottom: '0.3rem'}}>
-                    CASH TO INVEST
+                    <MetricLabel label={"cash to invest"}/>
                 </Grid>
                 <Grid item>
                     <MaterialTextField onFilterChange={onFilterChange}/>
@@ -103,7 +92,7 @@ export default function FilterContainer({onFilterChange, filters}) {
             </Box>
             {/* <Box py={2}>
                 <Grid item style={{paddingBottom: '0.3rem'}}>
-                    STRATEGY TYPE
+                    <MetricLabel label={"strategy type"}/>
                 </Grid>
                 <Grid item>
                     <MaterialFilter onFilterChange={(event) => onFilterChange(event, 'strategy')} options={strategyTypeFilter} defaultValue={"all"}/>
@@ -111,7 +100,7 @@ export default function FilterContainer({onFilterChange, filters}) {
             </Box> */}
             <Box py={2}>
                 <Grid item style={{paddingBottom: '0.3rem'}}>
-                    MIN VOLUME
+                    <MetricLabel label={"min volume"}/>
                 </Grid>
                 <Grid item>
                     <MaterialFilter onFilterChange={(event) => onFilterChange(event, 'volume')} options={minVolumeFilter} defaultValue={1}/>
@@ -119,7 +108,7 @@ export default function FilterContainer({onFilterChange, filters}) {
             </Box>
             <Box py={2}>
                 <Grid item style={{paddingBottom: '0.3rem'}}>
-                    MIN OPEN INTEREST
+                    <MetricLabel label={"min open interest"}/>
                 </Grid>
                 <Grid item>
                     <MaterialFilter onFilterChange={(event) => onFilterChange(event, 'interest')} options={minInterestFilter} defaultValue={10}/>
@@ -127,7 +116,7 @@ export default function FilterContainer({onFilterChange, filters}) {
             </Box>
             <Box py={2}>
                 <Grid item style={{paddingBottom: '0.3rem'}}>
-                    TIME SINCE LAST TRADED
+                    <MetricLabel label={"time since last traded"}/>
                 </Grid>
                 <Grid item>
                     <MaterialFilter onFilterChange={(event) => onFilterChange(event, 'lastTraded')} options={lastTradedFilter} defaultValue={-9999999}/>
