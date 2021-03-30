@@ -220,6 +220,8 @@ export function getTradeStrikeStr(row) {
             let shortPutLeg = getLegByName(row, 'short_put_leg');
             return `Strike $${longPutLeg.contract.strike} / $${shortPutLeg.contract.strike}`;
         }
+        default:
+            break;
     }
 }
 
@@ -294,6 +296,7 @@ export async function newLoadExpirationDates(headers, selected, setModalActive, 
         setExpirationTimestamps(response.data.expiration_timestamps);
         setBasicInfo(response.data.quote)
         selected.external_cache_id = response.data.external_cache_id;
+        selected.ticker_stats_id = response.data.ticker_stats.id;
         setSelectedTicker(selected);
         setModalActive(false);
     } catch (error) {
@@ -308,7 +311,7 @@ export async function newLoadTickers(headers, setAllTickers) {
         let recentTickers = localStorage.getItem('tigerstance-recent-tickers') || '';
         recentTickers = recentTickers.split(' ');
 
-        const response = await Axios.get(`${getApiUrl()}/tickers/`, { headers: headers });
+        const response = await Axios.get(`${getApiUrl()}/tickers/`, { headers });
         let visitedTickers = [];
         let restTickers = [];
 

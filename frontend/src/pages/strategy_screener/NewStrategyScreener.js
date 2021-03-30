@@ -137,7 +137,7 @@ export default function NewStrategyScreener() {
                 }
             }
             setModalActive(true);
-            const response = await Axios.post(url, body);
+            const response = await Axios.post(url, body, { headers });
             let trades = response.data.trades;
             trades.map((val, index) => {
                 val.type2 = val.type;
