@@ -1,4 +1,5 @@
 import React, { useState, useContext, useCallback, useEffect } from 'react';
+import { Link } from "react-router-dom";
 import { Alert, Button, Card, CardColumns, Col, Container, Row, Spinner, ToggleButton, ToggleButtonGroup } from 'react-bootstrap';
 import { MdTrendingFlat, MdArrowUpward, MdArrowDownward, MdShowChart } from 'react-icons/md';
 import 'react-bootstrap-typeahead/css/Typeahead.css';
@@ -292,6 +293,18 @@ export default function StrategyBuilder() {
                         :
                         null
                     }
+                    <Row>
+                        <Col className="text-center" >
+                            {
+                                !authState.isAuthenticated &&
+                                (
+                                    <b className="md-1">
+                                        <Link to="/signin">Log in</Link> or <Link to="/signin/register">sign up for free</Link> to unlock 4 more strategies!
+                                    </b>
+                                )
+                            }
+                        </Col>
+                    </Row>
                     <Row className="mb-3">
                         <Col>
                             {(!selectedStrategy) ?
