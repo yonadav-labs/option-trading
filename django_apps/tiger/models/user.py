@@ -9,6 +9,7 @@ from .broker import Broker
 
 class User(AbstractUser):
     okta_id = models.CharField(max_length=200, null=True, blank=True)
+    nick_name = models.CharField(max_length=200, unique=True, null=True, blank=True)
     brokers = models.ManyToManyField(Broker)
     disabled_strategies = ArrayField(models.CharField(max_length=50), blank=True, null=True)
 

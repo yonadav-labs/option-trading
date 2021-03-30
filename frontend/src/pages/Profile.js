@@ -13,7 +13,9 @@ const Profile = () => {
     const [brokers, setBrokers] = useState([]);
     const [choosenBrokers, setChoosenBrokers] = useState([]);
     const [disabledStrategies, setDisabledStrategies] = useState([]);
+    const [nickName, setNickName] = useState(null);
     const [resultMsg, setResultMsg] = useState("");
+    const [errMsg, setErrMsg] = useState("");
 
     const API_URL = getApiUrl();
     const reason = useRef("");
@@ -47,8 +49,8 @@ const Profile = () => {
     const onChangeBrokers = (event) => {
         let selected = [];
         let selected_opt = (event.target.selectedOptions);
-
         setResultMsg("");
+
         for (let i = 0; i < selected_opt.length; i++) {
             selected.push(selected_opt.item(i).value)
         }
@@ -72,12 +74,18 @@ const Profile = () => {
         setDisabledStrategies(disabled_strategies);
     };
 
+    const onChangeNickName = (event) => {
+        setErrMsg("");
+        setResultMsg("");
+        setNickName(event.target.value.trim());
+    };
+
     const saveUpdates = (event) => {
         event.preventDefault();
         event.stopPropagation();
 
         const { accessToken } = authState;
-        let data = { disabled_strategies: disabledStrategies };
+        let data = { disabled_strategies: disabledStrategies, nick_name: nickName };
         if (choosenBrokers.length > 0) {
             data.brokers = choosenBrokers;
         }
@@ -92,16 +100,16 @@ const Profile = () => {
         })
             .then((response) => {
                 if (!response.ok) {
-                    return Promise.reject();
+                    return response.json().then(error => {throw new Error(error.nick_name[0])})
                 }
-                return response;
+                return response.json();
             })
             .then((data) => {
                 setResultMsg("Saved successfully!");
             })
             .catch((err) => {
                 /* eslint-disable no-console */
-                console.error(err);
+                setErrMsg(err.message);
             });
     };
 
@@ -135,6 +143,7 @@ const Profile = () => {
 
     useEffect(() => {
         if (user) {
+            setNickName(user.nick_name);
             setChoosenBrokers(user.brokers);
             setDisabledStrategies(user.disabled_strategies || []);
         }
@@ -188,6 +197,14 @@ const Profile = () => {
                                 <Form onSubmit={saveUpdates}>
                                     <div className="row">
                                         <div className="col-md-12">
+                                            <Form.Group controlId="id-nick-name">
+                                                <Form.Label className="d-block">Nick Name</Form.Label>
+                                                <Form.Control defaultValue={nickName} onChange={onChangeNickName} placeholder="(emtpy)" />
+                                            </Form.Group>
+                                        </div>
+                                    </div>
+                                    <div className="row">
+                                        <div className="col-md-12">
                                             <Form.Group controlId="id-brokers">
                                                 <Form.Label className="d-block">Stock Brokerage</Form.Label>
                                                 <small className="d-block mb-2">This setting will be used to estimate commission costs.</small>
@@ -226,6 +243,9 @@ const Profile = () => {
                                         ))}
                                     </div>
                                     <div className="row">
+                                        <div className="col-md-12">
+                                            <div className="text-danger mb-2 mt-0">{errMsg}</div>
+                                        </div>
                                         <div className="col-md-12">
                                             <div className="text-success mb-2 mt-0">{resultMsg}</div>
                                         </div>

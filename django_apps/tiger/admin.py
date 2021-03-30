@@ -94,7 +94,7 @@ class BrokerAdmin(admin.ModelAdmin):
 
 class CustomUserAdmin(UserAdmin):
     fieldsets = UserAdmin.fieldsets + (
-            (None, {'fields': ('brokers', 'disabled_strategies')}),
+        (None, {'fields': ('nick_name', 'brokers', 'disabled_strategies')}),
     )
 
 
