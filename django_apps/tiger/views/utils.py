@@ -141,9 +141,9 @@ def get_broker(user=None):
 
 
 def user_disabled_strategy(user, strategy):
-    disabled_strategies = []
-
     if user and user.is_authenticated:
         disabled_strategies = user.disabled_strategies or []
+    else:
+        disabled_strategies = ['cash_secured_put', 'bear_call_spread', 'bear_put_spread', 'bull_put_spread']
 
     return strategy in disabled_strategies

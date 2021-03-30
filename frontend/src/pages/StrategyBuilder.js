@@ -9,7 +9,7 @@ import TickerTypeahead from '../components/TickerTypeahead';
 import ModalSpinner from '../components/ModalSpinner';
 import TickerSummary from '../components/TickerSummary';
 import Select from "react-select";
-import getApiUrl, { loadTickers, loadExpirationDates } from '../utils';
+import getApiUrl, { loadTickers, loadExpirationDates, getDefaultDisabledTradeTypes } from '../utils';
 import Axios from 'axios';
 import LegCardDetails from '../components/LegCardDetails';
 import { useOktaAuth } from '@okta/okta-react';
@@ -88,6 +88,8 @@ export default function StrategyBuilder() {
     useEffect(() => {
         if (user) {
             setAvailableStrategies(strategies.filter(x => (!user.disabled_strategies || user.disabled_strategies.indexOf(x.type) === -1)));
+        } else {
+            setAvailableStrategies(strategies.filter(x => (getDefaultDisabledTradeTypes().indexOf(x.type) === -1)));
         }
     }, [user]);
 

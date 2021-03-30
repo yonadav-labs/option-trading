@@ -1,4 +1,5 @@
 import React, { useState, useContext, useEffect } from 'react';
+import { Link } from "react-router-dom";
 import BootstrapTable from 'react-bootstrap-table-next';
 import paginationFactory from 'react-bootstrap-table2-paginator';
 import Axios from 'axios';
@@ -13,7 +14,7 @@ import UserContext from '../UserContext';
 import getApiUrl, {
     PriceFormatter, PercentageFormatter, TimestampDateFormatter, onLastTradedFilterChange,
     getTradeStrikeStr, getTradeTypeDisplay, getAllTradeTypes,
-    loadTickers, loadExpirationDates
+    loadTickers, loadExpirationDates, getDefaultDisabledTradeTypes
 } from '../utils';
 import TickerTypeahead from '../components/TickerTypeahead';
 import TickerSummary from '../components/TickerSummary.js';
@@ -51,7 +52,7 @@ export default function BestCallByPrice() {
     const [modalActive, setModalActive] = useState(false);
     const [targetPriceLower, setTargetPriceLower] = useState(null);
     const [targetPriceUpper, setTargetPriceUpper] = useState(null);
-    const [disabledStrategies, setDisabledStrategies] = useState([]);
+    const [disabledStrategies, setDisabledStrategies] = useState(getDefaultDisabledTradeTypes());
     const [headers, setHeaders] = useState(null);
     const [broker, setBroker] = useState(null);
     const { oktaAuth, authState } = useOktaAuth();
@@ -525,6 +526,18 @@ export default function BestCallByPrice() {
                                                 })}
                                             </Form.Control>
                                         </Form.Group>
+                                    </Col>
+                                </Row>
+                                <Row>
+                                    <Col className="text-center" >
+                                        {
+                                            !authState.isAuthenticated &&
+                                            (
+                                                <b className="md-1">
+                                                    <Link to="/signin">Log in</Link> or <Link to="/signin/register">sign up for free</Link> to unlock 4 more strategies!
+                                                </b>
+                                            )
+                                        }
                                     </Col>
                                 </Row>
                                 <Row>

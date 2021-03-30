@@ -156,7 +156,12 @@ export function getLegByName(trade, name) {
 export function getAllTradeTypes(type) {
     return ['long_call', 'covered_call', 'long_put', 'cash_secured_put', 'bull_call_spread', 'bear_call_spread',
         'bear_put_spread', 'bull_put_spread'];
-}
+};
+
+export function getDefaultDisabledTradeTypes(type) {
+    return ['cash_secured_put', 'bear_call_spread', 'bear_put_spread', 'bull_put_spread'];
+};
+
 export function getContractName(contract) {
     return (
         <Row>
