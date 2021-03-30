@@ -4,13 +4,14 @@ import UserContext from '../UserContext';
 import './Profile.css';
 import { Button, Form, Modal } from 'react-bootstrap';
 import getApiUrl, { getAllTradeTypes, getTradeTypeDisplay } from '../utils';
-import { useHistory } from 'react-router-dom';
+import { useHistory, Link } from 'react-router-dom';
 
 const Profile = () => {
     const { oktaAuth, authState } = useOktaAuth();
     const { user } = useContext(UserContext);
     const [showCancelSubscriptionModal, setShowCancelSubscriptionModal] = useState(false);
     const [brokers, setBrokers] = useState([]);
+    const [tradeHistory, setTradeHistory] = useState([]);
     const [choosenBrokers, setChoosenBrokers] = useState([]);
     const [disabledStrategies, setDisabledStrategies] = useState([]);
     const [nickName, setNickName] = useState(null);
@@ -120,6 +121,7 @@ const Profile = () => {
         } else {
             const { accessToken } = authState;
 
+            // get possible brokers
             fetch(`${API_URL}/brokers/`, {
                 headers: {
                     Authorization: `Bearer ${accessToken.accessToken}`,
@@ -133,6 +135,26 @@ const Profile = () => {
                 })
                 .then((data) => {
                     setBrokers(data);
+                })
+                .catch((err) => {
+                    /* eslint-disable no-console */
+                    console.error(err);
+                });
+
+            // get past trades
+            fetch(`${API_URL}/trade_snapshots_history`, {
+                headers: {
+                    Authorization: `Bearer ${accessToken.accessToken}`,
+                },
+            })
+                .then((response) => {
+                    if (!response.ok) {
+                        return Promise.reject();
+                    }
+                    return response.json();
+                })
+                .then((data) => {
+                    setTradeHistory(data);
                 })
                 .catch((err) => {
                     /* eslint-disable no-console */
@@ -229,7 +251,7 @@ const Profile = () => {
                                     <Form.Label className="d-block">Enabled strategies</Form.Label>
                                     <div className="row">
                                         {getAllTradeTypes().map(type => (
-                                            <div className="col-lg-3 col-sm-6">
+                                            <div className="col-lg-4 col-sm-6">
                                                 <Form.Check
                                                     key={type}
                                                     id={type}
@@ -254,6 +276,23 @@ const Profile = () => {
                                         </div>
                                     </div>
                                 </Form>
+
+                                <h6 className="b-b-default f-w-600 mt-4">Saved positions</h6>
+                                <div className="row">
+                                    <div className="col-md-12">
+                                        {
+                                            tradeHistory.length > 0 ?
+                                                <ul>
+                                                    {tradeHistory.map(x => (
+                                                        <li key={x.id}>
+                                                            <Link className="d-inline-block" to={"/t/" + x.id} target="_blank">{x.display_name}</Link>
+                                                        </li>
+                                                    ))}
+                                                </ul> :
+                                                <div>(empty)</div>
+                                        }
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>

@@ -3,7 +3,8 @@ import logging
 
 from django.shortcuts import get_object_or_404
 from rest_framework import status
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from tiger.blob_reader import get_quote
@@ -85,3 +86,21 @@ def trade_snapshots_on_the_fly(request):
                             status=status.HTTP_201_CREATED)
 
         return Response(trade_snapshot_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def trade_snapshots_history(request):
+    """
+    get the latest 10 snapshots for the user
+    """
+    trade_snapshots = request.user.trades.all().order_by('-created_time')[:10]
+    broker = get_broker(request.user)
+    broker_settings = broker.get_broker_settings()
+
+    resp = []
+    for trade_snapshot in trade_snapshots:
+        trade = TradeFactory.from_snapshot(trade_snapshot, broker_settings)
+        resp.append({'id': trade_snapshot.id, 'display_name': trade.display_name})
+
+    return Response(resp)
