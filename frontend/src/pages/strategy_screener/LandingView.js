@@ -16,7 +16,7 @@ export default function LandingView(props) {
         sentiment,
         onExpirationSelectionChange,
         setTargetPriceBySentiment,
-        getBestStrategies,
+        setTargetPrice,
     } = props
 
     const handleSentiment = (event, newSentiment) => {
@@ -111,7 +111,7 @@ export default function LandingView(props) {
                             <br />
                             <Grid container direction="row" justify="center" spacing={3} >
                                 <Grid item xs={4}>
-                                    <Button variant="contained" color="primary" size="large" onClick={getBestStrategies}>
+                                    <Button variant="contained" color="primary" size="large" onClick={setTargetPrice}>
                                         Analyze
                                     </Button>
                                 </Grid>

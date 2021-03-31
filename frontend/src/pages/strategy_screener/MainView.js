@@ -25,7 +25,7 @@ export default function MainView({ allTickers, onTickerSelectionChange, bestStra
                 <Grid item sm={2}>
                     <Box p={4} boxShadow={3} bgcolor='#333741' color="white" height="105%" style={{marginRight: '-2rem'}}>
                         <Grid container direction="column" justify="center" className="filter-label">
-                            <FilterContainer onFilterChange={onFilterChange} filters={filters}/>
+                            <FilterContainer onFilterChange={onFilterChange} filters={filters} initialPrice={basicInfo.regularMarketPrice}/>
                         </Grid>
                     </Box>
                 </Grid>

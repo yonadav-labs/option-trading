@@ -28,12 +28,14 @@ export default function NewStrategyScreener() {
     const [targetPriceLower, setTargetPriceLower] = useState(null);
     const [targetPriceUpper, setTargetPriceUpper] = useState(null);
     const [filters, setFilters] = useState({
+        targetPriceLower: null,
+        targetPriceUpper: null,
         premiumType: 'market',
         cashToInvest: null,
         strategyType: 'all',
         minVolume: 1,
         minOpenInterest: 10,
-        lastTradedDate: null
+        lastTradedDate: -9999999
     })
 
     // component management states
@@ -56,6 +58,16 @@ export default function NewStrategyScreener() {
         setSentiment('')
         setTargetPriceLower(null)
         setTargetPriceUpper(null)
+        setFilters({
+            targetPriceLower: null,
+            targetPriceUpper: null,
+            premiumType: 'market',
+            cashToInvest: null,
+            strategyType: 'all',
+            minVolume: 1,
+            minOpenInterest: 10,
+            lastTradedDate: -9999999
+        })
     }
 
     const onTickerSelectionChange = (e, selected) => {
@@ -119,6 +131,10 @@ export default function NewStrategyScreener() {
         }
     }
 
+    const setTargetPrice = () => {
+        setFilters({...filters, targetPriceLower: targetPriceLower, targetPriceUpper: targetPriceUpper})
+    }
+
     const getBestStrategies = async () => {
         try {
             let url = `${API_URL}/dev/tickers/${selectedTicker.symbol}/trades/`;
@@ -131,8 +147,8 @@ export default function NewStrategyScreener() {
                 },
                 "strategy_settings": {
                     "premium_type": filters.premiumType,
-                    "target_price_lower": targetPriceLower,
-                    "target_price_upper": targetPriceUpper,
+                    "target_price_lower": filters.targetPriceLower,
+                    "target_price_upper": filters.targetPriceUpper,
                     "cash_to_invest": filters.cashToInvest
                 }
             }
@@ -176,11 +192,8 @@ export default function NewStrategyScreener() {
             case 'lastTraded':
                 setFilters({...filters, lastTradedDate: event.target.value})
                 break;
-            case 'lowerPrice':
-                setTargetPriceLower(event.target.value)
-                break;
-            case 'upperPrice':
-                setTargetPriceUpper(event.target.value)
+            case 'targetPrice':
+                setFilters({...filters, targetPriceLower: event, targetPriceUpper: event})
                 break;
         
             default:
@@ -208,7 +221,7 @@ export default function NewStrategyScreener() {
                         onExpirationSelectionChange={onExpirationSelectionChange}
                         selectedExpirationTimestamp={selectedExpirationTimestamp}
                         setTargetPriceBySentiment={setTargetPriceBySentiment}
-                        getBestStrategies={getBestStrategies}
+                        setTargetPrice={setTargetPrice}
                     />
                     :
                     <MainView

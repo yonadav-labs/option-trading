@@ -1,11 +1,12 @@
 import React from "react";
-import { Grid, Box, makeStyles } from "@material-ui/core";
+import { Grid, Box } from "@material-ui/core";
 import TuneIcon from '@material-ui/icons/Tune';
 import MaterialFilter from "./MaterialFilter";
 import MaterialTextField from "./MaterialTextField";
 import MetricLabel from "../MetricLabel";
+import PriceTargetFilter from "./PriceTargetFilter";
 
-export default function FilterContainer({onFilterChange, filters}) {
+export default function FilterContainer({onFilterChange, initialPrice}) {
     const premiumPriceFilter = [
         {label: "Market Order Price", value: "market"},
         {label: "Mid/Mark Price", value: 'mid'}
@@ -68,10 +69,10 @@ export default function FilterContainer({onFilterChange, filters}) {
             </Box>
             <Box p={4} py={3} bgcolor='#14161b' mx={-4}>
                 <Grid item style={{paddingBottom: '0.3rem'}}>
-                    <MetricLabel label={"price range on exp day"}/>
+                    <MetricLabel label={"target price on exp day"}/>
                 </Grid>
                 <Grid item style={{paddingBottom: '0.5rem'}}>
-                    <MaterialTextField onFilterChange={onFilterChange}/>
+                    <PriceTargetFilter onFilterChange={onFilterChange} initialPrice={initialPrice}/>
                 </Grid>
             </Box>
             <Box py={2}>
@@ -87,7 +88,7 @@ export default function FilterContainer({onFilterChange, filters}) {
                     <MetricLabel label={"cash to invest"}/>
                 </Grid>
                 <Grid item>
-                    <MaterialTextField onFilterChange={onFilterChange}/>
+                    <MaterialTextField onFilterChange={onFilterChange} placeholder="0 (optional)"/>
                 </Grid>
             </Box>
             {/* <Box py={2}>

@@ -8,7 +8,6 @@ import MetricLabel from "./MetricLabel";
 export default function NewTickerSummary({ basicInfo }) {
     const [anchorEl, setAnchorEl] = useState(null);
     const handleClick = (event) => {
-        console.log(event.currentTarget)
         setAnchorEl(anchorEl ? null : event.currentTarget);
     };
     const open = Boolean(anchorEl);

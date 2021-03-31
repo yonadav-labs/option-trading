@@ -1,6 +1,6 @@
-import React, {useState} from "react";
-import { OutlinedInput, makeStyles, InputAdornment, IconButton } from "@material-ui/core";
-import ArrowForwardIosIcon from '@material-ui/icons/ArrowForwardIos';
+import React, {useState, useCallback} from "react";
+import { OutlinedInput, makeStyles, InputAdornment } from "@material-ui/core";
+import _ from "lodash";
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -10,36 +10,26 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-export default function MaterialTextField({ onFilterChange }) {
+export default function MaterialTextField({ onFilterChange, placeholder }) {
     const classes = useStyles();
     const [value, setValue] = useState('')
 
+    // function to send fetch after 2 seconds
+    const delayedQuery = useCallback(_.debounce(q => onFilterChange(q, "cash"), 2000), []);
     const changeHandler = (e) => {
-        let input = e.target.value;
-        if (
-            !input ||
-            (input[input.length - 1].match("[0-9]") && input[0].match("[1-9]"))
-        )
-            setValue(input);
+        setValue(e.target.value);
+        delayedQuery(parseFloat(e.target.value))
     };
 
     return (
         <OutlinedInput
             className={classes.root}
-            placeholder="$0 (optional)"
+            placeholder={placeholder}
+            type="number"
             fullWidth
             value={value}
             onChange={changeHandler}
-            endAdornment={
-                <InputAdornment position="end">
-                    <IconButton
-                        edge="end"
-                        onClick={() => onFilterChange(value, 'cash')}
-                    >
-                        <ArrowForwardIosIcon color="secondary"/>
-                    </IconButton>
-                </InputAdornment>
-            }
+            startAdornment={<InputAdornment position="start"> <span style={{color: "white"}}>$</span></InputAdornment>}
         />
     );
 }
