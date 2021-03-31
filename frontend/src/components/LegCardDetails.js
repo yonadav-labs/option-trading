@@ -62,21 +62,21 @@ export default function LegCardDetails(props) {
                         <Col>
                             <Form>
                                 <Form.Row>
-                                    <Col sm="2" xs="3">
+                                    <Col sm="2" xs="12">
                                         <MetricLabel label="action" />
                                         <Form.Control as="select" value={legs[index].action} onChange={(e) => updateLeg("action", e.target.value, index)} disabled={selectedStrategy.legs[index].action}>
                                             <option value="long" key="long">Long</option>
                                             <option value="short" key="short">Short</option>
                                         </Form.Control>
                                     </Col>
-                                    <Col sm="2" xs="3">
+                                    <Col sm="2" xs="12">
                                         <MetricLabel label="call/put" />
                                         <Form.Control as="select" value={legs[index].optionType} onChange={(e) => updateLeg("optionType", e.target.value, index)} disabled={selectedStrategy.legs[index].optionType}>
                                             <option value="call" key="call">Call</option>
                                             <option value="put" key="put">Put</option>
                                         </Form.Control>
                                     </Col>
-                                    <Col sm="4" xs="6">
+                                    <Col sm="4" xs="12">
                                         <MetricLabel label="expiration date" />
                                         <Form.Control as="select" value={legs[index].expiration || 0} onChange={(e) => onExpirationChange(e)} disabled={selectedStrategy.legs[index].expiration}>
                                             {expirationTimestamps.map(val => {

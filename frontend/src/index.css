@@ -63,3 +63,9 @@ code {
     transform: rotate(360deg);
   }
 }
+
+/* temp hack. */
+.react-bootstrap-table .col-6 {
+  flex: 0 0 16.66667%;
+  max-width: 16.66667%;
+}
