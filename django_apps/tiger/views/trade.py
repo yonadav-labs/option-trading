@@ -24,7 +24,7 @@ def filter_and_sort_trades(input_trades):
 
 
 def save_best_trade_by_type(best_trade_dict, strategy_type, trade):
-    if trade.cost < 0.1:
+    if trade is None or trade.cost < 0.1 or trade.target_price_profit <= 0.0:
         return
     if strategy_type not in best_trade_dict or best_trade_dict[strategy_type].target_price_profit_ratio < trade.target_price_profit_ratio:
         best_trade_dict[strategy_type] = trade

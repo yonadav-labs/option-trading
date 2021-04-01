@@ -59,16 +59,16 @@ export default function NewTradeCard({ strategy }) {
                         <Grid item xs={2}>
                             <Typography variant="label">hypothetical profit</Typography>
                             <br />
-                            <Typography variant="paragraph">+31X</Typography>
+                            <Typography variant="paragraph">${strategy.target_price_profit}</Typography>
                             <br />
-                            <Typography variant="smallParagraph" color="#828282">{strategy.profit_cap ? `$${strategy.profit_cap}` : 'UNLIMITED'}</Typography>
+                            <Typography variant="smallParagraph" color="#828282">+{strategy.target_price_profit_ratio * 100}%</Typography>
                         </Grid>
                         <Grid item xs={2}>
                             <Typography variant="label">BREAK-EVEN</Typography>
                             <br />
-                            <Typography variant="paragraph">+{(strategy.to_break_even_ratio * 100).toFixed(2)}%</Typography>  {/* have to dynamically change + or - */}
+                            <Typography variant="paragraph">At ${strategy.break_even_price}</Typography>  {/* have to dynamically change + or - */}
                             <br />
-                            <Typography variant="smallParagraph" color="#828282">At ${strategy.break_even_price}</Typography>
+                            <Typography variant="smallParagraph" color="#828282">+{strategy.to_break_even_ratio * 100}%</Typography>
                         </Grid>
                         <Grid item xs={2}>
                             <Typography variant="label">COST / MAX LOSS</Typography>
