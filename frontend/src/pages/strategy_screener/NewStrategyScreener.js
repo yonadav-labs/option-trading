@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
 import Axios from 'axios';
-import { CssBaseline } from "@material-ui/core";
+import { Box, CssBaseline } from "@material-ui/core";
 import ModalSpinner from '../../components/ModalSpinner';
 import LandingView from "./LandingView";
 import MainView from "./MainView";
-import './StrategyScreen.css'
+// import './StrategyScreen.css'
 
 // utils
 import getApiUrl, { newLoadTickers, newLoadExpirationDates } from "../../utils";
@@ -207,8 +207,8 @@ export default function NewStrategyScreener() {
     }, [filters])
 
     return (
-        <div className="strategy-screener">
-            <CssBaseline />
+        <Box sx={{flexGrow: 1}} className="min-vh-100">
+            {/* <CssBaseline /> */}
             <ModalSpinner active={modalActive}></ModalSpinner>
             {
                 pageState ?
@@ -237,6 +237,6 @@ export default function NewStrategyScreener() {
                         filters={filters}
                     />
             }
-        </div>
+        </Box>
     );
 }

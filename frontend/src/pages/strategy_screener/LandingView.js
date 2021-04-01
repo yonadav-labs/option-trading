@@ -24,14 +24,14 @@ export default function LandingView(props) {
     };
 
     return (
-        <Container className="min-vh-100">
-            <Grid container direction="row" justify="center" alignItems="center" >
+        <>
+        <Grid container direction="row" justifyContent="center" alignItems="center" >
                 <Grid item>
                     <h1>Discover</h1>
                 </Grid>
             </Grid>
             <br />
-            <Grid container direction="row" justify="center" alignItems="center" >
+            <Grid container direction="row" justifyContent="center" alignItems="center" >
                 <Grid item xs={7}>
                     <p style={{ textAlign: "center" }}>
                         {" "}
@@ -44,7 +44,7 @@ export default function LandingView(props) {
                 </Grid>
             </Grid>
             <br />
-            <Grid container direction="row" justify="center" alignItems="center" >
+            <Grid container direction="row" justifyContent="center" alignItems="center" >
                 <Grid item xs={5} align="center">
                     <Paper elevation={3}>
                         <Box p={4}>
@@ -62,7 +62,7 @@ export default function LandingView(props) {
                                 </Grid>
                             </Grid>
                             <br />
-                            <Grid container direction="row" justify="flex-start" alignItems="flex-start" spacing={3} >
+                            <Grid container direction="row" justifyContent="flex-start" alignItems="flex-start" spacing={3} >
                                 <Grid item xs={6} alignItems="flex-start">
                                     <span className="landing-view-label">Option Expiration Date</span>
                                 </Grid>
@@ -70,7 +70,7 @@ export default function LandingView(props) {
                                     <span className="landing-view-label">How are you feeling?</span>
                                 </Grid>
                             </Grid>
-                            <Grid container direction="row" justify="center" spacing={3} >
+                            <Grid container direction="row" justifyContent="center" spacing={3} >
                                 <Grid item xs={6}>
                                     <Autocomplete
                                         id="expiration-dates"
@@ -109,7 +109,7 @@ export default function LandingView(props) {
                                 </Grid>
                             </Grid>
                             <br />
-                            <Grid container direction="row" justify="center" spacing={3} >
+                            <Grid container direction="row" justifyContent="center" spacing={3} >
                                 <Grid item xs={4}>
                                     <Button variant="contained" color="primary" size="large" onClick={setTargetPrice}>
                                         Analyze
@@ -120,6 +120,6 @@ export default function LandingView(props) {
                     </Paper>
                 </Grid>
             </Grid>
-        </Container>
+        </>
     );
 }

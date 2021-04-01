@@ -61,7 +61,7 @@ export default function FilterContainer({onFilterChange, initialPrice}) {
         <>
             <Box pb={2}>
             <Grid item>
-                <Grid container direction="row" justify="space-between" alignItems="center">
+                <Grid container direction="row" justifyContent="space-between" alignItems="center">
                     <Grid item><span style={{fontSize: '1.3rem'}}>SETTINGS</span></Grid>
                     <Grid item><TuneIcon fontSize="large"/> </Grid>
                 </Grid>

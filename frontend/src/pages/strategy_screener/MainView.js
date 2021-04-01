@@ -1,7 +1,7 @@
 import React, {useState, useEffect} from "react";
-import { Grid, TextField, Box } from "@material-ui/core";
+import { Grid, TextField, Box, Typography } from "@material-ui/core";
 import { Autocomplete, Pagination } from "@material-ui/lab/";
-import NewTradeCard from "../../components/NewTradeCard";
+import NewTradeCard from "../../components/cards/NewTradeCard";
 import TickerAutocomplete from "../../components/TickerAutocomplete";
 import FilterContainer from "../../components/filters/FilterContainer";
 import NewTickerSummary from "../../components/NewTickerSummary";
@@ -20,8 +20,8 @@ export default function MainView({ allTickers, onTickerSelectionChange, bestStra
     }, [bestStrategies])
 
     return (
-        <div>
-            <Grid container direction="row" justify="center" alignItems="stretch">
+        <>
+            <Grid container direction="row" justifyContent="center" alignItems="stretch">
                 <Grid item sm={2}>
                     <Box p={4} boxShadow={3} bgcolor='#333741' color="white" height="105%" style={{marginRight: '-2rem'}}>
                         <Grid container direction="column" justify="center" className="filter-label">
@@ -32,9 +32,9 @@ export default function MainView({ allTickers, onTickerSelectionChange, bestStra
                 <Grid item sm={10}>
                     <Box boxShadow={4} p={2} style={{ marginLeft: '2rem' }}>
                         <Box py={2}>
-                            <Grid container direction="row" justify="center" alignItems="center">
+                            <Grid container direction="row" justifyContent="center" alignItems="center">
                                 <Grid item sm={2}>
-                                    <span className="main-selection">ENTER TICKER SYMBOL</span>
+                                    <Typography variant="title">Enter Ticker Symbol</Typography>
                                 </Grid>
                                 <Grid item sm={6}>
                                     <TickerAutocomplete
@@ -69,16 +69,16 @@ export default function MainView({ allTickers, onTickerSelectionChange, bestStra
                         </Box>
                     </Box>
                     <Box p={5} bgcolor='#F2F2F2' minHeight="100vh" height="100%" style={{ marginLeft: '2rem' }}>
-                        <Grid container spacing={2} direction="column" justify="center" alignItems="stretch">
+                        <Grid container spacing={2} direction="column" justifyContent="center" alignItems="stretch">
                             {renderedStrategies.map((strategy, index) => <NewTradeCard strategy={strategy} key={index} />)}
                         </Grid>
                     </Box>
                 </Grid>
             </Grid>
-            <Grid container justify="flex-end">
+            <Grid container justifyContent="flex-end">
                 <Pagination count={noOfPages} color="primary" onChange={pageChangeHandler} />
             </Grid>
-        </div>
+        </>
     );
 }
 

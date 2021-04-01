@@ -7,6 +7,9 @@ import './App.css';
 import 'react-bootstrap-table-next/dist/react-bootstrap-table2.min.css';
 import AppWithRouterAccess from './AppWithRouterAccess';
 import UserContext from './UserContext';
+import { ThemeProvider } from '@material-ui/core/styles'
+import CssBaseline from '@material-ui/core/CssBaseline'
+import theme from './theme';
 
 // My personal UA tracking code. Move to G tracking code once ReactGA is compatible with that.
 // https://stackoverflow.com/questions/62135901/reactga-not-working-for-g-type-tracking-id
@@ -17,11 +20,14 @@ function App() {
   const value = { user, setUser };
 
   return (
-    <UserContext.Provider value={value}>
-      <Router>
-        <AppWithRouterAccess />
-      </Router>
-    </UserContext.Provider>
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
+      <UserContext.Provider value={value}>
+        <Router>
+          <AppWithRouterAccess />
+        </Router>
+      </UserContext.Provider>
+    </ThemeProvider>
   );
 }
 

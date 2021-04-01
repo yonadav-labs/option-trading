@@ -1,0 +1,113 @@
+import { createMuiTheme, responsiveFontSizes } from '@material-ui/core/styles'
+
+let theme = createMuiTheme({
+    palette: {
+        type: 'light',
+        primary: {
+            main: '#ff8f2b',
+        },
+        secondary: {
+            main: '#ffd338',
+        },
+        warning: {
+            main: '#9B51E0',
+        },
+        divider: '#e4e4e4',
+    },
+    typography: {
+        h1: {
+            fontSize: '4.375rem',
+            fontWeight: 400,
+            lineHeight: 1,
+            letterSpacing: '-0.063em',
+        },
+        h2: {
+            fontWeight: 400,
+            letterSpacing: '-0.063em',
+            lineHeight: 1.1,
+        },
+        h3: {
+            fontSize: '2.5rem',
+            lineHeight: 1.2,
+            letterSpacing: '-0.063em',
+        },
+        h4: {
+            fontSize: '1.75rem',
+            lineHeight: 1.1,
+        },
+        h5: {
+            fontWeight: 700,
+            fontSize: '1.313rem',
+            lineHeight: 1.2,
+        },
+        h6: {
+            fontWeight: 700,
+            fontSize: '1.125rem',
+            lineHeight: 1.2,
+        },
+        subtitle1: {
+            fontSize: '0.875rem',
+            lineHeight: 1.2,
+            fontWeight: 500,
+        },
+        // subtitle2: undefined,
+        // body1: undefined,
+        // body2: undefined,
+        title: {
+            fontFamily: "Roboto",
+            fontWeight: 500,
+            fontSize: '1rem',
+            lineHeight: 1.4,
+        },
+        paragraph: {
+            fontWeight: 400,
+            fontSize: '1rem',
+            lineHeight: 1.4,
+        },
+        smallParagraph: {
+            fontWeight: 400,
+            fontSize: '0.875rem',
+            lineHeight: 1.2,
+        },
+        label: {
+            fontFamily: "Roboto",
+            fontWeight: 700,
+            fontSize: '0.75rem',
+            lineHeight: 1.3,
+            letterSpacing: '0.063em',
+            textTransform: 'uppercase'
+        }
+    },
+    components: {
+        MuiButton: {
+            styleOverrides: {
+                root: {
+                    background: 'linear-gradient(90deg, #FF8F2B 0%, #FFD43A 100%)',
+                    border: 0,
+                    borderRadius: 5,
+                    boxShadow: 'none',
+                    color: '#fafafa',
+                    height: 40,
+                    padding: '14px 22px 13px',
+                },
+            }
+        },
+        MuiDivider: {
+            styleOverrides: {
+                root: {
+                    opacity: 1,
+                }
+            }
+        }
+    },
+    shape: {
+        borderRadius: 5,
+    },
+});
+
+theme = responsiveFontSizes(theme);
+theme.typography.subtitle2 = undefined;
+// theme.typography.body1 = undefined;
+theme.typography.body2 = undefined;
+
+export default theme
