@@ -34,7 +34,7 @@ def build_trades(stock, call_contract_lists, put_contract_lists, strategy_settin
     premium_type = strategy_settings.get('premium_type', 'market')
     target_price_lower = strategy_settings.get('target_price_lower', None)
     target_price_upper = strategy_settings.get('target_price_upper', None)
-    available_cash = strategy_settings.get('available_cash',  None)
+    available_cash = strategy_settings.get('cash_to_invest',  None)
     best_trade_dict = {}
 
     for calls_per_exp in call_contract_lists:
