@@ -113,8 +113,7 @@ export default function TradeDetailsCard(props) {
                                     <MetricLabel label="5% chance wrost case loss" />
                                     <span>
                                         {PriceFormatter(trade.two_sigma_profit_lower)}&nbsp;
-                                ({trade.two_sigma_profit_lower_ratio >= 0 ? '+' : '-'}
-                                        {PercentageFormatter(Math.abs(trade.two_sigma_profit_lower_ratio))})&nbsp;
+                                        {ProfitFormatter(Math.abs(trade.two_sigma_profit_lower_ratio))}&nbsp;
                                 <small>if stock price at {PriceFormatter(trade.two_sigma_prices[0])}</small>
                                     </span >
                                 </Col>

@@ -229,6 +229,16 @@ class Trade(ABC):
                                    self.get_profit_in_price_range(higher_price, higher_price)))
 
     @property
+    def two_sigma_profit_lower_price(self):
+        # TODO: change to a function that can handle peek/valley. Currently all strategies are monotonic.
+        if not self.two_sigma_prices:
+            return None
+        lower_price, higher_price = self.two_sigma_prices
+        lower_price_profit = self.get_profit_in_price_range(lower_price, lower_price)
+        higer_price_profit = self.get_profit_in_price_range(higher_price, higher_price)
+        return lower_price if lower_price_profit < higer_price_profit else higer_price_profit
+
+    @property
     def two_sigma_profit_lower_ratio(self):
         if self.two_sigma_profit_lower is None:
             return None

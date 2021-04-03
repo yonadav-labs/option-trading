@@ -115,6 +115,7 @@ class TradeSerializer(serializers.Serializer):
     leverage = ReadOnlyRatioDecimalField()
     two_sigma_prices = serializers.ListField(child=ReadOnlyDollarDecimalField())
     two_sigma_profit_lower = ReadOnlyDollarDecimalField()
+    two_sigma_profit_lower_price = ReadOnlyDollarDecimalField()
     two_sigma_profit_lower_ratio = ReadOnlyRatioDecimalField()
     quote_time = serializers.ReadOnlyField()
     net_debit_per_unit = ReadOnlyDollarDecimalField()

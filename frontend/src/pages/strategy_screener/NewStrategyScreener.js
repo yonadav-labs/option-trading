@@ -17,13 +17,13 @@ export default function NewStrategyScreener() {
     const [allTickers, setAllTickers] = useState([]);
     const [selectedTicker, setSelectedTicker] = useState();
     const [basicInfo, setBasicInfo] = useState({});
-    const [bestStrategies, setBestStrategies] = useState(null);
-    
+    const [bestTrades, setBestTrades] = useState(null);
+
     // expiration date states
     const [expirationTimestamps, setExpirationTimestamps] = useState([]);
     const [expirationTimestampsOptions, setExpirationTimestampsOptions] = useState([])
     const [selectedExpirationTimestamp, setSelectedExpirationTimestamp] = useState([]);
-    
+
     // filter states
     const [targetPriceLower, setTargetPriceLower] = useState(null);
     const [targetPriceUpper, setTargetPriceUpper] = useState(null);
@@ -132,10 +132,10 @@ export default function NewStrategyScreener() {
     }
 
     const setTargetPrice = () => {
-        setFilters({...filters, targetPriceLower: targetPriceLower, targetPriceUpper: targetPriceUpper})
+        setFilters({ ...filters, targetPriceLower: targetPriceLower, targetPriceUpper: targetPriceUpper })
     }
 
-    const getBestStrategies = async () => {
+    const getBestTrades = async () => {
         try {
             let url = `${API_URL}/dev/tickers/${selectedTicker.symbol}/trades/`;
             let body = {
@@ -162,7 +162,7 @@ export default function NewStrategyScreener() {
                 val.id = index;
                 return val;
             })
-            setBestStrategies(trades);
+            setBestTrades(trades);
             setPageState(false)
             setModalActive(false);
         } catch (error) {
@@ -175,45 +175,45 @@ export default function NewStrategyScreener() {
     const onFilterChange = (event, filterChoice, eventTwo) => {
         switch (filterChoice) {
             case 'premium':
-                setFilters({...filters, premiumType: event.target.value})
+                setFilters({ ...filters, premiumType: event.target.value })
                 break;
             case 'cash':
-                setFilters({...filters, cashToInvest: event})
+                setFilters({ ...filters, cashToInvest: event })
                 break;
             case 'strategy':
-                setFilters({...filters, strategyType: event.target.value})
+                setFilters({ ...filters, strategyType: event.target.value })
                 break;
             case 'volume':
-                setFilters({...filters, minVolume: event.target.value})
+                setFilters({ ...filters, minVolume: event.target.value })
                 break;
             case 'interest':
-                setFilters({...filters, minOpenInterest: event.target.value})
+                setFilters({ ...filters, minOpenInterest: event.target.value })
                 break;
             case 'lastTraded':
-                setFilters({...filters, lastTradedDate: event.target.value})
+                setFilters({ ...filters, lastTradedDate: event.target.value })
                 break;
             case 'targetPrice':
-                setFilters({...filters, targetPriceLower: event, targetPriceUpper: eventTwo})
+                setFilters({ ...filters, targetPriceLower: event, targetPriceUpper: eventTwo })
                 break;
             case 'lowerTarget':
-                setFilters({...filters, targetPriceLower: event})
+                setFilters({ ...filters, targetPriceLower: event })
                 break;
             case 'higherTarget':
-                setFilters({...filters, targetPriceUpper: event})
+                setFilters({ ...filters, targetPriceUpper: event })
                 break;
-        
+
             default:
                 break;
         }
     }
 
-    // fetch new strategies when filter changes
+    // fetch new trades when filter changes
     useEffect(() => {
-        getBestStrategies()
+        getBestTrades()
     }, [filters])
 
     return (
-        <Box sx={{flexGrow: 1}} className="min-vh-100">
+        <Box sx={{ flexGrow: 1 }} className="min-vh-100">
             <ModalSpinner active={modalActive}></ModalSpinner>
             {
                 pageState ?
@@ -236,7 +236,7 @@ export default function NewStrategyScreener() {
                         expirationDisabled={expirationDisabled}
                         onExpirationSelectionChange={onExpirationSelectionChange}
                         selectedExpirationTimestamp={selectedExpirationTimestamp}
-                        bestStrategies={bestStrategies}
+                        bestTrades={bestTrades}
                         basicInfo={basicInfo}
                         onFilterChange={onFilterChange}
                         filters={filters}
