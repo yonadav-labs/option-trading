@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Axios from 'axios';
-import { Box, CssBaseline } from "@material-ui/core";
+import { Box } from "@material-ui/core";
 import ModalSpinner from '../../components/ModalSpinner';
 import LandingView from "./LandingView";
 import MainView from "./MainView";
@@ -172,7 +172,7 @@ export default function NewStrategyScreener() {
     };
 
     // function to change filter states
-    const onFilterChange = (event, filterChoice) => {
+    const onFilterChange = (event, filterChoice, eventTwo) => {
         switch (filterChoice) {
             case 'premium':
                 setFilters({...filters, premiumType: event.target.value})
@@ -193,7 +193,13 @@ export default function NewStrategyScreener() {
                 setFilters({...filters, lastTradedDate: event.target.value})
                 break;
             case 'targetPrice':
-                setFilters({...filters, targetPriceLower: event, targetPriceUpper: event})
+                setFilters({...filters, targetPriceLower: event, targetPriceUpper: eventTwo})
+                break;
+            case 'lowerTarget':
+                setFilters({...filters, targetPriceLower: event})
+                break;
+            case 'higherTarget':
+                setFilters({...filters, targetPriceUpper: event})
                 break;
         
             default:
@@ -208,7 +214,6 @@ export default function NewStrategyScreener() {
 
     return (
         <Box sx={{flexGrow: 1}} className="min-vh-100">
-            {/* <CssBaseline /> */}
             <ModalSpinner active={modalActive}></ModalSpinner>
             {
                 pageState ?

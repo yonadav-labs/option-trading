@@ -106,6 +106,9 @@ export function ExpDayFormatter(ts, days_till_expiration) {
     );
 };
 
+export function fixedFloat(x) {
+    return parseFloat(x.toFixed(2));
+}
 
 export function InTheMoneyRowStyle(row, rowIndex) {
     const style = { "cursor": "pointer" };

@@ -4,7 +4,8 @@ import TuneIcon from '@material-ui/icons/Tune';
 import MaterialFilter from "./MaterialFilter";
 import MaterialTextField from "./MaterialTextField";
 import MetricLabel from "../MetricLabel";
-import PriceTargetFilter from "./PriceTargetFilter";
+import PriceTargetBox from "./PriceTargetBox";
+
 
 export default function FilterContainer({onFilterChange, initialPrice}) {
     const premiumPriceFilter = [
@@ -67,14 +68,7 @@ export default function FilterContainer({onFilterChange, initialPrice}) {
                 </Grid>
             </Grid>
             </Box>
-            <Box p={4} py={3} bgcolor='#14161b' mx={-4}>
-                <Grid item style={{paddingBottom: '0.3rem'}}>
-                    <MetricLabel label={"target price on exp day"}/>
-                </Grid>
-                <Grid item style={{paddingBottom: '0.5rem'}}>
-                    <PriceTargetFilter onFilterChange={onFilterChange} initialPrice={initialPrice}/>
-                </Grid>
-            </Box>
+            <PriceTargetBox onFilterChange={onFilterChange} initialPrice={initialPrice}/>
             <Box py={2}>
                 <Grid item style={{paddingBottom: '0.3rem'}}>
                     <MetricLabel label={"premium price options"}/>
