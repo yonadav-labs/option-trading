@@ -1,5 +1,5 @@
 from django.test import TestCase
-from tiger.views.utils import filter_contract_on_attribute
+from tiger.views.utils import filter_object_on_attribute
 from tiger.core import OptionContract
 
 class FilterContractOnAttributeTestCase(TestCase):
@@ -9,50 +9,50 @@ class FilterContractOnAttributeTestCase(TestCase):
     
     def test_filter_is(self):
         # valid calls
-        self.assertTrue(filter_contract_on_attribute(self.contract, 'eq.strike', 50.0))
-        self.assertFalse(filter_contract_on_attribute(self.contract, 'eq.strike', '50'))
-        self.assertFalse(filter_contract_on_attribute(self.contract, 'eq.strike', 5.0))
-        self.assertFalse(filter_contract_on_attribute(self.contract, 'eq.strike', ''))
+        self.assertTrue(filter_object_on_attribute(self.contract, 'eq.strike', 50.0))
+        self.assertFalse(filter_object_on_attribute(self.contract, 'eq.strike', '50'))
+        self.assertFalse(filter_object_on_attribute(self.contract, 'eq.strike', 5.0))
+        self.assertFalse(filter_object_on_attribute(self.contract, 'eq.strike', ''))
         # invalid calls
-        self.assertTrue(filter_contract_on_attribute(self.contract, 'eq.asdf', ''))
-        self.assertTrue(filter_contract_on_attribute(self.contract, 'eq.asdf', 123))
+        self.assertTrue(filter_object_on_attribute(self.contract, 'eq.asdf', ''))
+        self.assertTrue(filter_object_on_attribute(self.contract, 'eq.asdf', 123))
     
     def test_filter_min(self):
         # valid calls
-        self.assertTrue(filter_contract_on_attribute(self.contract, 'min.bid', 500.0))
-        self.assertTrue(filter_contract_on_attribute(self.contract, 'min.open_interest', 0.0))
-        self.assertFalse(filter_contract_on_attribute(self.contract, 'min.bid', 700.0))
-        self.assertFalse(filter_contract_on_attribute(self.contract, 'min.open_interest', 10))
+        self.assertTrue(filter_object_on_attribute(self.contract, 'min.bid', 500.0))
+        self.assertTrue(filter_object_on_attribute(self.contract, 'min.open_interest', 0.0))
+        self.assertFalse(filter_object_on_attribute(self.contract, 'min.bid', 700.0))
+        self.assertFalse(filter_object_on_attribute(self.contract, 'min.open_interest', 10))
         with self.assertRaises(AssertionError):
-            filter_contract_on_attribute(self.contract, 'min.bid', '500')
+            filter_object_on_attribute(self.contract, 'min.bid', '500')
         with self.assertRaises(AssertionError):
-            filter_contract_on_attribute(self.contract, 'min.bid', '')
+            filter_object_on_attribute(self.contract, 'min.bid', '')
         # invalid calls
-        self.assertTrue(filter_contract_on_attribute(self.contract, 'min.asdf', ''))
-        self.assertTrue(filter_contract_on_attribute(self.contract, 'min.asdf', 123))
+        self.assertTrue(filter_object_on_attribute(self.contract, 'min.asdf', ''))
+        self.assertTrue(filter_object_on_attribute(self.contract, 'min.asdf', 123))
 
     def test_filter_max(self):
         # valid calls
-        self.assertTrue(filter_contract_on_attribute(self.contract, 'max.ask', 600.0))
-        self.assertTrue(filter_contract_on_attribute(self.contract, 'max.open_interest', 10))
-        self.assertFalse(filter_contract_on_attribute(self.contract, 'max.ask', 400.0))
+        self.assertTrue(filter_object_on_attribute(self.contract, 'max.ask', 600.0))
+        self.assertTrue(filter_object_on_attribute(self.contract, 'max.open_interest', 10))
+        self.assertFalse(filter_object_on_attribute(self.contract, 'max.ask', 400.0))
         with self.assertRaises(AssertionError):
-            filter_contract_on_attribute(self.contract, 'max.ask', '600')
+            filter_object_on_attribute(self.contract, 'max.ask', '600')
         with self.assertRaises(AssertionError):
-            filter_contract_on_attribute(self.contract, 'max.ask', '')
+            filter_object_on_attribute(self.contract, 'max.ask', '')
         # invalid calls
-        self.assertTrue(filter_contract_on_attribute(self.contract, 'max.asdf', ''))
-        self.assertTrue(filter_contract_on_attribute(self.contract, 'max.asdf', 123))
+        self.assertTrue(filter_object_on_attribute(self.contract, 'max.asdf', ''))
+        self.assertTrue(filter_object_on_attribute(self.contract, 'max.asdf', 123))
 
     def test_filter_unknown(self):
-        self.assertTrue(filter_contract_on_attribute(self.contract, 'another.random.string', ''))
-        self.assertTrue(filter_contract_on_attribute(self.contract, 'another.random.string', 0))
+        self.assertTrue(filter_object_on_attribute(self.contract, 'another.random.string', ''))
+        self.assertTrue(filter_object_on_attribute(self.contract, 'another.random.string', 0))
         with self.assertRaises(AssertionError):
-            filter_contract_on_attribute(self.contract, 'random string', '')
+            filter_object_on_attribute(self.contract, 'random string', '')
         with self.assertRaises(AssertionError):
-            filter_contract_on_attribute(self.contract, 'random string', 0)
+            filter_object_on_attribute(self.contract, 'random string', 0)
         with self.assertRaises(AssertionError):
-            filter_contract_on_attribute(self.contract, 123, '')
+            filter_object_on_attribute(self.contract, 123, '')
         with self.assertRaises(AssertionError):
-            filter_contract_on_attribute(self.contract, None, None)
+            filter_object_on_attribute(self.contract, None, None)
         

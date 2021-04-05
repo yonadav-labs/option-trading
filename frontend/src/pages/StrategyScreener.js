@@ -123,7 +123,7 @@ export default function BestCallByPrice() {
             }
         }, {
             dataField: "target_price_profit_ratio",
-            text: "Hypothetical profit",
+            text: "Hypothetical return",
             hidden: targetPriceLower == null,
             formatter: (cell, row, rowIndex, extraData) => {
                 if (cell != null) {

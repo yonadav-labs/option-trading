@@ -17,6 +17,8 @@ const CustomTooltip = withStyles((theme) => ({
 }))(Tooltip);
 
 const HelpTextDict = {
+    '10% chance loss': 'Average of possible losses with a 10% probability based on historical data.',
+    '10% chance profit': 'Average of possible losses with a 10% probability based on historical data.',
     '52 week range': 'The high and low prices of last 52 weeks (1 year).',
     'action': 'Long means buy. Short means sell.',
     'ask': 'The latest price someone is willing to sell this option.',
@@ -37,7 +39,7 @@ const HelpTextDict = {
     'expiration': 'The last date of an option contract on which the holder of the option may exercise it according to its terms.',
     'expiration date': 'The last date of an option contract on which the holder of the option may exercise it according to its terms.',
     'gamma': 'Estimate of the rate of change between an option\'s Delta and the stock\'s price',
-    'hypothetical profit': 'Average of possible profit outcomes if share price lies within the target price range on expiration date.',
+    'hypothetical return': 'Average of possible return outcomes if share price lies within the target price range on expiration date.',
     'initial value': 'The value of this trade when it was was saved or shared.',
     'implied volatility': 'Expected annualized volatility of a stock over the life of the option.',
     'latest stock return': 'The latest return from the stock, for comparison of the options trade\'s return.',

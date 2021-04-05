@@ -106,16 +106,14 @@ export default function NewTradeCard({ trade }) {
                         justifyContent="space-between"
                     >
                         <Grid item xs={2}>
-                            <MetricLabel label="hypothetical profit" />
+                            <MetricLabel label="hypothetical return" />
                             <Typography variant="paragraph">{PriceFormatter(trade.target_price_profit)}</Typography>
-                            <br />
-                            <Typography variant="smallParagraph" color="#828282">{ProfitFormatter(trade.target_price_profit_ratio)}</Typography>
+                            <Typography variant="smallParagraph" color="#828282"> ({ProfitFormatter(trade.target_price_profit_ratio)})</Typography>
                         </Grid>
                         <Grid item xs={2}>
                             <MetricLabel label="break-even at" />
                             <Typography variant="paragraph">{PriceFormatter(trade.break_even_price)}</Typography>
-                            <br />
-                            <Typography variant="smallParagraph" color="#828282">{ProfitFormatter(trade.to_break_even_ratio)}</Typography>
+                            <Typography variant="smallParagraph" color="#828282"> ({ProfitFormatter(trade.to_break_even_ratio)})</Typography>
                         </Grid>
                         <Grid item xs={2}>
                             <MetricLabel label="cost" />
@@ -123,7 +121,11 @@ export default function NewTradeCard({ trade }) {
                         </Grid>
                         <Grid item xs={2}>
                             <MetricLabel label="profit limit" />
-                            <Typography variant="paragraph">{trade.profit_cap ? `$${trade.profit_cap}` : 'UNLIMITED'}</Typography>
+                            <Typography variant="paragraph">{trade.profit_cap ?
+                                <>
+                                    <Typography variant="paragraph">{PriceFormatter(trade.profit_cap)}</Typography>
+                                    <Typography variant="smallParagraph" color="#828282"> ({ProfitFormatter(trade.profit_cap / trade.cost)})</Typography>
+                                </> : 'UNLIMITED'}</Typography>
                         </Grid>
                         <Grid item xs={2}>
                             <MetricLabel label="volume" />
@@ -159,22 +161,34 @@ export default function NewTradeCard({ trade }) {
                                     {PercentageFormatter(trade.leverage)}
                                 </Grid>
                                 <Grid item xs={2}>
-                                    <MetricLabel label="5% chance loss" />
+                                    <MetricLabel label="10% chance loss" />
                                     {
                                         trade.two_sigma_profit_lower ?
                                             <>
-                                                <Typography variant="paragraph">{PriceFormatter(trade.two_sigma_profit_lower)}</Typography>
+                                                <Typography variant="paragraph">{PriceFormatter(trade.ten_percent_worst_return)}</Typography>
+                                                <Typography variant="smallParagraph" color="#828282"> ({ProfitFormatter(trade.ten_percent_worst_return_ratio)})</Typography>
                                                 <br />
-                                                <Typography variant="smallParagraph" color="#828282">{ProfitFormatter(trade.two_sigma_profit_lower_ratio)}</Typography>
+                                                <Typography variant="smallParagraph" color="#828282">
+                                                    {trade.ten_percent_worst_return_price > trade.stock.stock_price ? 'Above ' : 'Below '}
+                                                    {PriceFormatter(trade.ten_percent_worst_return_price)}
+                                                </Typography>
                                             </>
                                             : "N/A"
                                     }
                                 </Grid>
                                 <Grid item xs={2}>
-                                    <MetricLabel label="5% chance loss price" />
+                                    <MetricLabel label="10% chance profit" />
                                     {
                                         trade.two_sigma_profit_lower ?
-                                            PriceFormatter(trade.two_sigma_profit_lower_price)
+                                            <>
+                                                <Typography variant="paragraph">{PriceFormatter(trade.ten_percent_best_return)}</Typography>
+                                                <Typography variant="smallParagraph" color="#828282"> ({ProfitFormatter(trade.ten_percent_best_return_ratio)})</Typography>
+                                                <br />
+                                                <Typography variant="smallParagraph" color="#828282">
+                                                    {trade.ten_percent_best_return_price > trade.stock.stock_price ? 'Above ' : 'Below '}
+                                                    {PriceFormatter(trade.ten_percent_best_return_price)}
+                                                </Typography>
+                                            </>
                                             : "N/A"
                                     }
                                 </Grid>

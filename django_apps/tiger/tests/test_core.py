@@ -87,13 +87,27 @@ class CallTradesTestCase(TestCase):
         self.assertAlmostEqual(long_call.stock.historical_volatility, 0.8)
         self.assertSequenceEqual(long_call.two_sigma_prices, [0.0, 918.0998518877443])
         self.assertAlmostEqual(long_call.two_sigma_profit_lower, -16171.3)
+        self.assertAlmostEqual(long_call.sigma, 0.5941513889707513)
+        self.assertSequenceEqual(long_call.get_ten_percent_prices_and_returns(is_profit=True),
+                                 [739.9148738774114, 37978.80203064213])
+        self.assertSequenceEqual(long_call.get_ten_percent_prices_and_returns(is_profit=False),
+                                 [100.08512612258868, -16171.299999999997])
+        self.assertAlmostEqual(long_call.ten_percent_best_return_price, 739.9148738774114)
+        self.assertAlmostEqual(long_call.ten_percent_best_return, 37978.80203064213)
+        self.assertAlmostEqual(long_call.ten_percent_best_return_ratio, 2.348531165128477)
+        self.assertAlmostEqual(long_call.ten_percent_worst_return_price, 100.08512612258868)
+        self.assertAlmostEqual(long_call.ten_percent_worst_return, -16171.3)
+        self.assertAlmostEqual(long_call.ten_percent_worst_return_ratio, -1.0)
 
-        self.assertAlmostEqual(LongCall.build(self.stock, call_contract, 'mid', self.broker_settings, 580, 620).target_price_profit,
-                               15028.7)
-        self.assertAlmostEqual(LongCall.build(self.stock, call_contract, 'mid', self.broker_settings, 349.7, 549.7).target_price_profit,
-                               -1.3)
-        self.assertAlmostEqual(LongCall.build(self.stock, call_contract, 'mid', self.broker_settings, 260, 280).target_price_profit,
-                               -16171.3)
+        self.assertAlmostEqual(
+            LongCall.build(self.stock, call_contract, 'mid', self.broker_settings, 580, 620).target_price_profit,
+            15028.7)
+        self.assertAlmostEqual(
+            LongCall.build(self.stock, call_contract, 'mid', self.broker_settings, 349.7, 549.7).target_price_profit,
+            -1.3)
+        self.assertAlmostEqual(
+            LongCall.build(self.stock, call_contract, 'mid', self.broker_settings, 260, 280).target_price_profit,
+            -16171.3)
 
     def test_value_in_price_range(self):
         call_contract = OptionContract(self.ticker, True, self.yahoo_input, self.stock_price)
@@ -177,12 +191,15 @@ class CallTradesTestCase(TestCase):
         self.assertAlmostEqual(sell_call.target_price_profit, -1.3)
         self.assertAlmostEqual(sell_call.cost, 25831.3)
 
-        self.assertAlmostEqual(CoveredCall.build(self.stock, call_contract, 'mid', self.broker_settings, 100, 120).target_price_profit,
-                               -14831.3)
-        self.assertAlmostEqual(CoveredCall.build(self.stock, call_contract, 'mid', self.broker_settings, 300, 310).target_price_profit,
-                               2968.7)
-        self.assertAlmostEqual(CoveredCall.build(self.stock, call_contract, 'mid', self.broker_settings, 278, 298).target_price_profit,
-                               2718.7)
+        self.assertAlmostEqual(
+            CoveredCall.build(self.stock, call_contract, 'mid', self.broker_settings, 100, 120).target_price_profit,
+            -14831.3)
+        self.assertAlmostEqual(
+            CoveredCall.build(self.stock, call_contract, 'mid', self.broker_settings, 300, 310).target_price_profit,
+            2968.7)
+        self.assertAlmostEqual(
+            CoveredCall.build(self.stock, call_contract, 'mid', self.broker_settings, 278, 298).target_price_profit,
+            2718.7)
 
         call_contract = OptionContract(self.ticker, True, self.yahoo_input2, self.stock_price)
         sell_call = CoveredCall.build(self.stock, call_contract, 'mid', self.broker_settings)
@@ -223,7 +240,8 @@ class CallTradesTestCase(TestCase):
         self.assertAlmostEqual(OptionLeg(True, 2, call_contract, 'mid', self.broker_settings).cost, 16170 * 2 + 1.3)
         self.assertAlmostEqual(OptionLeg(True, 2, call_contract, 'market', self.broker_settings).cost, 16315 * 2 + 1.3)
         self.assertAlmostEqual(OptionLeg(False, 2, call_contract, 'mid', self.broker_settings).cost, -16170 * 2 + 1.3)
-        self.assertAlmostEqual(OptionLeg(False, 2, call_contract, 'market', self.broker_settings).cost, -16025 * 2 + 1.3)
+        self.assertAlmostEqual(OptionLeg(False, 2, call_contract, 'market', self.broker_settings).cost,
+                               -16025 * 2 + 1.3)
 
 
 class PutTradesTestCase(TestCase):
@@ -300,7 +318,8 @@ class PutTradesTestCase(TestCase):
     def test_buy_put(self, mock_now):
         mock_now.return_value = make_aware(datetime.fromtimestamp(MOCK_NOW_TIMESTAMP), get_default_timezone())
         put_contract = OptionContract(self.ticker, False, self.yahoo_input, self.stock_price)
-        long_put = LongPut.build(self.stock, put_contract, 'mid', self.broker_settings, target_price_lower=65.0, target_price_upper=65.0)
+        long_put = LongPut.build(self.stock, put_contract, 'mid', self.broker_settings, target_price_lower=65.0,
+                                 target_price_upper=65.0)
 
         # Test attributes.
         self.assertEqual(put_contract.ask, 1.0)

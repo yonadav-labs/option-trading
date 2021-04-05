@@ -130,7 +130,8 @@ def fetch_price_target(ticker, new_stats):
 
 
 def fetch_historical_volatility(ticker, new_stats):
-    '''Context: https://www.profitspi.com/stock/view.aspx?v=stock-chart&uv=100585'''
+    '''Context:https://www.profitspi.com/stock/view.aspx?v=stock-chart&uv=100585
+        Data verification: https://www.barchart.com/stocks/quotes/AAPL/overview'''
     url = f'{settings.IEXCLOUD_BASE_URL}/stock/{ticker.symbol}/indicator/volatility'
     resp = requests.get(url, params={**DEFAULT_QUERY_PARAMS, 'indicatorOnly': True, 'range': '35d', 'input1': 20})
 

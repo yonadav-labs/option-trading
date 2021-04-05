@@ -70,7 +70,7 @@ export default function TradeDetailsCard(props) {
                                     - {PriceFormatter(trade.target_price_upper)} ({ProfitFormatter(trade.to_target_price_upper_ratio)})
                                     </Col>
                                 <Col sm="4" xs="6">
-                                    <MetricLabel label="hypothetical profit" />
+                                    <MetricLabel label="hypothetical return" />
                                     {PriceFormatter(trade.target_price_profit)} ({ProfitFormatter(trade.target_price_profit_ratio)})
                                     </Col>
                             </Row>

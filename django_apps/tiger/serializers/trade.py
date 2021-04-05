@@ -117,6 +117,12 @@ class TradeSerializer(serializers.Serializer):
     two_sigma_profit_lower = ReadOnlyDollarDecimalField()
     two_sigma_profit_lower_price = ReadOnlyDollarDecimalField()
     two_sigma_profit_lower_ratio = ReadOnlyRatioDecimalField()
+    ten_percent_best_return_price = ReadOnlyDollarDecimalField()
+    ten_percent_best_return = ReadOnlyDollarDecimalField()
+    ten_percent_best_return_ratio = ReadOnlyRatioDecimalField()
+    ten_percent_worst_return_price = ReadOnlyDollarDecimalField()
+    ten_percent_worst_return = ReadOnlyDollarDecimalField()
+    ten_percent_worst_return_ratio = ReadOnlyRatioDecimalField()
     quote_time = serializers.ReadOnlyField()
     net_debit_per_unit = ReadOnlyDollarDecimalField()
 

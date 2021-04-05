@@ -35,7 +35,8 @@ export default function NewStrategyScreener() {
         strategyType: 'all',
         minVolume: 1,
         minOpenInterest: 10,
-        lastTradedDate: -9999999
+        lastTradedDate: -9999999,
+        tenPercentWorstReturnRatio: -1.0,
     })
 
     // component management states
@@ -66,7 +67,8 @@ export default function NewStrategyScreener() {
             strategyType: 'all',
             minVolume: 1,
             minOpenInterest: 10,
-            lastTradedDate: -9999999
+            lastTradedDate: -9999999,
+            tenPercentWorstReturnRatio: -1.0,
         })
     }
 
@@ -140,17 +142,20 @@ export default function NewStrategyScreener() {
             let url = `${API_URL}/dev/tickers/${selectedTicker.symbol}/trades/`;
             let body = {
                 "expiration_timestamps": [selectedExpirationTimestamp[0].value],
+                "strategy_settings": {
+                    "premium_type": filters.premiumType,
+                    "target_price_lower": filters.targetPriceLower,
+                    "target_price_upper": filters.targetPriceUpper,
+                    "cash_to_invest": filters.cashToInvest,
+                },
                 "contract_filters": {
                     "min.open_interest": filters.minOpenInterest,
                     "min.volume": filters.minVolume,
                     "min.last_trade_date": filters.lastTradedDate
                 },
-                "strategy_settings": {
-                    "premium_type": filters.premiumType,
-                    "target_price_lower": filters.targetPriceLower,
-                    "target_price_upper": filters.targetPriceUpper,
-                    "cash_to_invest": filters.cashToInvest
-                }
+                "trade_filters": {
+                    "min.ten_percent_worst_return_ratio": filters.tenPercentWorstReturnRatio,
+                },
             }
             setModalActive(true);
             const response = await Axios.post(url, body, { headers });
@@ -180,9 +185,6 @@ export default function NewStrategyScreener() {
             case 'cash':
                 setFilters({ ...filters, cashToInvest: event })
                 break;
-            case 'strategy':
-                setFilters({ ...filters, strategyType: event.target.value })
-                break;
             case 'volume':
                 setFilters({ ...filters, minVolume: event.target.value })
                 break;
@@ -200,6 +202,9 @@ export default function NewStrategyScreener() {
                 break;
             case 'higherTarget':
                 setFilters({ ...filters, targetPriceUpper: event })
+                break;
+            case 'tenPercentWorstReturnRatio':
+                setFilters({ ...filters, tenPercentWorstReturnRatio: event.target.value })
                 break;
 
             default:

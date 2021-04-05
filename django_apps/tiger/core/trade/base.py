@@ -203,6 +203,7 @@ class Trade(ABC):
     def graph_y_points(self):
         return [self.get_profit_in_price_range(price, price) for price in self.graph_x_points]
 
+    # TODO: deprecated.
     def get_sigma_prices(self, sigma_num):
         '''Returns 2 prices, -X * sigma, X * sigma, based on historical volatility.'''
         # TODO: historical_volatility is not saved as snapshot.
@@ -215,10 +216,12 @@ class Trade(ABC):
         sigma = daily_volatility * math.sqrt(trading_days_till_exp)
         return [max(0.0, self.stock.stock_price * (1 + n * sigma)) for n in (-sigma_num, sigma_num)]
 
+    # TODO: deprecated.
     @property
     def two_sigma_prices(self):
         return self.get_sigma_prices(2)
 
+    # TODO: deprecated.
     @property
     def two_sigma_profit_lower(self):
         # TODO: change to a function that can handle peek/valley. Currently all strategies are monotonic.
@@ -228,6 +231,7 @@ class Trade(ABC):
         return max(-self.cost, min(self.get_profit_in_price_range(lower_price, lower_price),
                                    self.get_profit_in_price_range(higher_price, higher_price)))
 
+    # TODO: deprecated.
     @property
     def two_sigma_profit_lower_price(self):
         # TODO: change to a function that can handle peek/valley. Currently all strategies are monotonic.
@@ -238,11 +242,87 @@ class Trade(ABC):
         higer_price_profit = self.get_profit_in_price_range(higher_price, higher_price)
         return lower_price if lower_price_profit < higer_price_profit else higer_price_profit
 
+    # TODO: deprecated.
     @property
     def two_sigma_profit_lower_ratio(self):
         if self.two_sigma_profit_lower is None:
             return None
         return self.two_sigma_profit_lower / self.cost
+
+    @property
+    def sigma(self):
+        # https://www.profitspi.com/stock/view.aspx?v=stock-chart&uv=100585
+        # https://www.macroption.com/historical-volatility-calculation/
+        historical_volatility = self.stock.historical_volatility
+        if not historical_volatility:
+            return None
+        # TODO: change to count actual trading days.
+        trading_days_till_exp = int(self.min_days_till_expiration * 5.0 / 7.0)  # Estimation to exclude weekends.
+        daily_volatility = historical_volatility / math.sqrt(252)
+        return daily_volatility * math.sqrt(trading_days_till_exp)
+
+    def get_ten_percent_prices_and_returns(self, is_profit):
+        '''
+        Use stock's historic volatility to estimate an extreme price range that has 10% probability to happen.
+        Then we calculate the potential profit/loss with this price range as a estimate for how rewarding/risky
+        this trade is.
+        :param is_profit: if True, return the price and return of 10% profit case, otherwise, return for the losee case.
+        :return: a 10% chance price and it's return.
+        '''
+        if self.sigma is None:
+            return None
+        stock_price = self.stock.stock_price
+        # TODO: use 3 sigma when profit calculation is using normal distribution.
+        lowest_price = max(0, stock_price * (1 - 2 * self.sigma))
+        highest_price = max(0, stock_price * (1 + 2 * self.sigma))
+        # https://www.mymathtables.com/statistic/z-score-percentile-normal-distribution.html
+        # 1.282: 10% percentile.
+        ten_percent_low_price = max(0, stock_price * (1 - 1.282 * self.sigma))
+        ten_percent_high_price = max(0, stock_price * (1 + 1.282 * self.sigma))
+        low_price_return = max(-self.cost, self.get_profit_in_price_range(lowest_price, ten_percent_low_price))
+        high_price_return = max(-self.cost, self.get_profit_in_price_range(ten_percent_high_price, highest_price))
+        if is_profit:
+            return [ten_percent_low_price, low_price_return] if low_price_return > high_price_return \
+                else [ten_percent_high_price, high_price_return]
+        else:
+            return [ten_percent_high_price, high_price_return] if low_price_return > high_price_return \
+                else [ten_percent_low_price, low_price_return]
+
+    @property
+    def ten_percent_best_return_price(self):
+        if self.sigma is None:
+            return None
+        return self.get_ten_percent_prices_and_returns(is_profit=True)[0]
+
+    @property
+    def ten_percent_best_return(self):
+        if self.sigma is None:
+            return None
+        return self.get_ten_percent_prices_and_returns(is_profit=True)[1]
+
+    @property
+    def ten_percent_best_return_ratio(self):
+        if self.sigma is None:
+            return None
+        return self.ten_percent_best_return / self.cost
+
+    @property
+    def ten_percent_worst_return_price(self):
+        if self.sigma is None:
+            return None
+        return self.get_ten_percent_prices_and_returns(is_profit=False)[0]
+
+    @property
+    def ten_percent_worst_return(self):
+        if self.sigma is None:
+            return None
+        return self.get_ten_percent_prices_and_returns(is_profit=False)[1]
+
+    @property
+    def ten_percent_worst_return_ratio(self):
+        if self.sigma is None:
+            return None
+        return self.ten_percent_worst_return / self.cost
 
     def get_profit_in_price_range(self, price_lower, price_upper):
         profit_sum = 0.0
