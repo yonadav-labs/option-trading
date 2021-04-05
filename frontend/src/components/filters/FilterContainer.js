@@ -11,9 +11,10 @@ export default function FilterContainer({ onFilterChange, initialPrice }) {
     const premiumPriceFilter = [
         { label: "Market Order Price", value: "market" },
         { label: "Mid/Mark Price", value: 'mid' }
-    ]
+    ];
 
     const minVolumeFilter = [
+        { label: "All", value: 0 },
         { label: "≥ 1", value: 1 },
         { label: "≥ 5", value: 5 },
         { label: "≥ 10", value: 10 },
@@ -22,33 +23,37 @@ export default function FilterContainer({ onFilterChange, initialPrice }) {
         { label: "≥ 500", value: 500 },
         { label: "≥ 1000", value: 1000 },
         { label: "≥ 5000", value: 5000 },
-    ]
+    ];
 
     const minInterestFilter = [
+        { label: "All", value: 0 },
+        { label: "≥ 1", value: 1 },
+        { label: "≥ 5", value: 5 },
         { label: "≥ 10", value: 10 },
         { label: "≥ 50", value: 50 },
         { label: "≥ 100", value: 100 },
         { label: "≥ 500", value: 500 },
         { label: "≥ 1000", value: 1000 },
         { label: "≥ 5000", value: 5000 },
-    ]
+    ];
 
     const lastTradedFilter = [
         { label: "All", value: -9999999 },
         { label: "Last Traded in 1 Days", value: -1 },
         { label: "Last Traded in 5 Days", value: -5 },
         { label: "Last Traded in 10 Days", value: -10 },
-    ]
+        { label: "Last Traded in 30 Days", value: -30 },
+    ];
 
     const max10PctLossFilter = [
         { label: "All", value: -1.0 },
         { label: "≥ -5%", value: -0.05 },
         { label: "≥ -10%", value: -0.1 },
         { label: "≥ -20%", value: -0.2 },
-        { label: "≥ -40%", value: -0.2 },
-        { label: "≥ -60%", value: -0.5 },
+        { label: "≥ -40%", value: -0.4 },
+        { label: "≥ -60%", value: -0.6 },
         { label: "≥ -80%", value: -0.8 },
-    ]
+    ];
 
     return (
         <>
@@ -71,18 +76,18 @@ export default function FilterContainer({ onFilterChange, initialPrice }) {
             </Box>
             <Box py={2}>
                 <Grid item style={{ paddingBottom: '0.3rem' }}>
-                    <MetricLabel label={"min volume"} />
+                    <MetricLabel label={"volume"} />
                 </Grid>
                 <Grid item>
-                    <MaterialFilter onFilterChange={(event) => onFilterChange(event, 'volume')} options={minVolumeFilter} defaultValue={1} />
+                    <MaterialFilter onFilterChange={(event) => onFilterChange(event, 'volume')} options={minVolumeFilter} defaultValue={0} />
                 </Grid>
             </Box>
             <Box py={2}>
                 <Grid item style={{ paddingBottom: '0.3rem' }}>
-                    <MetricLabel label={"min open interest"} />
+                    <MetricLabel label={"open interest"} />
                 </Grid>
                 <Grid item>
-                    <MaterialFilter onFilterChange={(event) => onFilterChange(event, 'interest')} options={minInterestFilter} defaultValue={10} />
+                    <MaterialFilter onFilterChange={(event) => onFilterChange(event, 'interest')} options={minInterestFilter} defaultValue={0} />
                 </Grid>
             </Box>
             <Box py={2}>
