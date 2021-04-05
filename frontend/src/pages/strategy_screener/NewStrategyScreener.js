@@ -32,9 +32,8 @@ export default function NewStrategyScreener() {
         targetPriceUpper: null,
         premiumType: 'market',
         cashToInvest: null,
-        strategyType: 'all',
-        minVolume: 1,
-        minOpenInterest: 10,
+        minVolume: 0,
+        minOpenInterest: 0,
         lastTradedDate: -9999999,
         tenPercentWorstReturnRatio: -1.0,
     })
@@ -65,8 +64,8 @@ export default function NewStrategyScreener() {
             premiumType: 'market',
             cashToInvest: null,
             strategyType: 'all',
-            minVolume: 1,
-            minOpenInterest: 10,
+            minVolume: 0,
+            minOpenInterest: 0,
             lastTradedDate: -9999999,
             tenPercentWorstReturnRatio: -1.0,
         })
