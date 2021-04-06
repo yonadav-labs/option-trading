@@ -1,11 +1,24 @@
 import React, {useState} from "react";
-import { Grid, Button, Popper, Box} from "@material-ui/core";
+import { Grid, Button, Popper, Box, makeStyles} from "@material-ui/core";
 import { TimestampDateFormatter, formatLargeNumber } from "../utils";
 import ZoomInIcon from '@material-ui/icons/ZoomIn';
 import TradingViewWidget from 'react-tradingview-widget';
 import MetricLabel from "./MetricLabel";
 
+const useStyles = makeStyles(theme => ({
+    viewChartButton: {
+        color: '#ff8f2b',
+        background: 'white',
+        border: '1px solid #E4E4E4',
+        '&:hover': {
+            background: '#fafafa',
+            boxShadow: 'none',
+        }
+    }
+}))
+
 export default function NewTickerSummary({ basicInfo }) {
+    const classes = useStyles();
     const [anchorEl, setAnchorEl] = useState(null);
     const handleClick = (event) => {
         setAnchorEl(anchorEl ? null : event.currentTarget);
@@ -92,8 +105,8 @@ export default function NewTickerSummary({ basicInfo }) {
                 </span>
             </Grid>
             <Grid item>
-                <Button size="large" variant="outlined" onClick={handleClick}>
-                    <ZoomInIcon style={{ color: "#FF8F2B" }} />{" "}
+                <Button className={classes.viewChartButton} size="large" onClick={handleClick}>
+                    <ZoomInIcon/>
                     <span className="stock-summary-title">View Chart</span>
                 </Button>
             </Grid>
