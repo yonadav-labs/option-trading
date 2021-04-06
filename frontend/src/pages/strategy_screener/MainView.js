@@ -6,7 +6,20 @@ import TickerAutocomplete from "../../components/TickerAutocomplete";
 import FilterContainer from "../../components/filters/FilterContainer";
 import NewTickerSummary from "../../components/NewTickerSummary";
 
-export default function MainView({ allTickers, onTickerSelectionChange, bestTrades, basicInfo, onFilterChange, filters }) {
+export default function MainView(props) {
+    const { 
+        allTickers, 
+        selectedTicker, 
+        onTickerSelectionChange, 
+        selectedExpirationTimestamp, 
+        expirationTimestampsOptions,
+        onExpirationSelectionChange,
+        getBestTrades,
+        bestTrades, 
+        basicInfo, 
+        onFilterChange, 
+        filters 
+    } = props
     const [renderedTrades, setRenderedTrades] = useState([])
     const [noOfPages, setNoOfPages] = useState(null)
 
@@ -15,9 +28,15 @@ export default function MainView({ allTickers, onTickerSelectionChange, bestTrad
     }
 
     useEffect(() => {
-        setRenderedTrades(bestTrades.slice(0, 10))
-        setNoOfPages(Math.ceil(bestTrades.length / 10))
+        if (bestTrades) {
+            setRenderedTrades(bestTrades.slice(0, 10))
+            setNoOfPages(Math.ceil(bestTrades.length / 10))
+        } else {setRenderedTrades([])}
     }, [bestTrades])
+
+    useEffect(() => {
+        getBestTrades()
+    }, [selectedExpirationTimestamp])
 
     return (
         <>
@@ -25,7 +44,7 @@ export default function MainView({ allTickers, onTickerSelectionChange, bestTrad
                 <Grid item sm={2}>
                     <Box p={4} boxShadow={3} bgcolor='#333741' color="white" height="105%" style={{ marginRight: '-2rem' }}>
                         <Grid container direction="column" justify="center" className="filter-label">
-                            <FilterContainer onFilterChange={onFilterChange} filters={filters} initialPrice={basicInfo.regularMarketPrice} />
+                            <FilterContainer onFilterChange={onFilterChange} selectedTicker={selectedTicker} filters={filters} initialPrice={basicInfo.regularMarketPrice} />
                         </Grid>
                     </Box>
                 </Grid>
@@ -41,6 +60,7 @@ export default function MainView({ allTickers, onTickerSelectionChange, bestTrad
                                         tickers={allTickers}
                                         onChange={onTickerSelectionChange}
                                         size={'small'}
+                                        value={selectedTicker}
                                     />
                                 </Grid>
                                 <Grid item sm={2} style={{ paddingLeft: '1rem' }}>
@@ -49,8 +69,9 @@ export default function MainView({ allTickers, onTickerSelectionChange, bestTrad
                                 <Grid item sm={2}>
                                     <Autocomplete
                                         id="expiration-dates"
-                                        multiple
-                                        options={options}
+                                        options={expirationTimestampsOptions}
+                                        value={selectedExpirationTimestamp}
+                                        onChange={onExpirationSelectionChange}
                                         size="small"
                                         fullWidth
                                         renderInput={(params) => (
@@ -60,6 +81,7 @@ export default function MainView({ allTickers, onTickerSelectionChange, bestTrad
                                                 placeholder="Select an expiration date"
                                             />
                                         )}
+                                        getOptionLabel={(option) => option.label}
                                     />
                                 </Grid>
                             </Grid>
@@ -76,7 +98,7 @@ export default function MainView({ allTickers, onTickerSelectionChange, bestTrad
                 </Grid>
             </Grid>
             <Grid container justifyContent="flex-end">
-                <Pagination count={noOfPages} color="primary" onChange={pageChangeHandler} />
+                <Pagination count={noOfPages} shape="rounded" onChange={pageChangeHandler} />
             </Grid>
         </>
     );

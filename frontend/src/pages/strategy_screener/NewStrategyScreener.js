@@ -15,14 +15,14 @@ export default function NewStrategyScreener() {
 
     // stock/ticker states
     const [allTickers, setAllTickers] = useState([]);
-    const [selectedTicker, setSelectedTicker] = useState();
+    const [selectedTicker, setSelectedTicker] = useState(null);
     const [basicInfo, setBasicInfo] = useState({});
     const [bestTrades, setBestTrades] = useState(null);
 
     // expiration date states
     const [expirationTimestamps, setExpirationTimestamps] = useState([]);
     const [expirationTimestampsOptions, setExpirationTimestampsOptions] = useState([])
-    const [selectedExpirationTimestamp, setSelectedExpirationTimestamp] = useState([]);
+    const [selectedExpirationTimestamp, setSelectedExpirationTimestamp] = useState(null);
 
     // filter states
     const [targetPriceLower, setTargetPriceLower] = useState(null);
@@ -52,7 +52,7 @@ export default function NewStrategyScreener() {
         setSelectedTicker(null);
         setExpirationTimestamps([]);
         setExpirationTimestampsOptions([])
-        setSelectedExpirationTimestamp([]);
+        setSelectedExpirationTimestamp(null);
         setBasicInfo({});
         setModalActive(false);
         setSentiment('')
@@ -69,6 +69,7 @@ export default function NewStrategyScreener() {
             lastTradedDate: -9999999,
             tenPercentWorstReturnRatio: -1.0,
         })
+        setBestTrades(null)
     }
 
     const onTickerSelectionChange = (e, selected) => {
@@ -112,6 +113,7 @@ export default function NewStrategyScreener() {
             })
             setExpirationTimestampsOptions(arr)
             setExpirationDisabled(false)
+            setSelectedExpirationTimestamp(arr[0])
         }
     }, [expirationTimestamps])
 
@@ -138,38 +140,40 @@ export default function NewStrategyScreener() {
 
     const getBestTrades = async () => {
         try {
-            let url = `${API_URL}/dev/tickers/${selectedTicker.symbol}/trades/`;
-            let body = {
-                "expiration_timestamps": [selectedExpirationTimestamp[0].value],
-                "strategy_settings": {
-                    "premium_type": filters.premiumType,
-                    "target_price_lower": filters.targetPriceLower,
-                    "target_price_upper": filters.targetPriceUpper,
-                    "cash_to_invest": filters.cashToInvest,
-                },
-                "contract_filters": {
-                    "min.open_interest": filters.minOpenInterest,
-                    "min.volume": filters.minVolume,
-                    "min.last_trade_date": filters.lastTradedDate
-                },
-                "trade_filters": {
-                    "min.ten_percent_worst_return_ratio": filters.tenPercentWorstReturnRatio,
-                },
+            if (selectedTicker) {
+                let url = `${API_URL}/dev/tickers/${selectedTicker.symbol}/trades/`;
+                let body = {
+                    "expiration_timestamps": [selectedExpirationTimestamp.value],
+                    "strategy_settings": {
+                        "premium_type": filters.premiumType,
+                        "target_price_lower": filters.targetPriceLower,
+                        "target_price_upper": filters.targetPriceUpper,
+                        "cash_to_invest": filters.cashToInvest,
+                    },
+                    "contract_filters": {
+                        "min.open_interest": filters.minOpenInterest,
+                        "min.volume": filters.minVolume,
+                        "min.last_trade_date": filters.lastTradedDate
+                    },
+                    "trade_filters": {
+                        "min.ten_percent_worst_return_ratio": filters.tenPercentWorstReturnRatio,
+                    },
+                }
+                setModalActive(true);
+                const response = await Axios.post(url, body, { headers });
+                let trades = response.data.trades;
+                trades.map((val, index) => {
+                    val.type2 = val.type;
+                    val.min_last_trade_date2 = val.min_last_trade_date;
+                    val.min_volume2 = val.min_volume;
+                    val.id = index;
+                    return val;
+                });
+                trades.sort((a, b) => b.target_price_profit - a.target_price_profit);
+                setBestTrades(trades);
+                setPageState(false);
+                setModalActive(false);
             }
-            setModalActive(true);
-            const response = await Axios.post(url, body, { headers });
-            let trades = response.data.trades;
-            trades.map((val, index) => {
-                val.type2 = val.type;
-                val.min_last_trade_date2 = val.min_last_trade_date;
-                val.min_volume2 = val.min_volume;
-                val.id = index;
-                return val;
-            });
-            trades.sort((a, b) => b.target_price_profit - a.target_price_profit);
-            setBestTrades(trades);
-            setPageState(false);
-            setModalActive(false);
         } catch (error) {
             console.error(error);
             setModalActive(false);
@@ -224,6 +228,7 @@ export default function NewStrategyScreener() {
                 pageState ?
                     <LandingView
                         allTickers={allTickers}
+                        selectedTicker={selectedTicker}
                         onTickerSelectionChange={onTickerSelectionChange}
                         expirationTimestampsOptions={expirationTimestampsOptions}
                         expirationDisabled={expirationDisabled}
@@ -236,11 +241,13 @@ export default function NewStrategyScreener() {
                     :
                     <MainView
                         allTickers={allTickers}
+                        selectedTicker={selectedTicker}
                         onTickerSelectionChange={onTickerSelectionChange}
                         expirationTimestampsOptions={expirationTimestampsOptions}
                         expirationDisabled={expirationDisabled}
                         onExpirationSelectionChange={onExpirationSelectionChange}
                         selectedExpirationTimestamp={selectedExpirationTimestamp}
+                        getBestTrades={getBestTrades}
                         bestTrades={bestTrades}
                         basicInfo={basicInfo}
                         onFilterChange={onFilterChange}

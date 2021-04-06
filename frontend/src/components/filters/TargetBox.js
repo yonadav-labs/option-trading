@@ -1,4 +1,4 @@
-import React, {useState, useCallback} from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import { Box, Grid, withStyles } from "@material-ui/core";
 import { ToggleButtonGroup, ToggleButton } from "@material-ui/lab/";
 import _ from "lodash";
@@ -47,7 +47,7 @@ const StyledToggleButton = withStyles({
 })(ToggleButton);
 
 
-export default function TargetBox({ onFilterChange, initialPrice }) {
+export default function PriceTargetBox({ onFilterChange, initialPrice, selectedTicker }) {
     const [targetType, setTargetType] = useState('price')
     const [priceTargetValue, setPriceTargetValue] = useState(initialPrice)
     const [intervalValue, setIntervalValue] = useState(0)
@@ -106,6 +106,15 @@ export default function TargetBox({ onFilterChange, initialPrice }) {
         setInterval({...interval, higher: val})
         delayedQuery(val, "higherTarget")
     }
+
+    useEffect(() => {
+        setPriceTargetValue(initialPrice || 0)
+    }, [selectedTicker])
+
+    useEffect(() => {
+        handleTargetType("a", "price")
+        // console.log('hitting', priceTargetValue)
+    }, [priceTargetValue])
 
     return (
         <Box p={4} py={3} mx={-4} bgcolor='rgba(51, 51, 51, 0.75)'>

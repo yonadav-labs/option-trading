@@ -116,7 +116,7 @@ export default function NewTickerSummary({ basicInfo }) {
                 anchorEl={anchorEl} 
             >
                 <Box boxShadow={3} bgcolor="white" p={2} width='600px' height='400px'>
-                    <TradingViewWidget symbol={basicInfo.symbol} autosize/>
+                    <TradingViewWidget symbol={basicInfo.symbol || ''} autosize/>
                 </Box>
             </Popper>
         </Grid>

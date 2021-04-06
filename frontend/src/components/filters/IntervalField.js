@@ -22,7 +22,7 @@ export default function IntervalField({ initialPrice, intervalValue, intervalVal
                 fullWidth
                 value={intervalValue}
                 onChange={(e) => intervalValueChangeHandler(e.target.value)}
-                defaultValue={0}
+                // defaultValue={0}
                 startAdornment={<InputAdornment position="start"> <span style={{color: "#cdcece"}}>+/- <span style={{color: "white"}}>$</span></span> </InputAdornment>}
                 endAdornment={
                     <InputAdornment position="end">

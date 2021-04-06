@@ -48,7 +48,7 @@ export default function PriceTarget({ initialPrice, priceTargetHandler, priceTar
                 }}
                 fullWidth
                 value={priceTargetValue}
-                defaultValue={initialPrice}
+                // defaultValue={initialPrice}
                 onChange={(e) => priceTargetHandler(e.target.value)}
                 onClick={handleClick}
                 startAdornment={<InputAdornment position="start"> <span style={{ color: "white" }}>$</span></InputAdornment>}

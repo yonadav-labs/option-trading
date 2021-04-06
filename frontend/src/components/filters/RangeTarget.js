@@ -47,7 +47,6 @@ export default function RangeTarget({ changeHandler, initialPrice, priceTargetOp
                 }}
                 fullWidth
                 value={value}
-                defaultValue={value}
                 onChange={(e) => changeHandler(e.target.value)}
                 onClick={handleClick}
                 startAdornment={<InputAdornment position="start"> <span style={{color: "white"}}>$</span></InputAdornment>}

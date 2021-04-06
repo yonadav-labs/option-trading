@@ -8,7 +8,9 @@ import {
 import TickerAutocomplete from "../../components/TickerAutocomplete";
 
 export default function LandingView(props) {
-    const { allTickers,
+    const { 
+        allTickers,
+        selectedTicker,
         selectedExpirationTimestamp,
         onTickerSelectionChange,
         expirationTimestampsOptions,
@@ -58,6 +60,7 @@ export default function LandingView(props) {
                                     <TickerAutocomplete
                                         tickers={allTickers}
                                         onChange={onTickerSelectionChange}
+                                        value={selectedTicker}
                                     />
                                 </Grid>
                             </Grid>
@@ -74,7 +77,6 @@ export default function LandingView(props) {
                                 <Grid item xs={6}>
                                     <Autocomplete
                                         id="expiration-dates"
-                                        multiple
                                         value={selectedExpirationTimestamp}
                                         options={expirationTimestampsOptions}
                                         getOptionLabel={(option) =>
@@ -111,7 +113,7 @@ export default function LandingView(props) {
                             <br />
                             <Grid container direction="row" justifyContent="center" spacing={3} >
                                 <Grid item xs={4}>
-                                    <Button size="large" onClick={setTargetPrice} disabled={selectedExpirationTimestamp.length < 1 || !sentiment}>
+                                    <Button size="large" onClick={setTargetPrice} disabled={!selectedExpirationTimestamp || !sentiment}>
                                         Analyze
                                     </Button>
                                 </Grid>

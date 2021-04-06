@@ -7,7 +7,7 @@ import MetricLabel from "../MetricLabel";
 import TargetBox from "./TargetBox";
 
 
-export default function FilterContainer({ onFilterChange, initialPrice }) {
+export default function FilterContainer({ onFilterChange, initialPrice, filters, selectedTicker }) {
     const premiumPriceFilter = [
         { label: "Market Order Price", value: "market" },
         { label: "Mid/Mark Price", value: 'mid' }
@@ -65,13 +65,13 @@ export default function FilterContainer({ onFilterChange, initialPrice }) {
                     </Grid>
                 </Grid>
             </Box>
-            <TargetBox onFilterChange={onFilterChange} initialPrice={initialPrice} />
+            <TargetBox onFilterChange={onFilterChange} initialPrice={initialPrice} filters={filters} selectedTicker={selectedTicker}/>
             <Box py={2}>
                 <Grid item style={{ paddingBottom: '0.3rem' }}>
                     <MetricLabel label={"premium price options"} />
                 </Grid>
                 <Grid item>
-                    <MaterialFilter onFilterChange={(event) => onFilterChange(event, 'premium')} options={premiumPriceFilter} defaultValue={"market"} />
+                    <MaterialFilter onFilterChange={(event) => onFilterChange(event, 'premium')} options={premiumPriceFilter} value={filters.premiumType} defaultValue={"market"} />
                 </Grid>
             </Box>
             <Box py={2}>
@@ -79,7 +79,7 @@ export default function FilterContainer({ onFilterChange, initialPrice }) {
                     <MetricLabel label={"volume"} />
                 </Grid>
                 <Grid item>
-                    <MaterialFilter onFilterChange={(event) => onFilterChange(event, 'volume')} options={minVolumeFilter} defaultValue={0} />
+                    <MaterialFilter onFilterChange={(event) => onFilterChange(event, 'volume')} options={minVolumeFilter} value={filters.minVolume} defaultValue={0} />
                 </Grid>
             </Box>
             <Box py={2}>
@@ -87,7 +87,7 @@ export default function FilterContainer({ onFilterChange, initialPrice }) {
                     <MetricLabel label={"open interest"} />
                 </Grid>
                 <Grid item>
-                    <MaterialFilter onFilterChange={(event) => onFilterChange(event, 'interest')} options={minInterestFilter} defaultValue={0} />
+                    <MaterialFilter onFilterChange={(event) => onFilterChange(event, 'interest')} options={minInterestFilter} value={filters.minOpenInterest} defaultValue={0} />
                 </Grid>
             </Box>
             <Box py={2}>
@@ -95,7 +95,7 @@ export default function FilterContainer({ onFilterChange, initialPrice }) {
                     <MetricLabel label={"10% chance loss"} />
                 </Grid>
                 <Grid item>
-                    <MaterialFilter onFilterChange={(event) => onFilterChange(event, 'tenPercentWorstReturnRatio')} options={max10PctLossFilter} defaultValue={-1.0} />
+                    <MaterialFilter onFilterChange={(event) => onFilterChange(event, 'tenPercentWorstReturnRatio')} options={max10PctLossFilter} value={filters.tenPercentWorstReturnRatio} defaultValue={-1.0} />
                 </Grid>
             </Box>
             <Box py={2}>
@@ -103,7 +103,7 @@ export default function FilterContainer({ onFilterChange, initialPrice }) {
                     <MetricLabel label={"cash to invest"} />
                 </Grid>
                 <Grid item>
-                    <DollarInputField onFilterChange={onFilterChange} placeholder="0 (optional)" />
+                    <DollarInputField onFilterChange={onFilterChange} placeholder="0 (optional)" value={filters.cashToInvest}/>
                 </Grid>
             </Box>
             <Box py={2}>
@@ -111,7 +111,7 @@ export default function FilterContainer({ onFilterChange, initialPrice }) {
                     <MetricLabel label={"time since last traded"} />
                 </Grid>
                 <Grid item>
-                    <MaterialFilter onFilterChange={(event) => onFilterChange(event, 'lastTraded')} options={lastTradedFilter} defaultValue={-9999999} />
+                    <MaterialFilter onFilterChange={(event) => onFilterChange(event, 'lastTraded')} options={lastTradedFilter} value={filters.lastTradedDate} defaultValue={-9999999} />
                 </Grid>
             </Box>
         </>
