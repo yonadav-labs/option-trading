@@ -4,19 +4,26 @@ import { ToggleButtonGroup, ToggleButton } from "@material-ui/lab/";
 import _ from "lodash";
 import { fixedFloat } from "../../utils";
 import MetricLabel from "../MetricLabel";
-import PriceTargetFilter from "./PriceTargetFilter";
+import PriceTarget from "./PriceTarget";
 import IntervalField from "./IntervalField";
 import RangeTarget from "./RangeTarget";
-
 
 const StyledToggleButtonGroup = withStyles((theme) => ({
     root: {
         width: "100%",
+        
     },
     grouped: {
-        margin: theme.spacing(0.5),
-        padding: 6
+        margin: theme.spacing(0.5)
     },
+    groupedHorizontal: {
+        "&:not(:last-child)": {
+            borderRadius: 30
+        },
+        "&:not(:first-child)": {
+            borderRadius: 30
+        }
+    }
 }))(ToggleButtonGroup);
 
 const StyledToggleButton = withStyles({
@@ -24,7 +31,6 @@ const StyledToggleButton = withStyles({
         color: "white",
         textTransform: "none",
         width: "100%",
-        borderRadius: 40,
         "&$selected": {
             backgroundColor: "white",
             color: "black",
@@ -33,12 +39,15 @@ const StyledToggleButton = withStyles({
                 color: "black",
             },
         },
+        "&:focus": {
+            outline: "none"
+        },
     },
     selected: {},
 })(ToggleButton);
 
 
-export default function PriceTargetBox({ onFilterChange, initialPrice }) {
+export default function TargetBox({ onFilterChange, initialPrice }) {
     const [targetType, setTargetType] = useState('price')
     const [priceTargetValue, setPriceTargetValue] = useState(initialPrice)
     const [intervalValue, setIntervalValue] = useState(0)
@@ -60,7 +69,8 @@ export default function PriceTargetBox({ onFilterChange, initialPrice }) {
     const delayedQuery = useCallback(_.debounce((i, t, j) => onFilterChange(i, t, j), 1000), []);
 
     const intervalValueChangeHandler = (e) => {
-        setIntervalValue(e)
+        const val = parseFloat(e) || 0
+        setIntervalValue(val)
         intervalChangeHandler(priceTargetValue, e)
     }
 
@@ -80,27 +90,30 @@ export default function PriceTargetBox({ onFilterChange, initialPrice }) {
     }
     
     const priceTargetHandler = (e) => {
-        setPriceTargetValue(parseFloat(e))
+        const val = parseFloat(e) || 0
+        setPriceTargetValue(val)
         intervalChangeHandler(e, intervalValue)
     }
 
     const lowerRangeHandler = (e) => {
-        setInterval({...interval, lower: parseFloat(e)})
-        delayedQuery(parseFloat(e), "lowerTarget")
+        const val = parseFloat(e) || 0
+        setInterval({...interval, lower: val})
+        delayedQuery(val, "lowerTarget")
     }
 
     const higherRangeHandler = (e) => {
-        setInterval({...interval, higher: parseFloat(e)})
-        delayedQuery(parseFloat(e), "higherTarget")
+        const val = parseFloat(e) || 0
+        setInterval({...interval, higher: val})
+        delayedQuery(val, "higherTarget")
     }
 
     return (
-        <Box p={4} py={3} bgcolor="#14161b" mx={-4}>
+        <Box p={4} py={3} mx={-4} bgcolor='rgba(51, 51, 51, 0.75)'>
             <Grid item style={{ paddingBottom: "0.3rem" }}>
-                <MetricLabel label={"target price on exp day"} />
+                <MetricLabel label={"stock price on exp day"} />
             </Grid>
             <Grid item style={{ paddingBottom: "0.5rem" }}>
-                <Box border={1} borderColor="white" borderRadius={10}>
+                <Box border={1} borderColor="white" borderRadius={30}>
                     <StyledToggleButtonGroup
                         value={targetType}
                         exclusive
@@ -120,10 +133,10 @@ export default function PriceTargetBox({ onFilterChange, initialPrice }) {
             { targetType === "price" ?
                 <>
                     <Grid item style={{ paddingBottom: "0.3rem" }}>
-                    <MetricLabel label={"target price"} />
+                    <MetricLabel label={"target"} />
                     </Grid>
                     <Grid item style={{ paddingBottom: "0.5rem" }}>
-                        <PriceTargetFilter
+                        <PriceTarget
                             onFilterChange={onFilterChange}
                             initialPrice={initialPrice}
                             priceTargetValue={priceTargetValue}
@@ -148,7 +161,7 @@ export default function PriceTargetBox({ onFilterChange, initialPrice }) {
                 :
                 <>
                     <Grid item style={{ paddingBottom: "0.3rem" }}>
-                    <MetricLabel label={"low target"} />
+                    <MetricLabel label={"low"} />
                     </Grid>
                     <Grid item style={{ paddingBottom: "0.5rem" }}>
                         <RangeTarget
@@ -159,7 +172,7 @@ export default function PriceTargetBox({ onFilterChange, initialPrice }) {
                         />
                     </Grid>
                     <Grid item style={{ paddingBottom: "0.3rem" }}>
-                        <MetricLabel label={"high target"} />
+                        <MetricLabel label={"high"} />
                     </Grid>
                     <Grid item style={{ paddingBottom: "0.2rem" }}>
                         <RangeTarget

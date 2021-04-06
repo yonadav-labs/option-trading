@@ -3,29 +3,32 @@ import { OutlinedInput, makeStyles, InputAdornment } from "@material-ui/core";
 import _ from "lodash";
 
 const useStyles = makeStyles((theme) => ({
-    root: {
-        background: "#53555d",
-        borderRadius: 5,
-        color: "white"
+    customInput: {
+        color: 'white',
+        background: 'rgba(255, 255, 255, 0.15)',
     }
 }));
 
-export default function MaterialTextField({ onFilterChange, placeholder }) {
+export default function DollarInputField({ onFilterChange, placeholder }) {
     const classes = useStyles();
     const [value, setValue] = useState('')
 
     // function to send fetch after 2 seconds
     const delayedQuery = useCallback(_.debounce(q => onFilterChange(q, "cash"), 2000), []);
     const changeHandler = (e) => {
-        setValue(e.target.value);
-        delayedQuery(parseFloat(e.target.value))
+        const val = parseFloat(e.target.value) || 0
+        setValue(val);
+        delayedQuery(val)
     };
 
     return (
         <OutlinedInput
-            className={classes.root}
+            className={classes.customInput}
             placeholder={placeholder}
-            type="number"
+            inputProps={{
+                inputMode: 'numeric',
+                pattern: '[0-9]*'
+            }}
             fullWidth
             value={value}
             onChange={changeHandler}

@@ -2,9 +2,9 @@ import React from "react";
 import { Grid, Box } from "@material-ui/core";
 import TuneIcon from '@material-ui/icons/Tune';
 import MaterialFilter from "./MaterialFilter";
-import MaterialTextField from "./MaterialTextField";
+import DollarInputField from "./DollarInputField";
 import MetricLabel from "../MetricLabel";
-import PriceTargetBox from "./PriceTargetBox";
+import TargetBox from "./TargetBox";
 
 
 export default function FilterContainer({ onFilterChange, initialPrice }) {
@@ -65,7 +65,7 @@ export default function FilterContainer({ onFilterChange, initialPrice }) {
                     </Grid>
                 </Grid>
             </Box>
-            <PriceTargetBox onFilterChange={onFilterChange} initialPrice={initialPrice} />
+            <TargetBox onFilterChange={onFilterChange} initialPrice={initialPrice} />
             <Box py={2}>
                 <Grid item style={{ paddingBottom: '0.3rem' }}>
                     <MetricLabel label={"premium price options"} />
@@ -103,7 +103,7 @@ export default function FilterContainer({ onFilterChange, initialPrice }) {
                     <MetricLabel label={"cash to invest"} />
                 </Grid>
                 <Grid item>
-                    <MaterialTextField onFilterChange={onFilterChange} placeholder="0 (optional)" />
+                    <DollarInputField onFilterChange={onFilterChange} placeholder="0 (optional)" />
                 </Grid>
             </Box>
             <Box py={2}>

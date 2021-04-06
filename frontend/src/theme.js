@@ -1,4 +1,6 @@
 import { createMuiTheme, responsiveFontSizes } from '@material-ui/core/styles'
+import ExpandMoreIcon from "@material-ui/icons/ExpandMore"
+import SvgIcon from "@material-ui/core/SvgIcon"
 
 let theme = createMuiTheme({
     palette: {
@@ -78,6 +80,7 @@ let theme = createMuiTheme({
             textTransform: 'uppercase'
         },
         button: {
+            fontFamily: "Roboto",
             fontWeight: 700,
             fontSize: '0.75rem',
             lineHeight: 1.3,
@@ -145,6 +148,30 @@ let theme = createMuiTheme({
             styleOverrides: {
                 root: {
                     opacity: 1,
+                }
+            }
+        },
+        MuiSelect: {
+            styleOverrides: {
+                icon: {
+                    color: '#ff8f2b'
+                }
+            },
+            defaultProps: {
+                IconComponent: ExpandMoreIcon
+            }
+        },
+        MuiAutocomplete: {
+            styleOverrides: {
+                popupIndicator: {
+                    '& span': {
+                        '& svg': {
+                            color: '#ff8f2b',
+                            '& path': {
+                                d: 'path("M 16.59 8.59 L 12 13.17 L 7.41 8.59 L 6 10 l 6 6 l 6 -6 Z")'
+                            }
+                        }
+                    }
                 }
             }
         }

@@ -4,9 +4,16 @@ import _ from "lodash";
 
 const useStyles = makeStyles((theme) => ({
     root: {
-        background: "#53555d",
-        borderRadius: 5,
-        color: "white"
+        color: 'white',
+        background: 'rgba(255, 255, 255, 0.15)',
+    },
+    rangeButton: {
+        justifyContent: 'space-between',
+        background: 'transparent',
+        color: 'black',
+        '&:hover': {
+            background: '#fafafa',
+        }
     }
 }));
 
@@ -34,7 +41,10 @@ export default function RangeTarget({ changeHandler, initialPrice, priceTargetOp
         <> 
             <OutlinedInput
                 className={classes.root}
-                type="number"
+                inputProps={{
+                    inputMode: 'numeric',
+                    pattern: '[0-9]*'
+                }}
                 fullWidth
                 value={value}
                 defaultValue={value}
@@ -62,10 +72,10 @@ export default function RangeTarget({ changeHandler, initialPrice, priceTargetOp
                 }}
             >
                 <Box boxShadow={3} bgcolor="white" p={1} width='200px'>
-                    <Grid container> 
+                    <Grid container spacing={1}> 
                         {priceTargetOptions.map((option, index) => { return (
                             <Grid xs={12} key={index} item>
-                                <Button color="secondary" style={{justifyContent: 'space-between'}} fullWidth onClick={() => selectHandler((initialPrice + (initialPrice * option)).toFixed(2))}>
+                                <Button className={classes.rangeButton} fullWidth onClick={() => selectHandler((initialPrice + (initialPrice * option)).toFixed(2))}>
                                     <span>${(initialPrice + (initialPrice * option)).toFixed(2)}</span> <span style={{color: "#cdcece"}}>{option > 0 ? "+" : null}{option * 100}%</span>
                                 </Button>
                             </Grid> 

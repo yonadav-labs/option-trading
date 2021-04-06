@@ -1,11 +1,10 @@
 import React from "react";
-import { OutlinedInput, makeStyles, InputAdornment } from "@material-ui/core";
+import { OutlinedInput, makeStyles, InputAdornment, Input, TextField } from "@material-ui/core";
 
 const useStyles = makeStyles((theme) => ({
-    root: {
-        background: "#53555d",
-        borderRadius: 5,
-        color: "white"
+    customInput: {
+        color: 'white',
+        background: 'rgba(255, 255, 255, 0.15)',
     }
 }));
 
@@ -15,8 +14,11 @@ export default function IntervalField({ initialPrice, intervalValue, intervalVal
     return (
         <> 
             <OutlinedInput
-                className={classes.root}
-                type="number"
+                className={classes.customInput}
+                inputProps={{
+                    inputMode: 'numeric',
+                    pattern: '[0-9]*'
+                }}
                 fullWidth
                 value={intervalValue}
                 onChange={(e) => intervalValueChangeHandler(e.target.value)}

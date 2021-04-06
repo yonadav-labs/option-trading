@@ -26,6 +26,9 @@ const useStyles = makeStyles(theme => ({
             font: "500 14px Roboto",
             color: "#FF902B",
         },
+        "&:hover": {
+            background: '#fafafa'
+        }
     },
     horizontalLine: {
         borderBottom: "1px solid #E4E4E4",
