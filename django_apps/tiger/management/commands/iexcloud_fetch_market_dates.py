@@ -27,5 +27,7 @@ class Command(BaseCommand):
             for date_response in date_responses:
                 MarketDate.objects.update_or_create(date=date_response['date'], type=self.date_type)
 
+        print('Market dates fetched.')
+
     def handle(self, *args, **options):
         self.fetch_market_dates()
