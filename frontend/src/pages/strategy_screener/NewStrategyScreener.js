@@ -165,9 +165,10 @@ export default function NewStrategyScreener() {
                 val.min_volume2 = val.min_volume;
                 val.id = index;
                 return val;
-            })
+            });
+            trades.sort((a, b) => b.target_price_profit - a.target_price_profit);
             setBestTrades(trades);
-            setPageState(false)
+            setPageState(false);
             setModalActive(false);
         } catch (error) {
             console.error(error);
