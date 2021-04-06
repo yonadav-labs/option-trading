@@ -76,7 +76,14 @@ let theme = createMuiTheme({
             lineHeight: 1.3,
             letterSpacing: '0.063em',
             textTransform: 'uppercase'
-        }
+        },
+        button: {
+            fontWeight: 700,
+            fontSize: '0.75rem',
+            lineHeight: 1.3,
+            letterSpacing: '0.063em',
+            textTransform: 'uppercase'
+        },
     },
     components: {
         MuiButton: {
@@ -84,13 +91,55 @@ let theme = createMuiTheme({
                 root: {
                     background: 'linear-gradient(90deg, #FF8F2B 0%, #FFD43A 100%)',
                     border: 0,
-                    borderRadius: 5,
                     boxShadow: 'none',
                     color: '#fafafa',
                     height: 40,
                     padding: '14px 22px 13px',
+                    transition: 'ease-in-out',
+                    WebkitTransition: 'ease-in-out',
+                    '&:disabled': {
+                        color: '#fafafa',
+                        opacity: 0.5,
+                    },
+                    // "&:focus": {
+                    //     boxSizing: 'border-box',
+                    //     border: '1px solid #333333'
+                    // },
+                    '&:hover': {
+                        background: '#ff8f2b',
+                        boxShadow: 'none',
+                    }
                 },
-            }
+            },
+            variants: [
+                {
+                    props: { variant: 'secondary' },
+                    style: {
+                        background: '#fafafa',
+                        boxShadow: 'none',
+                        color: '#333333',
+                        height: 40,
+                        padding: '14px 22px 13px',
+                        transition: 'ease-in-out',
+                        WebkitTransition: 'ease-in-out',
+                        '&:disabled': {
+                            borderColor: 'linear-gradient(90deg, #FF8F2B 0%, #FFD43A 100%)',
+                            border: '1px',
+                            color: '#333333',
+                            opacity: 0.5
+                        },
+                        // "&:focus": {
+                        //     boxSizing: 'border-box',
+                        //     border: '1px solid #333333'
+                        // },
+                        '&:hover': {
+                            background: '#fafafa',
+                            color: '#ff8f2b',
+                            boxShadow: 'none',
+                        }
+                    }
+                }
+            ]
         },
         MuiDivider: {
             styleOverrides: {

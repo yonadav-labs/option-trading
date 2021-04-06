@@ -111,7 +111,7 @@ export default function LandingView(props) {
                             <br />
                             <Grid container direction="row" justifyContent="center" spacing={3} >
                                 <Grid item xs={4}>
-                                    <Button variant="contained" color="primary" size="large" onClick={setTargetPrice}>
+                                    <Button size="large" onClick={setTargetPrice} disabled={selectedExpirationTimestamp.length < 1 || !sentiment}>
                                         Analyze
                                     </Button>
                                 </Grid>
