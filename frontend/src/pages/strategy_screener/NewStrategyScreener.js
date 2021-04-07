@@ -169,7 +169,7 @@ export default function NewStrategyScreener() {
                     val.id = index;
                     return val;
                 });
-                trades.sort((a, b) => b.target_price_profit - a.target_price_profit);
+                trades.sort((a, b) => b.target_price_profit_ratio - a.target_price_profit_ratio);
                 setBestTrades(trades);
                 setPageState(false);
                 setModalActive(false);
