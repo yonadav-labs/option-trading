@@ -37,8 +37,8 @@ export default function TradeDetailsCard(props) {
                             {getTradeTypeDisplay(trade.type)}
                         </Col>
                         <Col sm="2" xs="6">
-                            <MetricLabel label={trade.net_debit_per_unit > 0 ? "net debit" : "net credit"} />
-                            {PriceFormatter(Math.abs(trade.net_debit_per_unit))}
+                            <MetricLabel label={trade.net_debt_per_unit > 0 ? "order net debt" : "order net credit"} />
+                            {PriceFormatter(Math.abs(trade.net_debt_per_unit))}
                         </Col>
                         <Col sm="2" xs="6"></Col>
                         <Col sm="2" xs="6"></Col>
@@ -57,6 +57,78 @@ export default function TradeDetailsCard(props) {
                             );
                         })
                     }
+                    <Row className="mt-3">
+                        <Col><h5>Key Data</h5></Col>
+                    </Row>
+                    <Row>
+                        <Col sm="2" xs="6">
+                            <MetricLabel label="hypothetical return" />
+                            {ProfitFormatter(trade.target_price_profit_ratio)} ({PriceFormatter(trade.target_price_profit)})
+                        </Col>
+                        <Col sm="2" xs="6">
+                            <MetricLabel label="break-even at" />
+                            {ProfitFormatter(trade.to_break_even_ratio)} (at {PriceFormatter(trade.break_even_price)})
+                        </Col>
+                        <Col sm="2" xs="6">
+                            <MetricLabel label="max return" />
+                            {trade.profit_cap != null ?
+                                (
+                                    <span>
+                                        {trade.profit_cap_ratio >= 0 ? '+' : '-'}{PercentageFormatter(Math.abs(trade.profit_cap_ratio))} ({PriceFormatter(trade.profit_cap)})
+                                    </span >
+                                )
+                                : (<span>Unlimited</span>)}
+                        </Col>
+                        <Col sm="2" xs="6">
+                            <MetricLabel label="10% chance loss" />
+                            {
+                                trade.two_sigma_profit_lower ?
+                                    <>
+                                        {ProfitFormatter(trade.ten_percent_worst_return_ratio)}
+                                                ({PriceFormatter(trade.ten_percent_worst_return)})
+                                                <br />
+                                        {trade.ten_percent_worst_return_price > trade.stock.stock_price ? 'Above ' : 'Below '}
+                                        {PriceFormatter(trade.ten_percent_worst_return_price)}
+                                    </>
+                                    : "N/A"
+                            }
+                        </Col>
+                        <Col sm="2" xs="6">
+                            <MetricLabel label="10% chance profit" />
+                            {
+                                trade.two_sigma_profit_lower ?
+                                    <>
+                                        {ProfitFormatter(trade.ten_percent_best_return_ratio)}
+                                                ({PriceFormatter(trade.ten_percent_best_return)})
+                                                <br />
+                                        {trade.ten_percent_best_return_price > trade.stock.stock_price ? 'Above ' : 'Below '}
+                                        {PriceFormatter(trade.ten_percent_best_return_price)}
+                                    </>
+                                    : "N/A"
+                            }
+                        </Col>
+                    </Row>
+                    <Row>
+                        <Col sm="2" xs="6">
+                            <MetricLabel label="total cost" />
+                            {PriceFormatter(trade.cost)}
+                        </Col>
+                        <Col sm="2" xs="6">
+                            <MetricLabel label="notional value" />
+                            {PriceFormatter(trade.notional_value)}
+                        </Col>
+                        <Col sm="2" xs="6">
+                            <MetricLabel label="leverage" />
+                            {PercentageFormatter(trade.leverage)}
+                        </Col>
+
+                        {displayCommissionCost &&
+                            <Col sm="2" xs="6">
+                                <MetricLabel label="total commission" />
+                                {PriceFormatter(trade.commission_cost)}
+                            </Col>
+                        }
+                    </Row>
                     <TradeProfitLossGraph trade={trade} />
                     {trade.target_price_lower &&
                         <>
@@ -71,60 +143,11 @@ export default function TradeDetailsCard(props) {
                                     </Col>
                                 <Col sm="4" xs="6">
                                     <MetricLabel label="hypothetical return" />
-                                    {PriceFormatter(trade.target_price_profit)} ({ProfitFormatter(trade.target_price_profit_ratio)})
+                                    {ProfitFormatter(trade.target_price_profit_ratio)} ({PriceFormatter(trade.target_price_profit)})
                                     </Col>
                             </Row>
                         </>
                     }
-
-                    <Row className="mt-3">
-                        <Col><h5>Key Data</h5></Col>
-                    </Row>
-                    <Row>
-                        <Col sm="2" xs="6">
-                            <MetricLabel label="break-even at" />
-                            {PriceFormatter(trade.break_even_price)} ({ProfitFormatter(trade.to_break_even_ratio)})
-                        </Col>
-                        <Col sm="2" xs="6">
-                            <MetricLabel label="profit limit" />
-                            {trade.profit_cap != null ?
-                                (
-                                    <span>
-                                        {PriceFormatter(trade.profit_cap)} ({trade.profit_cap_ratio >= 0 ? '+' : '-'}{PercentageFormatter(Math.abs(trade.profit_cap_ratio))})
-                                    </span >
-                                )
-                                : (<span>Unlimited</span>)}
-                        </Col>
-                        <Col sm="2" xs="6">
-                            <MetricLabel label="cost" />
-                            {PriceFormatter(trade.cost)}
-                        </Col>
-                        <Col sm="2" xs="6">
-                            <MetricLabel label="notional value" />
-                            {PriceFormatter(trade.notional_value)}
-                        </Col>
-                        <Col sm="2" xs="6">
-                            <MetricLabel label="leverage" />
-                            {PercentageFormatter(trade.leverage)}
-                        </Col>
-                        {trade.two_sigma_profit_lower != null ?
-                            (
-                                <Col sm="2" xs="6">
-                                    <MetricLabel label="5% chance wrost case loss" />
-                                    <span>
-                                        {PriceFormatter(trade.two_sigma_profit_lower)}&nbsp;
-                                        {ProfitFormatter(Math.abs(trade.two_sigma_profit_lower_ratio))}&nbsp;
-                                <small>if stock price at {PriceFormatter(trade.two_sigma_prices[0])}</small>
-                                    </span >
-                                </Col>
-                            ) : null}
-                        {displayCommissionCost &&
-                            <Col sm="2" xs="6">
-                                <MetricLabel label="commission cost" />
-                                {PriceFormatter(broker.options_open_commission)}/{PriceFormatter(broker.options_close_commission)}
-                            </Col>
-                        }
-                    </Row>
                     {
                         profitLoss &&
                         <>

@@ -350,14 +350,22 @@ class Trade(ABC):
         return None
 
     @property
-    def net_debit_per_unit(self):
+    def net_debt_per_unit(self):
         '''Nagtive number means net credit.'''
-        net_debit = 0.0
+        net_debt = 0.0
         for leg in self.legs:
             if leg.contract:
-                net_debit += leg.net_cost / leg.units
+                net_debt += leg.net_cost / leg.units
             elif leg.stock:
-                net_debit += leg.cost * (leg.units / 100)
-        return net_debit
+                net_debt += leg.cost * (leg.units / 100)
+        return net_debt
+
+    @property
+    def commission_cost(self):
+        commission_cost = 0.0
+        for leg in self.legs:
+            if leg.contract:
+                commission_cost += (leg.open_commission + leg.close_commission) * leg.units
+        return commission_cost
 
 # TODO: add a sell everything now and hold cash trade and a long stock trade.

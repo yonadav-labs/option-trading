@@ -43,7 +43,7 @@ class BearPutSpread(Trade):
         short_put_leg = self.get_short_put_leg()
         expiration_date_str = timestamp_to_datetime_with_default_tz(long_put_leg.contract.expiration) \
             .strftime("%m/%d/%Y")
-        return '[{}][Bear put spread] {} {} strike ${} / ${} at ${:.2f} net debit per spread' \
+        return '[{}][Bear put spread] {} {} strike ${} / ${} at ${:.2f} net debt per spread' \
             .format(self.stock.ticker.symbol, '{}X'.format(long_put_leg.units) if long_put_leg.units > 1 else '',
                     expiration_date_str, short_put_leg.contract.strike, long_put_leg.contract.strike,
                     abs(short_put_leg.cost + long_put_leg.cost))

@@ -124,9 +124,5 @@ class TradeSerializer(serializers.Serializer):
     ten_percent_worst_return = ReadOnlyDollarDecimalField()
     ten_percent_worst_return_ratio = ReadOnlyRatioDecimalField()
     quote_time = serializers.ReadOnlyField()
-    net_debit_per_unit = ReadOnlyDollarDecimalField()
-
-    # TODO: re-consider those metrics.
-    # premium_profit = serializers.FloatField(allow_null=True)  # CoveredCall, CashSecuredPut only
-    # premium_profit_ratio = serializers.ReadOnlyField()  # CoveredCall, CashSecuredPut only
-    # cash_required = serializers.FloatField(allow_null=True, min_value=0.0)  # CashSecuredPut only
+    net_debt_per_unit = ReadOnlyDollarDecimalField()
+    commission_cost = ReadOnlyDollarDecimalField()
