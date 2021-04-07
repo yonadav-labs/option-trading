@@ -62,10 +62,6 @@ export default function TradeDetailsCard(props) {
                     </Row>
                     <Row>
                         <Col sm="2" xs="6">
-                            <MetricLabel label="hypothetical return" />
-                            {ProfitFormatter(trade.target_price_profit_ratio)} ({PriceFormatter(trade.target_price_profit)})
-                        </Col>
-                        <Col sm="2" xs="6">
                             <MetricLabel label="break-even at" />
                             {ProfitFormatter(trade.to_break_even_ratio)} (at {PriceFormatter(trade.break_even_price)})
                         </Col>
