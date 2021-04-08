@@ -1,14 +1,20 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback, useRef, useMemo } from "react";
 import Axios from 'axios';
 import { Box } from "@material-ui/core";
 import ModalSpinner from '../../components/ModalSpinner';
 import LandingView from "./LandingView";
 import MainView from "./MainView";
-// import './StrategyScreen.css'
 
 // utils
-import getApiUrl, { newLoadTickers, newLoadExpirationDates } from "../../utils";
+import getApiUrl, { newLoadTickers, newLoadExpirationDates, fixedFloat } from "../../utils";
 import { useOktaAuth } from '@okta/okta-react';
+import { debounce } from "lodash";
+
+const useDebouncedCallback = (callback, delay) => {
+    const callbackRef = useRef();
+    callbackRef.current = callback;
+    return useCallback(debounce((...args) => callbackRef.current(...args), delay), []);
+}
 
 export default function NewStrategyScreener() {
     const API_URL = getApiUrl();
@@ -20,14 +26,14 @@ export default function NewStrategyScreener() {
     const [bestTrades, setBestTrades] = useState(null);
 
     // expiration date states
-    const [expirationTimestamps, setExpirationTimestamps] = useState([]);
     const [expirationTimestampsOptions, setExpirationTimestampsOptions] = useState([])
     const [selectedExpirationTimestamp, setSelectedExpirationTimestamp] = useState(null);
 
     // filter states
-    const [targetPriceLower, setTargetPriceLower] = useState(null);
-    const [targetPriceUpper, setTargetPriceUpper] = useState(null);
     const [filters, setFilters] = useState({
+        targetType: 'price',
+        priceTarget: basicInfo.regularMarketPrice || 0,
+        interval: 0,
         targetPriceLower: null,
         targetPriceUpper: null,
         premiumType: 'market',
@@ -45,20 +51,19 @@ export default function NewStrategyScreener() {
     const [pageState, setPageState] = useState(true)
 
     // okta states
-    const [headers, setHeaders] = useState(null);
+    const [headers, setHeaders] = useState({});
     const { oktaAuth, authState } = useOktaAuth();
 
     const resetStates = () => {
         setSelectedTicker(null);
-        setExpirationTimestamps([]);
         setExpirationTimestampsOptions([])
         setSelectedExpirationTimestamp(null);
         setBasicInfo({});
         setModalActive(false);
-        setSentiment('')
-        setTargetPriceLower(null)
-        setTargetPriceUpper(null)
         setFilters({
+            targetType: 'price',
+            priceTarget: basicInfo.regularMarketPrice || 0,
+            interval: 0,
             targetPriceLower: null,
             targetPriceUpper: null,
             premiumType: 'market',
@@ -72,40 +77,11 @@ export default function NewStrategyScreener() {
         setBestTrades(null)
     }
 
-    const onTickerSelectionChange = (e, selected) => {
-        resetStates()
-        if (selected) {
-            newLoadExpirationDates(headers, selected, setModalActive, setExpirationTimestamps, setBasicInfo, setSelectedTicker);
-        } else {
-            setExpirationDisabled(true)
-        }
-    };
-
-    const onExpirationSelectionChange = (e, selected) => {
-        setSelectedExpirationTimestamp(selected)
-    }
-
-    useEffect(() => {
-        if (authState.isAuthenticated) {
-            const { accessToken } = authState;
-            setHeaders({ Authorization: `Bearer ${accessToken.accessToken}` });
-        } else {
-            setHeaders({});
-        }
-    }, [oktaAuth, authState]);
-
-    useEffect(() => {
-        if (headers) {
-            newLoadTickers(headers, setAllTickers);
-        }
-    }, [headers]);
-
-    // when expiration dates are changed set new date options
-    useEffect(() => {
+    const setExpirationTimestamps = (val) => {
         setExpirationDisabled(true)
-        if (expirationTimestamps.length > 0) {
+        if (val.length > 0) {
             let arr = []
-            expirationTimestamps.map((timestamp, index) => {
+            val.map((timestamp, index) => {
                 // Yahoo's timestamp * 1000 = TD's timestamp.
                 const date = new Date(timestamp < 9999999999 ? timestamp * 1000 : timestamp)
                     .toLocaleDateString('en-US');
@@ -113,34 +89,39 @@ export default function NewStrategyScreener() {
             })
             setExpirationTimestampsOptions(arr)
             setExpirationDisabled(false)
-            setSelectedExpirationTimestamp(arr[0])
-        }
-    }, [expirationTimestamps])
-
-    // function to set upper and lower limit when selecting sentiment
-    const setTargetPriceBySentiment = (sentiment) => {
-        setSentiment(sentiment)
-        switch (sentiment) {
-            case 'bullish':
-                setTargetPriceLower(basicInfo.regularMarketPrice)
-                setTargetPriceUpper(basicInfo.regularMarketPrice * 1.1)
-                break;
-            case 'bearish':
-                setTargetPriceLower(basicInfo.regularMarketPrice * 0.9)
-                setTargetPriceUpper(basicInfo.regularMarketPrice)
-                break;
-            default:
-                break;
+            onExpirationSelectionChange(null, arr[0])
         }
     }
 
-    const setTargetPrice = () => {
-        setFilters({ ...filters, targetPriceLower: targetPriceLower, targetPriceUpper: targetPriceUpper })
+    const onBasicInfoChange = (val) => {
+        setBasicInfo(val);
+        onFilterChange(val.regularMarketPrice, "priceTarget");
+        if (sentiment) {
+            onFilterChange(val.regularMarketPrice, "targetPriceLower");
+            onFilterChange(val.regularMarketPrice, "targetPriceUpper");
+        }
+    }
+
+    const onTickerSelectionChange = (e, selected) => {
+        resetStates()
+        if (selected) {
+            newLoadExpirationDates(headers, selected, setModalActive, setExpirationTimestamps, onBasicInfoChange, setSelectedTicker);
+        } else {
+            setExpirationDisabled(true)
+        }
+    };
+
+    const onExpirationSelectionChange = (e, selected) => {
+        setSelectedExpirationTimestamp(selected)
+        debouncedGetBestTrades()
     }
 
     const getBestTrades = async () => {
+        // console.log('getting best trades')
+        // console.log(filters)
         try {
-            if (selectedTicker) {
+            if (selectedTicker && selectedExpirationTimestamp && filters.targetPriceLower && filters.targetPriceUpper) {
+
                 let url = `${API_URL}/dev/tickers/${selectedTicker.symbol}/trades/`;
                 let body = {
                     "expiration_timestamps": [selectedExpirationTimestamp.value],
@@ -159,8 +140,9 @@ export default function NewStrategyScreener() {
                         "min.ten_percent_worst_return_ratio": filters.tenPercentWorstReturnRatio,
                     },
                 }
+                // console.log('body', body)
                 setModalActive(true);
-                const response = await Axios.post(url, body, { headers });
+                const response = await Axios.post(url, body, { headers: headers });
                 let trades = response.data.trades;
                 trades.map((val, index) => {
                     val.type2 = val.type;
@@ -180,46 +162,51 @@ export default function NewStrategyScreener() {
         }
     };
 
-    // function to change filter states
-    const onFilterChange = (event, filterChoice, eventTwo) => {
-        switch (filterChoice) {
-            case 'premium':
-                setFilters({ ...filters, premiumType: event.target.value })
-                break;
-            case 'cash':
-                setFilters({ ...filters, cashToInvest: event })
-                break;
-            case 'volume':
-                setFilters({ ...filters, minVolume: event.target.value })
-                break;
-            case 'interest':
-                setFilters({ ...filters, minOpenInterest: event.target.value })
-                break;
-            case 'lastTraded':
-                setFilters({ ...filters, lastTradedDate: event.target.value })
-                break;
-            case 'targetPrice':
-                setFilters({ ...filters, targetPriceLower: event, targetPriceUpper: eventTwo })
-                break;
-            case 'lowerTarget':
-                setFilters({ ...filters, targetPriceLower: event })
-                break;
-            case 'higherTarget':
-                setFilters({ ...filters, targetPriceUpper: event })
-                break;
-            case 'tenPercentWorstReturnRatio':
-                setFilters({ ...filters, tenPercentWorstReturnRatio: event.target.value })
-                break;
+    const debouncedGetBestTrades = useDebouncedCallback(getBestTrades, 1500);
 
+    // function to change filter states
+    const onFilterChange = (value, filterChoice) => {
+        // console.log(value, filterChoice)
+        setFilters((prevState) => {
+            const newState = { ...prevState, [filterChoice]: value };
+            return newState;
+        });
+        debouncedGetBestTrades();
+    }
+
+    const onSentimentChange = (sentiment) => {
+        onFilterChange("range", "targetType");
+        setSentiment(sentiment)
+        switch (sentiment) {
+            case 'bullish':
+                onFilterChange(basicInfo.regularMarketPrice, "targetPriceLower")
+                onFilterChange(fixedFloat(basicInfo.regularMarketPrice * 1.1), "targetPriceUpper")
+                onFilterChange(fixedFloat(basicInfo.regularMarketPrice * 1.05), "priceTarget")
+                onFilterChange(fixedFloat(basicInfo.regularMarketPrice * 0.05), "interval")
+                break;
+            case 'bearish':
+                onFilterChange(fixedFloat(basicInfo.regularMarketPrice * 0.9), "targetPriceLower")
+                onFilterChange(basicInfo.regularMarketPrice, "targetPriceUpper")
+                onFilterChange(fixedFloat(basicInfo.regularMarketPrice * 0.95), "priceTarget")
+                onFilterChange(fixedFloat(basicInfo.regularMarketPrice * 0.05), "interval")
+                break;
             default:
                 break;
         }
-    }
+    };
 
-    // fetch new trades when filter changes
     useEffect(() => {
-        getBestTrades()
-    }, [filters])
+        if (authState.isAuthenticated) {
+            const { accessToken } = authState;
+            setHeaders({ Authorization: `Bearer ${accessToken.accessToken}` });
+        } else {
+            setHeaders({});
+        }
+    }, [oktaAuth, authState]);
+
+    useEffect(() => {
+        newLoadTickers(headers, setAllTickers)
+    }, []);
 
     return (
         <Box sx={{ flexGrow: 1 }} className="min-vh-100">
@@ -233,10 +220,9 @@ export default function NewStrategyScreener() {
                         expirationTimestampsOptions={expirationTimestampsOptions}
                         expirationDisabled={expirationDisabled}
                         sentiment={sentiment}
+                        onSentimentChange={onSentimentChange}
                         onExpirationSelectionChange={onExpirationSelectionChange}
                         selectedExpirationTimestamp={selectedExpirationTimestamp}
-                        setTargetPriceBySentiment={setTargetPriceBySentiment}
-                        setTargetPrice={setTargetPrice}
                     />
                     :
                     <MainView
@@ -247,7 +233,6 @@ export default function NewStrategyScreener() {
                         expirationDisabled={expirationDisabled}
                         onExpirationSelectionChange={onExpirationSelectionChange}
                         selectedExpirationTimestamp={selectedExpirationTimestamp}
-                        getBestTrades={getBestTrades}
                         bestTrades={bestTrades}
                         basicInfo={basicInfo}
                         onFilterChange={onFilterChange}

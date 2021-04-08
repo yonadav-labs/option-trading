@@ -1,10 +1,18 @@
 import React, { useState } from "react";
 import { OutlinedInput, makeStyles, InputAdornment, Popover, Box, Grid, Button } from "@material-ui/core";
+import { PercentageFormatter } from "../../utils";
 
 const useStyles = makeStyles((theme) => ({
     customInput: {
         color: 'white',
-        background: 'rgba(255, 255, 255, 0.15)'
+        background: 'rgba(255, 255, 255, 0.15)',
+        "& input::-webkit-outer-spin-button, & input::-webkit-inner-spin-button": {
+            "-webkit-appearance": "none",
+            margin: 0
+        },
+        "& input[type=number]": {
+            "-moz-appearance": "textfield"
+        }
     },
     priceButton: {
         justifyContent: 'space-between',
@@ -16,7 +24,7 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-export default function PriceTarget({ initialPrice, priceTargetHandler, priceTargetValue }) {
+export default function PriceTargetField({ initialPrice, onValueChange, value }) {
     const classes = useStyles();
 
     // popover functions and variable
@@ -34,7 +42,7 @@ export default function PriceTarget({ initialPrice, priceTargetHandler, priceTar
 
     // function to handle popover selection
     const selectHandler = (input) => {
-        priceTargetHandler(input)
+        onValueChange(input)
         handleClose()
     }
 
@@ -42,19 +50,15 @@ export default function PriceTarget({ initialPrice, priceTargetHandler, priceTar
         <>
             <OutlinedInput
                 className={classes.customInput}
-                inputProps={{
-                    inputMode: 'numeric',
-                    pattern: '[0-9]*'
-                }}
+                type="number"
                 fullWidth
-                value={priceTargetValue}
-                // defaultValue={initialPrice}
-                onChange={(e) => priceTargetHandler(e.target.value)}
+                value={value}
+                onChange={(e) => onValueChange(e.target.value)}
                 onClick={handleClick}
                 startAdornment={<InputAdornment position="start"> <span style={{ color: "white" }}>$</span></InputAdornment>}
                 endAdornment={
                     <InputAdornment position="end">
-                        <span style={{ color: "#cdcece" }}>{priceTargetValue - initialPrice > 0 ? "+" : null}{((priceTargetValue - initialPrice) / initialPrice).toFixed(2) * 100}%</span>
+                        <span style={{ color: "#cdcece" }}>{value - initialPrice > 0 ? "+" : null}{PercentageFormatter((value - initialPrice) / initialPrice)}</span>
                     </InputAdornment>
                 }
             />

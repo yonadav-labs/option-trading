@@ -92,7 +92,7 @@ export function TimestampDateFormatter(ts) {
 };
 
 export function TimestampTimeFormatter(ts) {
-    if (ts == 0) return (<span>N/A</span>);
+    if (ts === 0) return (<span>N/A</span>);
     const exp_date = new Date(ts * 1000).toLocaleDateString('en-US')
     const exp_time = new Date(ts * 1000).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })
     return (<span>{exp_date} {exp_time}</span>);
@@ -129,11 +129,11 @@ export function InTheMoneySign() {
 
 export function onInTheMoneyFilterChange(event, inTheMoneyFilter) {
     const { value } = event.target;
-    if (value == 'all') {
+    if (value === 'all') {
         inTheMoneyFilter([true, false]);
-    } else if (value == 'itm') {
+    } else if (value === 'itm') {
         inTheMoneyFilter([true]);
-    } else if (value == 'otm') {
+    } else if (value === 'otm') {
         inTheMoneyFilter([false]);
     }
 };
@@ -149,7 +149,7 @@ export function onLastTradedFilterChange(event, lastTradedFilter) {
 export function getLegByName(trade, name) {
     let return_leg = null;
     trade.legs.forEach(function (leg) {
-        if (leg.name == name) {
+        if (leg.name === name) {
             return_leg = leg;
         }
     });

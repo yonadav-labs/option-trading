@@ -174,6 +174,13 @@ let theme = createMuiTheme({
                     }
                 }
             }
+        },
+        MuiPaginationItem: {
+            variants: [
+                {
+                    props: { variant: 'text' }
+                }
+            ]
         }
     },
     shape: {

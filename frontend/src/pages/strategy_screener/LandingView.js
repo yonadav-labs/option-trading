@@ -16,14 +16,9 @@ export default function LandingView(props) {
         expirationTimestampsOptions,
         expirationDisabled,
         sentiment,
+        onSentimentChange,
         onExpirationSelectionChange,
-        setTargetPriceBySentiment,
-        setTargetPrice,
     } = props
-
-    const handleSentiment = (event, newSentiment) => {
-        setTargetPriceBySentiment(newSentiment)
-    };
 
     return (
         <>
@@ -52,7 +47,7 @@ export default function LandingView(props) {
                         <Box p={4}>
                             <Grid container>
                                 <Grid item style={{ paddingBottom: '0.5rem' }}>
-                                    <span className="landing-view-label"> Enter Ticker Symbol </span>
+                                    <span> Enter Ticker Symbol </span>
                                 </Grid>
                             </Grid>
                             <Grid container>
@@ -67,10 +62,10 @@ export default function LandingView(props) {
                             <br />
                             <Grid container direction="row" justifyContent="flex-start" alignItems="flex-start" spacing={3} >
                                 <Grid item xs={6} alignItems="flex-start">
-                                    <span className="landing-view-label">Option Expiration Date</span>
+                                    <span>Option Expiration Date</span>
                                 </Grid>
                                 <Grid item xs={6} alignItems="flex-start">
-                                    <span className="landing-view-label">How are you feeling?</span>
+                                    <span>How are you feeling?</span>
                                 </Grid>
                             </Grid>
                             <Grid container direction="row" justifyContent="center" spacing={3} >
@@ -98,7 +93,7 @@ export default function LandingView(props) {
                                     <ToggleButtonGroup
                                         value={sentiment}
                                         exclusive
-                                        onChange={handleSentiment}
+                                        onChange={(e, newVal) => onSentimentChange(newVal)}
                                         size="large"
                                     >
                                         <ToggleButton value="bullish" disabled={expirationDisabled}>
@@ -108,14 +103,6 @@ export default function LandingView(props) {
                                             Bearish
                                         </ToggleButton>
                                     </ToggleButtonGroup>
-                                </Grid>
-                            </Grid>
-                            <br />
-                            <Grid container direction="row" justifyContent="center" spacing={3} >
-                                <Grid item xs={4}>
-                                    <Button size="large" onClick={setTargetPrice} disabled={!selectedExpirationTimestamp || !sentiment}>
-                                        Analyze
-                                    </Button>
                                 </Grid>
                             </Grid>
                         </Box>

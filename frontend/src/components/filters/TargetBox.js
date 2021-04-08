@@ -1,12 +1,11 @@
-import React, { useState, useCallback, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { Box, Grid, withStyles } from "@material-ui/core";
 import { ToggleButtonGroup, ToggleButton } from "@material-ui/lab/";
-import _ from "lodash";
 import { fixedFloat } from "../../utils";
 import MetricLabel from "../MetricLabel";
-import PriceTarget from "./PriceTarget";
+import PriceTargetField from "./PriceTargetField";
 import IntervalField from "./IntervalField";
-import RangeTarget from "./RangeTarget";
+import RangeTargetField from "./RangeTargetField";
 
 const StyledToggleButtonGroup = withStyles((theme) => ({
     root: {
@@ -47,74 +46,44 @@ const StyledToggleButton = withStyles({
 })(ToggleButton);
 
 
-export default function PriceTargetBox({ onFilterChange, initialPrice, selectedTicker }) {
-    const [targetType, setTargetType] = useState('price')
-    const [priceTargetValue, setPriceTargetValue] = useState(initialPrice)
-    const [intervalValue, setIntervalValue] = useState(0)
-    const [interval, setInterval] = useState({
-        lower: initialPrice,
-        higher: initialPrice
-    })
+export default function PriceTargetBox({ onFilterChange, initialPrice, filters }) {
 
     const handleTargetType = (event, newTargetType) => {
         if (newTargetType !== null) {
-            setTargetType(newTargetType)
+            onFilterChange(newTargetType, "targetType");
         }
-        if (newTargetType === 'price') {
-            intervalValueChangeHandler(intervalValue)
-        }
+        updateTargetPrices(filters.priceTarget, filters.interval);
     }
 
-    // function to send fetch after 1 seconds
-    const delayedQuery = useCallback(_.debounce((i, t, j) => onFilterChange(i, t, j), 1000), []);
-
-    const intervalValueChangeHandler = (e) => {
-        const val = parseFloat(e) || 0
-        setIntervalValue(val)
-        intervalChangeHandler(priceTargetValue, e)
+    const updateTargetPrices = (priceTarget, interval) => {
+        const val = parseFloat(interval) || 0
+        const upperPrice = fixedFloat(priceTarget + val);
+        const lowerPrice = priceTarget - val < 0 ? 0 : fixedFloat(priceTarget - val);
+        onFilterChange(lowerPrice, "targetPriceLower");
+        onFilterChange(upperPrice, "targetPriceUpper");
     }
 
-    const intervalChangeHandler = (target, value) => {
-        let floatValue = parseFloat(value)
-        let floatTarget = parseFloat(target)
-        let lowerPrice 
-        let higherPrice = fixedFloat(floatTarget + floatValue)
-        if (floatTarget-floatValue < 0) {
-            lowerPrice = 0
-        } else{
-            lowerPrice = fixedFloat(floatTarget - floatValue)
-        }
-        setInterval({lower: lowerPrice, higher: higherPrice})
-        // console.log(floatValue, higherPrice)
-        delayedQuery(lowerPrice, "targetPrice", higherPrice)
+    const intervalChangeHandler = (e) => {
+        const val = parseFloat(e);
+        onFilterChange(val, 'interval');
+        updateTargetPrices(filters.priceTarget, val);
     }
     
-    const priceTargetHandler = (e) => {
-        const val = parseFloat(e) || 0
-        setPriceTargetValue(val)
-        intervalChangeHandler(e, intervalValue)
+    const priceTargetChangeHandler = (e) => {
+        const val = parseFloat(e);
+        onFilterChange(val, "priceTarget");
+        updateTargetPrices(val, filters.interval);
     }
 
-    const lowerRangeHandler = (e) => {
-        const val = parseFloat(e) || 0
-        setInterval({...interval, lower: val})
-        delayedQuery(val, "lowerTarget")
+    const lowerRangeChangeHandler = (e) => {
+        const val = parseFloat(e);
+        onFilterChange(val, "targetPriceLower");
     }
 
-    const higherRangeHandler = (e) => {
-        const val = parseFloat(e) || 0
-        setInterval({...interval, higher: val})
-        delayedQuery(val, "higherTarget")
+    const upperRangeChangeHandler = (e) => {
+        const val = parseFloat(e);
+        onFilterChange(val, "targetPriceUpper");
     }
-
-    useEffect(() => {
-        setPriceTargetValue(initialPrice || 0)
-    }, [selectedTicker])
-
-    useEffect(() => {
-        handleTargetType("a", "price")
-        // console.log('hitting', priceTargetValue)
-    }, [priceTargetValue])
 
     return (
         <Box p={4} py={3} mx={-4} bgcolor='rgba(51, 51, 51, 0.75)'>
@@ -124,7 +93,7 @@ export default function PriceTargetBox({ onFilterChange, initialPrice, selectedT
             <Grid item style={{ paddingBottom: "0.5rem" }}>
                 <Box border={1} borderColor="white" borderRadius={30}>
                     <StyledToggleButtonGroup
-                        value={targetType}
+                        value={filters.targetType}
                         exclusive
                         color="secondary"
                         onChange={handleTargetType}
@@ -139,17 +108,17 @@ export default function PriceTargetBox({ onFilterChange, initialPrice, selectedT
                     </StyledToggleButtonGroup>
                 </Box>
             </Grid>
-            { targetType === "price" ?
+            { filters.targetType === "price" ?
                 <>
                     <Grid item style={{ paddingBottom: "0.3rem" }}>
                     <MetricLabel label={"target"} />
                     </Grid>
                     <Grid item style={{ paddingBottom: "0.5rem" }}>
-                        <PriceTarget
+                        <PriceTargetField
                             onFilterChange={onFilterChange}
                             initialPrice={initialPrice}
-                            priceTargetValue={priceTargetValue}
-                            priceTargetHandler={priceTargetHandler}
+                            value={filters.priceTarget}
+                            onValueChange={priceTargetChangeHandler}
                         />
                     </Grid>
                     <Grid item style={{ paddingBottom: "0.3rem" }}>
@@ -159,12 +128,12 @@ export default function PriceTargetBox({ onFilterChange, initialPrice, selectedT
                         <IntervalField
                             onFilterChange={onFilterChange}
                             initialPrice={initialPrice}
-                            intervalValueChangeHandler={intervalValueChangeHandler}
-                            intervalValue={intervalValue}
+                            onValueChange={intervalChangeHandler}
+                            value={filters.interval}
                         />
                     </Grid>
                     <Grid item style={{ paddingBottom: "0.3rem" }}>
-                        <span>Range: {intervalValue === 0 || intervalValue === "" ? "None specified" : `$${interval.lower} - $${interval.higher}`}</span>
+                        <span>Range: {filters.interval === 0 || filters.interval === "" ? "None specified" : `$${filters.targetPriceLower.toFixed(2)} - $${filters.targetPriceUpper.toFixed(2)}`}</span>
                     </Grid> 
                 </>
                 :
@@ -173,22 +142,22 @@ export default function PriceTargetBox({ onFilterChange, initialPrice, selectedT
                     <MetricLabel label={"low"} />
                     </Grid>
                     <Grid item style={{ paddingBottom: "0.5rem" }}>
-                        <RangeTarget
-                            changeHandler={lowerRangeHandler}
+                        <RangeTargetField
+                            changeHandler={lowerRangeChangeHandler}
                             initialPrice={initialPrice}
                             priceTargetOptions = {[-0.01, -0.02, -0.05, -0.1, -0.2, -0.5, -1]}
-                            value={interval.lower}
+                            value={filters.targetPriceLower}
                         />
                     </Grid>
                     <Grid item style={{ paddingBottom: "0.3rem" }}>
                         <MetricLabel label={"high"} />
                     </Grid>
                     <Grid item style={{ paddingBottom: "0.2rem" }}>
-                        <RangeTarget
-                            changeHandler={higherRangeHandler}
+                        <RangeTargetField
+                            changeHandler={upperRangeChangeHandler}
                             initialPrice={initialPrice}
                             priceTargetOptions = {[0.01, 0.02, 0.05, 0.1, 0.2, 0.5, 1]}
-                            value={interval.higher}
+                            value={filters.targetPriceUpper}
                         />
                     </Grid>
                 </>

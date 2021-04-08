@@ -1,11 +1,18 @@
 import React, { useState } from "react";
 import { OutlinedInput, makeStyles, InputAdornment, Popover, Box, Grid, Button } from "@material-ui/core";
-import _ from "lodash";
+import { PercentageFormatter } from "../../utils";
 
 const useStyles = makeStyles((theme) => ({
     root: {
         color: 'white',
         background: 'rgba(255, 255, 255, 0.15)',
+        "& input::-webkit-outer-spin-button, & input::-webkit-inner-spin-button": {
+            "-webkit-appearance": "none",
+            margin: 0
+        },
+        "& input[type=number]": {
+            "-moz-appearance": "textfield"
+        }
     },
     rangeButton: {
         justifyContent: 'space-between',
@@ -17,7 +24,7 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-export default function RangeTarget({ changeHandler, initialPrice, priceTargetOptions, value }) {
+export default function RangeTargetField({ changeHandler, initialPrice, priceTargetOptions, value }) {
     const classes = useStyles();
 
     // popover functions and variable
@@ -41,10 +48,7 @@ export default function RangeTarget({ changeHandler, initialPrice, priceTargetOp
         <> 
             <OutlinedInput
                 className={classes.root}
-                inputProps={{
-                    inputMode: 'numeric',
-                    pattern: '[0-9]*'
-                }}
+                type="number"
                 fullWidth
                 value={value}
                 onChange={(e) => changeHandler(e.target.value)}
@@ -52,7 +56,7 @@ export default function RangeTarget({ changeHandler, initialPrice, priceTargetOp
                 startAdornment={<InputAdornment position="start"> <span style={{color: "white"}}>$</span></InputAdornment>}
                 endAdornment={
                     <InputAdornment position="end">
-                        <span style={{color: "#cdcece"}}>{value-initialPrice > 0 ? "+" : null}{((value-initialPrice)/initialPrice).toFixed(2) * 100}%</span>
+                        <span style={{color: "#cdcece"}}>{value-initialPrice > 0 ? "+" : null}{PercentageFormatter((value - initialPrice) / initialPrice)}</span>
                     </InputAdornment>
                 }
             />
