@@ -1,8 +1,7 @@
 import React, { cloneElement, createContext, forwardRef, useContext, useEffect, useRef, Children } from "react";
-import { TextField, useTheme, useMediaQuery, Typography } from "@material-ui/core";
+import { TextField, useTheme, useMediaQuery, Typography, Autocomplete } from "@material-ui/core";
 import { VariableSizeList } from 'react-window';
 import PropTypes from 'prop-types';
-import { Autocomplete } from "@material-ui/lab/";
 
 const LISTBOX_PADDING = 8;
 const OuterElementContext = createContext({});
@@ -88,7 +87,7 @@ export default function TickerAutocomplete(props) {
             value={value}
             getOptionLabel={(option) => option.display_label}
             renderInput={(params) => <TextField {...params} variant="outlined" label="Enter a ticker symbol: TSLA, AAPL, GOOG..." />}
-            renderOption={(option) => <Typography noWrap>{option.display_label}</Typography>}
+            renderOption={(props, option) => <Typography {...props} noWrap>{option.display_label}</Typography>}
             onChange={onChange}
         />
     );
