@@ -46,6 +46,8 @@ class Ticker(BaseModel):
         return self.stats.order_by('-created_time').first()
 
     def need_refresh_stats(self):
+        if self.status == 'disabled':
+            return False
         return not self.stats.filter(created_time__gte=timezone.now() + timedelta(hours=-12)).exists()
 
     def need_refresh_expiration_dates(self):

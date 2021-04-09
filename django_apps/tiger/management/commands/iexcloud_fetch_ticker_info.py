@@ -30,7 +30,7 @@ def fetch_tickers():
     return ticker_infos
 
 
-def fetch_expiration_dates(ticker):
+def fetch_expiration_dates_and_update_status(ticker):
     url = f'{settings.IEXCLOUD_BASE_URL}/stock/{ticker.symbol}/options'
     resp = requests.get(url, params=DEFAULT_QUERY_PARAMS)
 
@@ -150,7 +150,7 @@ def fetch_ticker_info(ticker_id):
     # Fetch expiration dates.
     if ticker.need_refresh_expiration_dates():
         print(f'Fetching exp dates: {ticker.symbol}')
-        fetch_expiration_dates(ticker)
+        fetch_expiration_dates_and_update_status(ticker)
     else:
         print(f'Exp dates cached: {ticker.symbol}')
 
@@ -165,7 +165,7 @@ def fetch_ticker_info(ticker_id):
         fetch_historical_volatility(ticker, new_stats)
         new_stats.save()
     else:
-        print(f'Stats cached: {ticker.symbol}')
+        print(f'Stats skipped: {ticker.symbol}')
 
 
 class Command(BaseCommand):
