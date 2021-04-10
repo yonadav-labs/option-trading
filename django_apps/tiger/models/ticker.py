@@ -1,10 +1,11 @@
 import json
+import time
 from datetime import timedelta
 
 from django.conf import settings
 from django.db import models
 from django.utils import timezone
-from tiger.blob_reader import get_expiration_timestamps, get_call_puts, get_quote
+from tiger.blob_reader import get_call_puts, get_quote
 from tiger.fetcher import get_yahoo_option_url, get_td_option_url
 
 from .base import BaseModel
@@ -35,8 +36,11 @@ class Ticker(BaseModel):
         return get_quote(response, True), external_cache_id
 
     def get_expiration_timestamps(self):
-        response, _ = self.get_request_cache(settings.USE_YAHOO)
-        return get_expiration_timestamps(response, settings.USE_YAHOO)
+        dates = self.expiration_dates.filter(date__gte=timezone.now())
+        timestamps = [int(time.mktime(date.date.timetuple()) * 1000) for date in dates]
+        # take care of delta (16 hrs)
+        timestamps = [timestamp + 57600000 for timestamp in timestamps]
+        return timestamps
 
     def get_call_puts(self, expiration_timestamp):
         response, external_cache_id = self.get_request_cache(settings.USE_YAHOO, expiration_timestamp)
