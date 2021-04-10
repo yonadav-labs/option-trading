@@ -37,6 +37,13 @@ const Login = () => {
                 {type: 'GOOGLE', id: idpGlId},
             ],
             idpDisplay: 'SECONDARY',
+            registration: {
+                postSubmit: function (response, onSuccess, onFailure) {
+                    // handle postsubmit callback
+                    onSuccess(response);
+                    window.location.assign('/signin');
+                }
+            },
             features: { registration: true, router: true }
         });
 
