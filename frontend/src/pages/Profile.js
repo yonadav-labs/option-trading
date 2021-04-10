@@ -101,7 +101,7 @@ const Profile = () => {
         })
             .then((response) => {
                 if (!response.ok) {
-                    return response.json().then(error => {throw new Error(error.nick_name[0])})
+                    return response.json().then(error => { throw new Error(error.nick_name[0]) })
                 }
                 return response.json();
             })
@@ -190,10 +190,14 @@ const Profile = () => {
                                 {user.subscription ?
                                     <div>
                                         <p>Current plan: Pro member</p>
-                                        {user.subscription &&
-                                            <p ><span className="f-w-600">Next billing time: </span>{user.subscription.detail.next_billing_time}</p>
+                                        {user.subscription.type === 'PAYPAL' ?
+                                            <>
+                                                <p><span className="f-w-600">Next billing time: </span>{user.subscription.detail.next_billing_time}</p>
+                                                <Button onClick={() => setShowCancelSubscriptionModal(true)} >Cancel Subscription</Button>
+                                            </>
+                                            :
+                                            <p><span className="f-w-600">Gift membership expiring on: </span>{user.subscription.expire_at}</p>
                                         }
-                                        <Button onClick={() => setShowCancelSubscriptionModal(true)} >Cancel Subscription</Button>
                                     </div>
                                     :
                                     <div>

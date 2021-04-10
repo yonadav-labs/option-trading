@@ -28,8 +28,8 @@ class ExternalRequestCacheAdmin(admin.ModelAdmin):
 
 
 class SubscriptionAdmin(admin.ModelAdmin):
-    list_display = ['id', 'user', 'paypal_subscription_id', 'paypal_plan_id', 'status'] + DEFAULT_FIELDS
-    list_filter = ['status', 'user']
+    list_display = ['user', 'type', 'paypal_subscription_id', 'paypal_plan_id', 'status', 'expire_at'] + DEFAULT_FIELDS
+    list_filter = ['status', 'type', 'user']
     search_fields = ['user__id', 'user__email', 'paypal_subscription_id', ]
 
 
