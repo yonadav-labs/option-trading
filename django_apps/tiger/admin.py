@@ -17,7 +17,7 @@ class ExpirationDateAdmin(admin.TabularInline):
 
 class TickerAdmin(admin.ModelAdmin):
     list_display = ['symbol', 'full_name', 'status', ] + DEFAULT_FIELDS
-    list_filter = ['status']
+    list_filter = ['status', 'created_time']
     search_fields = ['symbol', 'full_name']
     inlines = [ExpirationDateAdmin]
 
@@ -70,6 +70,7 @@ class WatchlistItemAdmin(admin.ModelAdmin):
 
 class TickerStatsAdmin(admin.ModelAdmin):
     list_display = [field.name for field in TickerStats._meta.get_fields() if field.name != 'stocksnapshot']
+    list_filter = ['ticker__status', 'created_time']
     search_fields = ['ticker__symbol', 'company_name']
 
 
