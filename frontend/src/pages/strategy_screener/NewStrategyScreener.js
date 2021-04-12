@@ -175,20 +175,17 @@ export default function NewStrategyScreener() {
     }
 
     const onSentimentChange = (sentiment) => {
-        onFilterChange("range", "targetType");
         setSentiment(sentiment)
         switch (sentiment) {
             case 'bullish':
-                onFilterChange(basicInfo.regularMarketPrice, "targetPriceLower")
-                onFilterChange(fixedFloat(basicInfo.regularMarketPrice * 1.1), "targetPriceUpper")
+                onFilterChange(fixedFloat(basicInfo.regularMarketPrice * 1.05), "targetPriceLower")
+                onFilterChange(fixedFloat(basicInfo.regularMarketPrice * 1.05), "targetPriceUpper")
                 onFilterChange(fixedFloat(basicInfo.regularMarketPrice * 1.05), "priceTarget")
-                onFilterChange(fixedFloat(basicInfo.regularMarketPrice * 0.05), "interval")
                 break;
             case 'bearish':
-                onFilterChange(fixedFloat(basicInfo.regularMarketPrice * 0.9), "targetPriceLower")
-                onFilterChange(basicInfo.regularMarketPrice, "targetPriceUpper")
+                onFilterChange(fixedFloat(basicInfo.regularMarketPrice * 0.95), "targetPriceLower")
+                onFilterChange(fixedFloat(basicInfo.regularMarketPrice * 0.95), "targetPriceUpper")
                 onFilterChange(fixedFloat(basicInfo.regularMarketPrice * 0.95), "priceTarget")
-                onFilterChange(fixedFloat(basicInfo.regularMarketPrice * 0.05), "interval")
                 break;
             default:
                 break;
