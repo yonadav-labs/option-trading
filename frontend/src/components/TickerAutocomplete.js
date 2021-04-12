@@ -86,8 +86,8 @@ export default function TickerAutocomplete(props) {
             size={size}
             value={value}
             getOptionLabel={(option) => option.display_label}
-            renderInput={(params) => <TextField {...params} variant="outlined" label="Enter a ticker symbol: TSLA, AAPL, GOOG..." />}
-            renderOption={(props, option) => <Typography {...props} noWrap>{option.display_label}</Typography>}
+            renderInput={(params) => <TextField {...params} InputLabelProps={{shrink: true}} variant="standard" label="Ticker Symbol" placeholder="Enter a ticker symbol: TSLA, AAPL, GOOG..." />}
+            renderOption={(props, option) => <li key={option}><Typography {...props} noWrap>{option.display_label}</Typography></li>}
             onChange={onChange}
         />
     );

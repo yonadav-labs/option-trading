@@ -1,6 +1,5 @@
-import React, { useState, useEffect } from "react";
-import { Box, Grid, withStyles } from "@material-ui/core";
-import { ToggleButtonGroup, ToggleButton } from "@material-ui/lab/";
+import React from "react";
+import { Box, Grid, withStyles, ToggleButtonGroup, ToggleButton } from "@material-ui/core";
 import { fixedFloat } from "../../utils";
 import MetricLabel from "../MetricLabel";
 import PriceTargetField from "./PriceTargetField";
