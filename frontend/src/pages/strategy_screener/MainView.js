@@ -37,8 +37,8 @@ export default function MainView(props) {
         <>
             <Grid container direction="row" justifyContent="center" alignItems="stretch">
                 <Grid item sm={2}>
-                    <Box p={4} boxShadow={3} bgcolor='#333741' color="white" height="105%" style={{ marginRight: '-2rem' }}>
-                        <Grid container direction="column" justify="center" className="filter-label">
+                    <Box bgcolor='#333741' color="white" height="105%" style={{ marginRight: '-2rem' }}>
+                        <Grid container direction="column" justifyContent="center" alignItems="center" className="filter-label">
                             <FilterContainer onFilterChange={onFilterChange} filters={filters} initialPrice={basicInfo.regularMarketPrice} />
                         </Grid>
                     </Box>
@@ -98,10 +98,3 @@ export default function MainView(props) {
         </>
     );
 }
-
-const options = [
-    'hello',
-    'world',
-    'apple',
-    'tesla'
-]

@@ -11,7 +11,8 @@ const useStyles = makeStyles((theme) => ({
         },
         "& input[type=number]": {
             "-moz-appearance": "textfield"
-        }
+        },
+        width: "100%"
     }
 }));
 
@@ -30,7 +31,6 @@ export default function DollarInputField({ onFilterChange, placeholder }) {
             className={classes.customInput}
             placeholder={placeholder}
             type="number"
-            fullWidth
             value={value}
             onChange={changeHandler}
             startAdornment={<InputAdornment position="start"> <span style={{color: "white"}}>$</span></InputAdornment>}

@@ -86,7 +86,7 @@ export default function PriceTargetBox({ onFilterChange, initialPrice, filters }
     }
 
     return (
-        <Box p={4} py={3} mx={-4} bgcolor='rgba(51, 51, 51, 0.75)'>
+        <Box bgcolor='rgba(51, 51, 51, 0.75)' style={{width: "100%"}} p={2}>
             <Grid item style={{ paddingBottom: "0.3rem" }}>
                 <MetricLabel label={"stock price on exp day"} />
             </Grid>

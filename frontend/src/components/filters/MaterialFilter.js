@@ -3,7 +3,7 @@ import { Select, FormControl, MenuItem, makeStyles } from "@material-ui/core";
 
 const useStyles = makeStyles((theme) => ({
     formControl: {
-        minWidth: 120
+        width: '100%'
     },
     customSelect: {
         color: 'white',
@@ -15,7 +15,7 @@ export default function MaterialFilter({options, value, defaultValue, onFilterCh
     const classes = useStyles();
 
     return (
-        <FormControl variant="outlined" className={classes.formControl} fullWidth>
+        <FormControl variant="outlined" className={classes.formControl}>
             <Select
                 defaultValue={defaultValue}
                 className={classes.customSelect}

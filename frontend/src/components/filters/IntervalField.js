@@ -24,7 +24,7 @@ export default function IntervalField({ initialPrice, value, onValueChange }) {
             <OutlinedInput
                 className={classes.customInput}
                 type="number"
-                fullWidth
+                style={{width: '100%'}}
                 value={value}
                 onChange={(e) => onValueChange(e.target.value)}
                 // defaultValue={0}

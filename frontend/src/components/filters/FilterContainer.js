@@ -61,7 +61,7 @@ export default function FilterContainer({ onFilterChange, initialPrice, filters 
 
     return (
         <>
-            <Box pb={2}>
+            <Box py={2} style={{width: "90%"}}>
                 <Grid item>
                     <Grid container direction="row" justifyContent="space-between" alignItems="center">
                         <Grid item><span style={{ fontSize: '1.3rem' }}>SETTINGS</span></Grid>
@@ -70,7 +70,7 @@ export default function FilterContainer({ onFilterChange, initialPrice, filters 
                 </Grid>
             </Box>
             <TargetBox onFilterChange={onFilterChange} initialPrice={initialPrice} filters={filters}/>
-            <Box py={2}>
+            <Box py={2} style={{width: "90%"}}>
                 <Grid item style={{ paddingBottom: '0.3rem' }}>
                     <MetricLabel label={"premium price options"} />
                 </Grid>
@@ -78,7 +78,7 @@ export default function FilterContainer({ onFilterChange, initialPrice, filters 
                     <MaterialFilter onFilterChange={(event) => filterChangeHandler(event, 'premiumType')} options={premiumPriceFilter} value={filters.premiumType} defaultValue={"market"} />
                 </Grid>
             </Box>
-            <Box py={2}>
+            <Box py={2} style={{width: "90%"}}>
                 <Grid item style={{ paddingBottom: '0.3rem' }}>
                     <MetricLabel label={"volume"} />
                 </Grid>
@@ -86,7 +86,7 @@ export default function FilterContainer({ onFilterChange, initialPrice, filters 
                     <MaterialFilter onFilterChange={(event) => filterChangeHandler(event, 'minVolume')} options={minVolumeFilter} value={filters.minVolume} defaultValue={0} />
                 </Grid>
             </Box>
-            <Box py={2}>
+            <Box py={2} style={{width: "90%"}}>
                 <Grid item style={{ paddingBottom: '0.3rem' }}>
                     <MetricLabel label={"open interest"} />
                 </Grid>
@@ -94,7 +94,7 @@ export default function FilterContainer({ onFilterChange, initialPrice, filters 
                     <MaterialFilter onFilterChange={(event) => filterChangeHandler(event, 'minOpenInterest')} options={minInterestFilter} value={filters.minOpenInterest} defaultValue={0} />
                 </Grid>
             </Box>
-            <Box py={2}>
+            <Box py={2} style={{width: "90%"}}>
                 <Grid item style={{ paddingBottom: '0.3rem' }}>
                     <MetricLabel label={"10% chance loss"} />
                 </Grid>
@@ -102,7 +102,7 @@ export default function FilterContainer({ onFilterChange, initialPrice, filters 
                     <MaterialFilter onFilterChange={(event) => filterChangeHandler(event, 'tenPercentWorstReturnRatio')} options={max10PctLossFilter} value={filters.tenPercentWorstReturnRatio} defaultValue={-1.0} />
                 </Grid>
             </Box>
-            <Box py={2}>
+            <Box py={2} style={{width: "90%"}}>
                 <Grid item style={{ paddingBottom: '0.3rem' }}>
                     <MetricLabel label={"cash to invest"} />
                 </Grid>
@@ -110,7 +110,7 @@ export default function FilterContainer({ onFilterChange, initialPrice, filters 
                     <DollarInputField onFilterChange={onFilterChange} placeholder="0 (optional)" value={filters.cashToInvest}/>
                 </Grid>
             </Box>
-            <Box py={2}>
+            <Box py={2} style={{width: "90%"}}>
                 <Grid item style={{ paddingBottom: '0.3rem' }}>
                     <MetricLabel label={"time since last traded"} />
                 </Grid>
