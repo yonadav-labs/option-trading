@@ -126,7 +126,7 @@ export default function SellCoveredCall() {
             headerSortingStyle,
         }, {
             dataField: "mark",
-            text: "Mark/mid premium",
+            text: "Mid/mark premium",
             formatter: (cell, row, rowIndex, extraData) => (
                 (
                     <span>
@@ -153,16 +153,16 @@ export default function SellCoveredCall() {
             sort: true,
             headerSortingStyle,
         }, {
+            dataField: "open_interest",
+            text: "Open interest",
+            sort: true,
+            headerSortingStyle,
+        }, {
             dataField: "delta",
             text: "Delta",
             formatter: (cell, row, rowIndex, extraData) => (
                 NumberRoundFormatter(cell, row)
             ),
-            sort: true,
-            headerSortingStyle,
-        }, {
-            dataField: "open_interest",
-            text: "Open interest",
             sort: true,
             headerSortingStyle,
         },
@@ -370,7 +370,7 @@ export default function SellCoveredCall() {
 
     const ExpandContractRow = {
         renderer: (row) => (
-            <ContractDetailsCard contract={row} />
+            <ContractDetailsCard contract={row} expandReadMore={true} />
         ),
         showExpandColumn: true,
         expandHeaderColumnRenderer: ({ isAnyExpands }) => {

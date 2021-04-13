@@ -41,6 +41,7 @@ const HelpTextDict = {
     'hypothetical return': 'Average of possible return outcomes if share price lies within the target price range on expiration date. Total cost is used to calculate the return rate.',
     'initial value': 'The value of this trade when it was was saved or shared.',
     'implied volatility': 'Expected annualized volatility of a stock over the life of the option.',
+    'itm probability': 'Probability of the contract to be in the money on expiration date.',
     'latest stock return': 'The latest return from the stock, for comparison of the options trade\'s return.',
     'latest return': 'The latest return from the trade since the time it was saved or shared. Calculated as latest value ÷ initial value - 1.',
     'latest value': 'The latest value of this trade.',

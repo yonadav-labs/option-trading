@@ -1,6 +1,6 @@
 from rest_framework import serializers
-
 from tiger.models import Ticker
+
 from .custom_fields import ReadOnlyRatioDecimalField, ReadOnlyDollarDecimalField
 
 '''
@@ -69,6 +69,7 @@ class OptionContractSerializer(serializers.Serializer):
     break_even_price = ReadOnlyDollarDecimalField()
     to_break_even_ratio = ReadOnlyRatioDecimalField()
     notional_value = ReadOnlyDollarDecimalField()
+    itm_probability = ReadOnlyRatioDecimalField()
 
 
 class LegSerializer(serializers.Serializer):

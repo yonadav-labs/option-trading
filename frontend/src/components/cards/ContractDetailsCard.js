@@ -8,8 +8,8 @@ import {
 import MetricLabel from '../MetricLabel.js';
 
 export default function ContractDetailsCard(props) {
-    const { contract, hideTitle } = props;
-    const [readMore, setReadMore] = useState(false);
+    const { contract, hideTitle, expandReadMore } = props;
+    const [readMore, setReadMore] = useState(expandReadMore);
     const linkName = readMore ? 'Collapse <<' : 'More >>'
     return (
         (
@@ -57,6 +57,10 @@ export default function ContractDetailsCard(props) {
                                     <Col sm="2" xs="6">
                                         <MetricLabel label="implied volatility" />
                                         {PercentageFormatter(contract.implied_volatility)}
+                                    </Col>
+                                    <Col sm="2" xs="6">
+                                        <MetricLabel label="itm probability" />
+                                        {PercentageFormatter(contract.itm_probability)}
                                     </Col>
                                     <Col sm="2" xs="12">
                                         <MetricLabel label="last traded" />

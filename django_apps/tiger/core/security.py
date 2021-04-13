@@ -2,6 +2,7 @@ from abc import ABC, abstractmethod
 
 import tiger.blob_reader as blob_reader
 from tiger.utils import days_from_timestamp, timestamp_to_datetime_with_default_tz
+from tiger.core.black_scholes import get_itm_probability
 
 
 class Security(ABC):
@@ -205,6 +206,12 @@ class OptionContract(Security):
     @property
     def to_break_even_ratio(self):
         return self.break_even_price / self.stock_price - 1.0
+
+    @property
+    def itm_probability(self):
+        return get_itm_probability(stock_price=self.stock_price, strike=self.strike,
+                                   exp_years=self.days_till_expiration / 365.0, sigma=self.implied_volatility,
+                                   is_call=self.is_call)
 
     def get_value_at_price(self, target_price):
         if self.is_call:
