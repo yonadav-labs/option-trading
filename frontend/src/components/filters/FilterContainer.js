@@ -1,13 +1,15 @@
 import React from "react";
-import { Grid, Box } from "@material-ui/core";
+import { Grid, Box, TextField, Autocomplete } from "@material-ui/core";
 import TuneIcon from '@material-ui/icons/Tune';
+import CloseIcon from '@material-ui/icons/Close';
 import MaterialFilter from "./MaterialFilter";
 import DollarInputField from "./DollarInputField";
 import MetricLabel from "../MetricLabel";
 import TargetBox from "./TargetBox";
+import TickerAutocomplete from "../TickerAutocomplete";
 
-
-export default function FilterContainer({ onFilterChange, initialPrice, filters }) {
+export default function FilterContainer(props) {
+    const { onFilterChange, initialPrice, filters, isMobile, handleClick, allTickers, onTickerSelectionChange, selectedTicker, expirationTimestampsOptions, selectedExpirationTimestamp, onExpirationSelectionChange } = props
     const premiumPriceFilter = [
         { label: "Market Order Price", value: "market" },
         { label: "Mid/Mark Price", value: 'mid' }
@@ -65,10 +67,52 @@ export default function FilterContainer({ onFilterChange, initialPrice, filters 
                 <Grid item>
                     <Grid container direction="row" justifyContent="space-between" alignItems="center">
                         <Grid item><span style={{ fontSize: '1.3rem' }}>SETTINGS</span></Grid>
-                        <Grid item><TuneIcon fontSize="large" /> </Grid>
+                        <Grid item>{isMobile ? <div onClick={handleClick}><CloseIcon fontSize="large" /></div>  : <TuneIcon fontSize="large" />}</Grid>
                     </Grid>
                 </Grid>
             </Box>
+            {isMobile ? 
+                <>
+                    <Box py={2} style={{width: "90%"}}>
+                    <Grid item style={{ paddingBottom: '0.3rem' }}>
+                            <MetricLabel label={"ticker symbol"} />
+                        </Grid>
+                        <Grid item>
+                            <TickerAutocomplete
+                                tickers={allTickers}
+                                onChange={onTickerSelectionChange}
+                                size={'medium'}
+                                value={selectedTicker}
+                            />
+                        </Grid>
+                    </Box>
+                    <Box py={2} style={{width: "90%"}}>
+                        <Grid item style={{ paddingBottom: '0.3rem' }}>
+                            <MetricLabel label={"expiration date"} />
+                        </Grid>
+                        <Grid item>
+                            <Autocomplete
+                                id="expiration-dates"
+                                options={expirationTimestampsOptions}
+                                value={selectedExpirationTimestamp}
+                                onChange={onExpirationSelectionChange}
+                                size="medium"
+                                fullWidth
+                                renderInput={(params) => (
+                                    <TextField
+                                        {...params}
+                                        variant="outlined"
+                                        placeholder="Select an expiration date"
+                                    />
+                                )}
+                                getOptionLabel={(option) => option.label}
+                            />
+                        </Grid>
+                    </Box>
+                </>
+                :
+                null
+            }
             <TargetBox onFilterChange={onFilterChange} initialPrice={initialPrice} filters={filters}/>
             <Box py={2} style={{width: "90%"}}>
                 <Grid item style={{ paddingBottom: '0.3rem' }}>
