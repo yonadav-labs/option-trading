@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { OutlinedInput, makeStyles, InputAdornment, Popover, Box, Grid, Button } from "@material-ui/core";
+import { OutlinedInput, makeStyles, InputAdornment, Box, Grid, Button } from "@material-ui/core";
 import { PercentageFormatter } from "../../utils";
 
 const useStyles = makeStyles((theme) => ({
@@ -26,35 +26,32 @@ const useStyles = makeStyles((theme) => ({
 
 export default function PriceTargetField({ initialPrice, onValueChange, value }) {
     const classes = useStyles();
-
-    // popover functions and variable
-    const [anchorEl, setAnchorEl] = useState(null);
-    const handleClick = (event) => {
-        setAnchorEl(anchorEl ? null : event.currentTarget);
-    };
-    const handleClose = () => {
-        setAnchorEl(null);
-    };
-    const open = Boolean(anchorEl);
-    const id = open ? 'simple-popover' : undefined;
+    const [selectBox, setSelectBox] = useState(false)
 
     const priceTargetOptions = [0.01, -0.01, 0.02, -0.02, 0.05, -0.05, 0.1, -0.1, 0.2, -0.2, 0.5, -0.5, 1, -1]
 
     // function to handle popover selection
     const selectHandler = (input) => {
         onValueChange(input)
-        handleClose()
+        selectBoxHide()
+    }
+
+    const selectBoxShow = () => {
+        setSelectBox(true)
+    }
+
+    const selectBoxHide = () => {
+        setSelectBox(false)
     }
 
     return (
-        <>
+        <div tabIndex={0} onFocus={selectBoxShow} onBlur={selectBoxHide}>
             <OutlinedInput
                 className={classes.customInput}
                 type="number"
                 fullWidth
                 value={value}
                 onChange={(e) => onValueChange(e.target.value)}
-                onClick={handleClick}
                 startAdornment={<InputAdornment position="start"> <span style={{ color: "white" }}>$</span></InputAdornment>}
                 endAdornment={
                     <InputAdornment position="end">
@@ -62,35 +59,21 @@ export default function PriceTargetField({ initialPrice, onValueChange, value })
                     </InputAdornment>
                 }
             />
-
-            <Popover
-                id={id}
-                open={open}
-                anchorEl={anchorEl}
-                onClose={handleClose}
-                anchorOrigin={{
-                    vertical: 'bottom',
-                    horizontal: 'center',
-                }}
-                transformOrigin={{
-                    vertical: 'top',
-                    horizontal: 'center',
-                }}
-            >
-                <Box boxShadow={3} bgcolor="white" p={1} width='300px'>
-                    <Grid container spacing={1}>
-                        {priceTargetOptions.map((option, index) => {
-                            return (
-                                <Grid xs={6} key={index} item>
-                                    <Button className={classes.priceButton} fullWidth onClick={() => selectHandler((initialPrice + (initialPrice * option)).toFixed(2))}>
-                                        <span>${(initialPrice + (initialPrice * option)).toFixed(2)}</span> <span style={{ color: "#cdcece" }}>{option > 0 ? "+" : null}{option * 100}%</span>
-                                    </Button>
-                                </Grid>
-                            )
-                        })}
-                    </Grid>
-                </Box>
-            </Popover>
-        </>
+            {selectBox ?
+                <Grid container spacing={1} boxShadow={3} p={1} bgcolor="white" width='300px' zIndex={20} position="absolute">
+                    {priceTargetOptions.map((option, index) => {
+                        return (
+                            <Grid xs={6} key={index} item>
+                                <Button className={classes.priceButton} fullWidth onMouseDown={() => selectHandler((initialPrice + (initialPrice * option)).toFixed(2))}>
+                                    <span>${(initialPrice + (initialPrice * option)).toFixed(2)}</span> <span style={{ color: "#cdcece" }}>{option > 0 ? "+" : null}{option * 100}%</span>
+                                </Button>
+                            </Grid>
+                        )
+                    })}
+                </Grid>
+                :
+                null
+            }
+        </div>
     );
 }

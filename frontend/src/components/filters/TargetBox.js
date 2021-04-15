@@ -4,7 +4,6 @@ import { fixedFloat } from "../../utils";
 import MetricLabel from "../MetricLabel";
 import PriceTargetField from "./PriceTargetField";
 import IntervalField from "./IntervalField";
-import RangeTargetField from "./RangeTargetField";
 
 const StyledToggleButtonGroup = withStyles((theme) => ({
     root: {
@@ -114,7 +113,6 @@ export default function PriceTargetBox({ onFilterChange, initialPrice, filters }
                     </Grid>
                     <Grid item style={{ paddingBottom: "0.5rem" }}>
                         <PriceTargetField
-                            onFilterChange={onFilterChange}
                             initialPrice={initialPrice}
                             value={filters.priceTarget}
                             onValueChange={priceTargetChangeHandler}
@@ -141,10 +139,9 @@ export default function PriceTargetBox({ onFilterChange, initialPrice, filters }
                     <MetricLabel label={"low"} />
                     </Grid>
                     <Grid item style={{ paddingBottom: "0.5rem" }}>
-                        <RangeTargetField
-                            changeHandler={lowerRangeChangeHandler}
+                        <PriceTargetField
+                            onValueChange={lowerRangeChangeHandler}
                             initialPrice={initialPrice}
-                            priceTargetOptions = {[-0.01, -0.02, -0.05, -0.1, -0.2, -0.5, -1]}
                             value={filters.targetPriceLower}
                         />
                     </Grid>
@@ -152,10 +149,9 @@ export default function PriceTargetBox({ onFilterChange, initialPrice, filters }
                         <MetricLabel label={"high"} />
                     </Grid>
                     <Grid item style={{ paddingBottom: "0.2rem" }}>
-                        <RangeTargetField
-                            changeHandler={upperRangeChangeHandler}
+                        <PriceTargetField
+                            onValueChange={upperRangeChangeHandler}
                             initialPrice={initialPrice}
-                            priceTargetOptions = {[0.01, 0.02, 0.05, 0.1, 0.2, 0.5, 1]}
                             value={filters.targetPriceUpper}
                         />
                     </Grid>
