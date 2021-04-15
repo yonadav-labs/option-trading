@@ -1,6 +1,8 @@
 import React from "react";
-import { Grid, Paper, TextField, Autocomplete, Stack, Container, Divider, makeStyles } from "@material-ui/core";
+import { Grid, Paper, TextField, Autocomplete, Stack, Container, Divider, makeStyles, Typography } from "@material-ui/core";
 import TickerAutocomplete from "../../components/TickerAutocomplete";
+import VerticalCarousel from '../../components/VerticalCarousel';
+import { Row, Col } from 'react-bootstrap';
 
 const useStyles = makeStyles((theme) => ({
     customPaper: {
@@ -80,23 +82,45 @@ export default function LandingView(props) {
                 </Paper>
             </Container>
             <br />
-            <Grid container direction="row" justifyContent="center" alignItems="center" >
+            <Grid container justifyContent="center" alignItems="center" spacing={3}>
                 <Grid item>
-                    <h1>Discover</h1>
+                    <h2>Discover option strategies with the best potential return</h2>
+                </Grid>
+                <Grid item xs={7}>
+                    <Typography variant="body1" align="center">
+                        Enter what you think the price of the stock will be and by when.
+                        <br /> 
+                        See the trades you can make to get the highest potential return. 
+                    </Typography>
                 </Grid>
             </Grid>
             <br />
-            <Grid container direction="row" justifyContent="center" alignItems="center" >
-                <Grid item xs={7}>
-                    <p style={{ textAlign: "center" }}>
-                        {" "}
-                        Lorem ipsum dolor sit amet, consectetur adipiscing elit,
-                        sed do eiusmod tempor incididunt ut labore et dolore
-                        magna aliqua. Quis auctor elit sed vulputate mi sit amet
-                        mauris. Ligula ullamcorper malesuada proin libero nunc
-                        consequat interdum.{" "}
-                    </p>
-                </Grid>
+            {/* TODO replace with material ui */}
+            <Grid>
+                <Row className="p-5">
+                    <VerticalCarousel>
+                        <VerticalCarousel.Slide
+                            imgSrc="slider1.png"
+                            heading="Select a stock"
+                            text="AAPL, AMZN, TSLA..."
+                        />
+                        <VerticalCarousel.Slide
+                            imgSrc="slider2.png"
+                            heading="Select an expiration date"
+                            text="Your timeframe for the strategy."
+                        />
+                        <VerticalCarousel.Slide
+                            imgSrc="slider3.png"
+                            heading="Enter a target price"
+                            text="Where do you think the stock price will be?"
+                        />
+                        <VerticalCarousel.Slide
+                            imgSrc="slider4.png"
+                            heading="Discover the best strategies"
+                            text="We calculate thousands of permutations for each strategy and show you the best ones."
+                        />
+                    </VerticalCarousel>
+                </Row>
             </Grid>
         </>
     );
