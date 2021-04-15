@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Grid, TextField, Box, Typography, Autocomplete, Pagination } from "@material-ui/core";
+import { Grid, TextField, Box, Typography, Autocomplete, Pagination, IconButton } from "@material-ui/core";
 import NewTradeCard from "../../components/cards/NewTradeCard";
 import TickerAutocomplete from "../../components/TickerAutocomplete";
 import FilterContainer from "../../components/filters/FilterContainer";
@@ -21,6 +21,12 @@ export default function MainView(props) {
         filters 
     } = props
 
+    // web filter slide out
+    const [filterOpen, setFilterOpen] = useState(false)
+    const handleFilter = () => {
+        setFilterOpen(!filterOpen)
+    }
+
     // mobile responsiveness
     const [screenWidth, setScreenWidth] = useState(window.innerWidth)
     const isMobile = screenWidth <= 800
@@ -31,7 +37,7 @@ export default function MainView(props) {
 
     // mobile filter state
     const [mobileFilter, setMobileFilter] = useState(false)
-    const handleClick = () => {
+    const handleMobileFilter = () => {
         setMobileFilter(!mobileFilter)
     }
 
@@ -54,16 +60,23 @@ export default function MainView(props) {
                 {isMobile ? 
                     null
                     :
-                    <Grid item sm={2}>
-                        <Box bgcolor='#333741' color="white" height="105%" style={{ marginRight: '-2rem' }}>
-                            <Grid container direction="column" justifyContent="center" alignItems="center" className="filter-label">
-                                <FilterContainer onFilterChange={onFilterChange} filters={filters} initialPrice={basicInfo.regularMarketPrice} />
-                            </Grid>
-                        </Box>
-                    </Grid>
+                    filterOpen ? 
+                        <Grid item sm={2.3}>
+                                <Box bgcolor='#333741' color="white" height="105%">
+                                    <Grid container direction="column" justifyContent="center" alignItems="center" className="filter-label">
+                                        <FilterContainer onFilterChange={onFilterChange} filters={filters} handleFilter={handleFilter} initialPrice={basicInfo.regularMarketPrice} />
+                                    </Grid>
+                                </Box>
+                        </Grid>
+                    :
+                        <Grid item xs={0.6}>
+                            <Box display="flex" justifyContent="center" py={2} bgcolor='#333741' color="white" height="105%">
+                                <IconButton color="inherit" style={{height:"max-content"}} onClick={handleFilter}><TuneIcon fontSize="large" /></IconButton>
+                            </Box>
+                        </Grid>
                 }
-                <Grid item xs={ isMobile ? 12 : 10}>
-                    <Box boxShadow={4} p={2} style={isMobile ? null : { marginLeft: '2rem' }}>
+                <Grid item xs={ isMobile ? 12 : filterOpen ? 9.7 : 11.4}>
+                    <Box boxShadow={4} p={2}>
                         { isMobile ?
                             <Box py={2} borderBottom={1}>
                                 <Grid container direction="row" justifyContent="center" alignItems="center">
@@ -76,7 +89,11 @@ export default function MainView(props) {
                                         :
                                         null
                                     }
-                                    <Grid item xs={1}><div onClick={handleClick}><TuneIcon fontSize="large"/></div></Grid>
+                                    <Grid item xs={1}>
+                                        <IconButton color="inherit" style={{height:"max-content"}} onClick={handleMobileFilter}>
+                                            <TuneIcon fontSize="large" />
+                                        </IconButton>
+                                    </Grid>
                                     { mobileFilter ?
                                         <>
                                             <div style={{position: "fixed", left: 0, right: 0, top: 0, bottom: 0, zIndex: 20, backgroundColor: "rgba(0,0,0,0.6)"}}></div>
@@ -88,7 +105,7 @@ export default function MainView(props) {
                                                             filters={filters} 
                                                             initialPrice={basicInfo.regularMarketPrice} 
                                                             isMobile={isMobile} 
-                                                            handleClick={handleClick}
+                                                            handleMobileFilter={handleMobileFilter}
                                                             allTickers={allTickers}
                                                             onTickerSelectionChange={onTickerSelectionChange}
                                                             selectedTicker={selectedTicker}
@@ -147,7 +164,7 @@ export default function MainView(props) {
                             <NewTickerSummary basicInfo={basicInfo} />
                         </Box>
                     </Box>
-                    <Box p={5} bgcolor='#F2F2F2' minHeight="100vh" height="100%" style={isMobile ? null : { marginLeft: '2rem' }}>
+                    <Box p={5} bgcolor='#F2F2F2' minHeight="100vh" height="100%">
                         <Grid container spacing={2} direction="column" justifyContent="center">
                             {renderedTrades.map((trade, index) => <NewTradeCard trade={trade} key={index} />)}
                         </Grid>

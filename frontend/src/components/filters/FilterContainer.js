@@ -1,5 +1,5 @@
 import React from "react";
-import { Grid, Box, TextField, Autocomplete } from "@material-ui/core";
+import { Grid, Box, TextField, Autocomplete, IconButton } from "@material-ui/core";
 import TuneIcon from '@material-ui/icons/Tune';
 import CloseIcon from '@material-ui/icons/Close';
 import MaterialFilter from "./MaterialFilter";
@@ -9,7 +9,20 @@ import TargetBox from "./TargetBox";
 import TickerAutocomplete from "../TickerAutocomplete";
 
 export default function FilterContainer(props) {
-    const { onFilterChange, initialPrice, filters, isMobile, handleClick, allTickers, onTickerSelectionChange, selectedTicker, expirationTimestampsOptions, selectedExpirationTimestamp, onExpirationSelectionChange } = props
+    const { 
+        onFilterChange,
+        initialPrice,
+        filters,
+        handleFilter,
+        isMobile,
+        handleMobileFilter,
+        allTickers,
+        onTickerSelectionChange,
+        selectedTicker,
+        expirationTimestampsOptions,
+        selectedExpirationTimestamp,
+        onExpirationSelectionChange
+    } = props
     const premiumPriceFilter = [
         { label: "Market Order Price", value: "market" },
         { label: "Mid/Mark Price", value: 'mid' }
@@ -67,7 +80,16 @@ export default function FilterContainer(props) {
                 <Grid item>
                     <Grid container direction="row" justifyContent="space-between" alignItems="center">
                         <Grid item><span style={{ fontSize: '1.3rem' }}>SETTINGS</span></Grid>
-                        <Grid item>{isMobile ? <div onClick={handleClick}><CloseIcon fontSize="large" /></div>  : <TuneIcon fontSize="large" />}</Grid>
+                        <Grid item>
+                            {isMobile ? 
+                                <IconButton color="inherit" style={{height:"max-content"}} onClick={handleMobileFilter}>
+                                    <CloseIcon fontSize="large" />
+                                </IconButton>
+                            : 
+                                <IconButton color="inherit" style={{height:"max-content"}} onClick={handleFilter}>
+                                    <TuneIcon fontSize="large" />
+                                </IconButton>}
+                        </Grid>
                     </Grid>
                 </Grid>
             </Box>
