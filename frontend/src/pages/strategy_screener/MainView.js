@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Grid, TextField, Box, Typography, Stack, Autocomplete, Pagination, Paper, Divider, Alert, IconButton } from "@material-ui/core";
+import { Grid, TextField, Typography, Stack, Autocomplete, Pagination, Paper, Divider, Alert, IconButton } from "@material-ui/core";
 import NewTradeCard from "../../components/cards/NewTradeCard";
 import TickerAutocomplete from "../../components/TickerAutocomplete";
 import FilterContainer from "../../components/filters/FilterContainer";
@@ -22,7 +22,7 @@ export default function MainView(props) {
     } = props
 
     // web filter slide out
-    const [filterOpen, setFilterOpen] = useState(false)
+    const [filterOpen, setFilterOpen] = useState(true)
     const handleFilter = () => {
         setFilterOpen(!filterOpen)
     }
@@ -36,7 +36,7 @@ export default function MainView(props) {
     window.addEventListener("resize", handleWindowSizeChange)
 
     // mobile filter state
-    const [mobileFilter, setMobileFilter] = useState(false)
+    const [mobileFilter, setMobileFilter] = useState(true)
     const handleMobileFilter = () => {
         setMobileFilter(!mobileFilter)
     }
