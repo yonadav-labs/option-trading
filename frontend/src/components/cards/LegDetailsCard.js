@@ -17,23 +17,23 @@ export default function LegDetailsCard(props) {
                             <h5>{leg_num ? `LEG ${leg_num}` : null}</h5>
                         </Col>
                         <Col sm="2" xs="6">
-                            <MetricLabel label="action" />
+                            <MetricLabel label="action" /><br />
                             {leg.is_long ? 'Long' : 'Short'}
                         </Col>
                         <Col sm="2" xs="6">
-                            <MetricLabel label="quantity" />
+                            <MetricLabel label="quantity" /><br />
                             {leg.units} {leg.units > 1 ? 'contracts' : 'contract'}
                         </Col>
                         <Col sm="2" xs="6">
-                            <MetricLabel label="expiration" />
+                            <MetricLabel label="expiration" /><br />
                             {TimestampDateFormatter(leg.contract.expiration)}
                         </Col>
                         <Col sm="2" xs="6">
-                            <MetricLabel label="strike" />
+                            <MetricLabel label="strike" /><br />
                             {PriceFormatter(leg.contract.strike)}
                         </Col>
                         <Col sm="2" xs="6">
-                            <MetricLabel label="call/put" />
+                            <MetricLabel label="call/put" /><br />
                             {leg.contract.is_call ? 'Call' : 'Put'}
                         </Col>
                         {/* <Col sm="2" xs="6">

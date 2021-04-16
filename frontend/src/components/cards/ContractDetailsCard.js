@@ -20,90 +20,90 @@ export default function ContractDetailsCard(props) {
                         <Card.Text>
                             <Row>
                                 <Col sm="2" xs="6">
-                                    <MetricLabel label="last" />
+                                    <MetricLabel label="last" /><br />
                                     {PriceFormatter(contract.last_price)}
                                 </Col>
                                 <Col sm="2" xs="6">
-                                    <MetricLabel label="mid/mark" />
+                                    <MetricLabel label="mid/mark" /><br />
                                     {PriceFormatter(contract.mark)}
                                 </Col>
                                 <Col sm="2" xs="6">
-                                    <MetricLabel label="bid x size" />
+                                    <MetricLabel label="bid x size" /><br />
                                     {PriceFormatter(contract.bid)} X {NumberRoundFormatter(contract.bid_size)}
                                 </Col>
                                 <Col sm="2" xs="6">
-                                    <MetricLabel label="ask x size" />
+                                    <MetricLabel label="ask x size" /><br />
                                     {PriceFormatter(contract.ask)} X {NumberRoundFormatter(contract.ask_size)}
                                 </Col>
                                 <Col sm="2" xs="6">
-                                    <MetricLabel label="volume" />
+                                    <MetricLabel label="volume" /><br />
                                     {contract.volume}
                                 </Col>
                                 <Col sm="2" xs="6">
-                                    <MetricLabel label="open interest" />
+                                    <MetricLabel label="open interest" /><br />
                                     {contract.open_interest}
                                 </Col>
                             </Row>
                             {readMore ? <>
                                 <Row>
                                     <Col sm="2" xs="6">
-                                        <MetricLabel label="day's change" />
+                                        <MetricLabel label="day's change" /><br />
                                         {PriceFormatter(contract.change)} ({NumberRoundFormatter(contract.percent_change)}%)
                                     </Col>
                                     <Col sm="2" xs="6">
-                                        <MetricLabel label="day range" />
+                                        <MetricLabel label="day range" /><br />
                                         {PriceFormatter(contract.low_price)} - {PriceFormatter(contract.high_price)}
                                     </Col>
                                     <Col sm="2" xs="6">
-                                        <MetricLabel label="implied volatility" />
+                                        <MetricLabel label="implied volatility" /><br />
                                         {PercentageFormatter(contract.implied_volatility)}
                                     </Col>
                                     <Col sm="2" xs="6">
-                                        <MetricLabel label="itm probability" />
+                                        <MetricLabel label="itm probability" /><br />
                                         {PercentageFormatter(contract.itm_probability)}
                                     </Col>
                                     <Col sm="2" xs="12">
-                                        <MetricLabel label="last traded" />
+                                        <MetricLabel label="last traded" /><br />
                                         {TimestampTimeFormatter(contract.last_trade_date)}
                                     </Col>
                                 </Row>
                                 <Row>
                                     <Col sm="2" xs="6">
-                                        <MetricLabel label="delta" />
+                                        <MetricLabel label="delta" /><br />
                                         {NumberRoundFormatter(contract.delta)}
                                     </Col>
                                     <Col sm="2" xs="6">
-                                        <MetricLabel label="theta" />
+                                        <MetricLabel label="theta" /><br />
                                         {NumberRoundFormatter(contract.theta)}
                                     </Col>
                                     <Col sm="2" xs="6">
-                                        <MetricLabel label="gamma" />
+                                        <MetricLabel label="gamma" /><br />
                                         {NumberRoundFormatter(contract.gamma)}
                                     </Col>
                                     <Col sm="2" xs="6">
-                                        <MetricLabel label="vega" />
+                                        <MetricLabel label="vega" /><br />
                                         {NumberRoundFormatter(contract.vega)}
                                     </Col>
                                     <Col sm="2" xs="6">
-                                        <MetricLabel label="rho" />
+                                        <MetricLabel label="rho" /><br />
                                         {NumberRoundFormatter(contract.rho)}
                                     </Col>
                                 </Row>
                                 <Row>
                                     <Col sm="2" xs="6">
-                                        <MetricLabel label="to expiration" />
+                                        <MetricLabel label="to expiration" /><br />
                                         {contract.days_till_expiration} days
                                     </Col>
                                     <Col sm="2" xs="6">
-                                        <MetricLabel label="notional value" />
+                                        <MetricLabel label="notional value" /><br />
                                         {PriceFormatter(contract.notional_value)}
                                     </Col>
                                     <Col sm="2" xs="6">
-                                        <MetricLabel label="break-even at" />
+                                        <MetricLabel label="break-even at" /><br />
                                         {PriceFormatter(contract.break_even_price)}
                                     </Col>
                                     <Col sm="2" xs="6">
-                                        <MetricLabel label="quoted at" />
+                                        <MetricLabel label="quoted at" /><br />
                                         {TimestampTimeFormatter(contract.quote_time)}
                                     </Col>
                                 </Row>

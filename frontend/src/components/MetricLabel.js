@@ -1,6 +1,6 @@
 import React from 'react';
 import { Tooltip } from "@material-ui/core";
-import { withStyles } from '@material-ui/core/styles';
+import { makeStyles, withStyles } from '@material-ui/core/styles';
 import HelpIcon from '@material-ui/icons/Help';
 
 const CustomTooltip = withStyles((theme) => ({
@@ -8,6 +8,12 @@ const CustomTooltip = withStyles((theme) => ({
         fontSize: '0.8rem',
     },
 }))(Tooltip);
+
+const useStyles = makeStyles({
+    label: {
+        textTransform: 'uppercase',
+    },
+});
 
 const HelpTextDict = {
     '10% chance loss': 'Average of possible losses with a 10% probability based on historical data.',
@@ -30,7 +36,7 @@ const HelpTextDict = {
     'eps': 'Earnings per share.',
     'expiration': 'The last date of an option contract on which the holder of the option may exercise it according to its terms.',
     'expiration date': 'The last date of an option contract on which the holder of the option may exercise it according to its terms.',
-    'gamma': 'Estimate of the rate of change between an option\'s Delta and the stock\'s price',
+    'gamma': 'Estimate of the rate of change between an option\'s Delta and the stock\'s price.',
     'hypothetical return': 'Average of possible return outcomes if share price lies within the target price range on expiration date. Total cost is used to calculate the return rate.',
     'initial value': 'The value of this trade when it was was saved or shared.',
     'implied volatility': 'Expected annualized volatility of a stock over the life of the option.',
@@ -73,6 +79,8 @@ const HelpTextDict = {
 export default function MetricLabel(props) {
     let { label, helpText } = props;
 
+    const classes = useStyles();
+
     if (!helpText) {
         helpText = HelpTextDict[label.toLowerCase()];
     }
@@ -80,9 +88,9 @@ export default function MetricLabel(props) {
     if (helpText) {
         return (
             (
-                <span>
+                <span className={classes.label}>
                     {label}
-                    <Tooltip title={helpText} placement="right-start" arrow sx={{marginLeft: "5px"}}>
+                    <Tooltip title={helpText} placement="right-start" arrow sx={{ marginLeft: "0.05rem" }}>
                         <HelpIcon fontSize="small" color="action" />
                     </Tooltip>
                 </span>
@@ -91,9 +99,9 @@ export default function MetricLabel(props) {
     } else {
         return (
             (
-                <>
+                <span className={classes.label}>
                     {label}
-                </>
+                </span>
             )
         );
     }
