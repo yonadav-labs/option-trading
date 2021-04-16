@@ -20,19 +20,28 @@ def create_subscriber_hash(email):
     return hash_code
 
 
-def add_or_update_member(user, tags=[]):
+def add_or_update_member(user):
     member_info = {
         "email_address": user.email,
         "status_if_new": "subscribed",
         "merge_fields": {
             "FNAME": user.first_name,
             "LNAME": user.last_name,
-        },
-        "tags": tags
+        }
     }
     subscriber_hash = create_subscriber_hash(user.email)
 
     try:
         resp = mailchimp_client.lists.set_list_member(settings.MAILCHIMP_EMAIL_LIST_ID, subscriber_hash, member_info)
+    except ApiClientError as error:
+        print("An exception occurred: {}".format(error.text))
+
+
+def update_tags(user, tags):
+    subscriber_hash = create_subscriber_hash(user.email)
+    data = {'tags': tags}
+
+    try:
+        resp = mailchimp_client.lists.update_list_member_tags(settings.MAILCHIMP_EMAIL_LIST_ID, subscriber_hash, data)
     except ApiClientError as error:
         print("An exception occurred: {}".format(error.text))
