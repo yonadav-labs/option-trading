@@ -1,0 +1,66 @@
+#!/usr/bin/env bash
+
+set -e
+
+BASTION_INSTANCE_NAME='prod-bastion'
+
+ts_aws() {
+  aws --profile tigerstance "$@"
+}
+
+get_prod_bastion_hostname() {
+  ts_aws ec2 describe-instances --filters Name=tag:Name,Values="$BASTION_INSTANCE_NAME" \
+    | grep '"PublicDnsName"' \
+    | head -n 1 \
+    | awk '{ print $2 }' \
+    | sed -E 's/[",]//g'
+}
+
+get_tunnel_ssh_pid() {
+  lsof -nP -i4TCP:"$LOCAL_PORT" \
+    | grep LISTEN \
+    | head -n 1 \
+    | awk '{ print $2 }'
+}
+
+if [[ "$1" == '-h' || "$1" == '--help' ]] ; then
+  cat 1>&2 << EOF
+Usage: aws-tunnel (-h | --help)
+       aws-tunnel LOCAL_PORT REMOTE_HOSTNAME REMOTE_PORT
+       aws-tunnel close LOCAL_PORT
+EOF
+  exit
+fi
+
+if [[ "$1" == "close" ]] ; then
+  LOCAL_PORT="$2"
+  TUNNEL_PID="$(get_tunnel_ssh_pid)"
+
+  if [[ -n "$TUNNEL_PID" ]] ; then
+    { kill -15 "$TUNNEL_PID" && echo "Tunnel closed." ; } \
+      || echo "Unable to close tunnel."
+  else
+    echo "Tunnel not found."
+  fi
+
+  exit
+elif [[ -n "$TUNNEL_PID" ]] ; then
+  LOCAL_PORT="$1"
+  TUNNEL_PID="$(get_tunnel_ssh_pid)"
+
+  echo -e "Tunnel already established on port \033[1;36m$LOCAL_PORT\033[0m."
+  echo -e "Run \033[1;36m$(basename "$0") close\033[0m or \033[1;36mkill -15 $TUNNEL_PID\033[0m to close the tunnel."
+
+  exit
+fi
+
+LOCAL_PORT="$1"
+REMOTE_HOSTNAME="$2"
+REMOTE_PORT="$3"
+BASTION_HOSTNAME="$(get_prod_bastion_hostname)"
+
+ssh -fN -L "$LOCAL_PORT":"$REMOTE_HOSTNAME":"$REMOTE_PORT" ubuntu@"$BASTION_HOSTNAME"
+TUNNEL_PID="$(get_tunnel_ssh_pid)"
+
+echo -e "Tunnel established on port \033[1;36m$LOCAL_PORT\033[0m."
+echo -e "Run '\033[1;36m$(basename "$0") close $LOCAL_PORT\033[0m' or '\033[1;36mkill -15 $TUNNEL_PID\033[0m' to close the tunnel."
