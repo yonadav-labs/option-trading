@@ -67,7 +67,7 @@ export default function LandingView(props) {
                             options={["Bullish", "Bearish"]}
                             fullWidth
                             disabled={expirationDisabled}
-                            onChange={(e, val) => val ? onSentimentChange(val.toLowerCase()) : onSentimentChange('')}
+                            onChange={(e, val) => onSentimentChange(val)}
                             renderInput={(params) => (
                                 <TextField
                                     {...params}

@@ -1,14 +1,7 @@
 import React from 'react';
 import { Tooltip } from "@material-ui/core";
-import { makeStyles, withStyles } from '@material-ui/core/styles';
-
-
-const useStyles = makeStyles({
-    label: {
-        fontWeight: 'bold',
-        textTransform: 'uppercase',
-    },
-});
+import { withStyles } from '@material-ui/core/styles';
+import HelpIcon from '@material-ui/icons/Help';
 
 const CustomTooltip = withStyles((theme) => ({
     tooltip: {
@@ -53,6 +46,7 @@ const HelpTextDict = {
     'mid/mark': 'The average of the bid and ask prices.',
     'notional value': 'Total value of the underlying stock this postition controls.',
     'open interest': 'The number of active contracts that are not closed or exercised. An indicator for market liquidity.',
+    'min open interest': 'The number of active contracts that are not closed or exercised. An indicator for market liquidity.',
     'p/e ratio': 'The price to earnings ratio.',
     'premium price to use': 'The options price to use in return calculation.'
         + 'Market price: use bid price of options contracts for sell, use ask price for buy. '
@@ -73,11 +67,11 @@ const HelpTextDict = {
     'total cost': 'The total capital required to enter this trade, including commission cost and collateral if applicable. Can also be considered as the value of this postition.',
     'vega': 'Estimate of change in an option premium based on a 1% change in implied volatility',
     'volume': 'Total number of option contracts transacted for the day. An indicator for market liquidity.',
+    'min volume': 'Total number of option contracts transacted for the day. An indicator for market liquidity.',
 }
 
 export default function MetricLabel(props) {
     let { label, helpText } = props;
-    const classes = useStyles();
 
     if (!helpText) {
         helpText = HelpTextDict[label.toLowerCase()];
@@ -86,20 +80,19 @@ export default function MetricLabel(props) {
     if (helpText) {
         return (
             (
-                <>
-                    <CustomTooltip title={helpText} placement="right-start" arrow>
-                        <span className={classes.label}>{label}</span>
-                    </CustomTooltip>
-                    <br />
-                </>
+                <span>
+                    {label}
+                    <Tooltip title={helpText} placement="right-start" arrow sx={{marginLeft: "5px"}}>
+                        <HelpIcon fontSize="small" color="action" />
+                    </Tooltip>
+                </span>
             )
         );
     } else {
         return (
             (
                 <>
-                    <span className={classes.label}>{label}</span>
-                    <br />
+                    {label}
                 </>
             )
         );

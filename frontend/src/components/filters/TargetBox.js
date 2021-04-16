@@ -1,5 +1,5 @@
 import React from "react";
-import { Box, Grid, withStyles, ToggleButtonGroup, ToggleButton } from "@material-ui/core";
+import { Box, Grid, withStyles, ToggleButtonGroup, ToggleButton, Typography } from "@material-ui/core";
 import { fixedFloat } from "../../utils";
 import MetricLabel from "../MetricLabel";
 import PriceTargetField from "./PriceTargetField";
@@ -86,7 +86,7 @@ export default function PriceTargetBox({ onFilterChange, initialPrice, filters }
     return (
         <Box bgcolor='rgba(51, 51, 51, 0.75)' style={{width: "100%"}} p={2}>
             <Grid item style={{ paddingBottom: "0.3rem" }}>
-                <MetricLabel label={"stock price on exp day"} />
+                <Typography variant="button"><MetricLabel label="Target Price on Exp Day" /></Typography>
             </Grid>
             <Grid item style={{ paddingBottom: "0.5rem" }}>
                 <Box border={1} borderColor="white" borderRadius={30}>
@@ -109,7 +109,7 @@ export default function PriceTargetBox({ onFilterChange, initialPrice, filters }
             { filters.targetType === "price" ?
                 <>
                     <Grid item style={{ paddingBottom: "0.3rem" }}>
-                    <MetricLabel label={"target"} />
+                        <Typography variant="button"><MetricLabel label="target price" /></Typography>
                     </Grid>
                     <Grid item style={{ paddingBottom: "0.5rem" }}>
                         <PriceTargetField
@@ -119,7 +119,7 @@ export default function PriceTargetBox({ onFilterChange, initialPrice, filters }
                         />
                     </Grid>
                     <Grid item style={{ paddingBottom: "0.3rem" }}>
-                        <MetricLabel label={"Interval (optional)"} />
+                        <Typography variant="button"><MetricLabel label="interval (optional)" /></Typography>
                     </Grid>
                     <Grid item style={{ paddingBottom: "0.2rem" }}>
                         <IntervalField
@@ -130,13 +130,13 @@ export default function PriceTargetBox({ onFilterChange, initialPrice, filters }
                         />
                     </Grid>
                     <Grid item style={{ paddingBottom: "0.3rem" }}>
-                        <span>Range: {filters.interval === 0 || filters.interval === "" ? "None specified" : `$${filters.targetPriceLower.toFixed(2)} - $${filters.targetPriceUpper.toFixed(2)}`}</span>
+                        <Typography variant="button">Range: {filters.interval === 0 || filters.interval === "" ? "None specified" : `$${filters.targetPriceLower.toFixed(2)} - $${filters.targetPriceUpper.toFixed(2)}`}</Typography>
                     </Grid> 
                 </>
                 :
                 <>
                     <Grid item style={{ paddingBottom: "0.3rem" }}>
-                    <MetricLabel label={"low"} />
+                        <Typography variant="button"><MetricLabel label="low target" /></Typography>
                     </Grid>
                     <Grid item style={{ paddingBottom: "0.5rem" }}>
                         <PriceTargetField
@@ -146,7 +146,7 @@ export default function PriceTargetBox({ onFilterChange, initialPrice, filters }
                         />
                     </Grid>
                     <Grid item style={{ paddingBottom: "0.3rem" }}>
-                        <MetricLabel label={"high"} />
+                        <Typography variant="button"><MetricLabel label="high target" /></Typography>
                     </Grid>
                     <Grid item style={{ paddingBottom: "0.2rem" }}>
                         <PriceTargetField

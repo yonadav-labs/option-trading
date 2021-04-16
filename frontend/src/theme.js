@@ -18,73 +18,88 @@ let theme = createMuiTheme({
     },
     typography: {
         h1: {
-            fontSize: '4.375rem',
-            fontWeight: 400,
+            fontSize: '5rem',
+            fontWeight: 'normal',
             lineHeight: 1,
-            letterSpacing: '-0.063em',
+            letterSpacing: '-0.071em',
         },
         h2: {
-            fontWeight: 400,
-            letterSpacing: '-0.063em',
+            fontSize: '4.286rem',
+            fontWeight: 'normal',
             lineHeight: 1.1,
+            letterSpacing: '-0.071em',
         },
         h3: {
-            fontSize: '2.5rem',
+            fontSize: '2.857rem',
+            fontWeight: 'normal',
             lineHeight: 1.2,
-            letterSpacing: '-0.063em',
+            letterSpacing: '-0.071em',
         },
         h4: {
-            fontSize: '1.75rem',
+            fontSize: '2rem',
+            fontWeight: 'normal',
             lineHeight: 1.1,
         },
         h5: {
-            fontWeight: 700,
-            fontSize: '1.313rem',
+            fontSize: '1.5rem',
+            fontWeight: 'bold',
             lineHeight: 1.2,
         },
         h6: {
-            fontWeight: 700,
-            fontSize: '1.125rem',
+            fontSize: '1.286rem',
+            fontWeight: 'bold',
             lineHeight: 1.2,
         },
         subtitle1: {
-            fontSize: '0.875rem',
-            lineHeight: 1.2,
+            fontSize: '1.143rem',
             fontWeight: 500,
-        },
-        // subtitle2: undefined,
-        // body1: undefined,
-        // body2: undefined,
-        title: {
-            fontFamily: "Roboto",
-            fontWeight: 500,
-            fontSize: '1rem',
             lineHeight: 1.4,
         },
-        paragraph: {
-            fontWeight: 400,
+        subtitle2: {
             fontSize: '1rem',
-            lineHeight: 1.4,
+            fontWeight: 500,
+            lineHeight: 1.5,
         },
-        smallParagraph: {
-            fontWeight: 400,
-            fontSize: '0.875rem',
-            lineHeight: 1.2,
+        body1: {
+            fontSize: '1.143rem',
+            fontWeight: 'normal',
+            lineHeight: 1.6,
         },
-        label: {
-            fontFamily: "Roboto",
-            fontWeight: 700,
-            fontSize: '0.75rem',
-            lineHeight: 1.3,
-            letterSpacing: '0.063em',
-            textTransform: 'uppercase'
+        body2: {
+            fontSize: '1rem',
+            fontWeight: 'normal',
+            lineHeight: 1.5,
         },
+        // title: {
+        //     fontFamily: "Roboto",
+        //     fontWeight: 500,
+        //     fontSize: '1rem',
+        //     lineHeight: 1.4,
+        // },
+        // paragraph: {
+        //     fontWeight: 400,
+        //     fontSize: '1rem',
+        //     lineHeight: 1.4,
+        // },
+        // smallParagraph: {
+        //     fontWeight: 400,
+        //     fontSize: '0.875rem',
+        //     lineHeight: 1.2,
+        // },
+        // label: {
+        //     fontFamily: "Roboto",
+        //     fontWeight: 700,
+        //     fontSize: '0.75rem',
+        //     lineHeight: 1.3,
+        //     letterSpacing: '0.063em',
+        //     textTransform: 'uppercase'
+        // },
         button: {
             fontFamily: "Roboto",
-            fontWeight: 700,
-            fontSize: '0.75rem',
+            fontSize: '0.786rem',
+            fontWeight: 'bold',
             lineHeight: 1.3,
-            letterSpacing: '0.063em',
+            letterSpacing: '0.071em',
             textTransform: 'uppercase'
         },
     },
@@ -189,8 +204,5 @@ let theme = createMuiTheme({
 });
 
 theme = responsiveFontSizes(theme);
-theme.typography.subtitle2 = undefined;
-// theme.typography.body1 = undefined;
-theme.typography.body2 = undefined;
 
 export default theme

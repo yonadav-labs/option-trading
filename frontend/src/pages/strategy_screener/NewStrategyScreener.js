@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback, useRef, useMemo } from "react";
 import Axios from 'axios';
-import { Box } from "@material-ui/core";
+import { Box, Container } from "@material-ui/core";
 import ModalSpinner from '../../components/ModalSpinner';
 import LandingView from "./LandingView";
 import MainView from "./MainView";
@@ -167,28 +167,27 @@ export default function NewStrategyScreener() {
     // function to change filter states
     const onFilterChange = (value, filterChoice) => {
         // console.log(value, filterChoice)
-        setFilters((prevState) => {
-            const newState = { ...prevState, [filterChoice]: value };
-            return newState;
-        });
+        setFilters(prevState => ({ ...prevState, [filterChoice]: value }));
         debouncedGetBestTrades();
     }
 
     const onSentimentChange = (sentiment) => {
         setSentiment(sentiment)
-        switch (sentiment) {
-            case 'bullish':
-                onFilterChange(fixedFloat(basicInfo.regularMarketPrice * 1.05), "targetPriceLower")
-                onFilterChange(fixedFloat(basicInfo.regularMarketPrice * 1.05), "targetPriceUpper")
-                onFilterChange(fixedFloat(basicInfo.regularMarketPrice * 1.05), "priceTarget")
-                break;
-            case 'bearish':
-                onFilterChange(fixedFloat(basicInfo.regularMarketPrice * 0.95), "targetPriceLower")
-                onFilterChange(fixedFloat(basicInfo.regularMarketPrice * 0.95), "targetPriceUpper")
-                onFilterChange(fixedFloat(basicInfo.regularMarketPrice * 0.95), "priceTarget")
-                break;
-            default:
-                break;
+        if (sentiment) {
+            switch (sentiment.toLowerCase()) {
+                case 'bullish':
+                    onFilterChange(fixedFloat(basicInfo.regularMarketPrice * 1.05), "targetPriceLower")
+                    onFilterChange(fixedFloat(basicInfo.regularMarketPrice * 1.05), "targetPriceUpper")
+                    onFilterChange(fixedFloat(basicInfo.regularMarketPrice * 1.05), "priceTarget")
+                    break;
+                case 'bearish':
+                    onFilterChange(fixedFloat(basicInfo.regularMarketPrice * 0.95), "targetPriceLower")
+                    onFilterChange(fixedFloat(basicInfo.regularMarketPrice * 0.95), "targetPriceUpper")
+                    onFilterChange(fixedFloat(basicInfo.regularMarketPrice * 0.95), "priceTarget")
+                    break;
+                default:
+                    break;
+            }
         }
     };
 
@@ -206,7 +205,7 @@ export default function NewStrategyScreener() {
     }, []);
 
     return (
-        <Box sx={{ flexGrow: 1 }} className="min-vh-100">
+        <>
             <ModalSpinner active={modalActive}></ModalSpinner>
             {
                 pageState ?
@@ -236,6 +235,6 @@ export default function NewStrategyScreener() {
                         filters={filters}
                     />
             }
-        </Box>
+        </>
     );
 }

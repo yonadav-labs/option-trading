@@ -1,5 +1,5 @@
-import React, {useState} from "react";
-import { Grid, Button, Popper, Box, makeStyles} from "@material-ui/core";
+import React, { useState } from "react";
+import { Grid, Button, Popper, Box, makeStyles, Typography } from "@material-ui/core";
 import { TimestampDateFormatter, formatLargeNumber } from "../utils";
 import ZoomInIcon from '@material-ui/icons/ZoomIn';
 import TradingViewWidget from 'react-tradingview-widget';
@@ -30,93 +30,100 @@ export default function NewTickerSummary({ basicInfo }) {
         <Grid
             container
             direction="row"
-            justifyContent="space-between"
-            alignItems="center"
+            spacing={1}
         >
-            <Grid item>
-                <span className="stock-summary-title"><MetricLabel label="last price" /></span>
-                <span className="stock-summary-information">
+            <Grid item sm>
+                <Typography variant="button" color="primary"><MetricLabel label="last price" /></Typography>
+                <br />
+                <Typography variant="body1">
                     {basicInfo.regularMarketPrice
                         ? `$${basicInfo.regularMarketPrice}`
                         : "N/A"}
-                </span>
+                </Typography>
             </Grid>
-            <Grid item>
-                <span className="stock-summary-title"><MetricLabel label="day range" /></span>
-                <span className="stock-summary-information">
+            <Grid item sm>
+                <Typography variant="button" color="primary"><MetricLabel label="day range" /></Typography>
+                <br />
+                <Typography variant="body1">
                     {basicInfo.regularMarketDayLow &&
-                    basicInfo.regularMarketDayHigh
+                        basicInfo.regularMarketDayHigh
                         ? `${basicInfo.regularMarketDayLow.toFixed(
-                              2
-                          )} - ${basicInfo.regularMarketDayHigh.toFixed(2)}`
+                            2
+                        )} - ${basicInfo.regularMarketDayHigh.toFixed(2)}`
                         : "N/A"}
-                </span>
+                </Typography>
             </Grid>
-            <Grid item>
-                <span className="stock-summary-title"><MetricLabel label="52 week range" /></span>
-                <span className="stock-summary-information">
+            <Grid item sm>
+                <Typography variant="button" color="primary"><MetricLabel label="52 week range" /></Typography>
+                <br />
+                <Typography variant="body1">
                     {basicInfo.fiftyTwoWeekLow && basicInfo.fiftyTwoWeekHigh
                         ? `${basicInfo.fiftyTwoWeekLow.toFixed(
-                              2
-                          )} - ${basicInfo.fiftyTwoWeekHigh.toFixed(2)}`
+                            2
+                        )} - ${basicInfo.fiftyTwoWeekHigh.toFixed(2)}`
                         : "N/A"}
-                </span>
+                </Typography>
             </Grid>
-            <Grid item>
-                <span className="stock-summary-title"><MetricLabel label="market cap" /></span>
-                <span className="stock-summary-information">
+            <Grid item sm>
+                <Typography variant="button" color="primary"><MetricLabel label="market cap" /></Typography>
+                <br />
+                <Typography variant="body1">
                     {basicInfo.marketCap
                         ? `$${formatLargeNumber(basicInfo.marketCap, 1)}`
                         : "N/A"}
-                </span>
+                </Typography>
             </Grid>
-            <Grid item>
-                <span className="stock-summary-title"><MetricLabel label="p/e ratio" /></span>
-                <span className="stock-summary-information">
+            <Grid item sm>
+                <Typography variant="button" color="primary"><MetricLabel label="p/e ratio" /></Typography>
+                <br />
+                <Typography variant="body1">
                     {basicInfo.trailingPE
                         ? basicInfo.trailingPE.toFixed(2)
                         : "N/A"}
-                </span>
+                </Typography>
             </Grid>
-            <Grid item>
-                <span className="stock-summary-title"><MetricLabel label="eps" /></span>
-                <span className="stock-summary-information">
+            <Grid item sm>
+                <Typography variant="button" color="primary"><MetricLabel label="eps" /></Typography>
+                <br />
+                <Typography variant="body1">
                     {basicInfo.epsTrailingTwelveMonths
                         ? `$${basicInfo.epsTrailingTwelveMonths.toFixed(2)}`
                         : "N/A"}
-                </span>
+                </Typography>
             </Grid>
-            <Grid item>
-                <span className="stock-summary-title"><MetricLabel label="earnings date" /></span>
-                <span className="stock-summary-information">
+            <Grid item sm>
+                <Typography variant="button" color="primary"><MetricLabel label="earnings date" /></Typography>
+                <br />
+                <Typography variant="body1">
                     {basicInfo.earningsTimestamp &&
-                    basicInfo.earningsTimestamp > Date.now() / 1000
+                        basicInfo.earningsTimestamp > Date.now() / 1000
                         ? TimestampDateFormatter(basicInfo.earningsTimestamp)
                         : "N/A"}
-                </span>
+                </Typography>
             </Grid>
-            <Grid item>
-                <span className="stock-summary-title"><MetricLabel label="dividend date" /></span>
-                <span className="stock-summary-information">
+            <Grid item sm>
+                <Typography variant="button" color="primary"><MetricLabel label="dividend date" /></Typography>
+                <br />
+                <Typography variant="body1">
                     {basicInfo.dividendDate &&
-                    basicInfo.earningsTimestamp > Date.now() / 1000
+                        basicInfo.earningsTimestamp > Date.now() / 1000
                         ? TimestampDateFormatter(basicInfo.dividendDate)
                         : "N/A"}
-                </span>
+                </Typography>
             </Grid>
-            <Grid item>
+            <Grid item sm>
                 <Button className={classes.viewChartButton} size="large" onClick={handleClick}>
-                    <ZoomInIcon/>
-                    <span className="stock-summary-title">View Chart</span>
+                    <ZoomInIcon />
+                    <Typography variant="button" color="primary">View Chart</Typography>
                 </Button>
             </Grid>
-            <Popper 
-                id={id} 
-                open={open} 
-                anchorEl={anchorEl} 
+            <Popper
+                id={id}
+                open={open}
+                anchorEl={anchorEl}
             >
                 <Box boxShadow={3} bgcolor="white" p={2} width='600px' height='400px'>
-                    <TradingViewWidget symbol={basicInfo.symbol || ''} autosize/>
+                    <TradingViewWidget symbol={basicInfo.symbol || ''} autosize />
                 </Box>
             </Popper>
         </Grid>

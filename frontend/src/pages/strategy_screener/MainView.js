@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Grid, TextField, Box, Typography, Autocomplete, Pagination, IconButton } from "@material-ui/core";
+import { Grid, TextField, Box, Typography, Stack, Autocomplete, Pagination, Paper, Divider, Alert, IconButton } from "@material-ui/core";
 import NewTradeCard from "../../components/cards/NewTradeCard";
 import TickerAutocomplete from "../../components/TickerAutocomplete";
 import FilterContainer from "../../components/filters/FilterContainer";
@@ -8,17 +8,17 @@ import TuneIcon from "@material-ui/icons/Tune";
 
 
 export default function MainView(props) {
-    const { 
-        allTickers, 
-        selectedTicker, 
-        onTickerSelectionChange, 
-        selectedExpirationTimestamp, 
+    const {
+        allTickers,
+        selectedTicker,
+        onTickerSelectionChange,
+        selectedExpirationTimestamp,
         expirationTimestampsOptions,
         onExpirationSelectionChange,
-        bestTrades, 
-        basicInfo, 
-        onFilterChange, 
-        filters 
+        bestTrades,
+        basicInfo,
+        onFilterChange,
+        filters
     } = props
 
     // web filter slide out
@@ -51,128 +51,115 @@ export default function MainView(props) {
         if (bestTrades) {
             setRenderedTrades(bestTrades.slice(0, 10))
             setNoOfPages(Math.ceil(bestTrades.length / 10))
-        } else {setRenderedTrades([])}
+        } else { setRenderedTrades([]) }
     }, [bestTrades])
 
     return (
         <>
-            <Grid container direction="row">
-                {isMobile ? 
+            <Grid container minHeight="inherit">
+                {isMobile ?
                     null
                     :
-                    filterOpen ? 
-                        <Grid item sm={2.3}>
-                                <Box bgcolor='#333741' color="white" height="105%">
-                                    <Grid container direction="column" justifyContent="center" alignItems="center" className="filter-label">
-                                        <FilterContainer onFilterChange={onFilterChange} filters={filters} handleFilter={handleFilter} initialPrice={basicInfo.regularMarketPrice} />
-                                    </Grid>
-                                </Box>
+                    filterOpen ?
+                        <Grid container item sm={2.3} direction="column" alignItems="center" bgcolor='#333741' color="white">
+                            <FilterContainer onFilterChange={onFilterChange} filters={filters} handleFilter={handleFilter} initialPrice={basicInfo.regularMarketPrice} />
                         </Grid>
-                    :
-                        <Grid item xs={0.6}>
-                            <Box display="flex" justifyContent="center" py={2} bgcolor='#333741' color="white" height="105%">
-                                <IconButton color="inherit" style={{height:"max-content"}} onClick={handleFilter}><TuneIcon fontSize="large" /></IconButton>
-                            </Box>
+                        :
+                        <Grid item py={2} bgcolor='#333741' color="white">
+                            <IconButton color="inherit" onClick={handleFilter}><TuneIcon fontSize="large" /></IconButton>
                         </Grid>
                 }
-                <Grid item xs={ isMobile ? 12 : filterOpen ? 9.7 : 11.4}>
-                    <Box boxShadow={4} p={2}>
-                        { isMobile ?
-                            <Box py={2} borderBottom={1}>
-                                <Grid container direction="row" justifyContent="center" alignItems="center">
-                                    {   selectedExpirationTimestamp ? 
-                                        <Grid item xs={11}>
-                                            <Typography variant="h5">{`${basicInfo.symbol} - ${basicInfo.shortName}`}</Typography>
-                                            <Typography variant="h5">{selectedExpirationTimestamp.label}</Typography>
-                                            <Typography variant="h5">${filters.priceTarget}</Typography>
-                                        </Grid>
-                                        :
-                                        null
-                                    }
-                                    <Grid item xs={1}>
-                                        <IconButton color="inherit" style={{height:"max-content"}} onClick={handleMobileFilter}>
+                <Grid item sm>
+                    <Grid component={Paper} container sm={12} elevation={4} square padding={2}>
+                        {isMobile ?
+                            <>
+                                <Grid container>
+                                    <Grid item xs>
+                                        <Typography variant="subtitle1">{basicInfo ? `${basicInfo.symbol} - ${basicInfo.shortName}` : <br />}</Typography>
+                                        <Typography variant="body2">{selectedExpirationTimestamp ? selectedExpirationTimestamp.label : <br />}</Typography>
+                                        <Typography variant="body2">${filters.priceTarget}</Typography>
+                                    </Grid>
+                                    <Grid item>
+                                        <IconButton color="inherit" onClick={handleMobileFilter}>
                                             <TuneIcon fontSize="large" />
                                         </IconButton>
                                     </Grid>
-                                    { mobileFilter ?
+                                    {mobileFilter ?
                                         <>
-                                            <div style={{position: "fixed", left: 0, right: 0, top: 0, bottom: 0, zIndex: 20, backgroundColor: "rgba(0,0,0,0.6)"}}></div>
-                                            <div style={{position: "absolute", right: 0, top: "9vh", zIndex: 100}}>
-                                                <Box bgcolor='#333741' color="white" height="100%">
-                                                    <Grid container direction="column" justifyContent="center" alignItems="center" className="filter-label">
-                                                        <FilterContainer 
-                                                            onFilterChange={onFilterChange} 
-                                                            filters={filters} 
-                                                            initialPrice={basicInfo.regularMarketPrice} 
-                                                            isMobile={isMobile} 
-                                                            handleMobileFilter={handleMobileFilter}
-                                                            allTickers={allTickers}
-                                                            onTickerSelectionChange={onTickerSelectionChange}
-                                                            selectedTicker={selectedTicker}
-                                                            expirationTimestampsOptions={expirationTimestampsOptions}
-                                                            selectedExpirationTimestamp={selectedExpirationTimestamp}
-                                                            onExpirationSelectionChange={onExpirationSelectionChange}
-                                                            />
-                                                    </Grid>
-                                                </Box>
+                                            <div style={{ position: "absolute", right: 0, top: "9vh", zIndex: 100 }}>
+                                                <Grid container direction="column" justifyContent="center" alignItems="center" bgcolor='#333741' color="white" height="100%">
+                                                    <FilterContainer
+                                                        onFilterChange={onFilterChange}
+                                                        filters={filters}
+                                                        initialPrice={basicInfo.regularMarketPrice}
+                                                        isMobile={isMobile}
+                                                        handleMobileFilter={handleMobileFilter}
+                                                        allTickers={allTickers}
+                                                        onTickerSelectionChange={onTickerSelectionChange}
+                                                        selectedTicker={selectedTicker}
+                                                        expirationTimestampsOptions={expirationTimestampsOptions}
+                                                        selectedExpirationTimestamp={selectedExpirationTimestamp}
+                                                        onExpirationSelectionChange={onExpirationSelectionChange}
+                                                    />
+                                                </Grid>
                                             </div>
                                         </>
                                         :
                                         null
                                     }
                                 </Grid>
-                            </Box>
+                                <Divider />
+                            </>
                             :
-                            <Box py={2}>
-                                <Grid container direction="row" justifyContent="center" alignItems="center">
-                                    <Grid item sm={2}>
-                                        <Typography variant="title">Enter Ticker Symbol</Typography>
-                                    </Grid>
-                                    <Grid item sm={6}>
-                                        <TickerAutocomplete
-                                            tickers={allTickers}
-                                            onChange={onTickerSelectionChange}
-                                            size={'small'}
-                                            value={selectedTicker}
-                                        />
-                                    </Grid>
-                                    <Grid item sm={2} style={{ paddingLeft: '1rem' }}>
-                                        <Typography variant="title">Expiration Date</Typography>
-                                    </Grid>
-                                    <Grid item sm={2}>
-                                        <Autocomplete
-                                            id="expiration-dates"
-                                            options={expirationTimestampsOptions}
-                                            value={selectedExpirationTimestamp}
-                                            onChange={onExpirationSelectionChange}
-                                            size="small"
-                                            fullWidth
-                                            renderInput={(params) => (
-                                                <TextField
-                                                    {...params}
-                                                    variant="outlined"
-                                                    placeholder="Select an expiration date"
-                                                />
-                                            )}
-                                            getOptionLabel={(option) => option.label}
-                                        />
-                                    </Grid>
+                            <Grid container alignItems="center" spacing={2} paddingBottom={4}>
+                                <Grid item>
+                                    <Typography variant="subtitle1">Enter Ticker Symbol</Typography>
                                 </Grid>
-                            </Box>
+                                <Grid item sm>
+                                    <TickerAutocomplete
+                                        tickers={allTickers}
+                                        onChange={onTickerSelectionChange}
+                                        size={'small'}
+                                        value={selectedTicker}
+                                    />
+                                </Grid>
+                                <Grid item>
+                                    <Typography variant="subtitle1">Expiration Date</Typography>
+                                </Grid>
+                                <Grid item sm={3}>
+                                    <Autocomplete
+                                        id="expiration-dates"
+                                        options={expirationTimestampsOptions}
+                                        value={selectedExpirationTimestamp}
+                                        onChange={onExpirationSelectionChange}
+                                        size="small"
+                                        fullWidth
+                                        renderInput={(params) => (
+                                            <TextField
+                                                {...params}
+                                                variant="outlined"
+                                                placeholder="Select an expiration date"
+                                            />
+                                        )}
+                                        getOptionLabel={(option) => option.label}
+                                    />
+                                </Grid>
+                            </Grid>
                         }
-                        <Box py={3}>
-                            <NewTickerSummary basicInfo={basicInfo} />
-                        </Box>
-                    </Box>
-                    <Box p={5} bgcolor='#F2F2F2' minHeight="100vh" height="100%">
-                        <Grid container spacing={2} direction="column" justifyContent="center">
+                        <NewTickerSummary basicInfo={basicInfo} />
+                    </Grid>
+                    <Grid container alignItems="center" justifyContent="center" padding={2}>
+                        <Alert severity="info">Strategies below offer the best returns based on target price.</Alert>
+                    </Grid>
+                    <Grid container>
+                        <Stack paddingX={3} spacing={2} width="inherit">
                             {renderedTrades.map((trade, index) => <NewTradeCard trade={trade} key={index} />)}
-                        </Grid>
-                    </Box>
+                        </Stack>
+                    </Grid>
+                    <Grid container justifyContent="flex-end" alignItems="flex-end" paddingY={2}>
+                        <Pagination count={noOfPages} shape="rounded" onChange={pageChangeHandler} />
+                    </Grid>
                 </Grid>
-            </Grid>
-            <Grid container justifyContent="flex-end">
-                <Pagination count={noOfPages} shape="rounded" onChange={pageChangeHandler} />
             </Grid>
         </>
     );
