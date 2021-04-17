@@ -40,6 +40,7 @@ export default function LandingView(props) {
                             tickers={allTickers}
                             onChange={onTickerSelectionChange}
                             value={selectedTicker}
+                            displayLabel
                         />
 
                         <Autocomplete
@@ -108,7 +109,7 @@ export default function LandingView(props) {
                         />
                         <VerticalCarousel.Slide
                             imgSrc="slider3.png"
-                            heading="Enter a target price"
+                            heading="Enter a price target"
                             text="Where do you think the stock price will be?"
                         />
                         <VerticalCarousel.Slide

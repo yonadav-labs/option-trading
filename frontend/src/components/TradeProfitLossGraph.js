@@ -43,7 +43,7 @@ export default function TradeProfitLossGraph(props) {
     }
     // share profit/loss end
 
-    // set annotations for target price if the exist
+    // set annotations for price target if the exist
     if (trade.target_price_lower !== null) {
         lowerTargetAnnotation = {
             color: "blue",
@@ -56,7 +56,7 @@ export default function TradeProfitLossGraph(props) {
                 style: {
                     fontStyle: "italic",
                 },
-                text: `Lower Target Price <br /> $${trade.target_price_lower}`,
+                text: `Lower Price Target <br /> $${trade.target_price_lower}`,
             },
             zIndex: 100,
         };
@@ -73,7 +73,7 @@ export default function TradeProfitLossGraph(props) {
                 style: {
                     fontStyle: "italic",
                 },
-                text: `Upper Target Price <br /> $${trade.target_price_upper}`,
+                text: `Upper Price Target <br /> $${trade.target_price_upper}`,
             },
             zIndex: 100,
         };
@@ -196,9 +196,9 @@ export default function TradeProfitLossGraph(props) {
                     },
                     zIndex: 100,
                 },
-                // annotation for lower target price
+                // annotation for lower price target
                 lowerTargetAnnotation,
-                // annotation for upper target price
+                // annotation for upper price target
                 upperTargetAnnotation,
             ],
         },

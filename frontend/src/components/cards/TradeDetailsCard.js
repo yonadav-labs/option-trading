@@ -133,7 +133,7 @@ export default function TradeDetailsCard(props) {
                             </Row>
                             <Row>
                                 <Col sm="4" xs="6">
-                                    <MetricLabel label="target price range" /><br />
+                                    <MetricLabel label="price target range" /><br />
                                     {PriceFormatter(trade.target_price_lower)} ({ProfitFormatter(trade.to_target_price_lower_ratio)})
                                     - {PriceFormatter(trade.target_price_upper)} ({ProfitFormatter(trade.to_target_price_upper_ratio)})
                                     </Col>

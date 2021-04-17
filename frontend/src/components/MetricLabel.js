@@ -37,7 +37,7 @@ const HelpTextDict = {
     'expiration': 'The last date of an option contract on which the holder of the option may exercise it according to its terms.',
     'expiration date': 'The last date of an option contract on which the holder of the option may exercise it according to its terms.',
     'gamma': 'Estimate of the rate of change between an option\'s Delta and the stock\'s price.',
-    'hypothetical return': 'Average of possible return outcomes if share price lies within the target price range on expiration date. Total cost is used to calculate the return rate.',
+    'hypothetical return': 'Average of possible return outcomes if share price lies within the price target range on expiration date. Total cost is used to calculate the return rate.',
     'initial value': 'The value of this trade when it was was saved or shared.',
     'implied volatility': 'Expected annualized volatility of a stock over the life of the option.',
     'itm probability': 'Probability of the contract to be in the money on expiration date.',
@@ -65,7 +65,8 @@ const HelpTextDict = {
     'strategy': 'Option strategies are the simultaneous and mixed, buying or selling of one or more options in order '
         + 'to create trading opportunities with unique risk/reward characters.',
     'strike': 'A fixed price at which the owner of the option can buy, or sell, the stock.',
-    'target price range': 'Your expected lower and upper bound share price of the stock on expiration day.',
+    'price target': 'Your expected share price of the stock on expiration day.',
+    'price target range': 'Your expected lower and upper bound share price of the stock on expiration day.',
     'theta': 'Estimate of how much an option\'s premium may decay each day with all other factors remaining the same.',
     'ticker': 'An abbreviation used to identify a particular stock. For example: AAPL stands for Apple Inc.',
     'to expiration': 'Number of days till the option\'s expiration date, including non-trading days.',

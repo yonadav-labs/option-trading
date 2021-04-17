@@ -8,7 +8,7 @@ import IntervalField from "./IntervalField";
 const StyledToggleButtonGroup = withStyles((theme) => ({
     root: {
         width: "100%",
-        
+
     },
     grouped: {
         margin: theme.spacing(0.5)
@@ -66,7 +66,7 @@ export default function PriceTargetBox({ onFilterChange, initialPrice, filters }
         onFilterChange(val, 'interval');
         updateTargetPrices(filters.priceTarget, val);
     }
-    
+
     const priceTargetChangeHandler = (e) => {
         const val = parseFloat(e);
         onFilterChange(val, "priceTarget");
@@ -84,9 +84,9 @@ export default function PriceTargetBox({ onFilterChange, initialPrice, filters }
     }
 
     return (
-        <Box bgcolor='rgba(51, 51, 51, 0.75)' style={{width: "100%"}} p={2}>
+        <Box bgcolor='rgba(51, 51, 51, 0.75)' style={{ width: "100%" }} p={2}>
             <Grid item style={{ paddingBottom: "0.3rem" }}>
-                <Typography variant="button"><MetricLabel label="Target Price on Exp Day" /></Typography>
+                <Typography variant="button"><MetricLabel label="price target on exp day" /></Typography>
             </Grid>
             <Grid item style={{ paddingBottom: "0.5rem" }}>
                 <Box border={1} borderColor="white" borderRadius={30}>
@@ -109,7 +109,7 @@ export default function PriceTargetBox({ onFilterChange, initialPrice, filters }
             { filters.targetType === "price" ?
                 <>
                     <Grid item style={{ paddingBottom: "0.3rem" }}>
-                        <Typography variant="button"><MetricLabel label="target price" /></Typography>
+                        <Typography variant="button"><MetricLabel label="price target" /></Typography>
                     </Grid>
                     <Grid item style={{ paddingBottom: "0.5rem" }}>
                         <PriceTargetField
@@ -131,7 +131,7 @@ export default function PriceTargetBox({ onFilterChange, initialPrice, filters }
                     </Grid>
                     <Grid item style={{ paddingBottom: "0.3rem" }}>
                         <Typography variant="button">Range: {filters.interval === 0 || filters.interval === "" ? "None specified" : `$${filters.targetPriceLower.toFixed(2)} - $${filters.targetPriceUpper.toFixed(2)}`}</Typography>
-                    </Grid> 
+                    </Grid>
                 </>
                 :
                 <>

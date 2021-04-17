@@ -70,7 +70,7 @@ export default function MainView(props) {
                         </Grid>
                 }
                 <Grid item sm>
-                    <Grid component={Paper} container sm={12} elevation={4} square padding={2} style={isMobile ? {width:"100vw"} : null}>
+                    <Grid component={Paper} container sm={12} elevation={4} square padding={2} style={isMobile ? { width: "100vw" } : null}>
                         {isMobile ?
                             <>
                                 <Grid container>
@@ -146,10 +146,13 @@ export default function MainView(props) {
                                 </Grid>
                             </Grid>
                         }
-                        <NewTickerSummary basicInfo={basicInfo} isMobile={isMobile}/>
+                        <NewTickerSummary basicInfo={basicInfo} isMobile={isMobile} />
                     </Grid>
                     <Grid container alignItems="center" justifyContent="center" padding={2}>
-                        <Alert severity="info">Strategies below offer the best returns based on target price.</Alert>
+                        <Alert severity="info">
+                            Below are the trading ideas with best potential return for each strategy based on price target.
+                            Please adjust the settings on the left to discover your faviorate ones.
+                        </Alert>
                     </Grid>
                     <Grid container>
                         <Stack paddingX={3} spacing={2} width="inherit">

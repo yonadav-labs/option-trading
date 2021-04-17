@@ -74,7 +74,7 @@ ListboxComponent.propTypes = {
 };
 
 export default function TickerAutocomplete(props) {
-    const { tickers, onChange, value, size } = props;
+    const { tickers, onChange, value, size, displayLabel } = props;
 
     return (
         <Autocomplete
@@ -86,7 +86,9 @@ export default function TickerAutocomplete(props) {
             size={size}
             value={value}
             getOptionLabel={(option) => option.display_label}
-            renderInput={(params) => <TextField {...params} InputLabelProps={{shrink: true}} variant="standard" label="Ticker Symbol" placeholder="Enter a ticker symbol: TSLA, AAPL, GOOG..." />}
+            renderInput={(params) => <TextField {...params} InputLabelProps={{ shrink: true }}
+                variant="standard" label={displayLabel ? "Ticker Symbol" : ""}
+                placeholder="Enter a ticker symbol: TSLA, AAPL, GOOG..." />}
             renderOption={(props, option) => <li key={option}><Typography {...props} noWrap>{option.display_label}</Typography></li>}
             onChange={onChange}
         />

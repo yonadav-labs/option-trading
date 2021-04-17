@@ -180,8 +180,8 @@ export default function StrategyBuilder() {
             },
             leg_snapshots: [],
             is_public: false,
-            // target_price_lower: 0, // there is no target price
-            // target_price_upper: 0, // there is no target price
+            // target_price_lower: 0, // there is no price target
+            // target_price_upper: 0, // there is no price target
             premium_type: selectedPremiumType.value,
         };
 

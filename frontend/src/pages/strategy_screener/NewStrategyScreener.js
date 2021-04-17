@@ -89,7 +89,7 @@ export default function NewStrategyScreener() {
             })
             setExpirationTimestampsOptions(arr)
             setExpirationDisabled(false)
-            onExpirationSelectionChange(null, arr[0])
+            // onExpirationSelectionChange(null, arr[0])
         }
     }
 
