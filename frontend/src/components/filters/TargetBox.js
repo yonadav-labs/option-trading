@@ -125,7 +125,7 @@ export default function PriceTargetBox({ onFilterChange, initialPrice, filters }
                     <Grid item style={{ paddingBottom: "0.3rem" }}>
                         <Typography variant="button"><MetricLabel label="high price target" /></Typography>
                     </Grid>
-                    <Grid item style={{ paddingBottom: "0.2rem" }}>
+                    <Grid item>
                         <PriceTargetField
                             onValueChange={upperRangeChangeHandler}
                             initialPrice={initialPrice}

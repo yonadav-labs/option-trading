@@ -155,7 +155,7 @@ export default function NewStrategyScreener() {
         }
     };
 
-    const debouncedGetBestTrades = useDebouncedCallback(getBestTrades, 1500);
+    const debouncedGetBestTrades = useDebouncedCallback(getBestTrades, 1000);
 
     // function to change filter states.
     const onFilterChange = (value, filterChoice) => {

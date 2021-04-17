@@ -70,7 +70,7 @@ export default function NewTradeCard({ trade }) {
                     {trade.legs.map((leg, idx) => (
                         <>
                             {/* <LegDetailsCard key={index} leg={leg} leg_num={index + 1}></LegDetailsCard> */}
-                            <Grid container direction="row" justifyContent="space-around" alignItems="baseline" spacing={2} paddingY={1}>
+                            <Grid container direction="row" justifyContent="space-around" alignItems="baseline" spacing={2} paddingY={0.5}>
                                 <Grid item xs={12} sm={1}><Typography variant="h6">Leg {idx + 1}</Typography></Grid>
                                 <Grid item xs={6} sm={1}>
                                     <Typography variant="button"><MetricLabel label="action" /></Typography>
@@ -79,7 +79,6 @@ export default function NewTradeCard({ trade }) {
                                 <Grid item xs={6} sm>
                                     <Typography variant="button"><MetricLabel label="quantity" /></Typography>
                                     <Typography variant="body1">{leg.units} {leg.stock ? "Shares" : ""}</Typography>
-                                    <Typography variant="body1">{leg.stock ? <>{PriceFormatter(leg.stock.stock_price)} per Share</> : ""}</Typography>
                                 </Grid>
                                 {
                                     leg.contract &&
@@ -113,7 +112,6 @@ export default function NewTradeCard({ trade }) {
                                 {moreInfo ?
                                     <IconButton onClick={(e) => { console.log("leg expand clicked"); e.stopPropagation() }}><ExpandMoreIcon /></IconButton>
                                     : null}
-
                             </Grid>
                             <Divider />
                         </>
@@ -142,7 +140,7 @@ export default function NewTradeCard({ trade }) {
                             </Typography>
                         </Grid>
                         <Grid item xs={6} sm={2.4}>
-                            <Typography variant="button"><MetricLabel label="10% chance loss" /></Typography>
+                            <Typography variant="button"><MetricLabel label="10% probability loss" /></Typography>
                             {
                                 trade.two_sigma_profit_lower ?
                                     <>
@@ -156,7 +154,7 @@ export default function NewTradeCard({ trade }) {
                             }
                         </Grid>
                         <Grid item xs={6} sm={2.4}>
-                            <Typography variant="button"><MetricLabel label="10% chance profit" /></Typography>
+                            <Typography variant="button"><MetricLabel label="10% probability profit" /></Typography>
                             {
                                 trade.two_sigma_profit_lower ?
                                     <>

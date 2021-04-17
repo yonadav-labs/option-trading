@@ -16,8 +16,8 @@ const useStyles = makeStyles({
 });
 
 const HelpTextDict = {
-    '10% chance loss': 'Average of possible losses with a 10% probability based on historical data.',
-    '10% chance profit': 'Average of possible losses with a 10% probability based on historical data.',
+    '10% probability loss': 'Average of possible losses with a 10% probability based on historical data.',
+    '10% probability profit': 'Average of possible losses with a 10% probability based on historical data.',
     '52 week range': 'The high and low prices of last 52 weeks (1 year).',
     'action': 'Long means buy. Short means sell.',
     'ask': 'The latest price someone is willing to sell this option.',

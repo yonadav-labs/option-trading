@@ -62,13 +62,16 @@ export default function FilterContainer(props) {
     ];
 
     const max10PctLossFilter = [
-        { label: "All", value: -1.0 },
-        { label: "≥ -5%", value: -0.05 },
-        { label: "≥ -10%", value: -0.1 },
-        { label: "≥ -20%", value: -0.2 },
-        { label: "≥ -40%", value: -0.4 },
-        { label: "≥ -60%", value: -0.6 },
-        { label: "≥ -80%", value: -0.8 },
+        { label: "Up to 100%", value: -1.0 },
+        { label: "Up to 10%", value: -0.1 },
+        { label: "Up to 20%", value: -0.2 },
+        { label: "Up to 30%", value: -0.3 },
+        { label: "Up to 40%", value: -0.4 },
+        { label: "Up to 50%", value: -0.5 },
+        { label: "Up to 60%", value: -0.6 },
+        { label: "Up to 70%", value: -0.7 },
+        { label: "Up to 80%", value: -0.8 },
+        { label: "Up to 90%", value: -0.9 },
     ];
 
     const filterChangeHandler = (event, key) => {
@@ -138,15 +141,7 @@ export default function FilterContainer(props) {
             }
 
             <TargetBox onFilterChange={onFilterChange} initialPrice={initialPrice} filters={filters} />
-            <Box py={1.5}>
-                <Grid item style={{ paddingBottom: '0.3rem' }}>
-                    <Typography variant="button"><MetricLabel label="premium price options" /></Typography>
-                </Grid>
-                <Grid item>
-                    <MaterialFilter onFilterChange={(event) => filterChangeHandler(event, 'premiumType')} options={premiumPriceFilter} value={filters.premiumType} defaultValue={"market"} />
-                </Grid>
-            </Box>
-            <Box py={1.5}>
+            <Box>
                 <Grid item style={{ paddingBottom: '0.3rem' }}>
                     <Typography variant="button"><MetricLabel label="min volume" /></Typography>
                 </Grid>
@@ -154,7 +149,7 @@ export default function FilterContainer(props) {
                     <MaterialFilter onFilterChange={(event) => filterChangeHandler(event, 'minVolume')} options={minVolumeFilter} value={filters.minVolume} defaultValue={0} />
                 </Grid>
             </Box>
-            <Box py={1.5}>
+            <Box>
                 <Grid item style={{ paddingBottom: '0.3rem' }}>
                     <Typography variant="button"><MetricLabel label="min open interest" /></Typography>
                 </Grid>
@@ -162,15 +157,23 @@ export default function FilterContainer(props) {
                     <MaterialFilter onFilterChange={(event) => filterChangeHandler(event, 'minOpenInterest')} options={minInterestFilter} value={filters.minOpenInterest} defaultValue={0} />
                 </Grid>
             </Box>
-            <Box py={1.5} >
+            <Box>
                 <Grid item style={{ paddingBottom: '0.3rem' }}>
-                    <Typography variant="button"><MetricLabel label="10% chance loss" /></Typography>
+                    <Typography variant="button"><MetricLabel label="10% probability loss" /></Typography>
                 </Grid>
                 <Grid item>
                     <MaterialFilter onFilterChange={(event) => filterChangeHandler(event, 'tenPercentWorstReturnRatio')} options={max10PctLossFilter} value={filters.tenPercentWorstReturnRatio} defaultValue={-1.0} />
                 </Grid>
             </Box>
-            <Box py={1.5}>
+            <Box>
+                <Grid item style={{ paddingBottom: '0.3rem' }}>
+                    <Typography variant="button"><MetricLabel label="premium price options" /></Typography>
+                </Grid>
+                <Grid item>
+                    <MaterialFilter onFilterChange={(event) => filterChangeHandler(event, 'premiumType')} options={premiumPriceFilter} value={filters.premiumType} defaultValue={"market"} />
+                </Grid>
+            </Box>
+            <Box>
                 <Grid item style={{ paddingBottom: '0.3rem' }}>
                     <Typography variant="button"><MetricLabel label="cash to invest" /></Typography>
                 </Grid>
@@ -178,7 +181,7 @@ export default function FilterContainer(props) {
                     <DollarInputField onFilterChange={onFilterChange} placeholder="0 (optional)" value={filters.cashToInvest} />
                 </Grid>
             </Box>
-            <Box py={1.5}>
+            <Box>
                 <Grid item style={{ paddingBottom: '0.3rem' }}>
                     <Typography variant="button"><MetricLabel label="time since last traded" /></Typography>
                 </Grid>
