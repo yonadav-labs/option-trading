@@ -1,14 +1,11 @@
-import React from "react";
+import React, { useState } from "react";
 import { Box, Grid, withStyles, ToggleButtonGroup, ToggleButton, Typography } from "@material-ui/core";
-import { fixedFloat } from "../../utils";
 import MetricLabel from "../MetricLabel";
 import PriceTargetField from "./PriceTargetField";
-import IntervalField from "./IntervalField";
 
 const StyledToggleButtonGroup = withStyles((theme) => ({
     root: {
         width: "100%",
-
     },
     grouped: {
         margin: theme.spacing(0.5)
@@ -28,6 +25,7 @@ const StyledToggleButton = withStyles({
         color: "white",
         textTransform: "none",
         width: "100%",
+        margin: 0,
         "&$selected": {
             backgroundColor: "white",
             color: "black",
@@ -46,31 +44,24 @@ const StyledToggleButton = withStyles({
 
 export default function PriceTargetBox({ onFilterChange, initialPrice, filters }) {
 
-    const handleTargetType = (event, newTargetType) => {
+    const [targetType, setTargetType] = useState('price');
+
+    const handleTargetTypeChange = (event, newTargetType) => {
         if (newTargetType !== null) {
-            onFilterChange(newTargetType, "targetType");
+            setTargetType(newTargetType);
+            updateRangeByPrice(filters.targetPriceLower);
         }
-        updateTargetPrices(filters.priceTarget, filters.interval);
     }
 
-    const updateTargetPrices = (priceTarget, interval) => {
-        const val = parseFloat(interval) || 0
-        const upperPrice = fixedFloat(priceTarget + val);
-        const lowerPrice = priceTarget - val < 0 ? 0 : fixedFloat(priceTarget - val);
-        onFilterChange(lowerPrice, "targetPriceLower");
-        onFilterChange(upperPrice, "targetPriceUpper");
-    }
-
-    const intervalChangeHandler = (e) => {
-        const val = parseFloat(e);
-        onFilterChange(val, 'interval');
-        updateTargetPrices(filters.priceTarget, val);
+    const updateRangeByPrice = (priceTarget) => {
+        onFilterChange(priceTarget, "targetPriceLower");
+        onFilterChange(priceTarget, "targetPriceUpper");
     }
 
     const priceTargetChangeHandler = (e) => {
         const val = parseFloat(e);
         onFilterChange(val, "priceTarget");
-        updateTargetPrices(val, filters.interval);
+        updateRangeByPrice(val);
     }
 
     const lowerRangeChangeHandler = (e) => {
@@ -84,18 +75,18 @@ export default function PriceTargetBox({ onFilterChange, initialPrice, filters }
     }
 
     return (
-        <Box bgcolor='rgba(51, 51, 51, 0.75)' style={{ width: "100%" }} p={2}>
+        <Box style={{ width: "100%", padding: "0px" }} p={2}>
             <Grid item style={{ paddingBottom: "0.3rem" }}>
                 <Typography variant="button"><MetricLabel label="price target on exp day" /></Typography>
             </Grid>
             <Grid item style={{ paddingBottom: "0.5rem" }}>
-                <Box border={1} borderColor="white" borderRadius={30}>
+                <Box>
                     <StyledToggleButtonGroup
-                        value={filters.targetType}
+                        value={targetType}
                         exclusive
                         color="secondary"
-                        onChange={handleTargetType}
-                        size="medium"
+                        onChange={handleTargetTypeChange}
+                        size="small"
                     >
                         <StyledToggleButton value="price">
                             Price
@@ -106,7 +97,7 @@ export default function PriceTargetBox({ onFilterChange, initialPrice, filters }
                     </StyledToggleButtonGroup>
                 </Box>
             </Grid>
-            { filters.targetType === "price" ?
+            { targetType === "price" ?
                 <>
                     <Grid item style={{ paddingBottom: "0.3rem" }}>
                         <Typography variant="button"><MetricLabel label="price target" /></Typography>
@@ -114,29 +105,15 @@ export default function PriceTargetBox({ onFilterChange, initialPrice, filters }
                     <Grid item style={{ paddingBottom: "0.5rem" }}>
                         <PriceTargetField
                             initialPrice={initialPrice}
-                            value={filters.priceTarget}
+                            value={filters.targetPriceLower}
                             onValueChange={priceTargetChangeHandler}
                         />
-                    </Grid>
-                    <Grid item style={{ paddingBottom: "0.3rem" }}>
-                        <Typography variant="button"><MetricLabel label="interval (optional)" /></Typography>
-                    </Grid>
-                    <Grid item style={{ paddingBottom: "0.2rem" }}>
-                        <IntervalField
-                            onFilterChange={onFilterChange}
-                            initialPrice={initialPrice}
-                            onValueChange={intervalChangeHandler}
-                            value={filters.interval}
-                        />
-                    </Grid>
-                    <Grid item style={{ paddingBottom: "0.3rem" }}>
-                        <Typography variant="button">Range: {filters.interval === 0 || filters.interval === "" ? "None specified" : `$${filters.targetPriceLower.toFixed(2)} - $${filters.targetPriceUpper.toFixed(2)}`}</Typography>
                     </Grid>
                 </>
                 :
                 <>
                     <Grid item style={{ paddingBottom: "0.3rem" }}>
-                        <Typography variant="button"><MetricLabel label="low target" /></Typography>
+                        <Typography variant="button"><MetricLabel label="low price target" /></Typography>
                     </Grid>
                     <Grid item style={{ paddingBottom: "0.5rem" }}>
                         <PriceTargetField
@@ -146,7 +123,7 @@ export default function PriceTargetBox({ onFilterChange, initialPrice, filters }
                         />
                     </Grid>
                     <Grid item style={{ paddingBottom: "0.3rem" }}>
-                        <Typography variant="button"><MetricLabel label="high target" /></Typography>
+                        <Typography variant="button"><MetricLabel label="high price target" /></Typography>
                     </Grid>
                     <Grid item style={{ paddingBottom: "0.2rem" }}>
                         <PriceTargetField

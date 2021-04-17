@@ -20,18 +20,18 @@ export default function IntervalField({ initialPrice, value, onValueChange }) {
     const classes = useStyles();
 
     return (
-        <> 
+        <>
             <OutlinedInput
                 className={classes.customInput}
                 type="number"
-                style={{width: '100%'}}
+                style={{ width: '100%' }}
                 value={value}
                 onChange={(e) => onValueChange(e.target.value)}
                 // defaultValue={0}
-                startAdornment={<InputAdornment position="start"> <span style={{color: "#cdcece"}}>+/- <span style={{color: "white"}}>$</span></span> </InputAdornment>}
+                startAdornment={<InputAdornment position="start"> <span style={{ color: "#8f8f8f" }}>+/- <span style={{ color: "white" }}>$</span></span> </InputAdornment>}
                 endAdornment={
                     <InputAdornment position="end">
-                        <span style={{color: "#cdcece"}}>{PercentageFormatter(value/initialPrice)}</span>
+                        <span style={{ color: "#8f8f8f" }}>{PercentageFormatter(value / initialPrice)}</span>
                     </InputAdornment>
                 }
             />

@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef, useMemo } from "react";
 import Axios from 'axios';
-import { Box, Container } from "@material-ui/core";
 import ModalSpinner from '../../components/ModalSpinner';
 import LandingView from "./LandingView";
 import MainView from "./MainView";
@@ -31,11 +30,10 @@ export default function NewStrategyScreener() {
 
     // filter states
     const [filters, setFilters] = useState({
-        targetType: 'price',
-        priceTarget: basicInfo.regularMarketPrice || 0,
-        interval: 0,
-        targetPriceLower: null,
-        targetPriceUpper: null,
+        // Set both lower/upper price to the same for single price target UI.
+        // Use targetPriceLower as default for single price target UI.
+        targetPriceLower: basicInfo.regularMarketPrice || 0,
+        targetPriceUpper: basicInfo.regularMarketPrice || 0,
         premiumType: 'market',
         cashToInvest: null,
         minVolume: 0,
@@ -61,11 +59,8 @@ export default function NewStrategyScreener() {
         setBasicInfo({});
         setModalActive(false);
         setFilters({
-            targetType: 'price',
-            priceTarget: basicInfo.regularMarketPrice || 0,
-            interval: 0,
-            targetPriceLower: null,
-            targetPriceUpper: null,
+            targetPriceLower: basicInfo.regularMarketPrice || 0,
+            targetPriceUpper: basicInfo.regularMarketPrice || 0,
             premiumType: 'market',
             cashToInvest: null,
             strategyType: 'all',
@@ -95,7 +90,6 @@ export default function NewStrategyScreener() {
 
     const onBasicInfoChange = (val) => {
         setBasicInfo(val);
-        onFilterChange(val.regularMarketPrice, "priceTarget");
         if (sentiment) {
             onFilterChange(val.regularMarketPrice, "targetPriceLower");
             onFilterChange(val.regularMarketPrice, "targetPriceUpper");
@@ -121,7 +115,6 @@ export default function NewStrategyScreener() {
         // console.log(filters)
         try {
             if (selectedTicker && selectedExpirationTimestamp && filters.targetPriceLower && filters.targetPriceUpper) {
-
                 let url = `${API_URL}/dev/tickers/${selectedTicker.symbol}/trades/`;
                 let body = {
                     "expiration_timestamps": [selectedExpirationTimestamp.value],
@@ -164,9 +157,12 @@ export default function NewStrategyScreener() {
 
     const debouncedGetBestTrades = useDebouncedCallback(getBestTrades, 1500);
 
-    // function to change filter states
+    // function to change filter states.
     const onFilterChange = (value, filterChoice) => {
-        // console.log(value, filterChoice)
+        // Do not send API request if filter choice didn't change.
+        if (filters[filterChoice] === value) {
+            return;
+        }
         setFilters(prevState => ({ ...prevState, [filterChoice]: value }));
         debouncedGetBestTrades();
     }
@@ -178,12 +174,10 @@ export default function NewStrategyScreener() {
                 case 'bullish':
                     onFilterChange(fixedFloat(basicInfo.regularMarketPrice * 1.05), "targetPriceLower")
                     onFilterChange(fixedFloat(basicInfo.regularMarketPrice * 1.05), "targetPriceUpper")
-                    onFilterChange(fixedFloat(basicInfo.regularMarketPrice * 1.05), "priceTarget")
                     break;
                 case 'bearish':
                     onFilterChange(fixedFloat(basicInfo.regularMarketPrice * 0.95), "targetPriceLower")
                     onFilterChange(fixedFloat(basicInfo.regularMarketPrice * 0.95), "targetPriceUpper")
-                    onFilterChange(fixedFloat(basicInfo.regularMarketPrice * 0.95), "priceTarget")
                     break;
                 default:
                     break;

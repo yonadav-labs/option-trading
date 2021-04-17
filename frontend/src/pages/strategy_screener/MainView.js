@@ -5,7 +5,7 @@ import TickerAutocomplete from "../../components/TickerAutocomplete";
 import FilterContainer from "../../components/filters/FilterContainer";
 import NewTickerSummary from "../../components/NewTickerSummary";
 import TuneIcon from "@material-ui/icons/Tune";
-
+import { PriceFormatter } from '../../utils';
 
 export default function MainView(props) {
     const {
@@ -23,7 +23,7 @@ export default function MainView(props) {
 
     // web filter slide out
     const [filterOpen, setFilterOpen] = useState(true)
-    const handleFilter = () => {
+    const handleFilterCollapse = () => {
         setFilterOpen(!filterOpen)
     }
 
@@ -36,9 +36,9 @@ export default function MainView(props) {
     window.addEventListener("resize", handleWindowSizeChange)
 
     // mobile filter state
-    const [mobileFilter, setMobileFilter] = useState(true)
-    const handleMobileFilter = () => {
-        setMobileFilter(!mobileFilter)
+    const [showMobileFilter, setShowMobileFilter] = useState(true)
+    const handleMobileFilterCollapse = () => {
+        setShowMobileFilter(!showMobileFilter)
     }
 
     // pagination
@@ -57,17 +57,17 @@ export default function MainView(props) {
     return (
         <>
             <Grid container minHeight="inherit">
-                {isMobile ?
-                    null
-                    :
-                    filterOpen ?
-                        <Grid container item sm={2.3} direction="column" alignItems="center" bgcolor='#333741' color="white">
-                            <FilterContainer onFilterChange={onFilterChange} filters={filters} handleFilter={handleFilter} initialPrice={basicInfo.regularMarketPrice} />
+                {!isMobile &&
+                    <>
+                        <Grid container item sm={2.3} direction="column" alignItems="center"
+                            bgcolor='#333741' color="white" style={{ display: filterOpen ? "block" : "none" }}>
+                            <FilterContainer onFilterChange={onFilterChange} filters={filters}
+                                handleFilterCollapse={handleFilterCollapse} initialPrice={basicInfo.regularMarketPrice} />
                         </Grid>
-                        :
-                        <Grid item py={2} bgcolor='#333741' color="white">
-                            <IconButton color="inherit" onClick={handleFilter}><TuneIcon fontSize="large" /></IconButton>
+                        <Grid item py={2} bgcolor='#333741' color="white" style={{ display: filterOpen ? "none" : "block" }} >
+                            <IconButton color="inherit" onClick={handleFilterCollapse}><TuneIcon fontSize="large" /></IconButton>
                         </Grid>
+                    </>
                 }
                 <Grid item sm>
                     <Grid component={Paper} container sm={12} elevation={4} square padding={2} style={isMobile ? { width: "100vw" } : null}>
@@ -76,37 +76,34 @@ export default function MainView(props) {
                                 <Grid container>
                                     <Grid item xs>
                                         <Typography variant="subtitle1">{basicInfo ? `${basicInfo.symbol} - ${basicInfo.shortName}` : <br />}</Typography>
-                                        <Typography variant="body2">{selectedExpirationTimestamp ? selectedExpirationTimestamp.label : <br />}</Typography>
-                                        <Typography variant="body2">${filters.priceTarget}</Typography>
+                                        <Typography variant="body2">EXP DATE: {selectedExpirationTimestamp ? selectedExpirationTimestamp.label : <br />}</Typography>
+                                        <Typography variant="body2">PRICE TARGET: {PriceFormatter(filters.targetPriceLower)}
+                                            {filters.targetPriceLower !== filters.targetPriceUpper &&
+                                                <> - {PriceFormatter(filters.targetPriceUpper)}</>}
+                                        </Typography>
                                     </Grid>
                                     <Grid item>
-                                        <IconButton color="inherit" onClick={handleMobileFilter}>
+                                        <IconButton color="inherit" onClick={handleMobileFilterCollapse}>
                                             <TuneIcon fontSize="large" />
                                         </IconButton>
                                     </Grid>
-                                    {mobileFilter ?
-                                        <>
-                                            <div style={{ position: "absolute", right: 0, top: "9vh", zIndex: 100 }}>
-                                                <Grid container direction="column" justifyContent="center" alignItems="center" bgcolor='#333741' color="white" height="100%">
-                                                    <FilterContainer
-                                                        onFilterChange={onFilterChange}
-                                                        filters={filters}
-                                                        initialPrice={basicInfo.regularMarketPrice}
-                                                        isMobile={isMobile}
-                                                        handleMobileFilter={handleMobileFilter}
-                                                        allTickers={allTickers}
-                                                        onTickerSelectionChange={onTickerSelectionChange}
-                                                        selectedTicker={selectedTicker}
-                                                        expirationTimestampsOptions={expirationTimestampsOptions}
-                                                        selectedExpirationTimestamp={selectedExpirationTimestamp}
-                                                        onExpirationSelectionChange={onExpirationSelectionChange}
-                                                    />
-                                                </Grid>
-                                            </div>
-                                        </>
-                                        :
-                                        null
-                                    }
+                                    <div style={{ position: "absolute", right: 0, top: "9vh", zIndex: 100, display: showMobileFilter ? "block" : "none" }}>
+                                        <Grid container direction="column" justifyContent="center" alignItems="center" bgcolor='#333741' color="white" height="100%">
+                                            <FilterContainer
+                                                onFilterChange={onFilterChange}
+                                                filters={filters}
+                                                initialPrice={basicInfo.regularMarketPrice}
+                                                isMobile={isMobile}
+                                                handleMobileFilterCollapse={handleMobileFilterCollapse}
+                                                allTickers={allTickers}
+                                                onTickerSelectionChange={onTickerSelectionChange}
+                                                selectedTicker={selectedTicker}
+                                                expirationTimestampsOptions={expirationTimestampsOptions}
+                                                selectedExpirationTimestamp={selectedExpirationTimestamp}
+                                                onExpirationSelectionChange={onExpirationSelectionChange}
+                                            />
+                                        </Grid>
+                                    </div>
                                 </Grid>
                                 <Divider />
                             </>
@@ -151,7 +148,7 @@ export default function MainView(props) {
                     <Grid container alignItems="center" justifyContent="center" padding={2}>
                         <Alert severity="info">
                             Below are the trading ideas with best potential return for each strategy based on price target.
-                            Please adjust the settings on the left to discover your faviorate ones.
+                            Please adjust the settings to discover your faviorate ones.
                         </Alert>
                     </Grid>
                     <Grid container>

@@ -55,7 +55,7 @@ export default function PriceTargetField({ initialPrice, onValueChange, value })
                 startAdornment={<InputAdornment position="start"> <span style={{ color: "white" }}>$</span></InputAdornment>}
                 endAdornment={
                     <InputAdornment position="end">
-                        <span style={{ color: "#cdcece" }}>{value - initialPrice > 0 ? "+" : null}{PercentageFormatter((value - initialPrice) / initialPrice)}</span>
+                        <span style={{ color: "#8f8f8f" }}>{value - initialPrice > 0 ? "+" : null}{PercentageFormatter((value - initialPrice) / initialPrice)}</span>
                     </InputAdornment>
                 }
             />
@@ -65,7 +65,7 @@ export default function PriceTargetField({ initialPrice, onValueChange, value })
                         return (
                             <Grid xs={6} key={index} item>
                                 <Button className={classes.priceButton} fullWidth onMouseDown={() => selectHandler((initialPrice + (initialPrice * option)).toFixed(2))}>
-                                    <span>${(initialPrice + (initialPrice * option)).toFixed(2)}</span> <span style={{ color: "#cdcece" }}>{option > 0 ? "+" : null}{option * 100}%</span>
+                                    <span>${(initialPrice + (initialPrice * option)).toFixed(2)}</span> <span style={{ color: "#8f8f8f" }}>{option > 0 ? "+" : null}{option * 100}%</span>
                                 </Button>
                             </Grid>
                         )

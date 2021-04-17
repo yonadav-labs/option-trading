@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { Grid, makeStyles, Typography, Divider, Chip, Card, CardHeader, CardContent, CardActionArea, CardActions, IconButton, Fab } from "@material-ui/core";
 import TradeProfitLossGraph from "../TradeProfitLossGraph";
-import LegDetailsCard from "./LegDetailsCard";
 import MetricLabel from '../MetricLabel.js';
 import {
     PriceFormatter, ProfitFormatter, getTradeTypeDisplay, PercentageFormatter,
@@ -9,9 +8,6 @@ import {
 } from '../../utils';
 import ZoomOutMapIcon from '@material-ui/icons/ZoomOutMap';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import LinkIcon from '@material-ui/icons/Link';
-import TwitterIcon from '@material-ui/icons/Twitter';
-import FacebookIcon from '@material-ui/icons/Facebook';
 import ShareTradeBtn from "../ShareTradeBtn";
 
 const useStyles = makeStyles(theme => ({
@@ -64,7 +60,7 @@ export default function NewTradeCard({ trade }) {
                             } />
                         </Grid>
                         <Grid container item sm justifyContent="flex-end" spacing={1}>
-                            <Grid item><ShareTradeBtn trade={trade}/></Grid>
+                            <Grid item><ShareTradeBtn trade={trade} /></Grid>
                             <Grid item><IconButton><ZoomOutMapIcon /></IconButton></Grid>
                         </Grid>
                     </Grid>}
