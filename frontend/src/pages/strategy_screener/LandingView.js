@@ -82,21 +82,18 @@ export default function LandingView(props) {
                 </Paper>
             </Container>
             <br />
-            <Grid container justifyContent="center" alignItems="center" spacing={3}>
-                <Grid item>
-                    <h2>Discover option strategies with the best potential return</h2>
-                </Grid>
-                <Grid item xs={7}>
-                    <Typography variant="body1" align="center">
-                        Enter what you think the price of the stock will be and by when.
-                        <br /> 
-                        See the trades you can make to get the highest potential return. 
+            <Container>
+                <Typography variant="h4" align="center">Discover option strategies with the best potential return.</Typography>
+                <br />
+                <Typography variant="body1" align="center">
+                    Enter what you think the price of the stock will be and by when.
+                        <br />
+                        See the trades you can make to get the highest potential return.
                     </Typography>
-                </Grid>
-            </Grid>
+            </Container>
             <br />
             {/* TODO replace with material ui */}
-            <Grid>
+            <Container>
                 <Row className="p-5">
                     <VerticalCarousel>
                         <VerticalCarousel.Slide
@@ -121,7 +118,7 @@ export default function LandingView(props) {
                         />
                     </VerticalCarousel>
                 </Row>
-            </Grid>
+            </Container>
         </>
     );
 }
