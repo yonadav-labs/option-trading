@@ -34,7 +34,7 @@ export default withRouter(class AppWithRouterAccess extends Component {
 
     render() {
         return (
-            <Container disableGutters maxWidth='xl' sx={{minHeight: '100vh' }}>
+            <Container disableGutters maxWidth='xl' sx={{ minHeight: '100vh' }}>
                 <Security
                     oktaAuth={oktaAuth}
                     onAuthRequired={this.onAuthRequired}
@@ -44,9 +44,9 @@ export default withRouter(class AppWithRouterAccess extends Component {
                         <Route path='/' exact={true} component={Home} />
                         <Route path='/option-screener' exact={true} component={OptionScreener} />
                         <Route path='/browse' exact={true} component={OptionScreener} />
-                        <Route path='/discover' exact={true} component={StrategyScreener} />
-                        <Route path='/strategy-screener' exact={true} component={StrategyScreener} />
-                        <Route path='/new-discover' exact={true} component={NewStrategyScreener} />
+                        <Route path='/discover' exact={true} component={NewStrategyScreener} />
+                        <Route path='/strategy-screener' exact={true} component={NewStrategyScreener} />
+                        <Route path='/old-discover' exact={true} component={StrategyScreener} />
                         <Route path='/t/:tradeId' exact={true} component={SingleTrade} />
                         <Route path='/strategy-builder' exact={true} component={StrategyBuilder} />
                         <Route path='/build' exact={true} component={StrategyBuilder} />
