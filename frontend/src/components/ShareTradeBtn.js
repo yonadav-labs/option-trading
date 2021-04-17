@@ -1,18 +1,18 @@
 import React, { useState } from 'react';
 import Axios from 'axios';
-import { FaShare } from 'react-icons/fa';
-import { Link } from "react-router-dom";
 import { useOktaAuth } from '@okta/okta-react';
 import { FacebookShareButton, FacebookIcon, TwitterShareButton, TwitterIcon } from "react-share";
-import { Badge } from 'react-bootstrap';
-
 import getApiUrl from '../utils';
+import ShareIcon from '@material-ui/icons/Share';
+import { ClickAwayListener, Grid, IconButton, Tooltip } from '@material-ui/core';
+import LinkIcon from '@material-ui/icons/Link';
 
 export default function ShareTradeBtn(props) {
     const { trade } = props;
-    const { oktaAuth, authState } = useOktaAuth();
+    const { authState } = useOktaAuth();
     const [shareLink, setShareLink] = useState('');
     const [isLoading, setIsLoading] = useState(false);
+    const [tooltipOpen, setTooltipOpen] = useState(false);
     const API_URL = getApiUrl();
 
     function ConvertToTradeSnapshot() {
@@ -29,7 +29,7 @@ export default function ShareTradeBtn(props) {
             target_price_lower: trade.target_price_lower,
             target_price_upper: trade.target_price_upper,
         };
-        trade.legs.map((leg, index) => {
+        trade.legs.map((leg) => {
             let legSnapshot = { is_long: leg.is_long, units: leg.units }
             if (leg.contract) {
                 let contract = {
@@ -67,7 +67,6 @@ export default function ShareTradeBtn(props) {
                 headers: headers
             });
             setShareLink('/t/' + response.data.id);
-            navigator.clipboard.writeText('www.tigerstance.com/t/' + response.data.id)
             setIsLoading(false);
         } catch (error) {
             console.error(error);
@@ -88,38 +87,56 @@ export default function ShareTradeBtn(props) {
         SaveTradeSnaphot(tradeSnapshot);
     }
 
+    const copyLink = (e) => {
+        e.stopPropagation();
+        navigator.clipboard.writeText('www.tigerstance.com' + shareLink);
+        setTooltipOpen(true);
+    }
+
     return (
         (
             <div>
                 {
-                    shareLink ?
-                        <span>
-                            <FaShare /> Share:&nbsp;
-                            <Link style={{ "cursor": "pointer" }} to={shareLink} onClick={(e) => { e.stopPropagation() }} target="_blank">
-                                www.tigerstance.com{shareLink}
-                            </Link>
-                            <br />
-                            <TwitterShareButton
-                                url={`www.tigerstance.com${shareLink}`}
-                                title={'Check this trade I found on #tigerstance!'}
-                                via={'EaseandExtra'}
-                            >
-                                <TwitterIcon size={32} round={true} />
-                            </TwitterShareButton>
-                            <FacebookShareButton
-                                url={`www.tigerstance.com${shareLink}`}
-                                quote={'Check this trade I found on #tigerstance!'}
-                            >
-                                <FacebookIcon size={32} round={true} />
-                            </FacebookShareButton> {" "}
-                            <Badge pill variant="success">
-                                Copied to clipboard
-                            </Badge>
-                        </span>
+                    (shareLink && !isLoading) ?
+                        <Grid container item>
+                            <IconButton size="small" onClick={(e) => e.stopPropagation()}>
+                                <FacebookShareButton
+                                    url={`www.tigerstance.com${shareLink}`}
+                                    quote={'Check this trade I found on #tigerstance!'}
+                                >
+                                    <FacebookIcon size="45" round={true} />
+                                </FacebookShareButton>
+                            </IconButton>
+                            <IconButton size="small" onClick={(e) => e.stopPropagation()}>
+                                <TwitterShareButton
+                                    url={`www.tigerstance.com${shareLink}`}
+                                    title={'Check this trade I found on #tigerstance!'}
+                                    via={'EaseandExtra'}
+                                >
+                                    <TwitterIcon size="45" round={true} />
+                                </TwitterShareButton>
+                            </IconButton>
+                            <ClickAwayListener onClickAway={() => setTooltipOpen(false)}>
+                                <div>
+                                    <Tooltip
+                                        PopperProps={{
+                                            disablePortal: true,
+                                        }}
+                                        onClose={() => setTooltipOpen(false)}
+                                        open={tooltipOpen}
+                                        disableFocusListener
+                                        disableHoverListener
+                                        disableTouchListener
+                                        title="Link copied to clipboard"
+                                    >
+                                        <IconButton onClick={copyLink}><LinkIcon /></IconButton>
+                                    </Tooltip>
+                                </div>
+
+                            </ClickAwayListener>
+                        </Grid>
                         :
-                        <div
-                            style={{ "cursor": "pointer" }} onClick={ShareTrade}><FaShare /> Share
-                        </div>
+                        <IconButton onClick={ShareTrade}><ShareIcon /></IconButton>
                 }
             </div >
         )

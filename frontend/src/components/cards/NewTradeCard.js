@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Grid, makeStyles, Typography, Divider, Chip, Card, CardHeader, CardContent, CardActionArea, CardActions, IconButton } from "@material-ui/core";
+import { Grid, makeStyles, Typography, Divider, Chip, Card, CardHeader, CardContent, CardActionArea, CardActions, IconButton, Fab } from "@material-ui/core";
 import TradeProfitLossGraph from "../TradeProfitLossGraph";
 import LegDetailsCard from "./LegDetailsCard";
 import MetricLabel from '../MetricLabel.js';
@@ -9,6 +9,10 @@ import {
 } from '../../utils';
 import ZoomOutMapIcon from '@material-ui/icons/ZoomOutMap';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import LinkIcon from '@material-ui/icons/Link';
+import TwitterIcon from '@material-ui/icons/Twitter';
+import FacebookIcon from '@material-ui/icons/Facebook';
+import ShareTradeBtn from "../ShareTradeBtn";
 
 const useStyles = makeStyles(theme => ({
     viewMoreButton: {
@@ -47,16 +51,23 @@ export default function NewTradeCard({ trade }) {
         <Card>
             <CardActionArea onClick={showMoreInfo}>
                 <CardHeader
-                    title={<>
-                        <Typography variant="h5" className={classes.capitalize} display="inline" paddingRight={2}>{getTradeTypeDisplay(trade.type)}</Typography>
-                        <Chip label={
-                            <>
-                                <Typography variant="subtitle1" display="inline"><MetricLabel label={trade.net_debt_per_unit > 0 ? "Order Net Debt" : "order net credit"} />:</Typography>
-                                <Typography variant="body1" display="inline">{PriceFormatter(Math.abs(trade.net_debt_per_unit))}</Typography>
-                            </>
-                        } />
-                        <ZoomOutMapIcon sx={{ float: 'right' }} />
-                    </>}
+                    title={<Grid container direction="row" spacing={1}>
+                        <Grid item>
+                            <Typography variant="h5" className={classes.capitalize} display="inline" paddingRight={2}>{getTradeTypeDisplay(trade.type)}</Typography>
+                        </Grid>
+                        <Grid item sm>
+                            <Chip label={
+                                <>
+                                    <Typography variant="subtitle1" display="inline"><MetricLabel label={trade.net_debt_per_unit > 0 ? "Order Net Debt" : "order net credit"} />:</Typography>
+                                    <Typography variant="body1" display="inline">{PriceFormatter(Math.abs(trade.net_debt_per_unit))}</Typography>
+                                </>
+                            } />
+                        </Grid>
+                        <Grid container item sm justifyContent="flex-end" spacing={1}>
+                            <Grid item><ShareTradeBtn trade={trade}/></Grid>
+                            <Grid item><IconButton><ZoomOutMapIcon /></IconButton></Grid>
+                        </Grid>
+                    </Grid>}
                 />
                 <Divider variant="middle" />
                 <CardContent>
