@@ -148,7 +148,7 @@ export default function MainView(props) {
                     <Grid container alignItems="center" justifyContent="center" padding={2}>
                         <Alert severity="info">
                             Below are the trading ideas with best potential return for each strategy based on price target.
-                            Please adjust the settings to discover your faviorate ones.
+                            Please adjust the settings to discover your favorite ones.
                         </Alert>
                     </Grid>
                     <Grid container>

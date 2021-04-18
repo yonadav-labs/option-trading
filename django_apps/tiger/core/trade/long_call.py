@@ -42,3 +42,7 @@ class LongCall(Trade):
     @property
     def profit_cap_price(self):
         return None
+
+    @property
+    def is_bullish(self):
+        return True

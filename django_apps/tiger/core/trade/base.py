@@ -1,5 +1,7 @@
-from abc import ABC, abstractmethod
 import math
+from abc import ABC, abstractmethod
+
+from tiger.core.black_scholes import get_target_price_probability
 
 
 class Trade(ABC):
@@ -367,5 +369,25 @@ class Trade(ABC):
             if leg.contract:
                 commission_cost += (leg.open_commission + leg.close_commission) * leg.units
         return commission_cost
+
+    @property
+    @abstractmethod
+    def is_bullish(self):
+        pass
+
+    @property
+    def profit_prob(self):
+        '''Probability of profit， implied from options pricing.'''
+        probs = []
+        for leg in self.legs:
+            if not leg.contract:
+                continue
+            prob = get_target_price_probability(
+                stock_price=self.stock.stock_price,
+                target_price=self.break_even_price + (0.01 if self.is_bullish else -0.01),
+                exp_years=leg.contract.days_till_expiration / 365.0,
+                sigma=leg.contract.implied_volatility, aims_above=self.is_bullish)
+            probs.append(prob)
+        return sum(probs) / len(probs)
 
 # TODO: add a sell everything now and hold cash trade and a long stock trade.

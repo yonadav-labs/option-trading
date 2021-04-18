@@ -78,36 +78,48 @@ export default function NewTradeCard({ trade }) {
                                 </Grid>
                                 <Grid item xs={6} sm>
                                     <Typography variant="button"><MetricLabel label="quantity" /></Typography>
-                                    <Typography variant="body1">{leg.units} {leg.stock ? "Shares" : ""}</Typography>
+                                    <Typography variant="body1">{leg.units}</Typography>
                                 </Grid>
                                 {
-                                    leg.contract &&
-                                    <>
-                                        <Grid item xs={6} sm>
-                                            <Typography variant="button"><MetricLabel label="exp date" /></Typography>
-                                            <Typography variant="body1">{TimestampDateFormatter(leg.contract.expiration)}</Typography>
-                                        </Grid>
-                                        <Grid item xs={6} sm>
-                                            <Typography variant="button"><MetricLabel label="strike" /></Typography>
-                                            <Typography variant="body1">{PriceFormatter(leg.contract.strike)}</Typography>
-                                        </Grid>
-                                        <Grid item xs={6} sm>
-                                            <Typography variant="button"><MetricLabel label="call / put" /></Typography>
-                                            <Typography variant="body1">{leg.contract.is_call ? 'Call' : 'Put'}</Typography>
-                                        </Grid>
-                                        <Grid item xs={6} sm>
-                                            <Typography variant="button"><MetricLabel label="last" /></Typography>
-                                            <Typography variant="body1">{PriceFormatter(leg.contract.last_price)}</Typography>
-                                        </Grid>
-                                        <Grid item xs={6} sm>
-                                            <Typography variant="button"><MetricLabel label="volume" /></Typography>
-                                            <Typography variant="body1">{leg.contract.volume}</Typography>
-                                        </Grid>
-                                        <Grid item xs={6} sm>
-                                            <Typography variant="button"><MetricLabel label="open interest" /></Typography>
-                                            <Typography variant="body1">{leg.contract.open_interest}</Typography>
-                                        </Grid>
-                                    </>
+                                    leg.contract ?
+                                        <>
+                                            <Grid item xs={6} sm>
+                                                <Typography variant="button"><MetricLabel label="exp date" /></Typography>
+                                                <Typography variant="body1">{TimestampDateFormatter(leg.contract.expiration)}</Typography>
+                                            </Grid>
+                                            <Grid item xs={6} sm>
+                                                <Typography variant="button"><MetricLabel label="strike" /></Typography>
+                                                <Typography variant="body1">{PriceFormatter(leg.contract.strike)}</Typography>
+                                            </Grid>
+                                            <Grid item xs={6} sm>
+                                                <Typography variant="button"><MetricLabel label="type" /></Typography>
+                                                <Typography variant="body1">{leg.contract.is_call ? 'Call' : 'Put'}</Typography>
+                                            </Grid>
+                                            <Grid item xs={6} sm>
+                                                <Typography variant="button"><MetricLabel label="last" /></Typography>
+                                                <Typography variant="body1">{PriceFormatter(leg.contract.last_price)}</Typography>
+                                            </Grid>
+                                            <Grid item xs={6} sm>
+                                                <Typography variant="button"><MetricLabel label="volume" /></Typography>
+                                                <Typography variant="body1">{leg.contract.volume}</Typography>
+                                            </Grid>
+                                            <Grid item xs={6} sm>
+                                                <Typography variant="button"><MetricLabel label="open interest" /></Typography>
+                                                <Typography variant="body1">{leg.contract.open_interest}</Typography>
+                                            </Grid>
+                                        </>
+                                        :
+                                        <>
+                                            <Grid item xs={6} sm>
+                                                <Typography variant="button"><MetricLabel label="type" /></Typography>
+                                                <Typography variant="body1">{leg.stock ? 'Share' : 'Cash'}</Typography>
+                                            </Grid>
+                                            <Grid item xs={6} sm></Grid>
+                                            <Grid item xs={6} sm></Grid>
+                                            <Grid item xs={6} sm></Grid>
+                                            <Grid item xs={6} sm></Grid>
+                                            <Grid item xs={6} sm></Grid>
+                                        </>
                                 }
                                 {moreInfo ?
                                     <IconButton onClick={(e) => { console.log("leg expand clicked"); e.stopPropagation() }}><ExpandMoreIcon /></IconButton>
@@ -123,15 +135,19 @@ export default function NewTradeCard({ trade }) {
                             </Grid>
                             : null
                         }
-                        <Grid item xs={6} sm={2.4}>
+                        <Grid item xs={6} sm={2}>
                             <Typography variant="button"><MetricLabel label="hypothetical return" /></Typography>
                             <Typography variant="body1" color="#4F4F4F">{ProfitFormatter(trade.target_price_profit_ratio)} ({PriceFormatter(trade.target_price_profit)})</Typography>
                         </Grid>
-                        <Grid item xs={6} sm={2.4}>
+                        <Grid item xs={6} sm={2}>
+                            <Typography variant="button"><MetricLabel label="probability of profit" /></Typography>
+                            <Typography variant="body1" color="#4F4F4F">{PercentageFormatter(trade.profit_prob)}</Typography>
+                        </Grid>
+                        <Grid item xs={6} sm={2}>
                             <Typography variant="button"><MetricLabel label="break-even at" /></Typography>
                             <Typography variant="body1" color="#4F4F4F">{ProfitFormatter(trade.to_break_even_ratio)} (at {PriceFormatter(trade.break_even_price)})</Typography>
                         </Grid>
-                        <Grid item xs={6} sm={2.4}>
+                        <Grid item xs={6} sm={2}>
                             <Typography variant="button"><MetricLabel label="max return" /></Typography>
                             <Typography variant="body1" color="#4F4F4F">{trade.profit_cap ?
                                 <>{ProfitFormatter(trade.profit_cap / trade.cost)} ({PriceFormatter(trade.profit_cap)})</>
@@ -139,7 +155,7 @@ export default function NewTradeCard({ trade }) {
                                 'UNLIMITED'}
                             </Typography>
                         </Grid>
-                        <Grid item xs={6} sm={2.4}>
+                        <Grid item xs={6} sm={2}>
                             <Typography variant="button"><MetricLabel label="10% probability loss" /></Typography>
                             {
                                 trade.two_sigma_profit_lower ?
@@ -153,7 +169,7 @@ export default function NewTradeCard({ trade }) {
                                     : "N/A"
                             }
                         </Grid>
-                        <Grid item xs={6} sm={2.4}>
+                        <Grid item xs={6} sm={2}>
                             <Typography variant="button"><MetricLabel label="10% probability profit" /></Typography>
                             {
                                 trade.two_sigma_profit_lower ?
@@ -169,26 +185,27 @@ export default function NewTradeCard({ trade }) {
                         </Grid>
                         {moreInfo ?
                             <>
-                                <Grid item xs={6} sm>
+                                <Grid item xs={6} sm={2}>
                                     <Typography variant="button"><MetricLabel label="total cost" /></Typography>
                                     <Typography variant="body1" color="#4F4F4F">${trade.cost}</Typography>
                                 </Grid>
-                                <Grid item xs={6} sm>
+                                <Grid item xs={6} sm={2}>
                                     <Typography variant="button"><MetricLabel label="notional value" /></Typography>
                                     <Typography variant="body1" color="#4F4F4F">{PriceFormatter(trade.notional_value)}</Typography>
                                 </Grid>
-                                <Grid item xs={6} sm>
+                                <Grid item xs={6} sm={2}>
                                     <Typography variant="button"><MetricLabel label="leverage" /></Typography>
                                     <Typography variant="body1" color="#4F4F4F">{PercentageFormatter(trade.leverage)}</Typography>
                                 </Grid>
-                                <Grid item xs={6} sm>
+                                <Grid item xs={6} sm={2}>
                                     <Typography variant="button"><MetricLabel label="total commission" /></Typography>
                                     <Typography variant="body1" color="#4F4F4F">{PriceFormatter(trade.commission_cost)}</Typography>
                                 </Grid>
-                                <Grid item xs={6} sm>
+                                <Grid item xs={6} sm={2}>
                                     <Typography variant="button"><MetricLabel label="quoted at" /></Typography>
                                     <Typography variant="body1" color="#4F4F4F">{TimestampTimeFormatter(trade.quote_time)}</Typography>
                                 </Grid>
+                                <Grid item xs={6} sm={2}></Grid>
                             </>
                             :
                             null

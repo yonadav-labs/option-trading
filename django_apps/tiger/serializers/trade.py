@@ -127,3 +127,4 @@ class TradeSerializer(serializers.Serializer):
     quote_time = serializers.ReadOnlyField()
     net_debt_per_unit = ReadOnlyDollarDecimalField()
     commission_cost = ReadOnlyDollarDecimalField()
+    profit_prob = ReadOnlyRatioDecimalField()

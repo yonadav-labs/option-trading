@@ -57,6 +57,7 @@ const HelpTextDict = {
     'premium price to use': 'The options price to use in return calculation.'
         + 'Market price: use bid price of options contracts for sell, use ask price for buy. '
         + 'Mid/Mark price: use the mid/mark price of options contracts.',
+    'probability of profit': 'Chance of making at least $0.01 on a trade. Implied by option price.',
     'max return': 'The highest possible return of this trade.',
     'order net debt': 'The cost to open position for this strategy per contract/spread. Commission cost not included.',
     'order net credit': 'The initial payback recieved to open position for this strategy per contract/spread. This is not profit.',

@@ -59,3 +59,7 @@ class BullPutSpread(Trade):
     @property
     def profit_cap_price(self):
         return self.get_short_put_leg().contract.strike
+
+    @property
+    def is_bullish(self):
+        return True

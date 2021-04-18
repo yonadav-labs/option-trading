@@ -41,3 +41,7 @@ class LongPut(Trade):
     @property
     def profit_cap_price(self):
         return 0.0
+
+    @property
+    def is_bullish(self):
+        return False

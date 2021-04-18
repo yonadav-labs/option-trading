@@ -49,11 +49,29 @@ def get_itm_probability(stock_price, strike, exp_years, sigma, is_call):
     :param exp_years: Time to maturity in years.
     :param sigma: Volatility of underlying asset.
     :param is_call: call or put
-    :return: delta.
+    :return: probability of the contract being in the money.
     '''
     d1 = (np.log(stock_price / strike) + (INTEREST_RATE + 0.5 * sigma ** 2) * exp_years) / (sigma * np.sqrt(exp_years))
     d2 = d1 - sigma * np.sqrt(exp_years)
     if is_call:
+        return si.norm.cdf(d2, 0.0, 1.0)
+    else:
+        return si.norm.cdf(-d2, 0.0, 1.0)
+
+
+def get_target_price_probability(stock_price, target_price, exp_years, sigma, aims_above):
+    '''
+    :param stock_price: Current stock price.
+    :param target_price: Target price.
+    :param exp_years: Time to maturity in years.
+    :param sigma: Volatility of underlying asset.
+    :param aims_above: if aims to be above the target price or below. True for bullish strategy, false for bearish.
+    :return: probability of the contract being above/below the target price.
+    '''
+    d1 = (np.log(stock_price / target_price) + (INTEREST_RATE + 0.5 * sigma ** 2) * exp_years) \
+         / (sigma * np.sqrt(exp_years))
+    d2 = d1 - sigma * np.sqrt(exp_years)
+    if aims_above:
         return si.norm.cdf(d2, 0.0, 1.0)
     else:
         return si.norm.cdf(-d2, 0.0, 1.0)

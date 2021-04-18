@@ -23,7 +23,8 @@ class BearCallSpread(Trade):
         assert self.stock.ticker.id == long_call_leg.contract.ticker.id == short_call_leg.contract.ticker.id
 
     @staticmethod
-    def build(stock, call_contract_1, call_contract_2, premium_type, broker_settings, target_price_lower=None, target_price_upper=None,
+    def build(stock, call_contract_1, call_contract_2, premium_type, broker_settings, target_price_lower=None,
+              target_price_upper=None,
               available_cash=None):
         if call_contract_1.strike == call_contract_2.strike or call_contract_1.expiration != call_contract_2.expiration:
             return None
@@ -59,3 +60,7 @@ class BearCallSpread(Trade):
     @property
     def profit_cap_price(self):
         return self.get_short_call_leg().contract.strike
+
+    @property
+    def is_bullish(self):
+        return False
