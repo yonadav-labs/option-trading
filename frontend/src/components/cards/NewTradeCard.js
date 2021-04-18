@@ -79,20 +79,12 @@ export default function NewTradeCard({ trade }) {
                             {/* <LegDetailsCard key={index} leg={leg} leg_num={index + 1}></LegDetailsCard> */}
                             <Grid container direction="row" justifyContent="space-around" alignItems="baseline" spacing={2} paddingY={0.5}>
                                 <Grid item xs={12} sm={1}><Typography variant="h6">Leg {idx + 1}</Typography></Grid>
-                                <Grid item xs={6} sm>
-                                    <Typography variant="button"><MetricLabel label="action" /></Typography>
-                                    <Typography variant="body1">{leg.is_long ? 'Long' : 'Short'}</Typography>
-                                </Grid>
-                                <Grid item xs={6} sm>
-                                    <Typography variant="button"><MetricLabel label="quantity" /></Typography>
-                                    <Typography variant="body1">{leg.units}</Typography>
-                                </Grid>
                                 {
                                     leg.contract ?
                                         <>
                                             <Grid item xs={6} sm>
-                                                <Typography variant="button"><MetricLabel label="exp date" /></Typography>
-                                                <Typography variant="body1">{TimestampDateFormatter(leg.contract.expiration)}</Typography>
+                                                <Typography variant="button"><MetricLabel label="action" /></Typography>
+                                                <Typography variant="body1">{leg.is_long ? 'Long' : 'Short'}</Typography>
                                             </Grid>
                                             <Grid item xs={6} sm>
                                                 <Typography variant="button"><MetricLabel label="strike" /></Typography>
@@ -101,6 +93,14 @@ export default function NewTradeCard({ trade }) {
                                             <Grid item xs={6} sm>
                                                 <Typography variant="button"><MetricLabel label="type" /></Typography>
                                                 <Typography variant="body1">{leg.contract.is_call ? 'Call' : 'Put'}</Typography>
+                                            </Grid>
+                                            <Grid item xs={6} sm>
+                                                <Typography variant="button"><MetricLabel label="exp date" /></Typography>
+                                                <Typography variant="body1">{TimestampDateFormatter(leg.contract.expiration)}</Typography>
+                                            </Grid>
+                                            <Grid item xs={6} sm>
+                                                <Typography variant="button"><MetricLabel label="quantity" /></Typography>
+                                                <Typography variant="body1">{leg.units}</Typography>
                                             </Grid>
                                             {/* <Grid item xs={6} sm>
                                                 <Typography variant="button"><MetricLabel label="last" /></Typography>
@@ -118,10 +118,18 @@ export default function NewTradeCard({ trade }) {
                                         :
                                         <>
                                             <Grid item xs={6} sm>
+                                                <Typography variant="button"><MetricLabel label="action" /></Typography>
+                                                {leg.stock ? <Typography variant="body1">{leg.is_long ? 'Long' : 'Short'}</Typography>
+                                                    : <Typography variant="body1">Hold as collateral</Typography>}
+                                            </Grid>
+                                            <Grid item xs={6} sm>
                                                 <Typography variant="button"><MetricLabel label="type" /></Typography>
                                                 <Typography variant="body1">{leg.stock ? 'Share' : 'Cash'}</Typography>
                                             </Grid>
-                                            <Grid item xs={6} sm></Grid>
+                                            <Grid item xs={6} sm>
+                                                <Typography variant="button"><MetricLabel label="quantity" /></Typography>
+                                                <Typography variant="body1">{leg.units}</Typography>
+                                            </Grid>
                                             <Grid item xs={6} sm></Grid>
                                             <Grid item xs={6} sm></Grid>
                                             <Grid item xs={6} sm></Grid>
