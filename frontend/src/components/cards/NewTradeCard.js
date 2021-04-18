@@ -79,7 +79,7 @@ export default function NewTradeCard({ trade }) {
                             {/* <LegDetailsCard key={index} leg={leg} leg_num={index + 1}></LegDetailsCard> */}
                             <Grid container direction="row" justifyContent="space-around" alignItems="baseline" spacing={2} paddingY={0.5}>
                                 <Grid item xs={12} sm={1}><Typography variant="h6">Leg {idx + 1}</Typography></Grid>
-                                <Grid item xs={6} sm={1}>
+                                <Grid item xs={6} sm>
                                     <Typography variant="button"><MetricLabel label="action" /></Typography>
                                     <Typography variant="body1">{leg.is_long ? 'Long' : 'Short'}</Typography>
                                 </Grid>
@@ -102,10 +102,10 @@ export default function NewTradeCard({ trade }) {
                                                 <Typography variant="button"><MetricLabel label="type" /></Typography>
                                                 <Typography variant="body1">{leg.contract.is_call ? 'Call' : 'Put'}</Typography>
                                             </Grid>
-                                            <Grid item xs={6} sm>
+                                            {/* <Grid item xs={6} sm>
                                                 <Typography variant="button"><MetricLabel label="last" /></Typography>
                                                 <Typography variant="body1">{PriceFormatter(leg.contract.last_price)}</Typography>
-                                            </Grid>
+                                            </Grid> */}
                                             <Grid item xs={6} sm>
                                                 <Typography variant="button"><MetricLabel label="volume" /></Typography>
                                                 <Typography variant="body1">{leg.contract.volume}</Typography>
@@ -142,19 +142,19 @@ export default function NewTradeCard({ trade }) {
                             </Grid>
                             : null
                         }
-                        <Grid item xs={6} sm={2}>
+                        <Grid item xs={6} sm={3}>
                             <Typography variant="button"><MetricLabel label="hypothetical return" /></Typography>
                             <Typography variant="body1" color="#4F4F4F">{ProfitFormatter(trade.target_price_profit_ratio)} ({PriceFormatter(trade.target_price_profit)})</Typography>
                         </Grid>
-                        <Grid item xs={6} sm={2}>
+                        <Grid item xs={6} sm={3}>
                             <Typography variant="button"><MetricLabel label="probability of profit" /></Typography>
                             <Typography variant="body1" color="#4F4F4F">{PercentageFormatter(trade.profit_prob)}</Typography>
                         </Grid>
-                        <Grid item xs={6} sm={2}>
+                        <Grid item xs={6} sm={3}>
                             <Typography variant="button"><MetricLabel label="break-even at" /></Typography>
                             <Typography variant="body1" color="#4F4F4F">{ProfitFormatter(trade.to_break_even_ratio)} (at {PriceFormatter(trade.break_even_price)})</Typography>
                         </Grid>
-                        <Grid item xs={6} sm={2}>
+                        <Grid item xs={6} sm={3}>
                             <Typography variant="button"><MetricLabel label="max return" /></Typography>
                             <Typography variant="body1" color="#4F4F4F">{trade.profit_cap ?
                                 <>{ProfitFormatter(trade.profit_cap / trade.cost)} ({PriceFormatter(trade.profit_cap)})</>
@@ -162,57 +162,57 @@ export default function NewTradeCard({ trade }) {
                                 'UNLIMITED'}
                             </Typography>
                         </Grid>
-                        <Grid item xs={6} sm={2}>
-                            <Typography variant="button"><MetricLabel label="10% probability loss" /></Typography>
-                            {
-                                trade.two_sigma_profit_lower ?
-                                    <>
-                                        <Typography variant="body1" color="#4F4F4F">{ProfitFormatter(trade.ten_percent_worst_return_ratio)} ({PriceFormatter(trade.ten_percent_worst_return)})</Typography>
-                                        <Typography variant="body2" color="#828282">
-                                            {trade.ten_percent_worst_return_price > trade.stock.stock_price ? 'Above ' : 'Below '}
-                                            {PriceFormatter(trade.ten_percent_worst_return_price)}
-                                        </Typography>
-                                    </>
-                                    : "N/A"
-                            }
-                        </Grid>
-                        <Grid item xs={6} sm={2}>
-                            <Typography variant="button"><MetricLabel label="10% probability profit" /></Typography>
-                            {
-                                trade.two_sigma_profit_lower ?
-                                    <>
-                                        <Typography variant="body1" color="#4F4F4F">{ProfitFormatter(trade.ten_percent_best_return_ratio)} ({PriceFormatter(trade.ten_percent_best_return)})</Typography>
-                                        <Typography variant="body2" color="#828282">
-                                            {trade.ten_percent_best_return_price > trade.stock.stock_price ? 'Above ' : 'Below '}
-                                            {PriceFormatter(trade.ten_percent_best_return_price)}
-                                        </Typography>
-                                    </>
-                                    : "N/A"
-                            }
-                        </Grid>
                         {moreInfo ?
                             <>
-                                <Grid item xs={6} sm={2}>
+                                <Grid item xs={6} sm={3}>
                                     <Typography variant="button"><MetricLabel label="total cost" /></Typography>
                                     <Typography variant="body1" color="#4F4F4F">${trade.cost}</Typography>
                                 </Grid>
-                                <Grid item xs={6} sm={2}>
+                                <Grid item xs={6} sm={3}>
                                     <Typography variant="button"><MetricLabel label="notional value" /></Typography>
                                     <Typography variant="body1" color="#4F4F4F">{PriceFormatter(trade.notional_value)}</Typography>
                                 </Grid>
-                                <Grid item xs={6} sm={2}>
+                                <Grid item xs={6} sm={3}>
                                     <Typography variant="button"><MetricLabel label="leverage" /></Typography>
                                     <Typography variant="body1" color="#4F4F4F">{PercentageFormatter(trade.leverage)}</Typography>
                                 </Grid>
-                                <Grid item xs={6} sm={2}>
+                                <Grid item xs={6} sm={3}>
                                     <Typography variant="button"><MetricLabel label="total commission" /></Typography>
                                     <Typography variant="body1" color="#4F4F4F">{PriceFormatter(trade.commission_cost)}</Typography>
                                 </Grid>
-                                <Grid item xs={6} sm={2}>
+                                <Grid item xs={6} sm={3}>
+                                    <Typography variant="button"><MetricLabel label="10% probability loss" /></Typography>
+                                    {
+                                        trade.two_sigma_profit_lower ?
+                                            <>
+                                                <Typography variant="body1" color="#4F4F4F">{ProfitFormatter(trade.ten_percent_worst_return_ratio)} ({PriceFormatter(trade.ten_percent_worst_return)})</Typography>
+                                                <Typography variant="body2" color="#828282">
+                                                    {trade.ten_percent_worst_return_price > trade.stock.stock_price ? 'Above ' : 'Below '}
+                                                    {PriceFormatter(trade.ten_percent_worst_return_price)}
+                                                </Typography>
+                                            </>
+                                            : "N/A"
+                                    }
+                                </Grid>
+                                <Grid item xs={6} sm={3}>
+                                    <Typography variant="button"><MetricLabel label="10% probability profit" /></Typography>
+                                    {
+                                        trade.two_sigma_profit_lower ?
+                                            <>
+                                                <Typography variant="body1" color="#4F4F4F">{ProfitFormatter(trade.ten_percent_best_return_ratio)} ({PriceFormatter(trade.ten_percent_best_return)})</Typography>
+                                                <Typography variant="body2" color="#828282">
+                                                    {trade.ten_percent_best_return_price > trade.stock.stock_price ? 'Above ' : 'Below '}
+                                                    {PriceFormatter(trade.ten_percent_best_return_price)}
+                                                </Typography>
+                                            </>
+                                            : "N/A"
+                                    }
+                                </Grid>
+                                <Grid item xs={6} sm={3}>
                                     <Typography variant="button"><MetricLabel label="quoted at" /></Typography>
                                     <Typography variant="body1" color="#4F4F4F">{TimestampTimeFormatter(trade.quote_time)}</Typography>
                                 </Grid>
-                                <Grid item xs={6} sm={2}></Grid>
+                                <Grid item xs={6} sm={3}></Grid>
                             </>
                             :
                             null
