@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useRef, useMemo } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import Axios from 'axios';
 import ModalSpinner from '../../components/ModalSpinner';
 import LandingView from "./LandingView";
@@ -39,7 +39,8 @@ export default function NewStrategyScreener() {
         minVolume: 0,
         minOpenInterest: 0,
         lastTradedDate: -9999999,
-        tenPercentWorstReturnRatio: -1.0,
+        minProfitProb: 0.0,
+        minTargetPriceProfitRatio: 0.0,
     })
 
     // component management states
@@ -67,7 +68,8 @@ export default function NewStrategyScreener() {
             minVolume: 0,
             minOpenInterest: 0,
             lastTradedDate: -9999999,
-            tenPercentWorstReturnRatio: -1.0,
+            minProfitProb: 0.0,
+            minTargetPriceProfitRatio: 0.0,
         })
         setBestTrades(null)
     }
@@ -111,8 +113,6 @@ export default function NewStrategyScreener() {
     }
 
     const getBestTrades = async () => {
-        // console.log('getting best trades')
-        // console.log(filters)
         try {
             if (selectedTicker && selectedExpirationTimestamp && filters.targetPriceLower && filters.targetPriceUpper) {
                 let url = `${API_URL}/dev/tickers/${selectedTicker.symbol}/trades/`;
@@ -130,10 +130,10 @@ export default function NewStrategyScreener() {
                         "min.last_trade_date": filters.lastTradedDate
                     },
                     "trade_filters": {
-                        "min.ten_percent_worst_return_ratio": filters.tenPercentWorstReturnRatio,
+                        "min.target_price_profit_ratio": filters.minTargetPriceProfitRatio,
+                        "min.profit_prob": filters.minProfitProb,
                     },
                 }
-                // console.log('body', body)
                 setModalActive(true);
                 const response = await Axios.post(url, body, { headers: headers });
                 let trades = response.data.trades;

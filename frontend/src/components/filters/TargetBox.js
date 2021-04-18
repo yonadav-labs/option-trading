@@ -76,10 +76,10 @@ export default function PriceTargetBox({ onFilterChange, initialPrice, filters }
 
     return (
         <Box style={{ width: "100%", padding: "0px" }} p={2}>
-            <Grid item style={{ paddingBottom: "0.3rem" }}>
+            <Grid item style={{ paddingBottom: "0.1rem" }}>
                 <Typography variant="button"><MetricLabel label="price target on exp day" /></Typography>
             </Grid>
-            <Grid item style={{ paddingBottom: "0.5rem" }}>
+            <Grid>
                 <Box>
                     <StyledToggleButtonGroup
                         value={targetType}
@@ -99,10 +99,10 @@ export default function PriceTargetBox({ onFilterChange, initialPrice, filters }
             </Grid>
             { targetType === "price" ?
                 <>
-                    <Grid item style={{ paddingBottom: "0.3rem" }}>
+                    <Grid item style={{ paddingBottom: "0.1rem" }}>
                         <Typography variant="button"><MetricLabel label="price target" /></Typography>
                     </Grid>
-                    <Grid item style={{ paddingBottom: "0.5rem" }}>
+                    <Grid item style={{ paddingBottom: "0.4rem" }}>
                         <PriceTargetField
                             initialPrice={initialPrice}
                             value={filters.targetPriceLower}
@@ -112,20 +112,20 @@ export default function PriceTargetBox({ onFilterChange, initialPrice, filters }
                 </>
                 :
                 <>
-                    <Grid item style={{ paddingBottom: "0.3rem" }}>
+                    <Grid item style={{ paddingBottom: "0.1rem" }}>
                         <Typography variant="button"><MetricLabel label="low price target" /></Typography>
                     </Grid>
-                    <Grid item style={{ paddingBottom: "0.5rem" }}>
+                    <Grid item style={{ paddingBottom: "0.4rem" }}>
                         <PriceTargetField
                             onValueChange={lowerRangeChangeHandler}
                             initialPrice={initialPrice}
                             value={filters.targetPriceLower}
                         />
                     </Grid>
-                    <Grid item style={{ paddingBottom: "0.3rem" }}>
+                    <Grid item style={{ paddingBottom: "0.1rem" }}>
                         <Typography variant="button"><MetricLabel label="high price target" /></Typography>
                     </Grid>
-                    <Grid item>
+                    <Grid item style={{ paddingBottom: "0.4rem" }}>
                         <PriceTargetField
                             onValueChange={upperRangeChangeHandler}
                             initialPrice={initialPrice}

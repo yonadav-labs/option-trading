@@ -24,12 +24,39 @@ export default function FilterContainer(props) {
         onExpirationSelectionChange
     } = props
 
-    const premiumPriceFilter = [
+    const premiumPriceFilterOptions = [
         { label: "Market Order Price", value: "market" },
         { label: "Mid/Mark Price", value: 'mid' }
     ];
 
-    const minVolumeFilter = [
+    const minTargetPriceProfitRatio = [
+        { label: "All", value: 0.0 },
+        { label: "≥ 1%", value: 0.01 },
+        { label: "≥ 2%", value: 0.02 },
+        { label: "≥ 5%", value: 0.05 },
+        { label: "≥ 10%", value: 0.1 },
+        { label: "≥ 20%", value: 0.2 },
+        { label: "≥ 50%", value: 0.5 },
+        { label: "≥ 100%", value: 1 },
+        { label: "≥ 200%", value: 2 },
+        { label: "≥ 500%", value: 5 },
+    ];
+
+    const minProfitProbOptions = [
+        { label: "All", value: 0.0 },
+        { label: "≥ 5%", value: 0.05 },
+        { label: "≥ 10%", value: 0.1 },
+        { label: "≥ 20%", value: 0.2 },
+        { label: "≥ 30%", value: 0.3 },
+        { label: "≥ 40%", value: 0.4 },
+        { label: "≥ 50%", value: 0.5 },
+        { label: "≥ 60%", value: 0.6 },
+        { label: "≥ 70%", value: 0.7 },
+        { label: "≥ 80%", value: 0.8 },
+        { label: "≥ 90%", value: 0.9 },
+    ];
+
+    const minVolumeFilterOptions = [
         { label: "All", value: 0 },
         { label: "≥ 1", value: 1 },
         { label: "≥ 5", value: 5 },
@@ -41,7 +68,7 @@ export default function FilterContainer(props) {
         { label: "≥ 5000", value: 5000 },
     ];
 
-    const minInterestFilter = [
+    const minInterestFilterOptions = [
         { label: "All", value: 0 },
         { label: "≥ 1", value: 1 },
         { label: "≥ 5", value: 5 },
@@ -53,25 +80,12 @@ export default function FilterContainer(props) {
         { label: "≥ 5000", value: 5000 },
     ];
 
-    const lastTradedFilter = [
+    const lastTradedFilterOptions = [
         { label: "All", value: -9999999 },
         { label: "Last Traded in 1 Days", value: -1 },
         { label: "Last Traded in 5 Days", value: -5 },
         { label: "Last Traded in 10 Days", value: -10 },
         { label: "Last Traded in 30 Days", value: -30 },
-    ];
-
-    const max10PctLossFilter = [
-        { label: "Up to 100%", value: -1.0 },
-        { label: "Up to 10%", value: -0.1 },
-        { label: "Up to 20%", value: -0.2 },
-        { label: "Up to 30%", value: -0.3 },
-        { label: "Up to 40%", value: -0.4 },
-        { label: "Up to 50%", value: -0.5 },
-        { label: "Up to 60%", value: -0.6 },
-        { label: "Up to 70%", value: -0.7 },
-        { label: "Up to 80%", value: -0.8 },
-        { label: "Up to 90%", value: -0.9 },
     ];
 
     const filterChangeHandler = (event, key) => {
@@ -80,7 +94,7 @@ export default function FilterContainer(props) {
 
     return (
         <div style={{ paddingLeft: "1rem", paddingRight: "1rem", width: "100%" }} >
-            <Box py={2} style={{ width: "90%" }}>
+            <Box py={2}>
                 <Grid item>
                     <Grid container direction="row" justifyContent="space-between" alignItems="center">
                         <Grid item><Typography variant="h5">Settings</Typography></Grid>
@@ -99,11 +113,11 @@ export default function FilterContainer(props) {
             </Box>
             {isMobile ?
                 <>
-                    <Box py={2} style={{ width: "90%" }}>
-                        <Grid item style={{ paddingBottom: '0.3rem' }}>
+                    <Box py={0.5} style={{ width: "96%" }}>
+                        <Grid item style={{ paddingBottom: '0.1rem' }}>
                             <Typography variant="button"><MetricLabel label="ticker symbol" /></Typography>
                         </Grid>
-                        <Grid item>
+                        <Grid>
                             <TickerAutocomplete
                                 tickers={allTickers}
                                 onChange={onTickerSelectionChange}
@@ -112,11 +126,11 @@ export default function FilterContainer(props) {
                             />
                         </Grid>
                     </Box>
-                    <Box py={2} style={{ width: "90%" }}>
-                        <Grid item style={{ paddingBottom: '0.3rem' }}>
+                    <Box py={0.5}>
+                        <Grid item style={{ paddingBottom: '0.1rem' }}>
                             <Typography variant="button"><MetricLabel label="expiration date" /></Typography>
                         </Grid>
-                        <Grid item>
+                        <Grid>
                             <Autocomplete
                                 id="expiration-dates"
                                 options={expirationTimestampsOptions}
@@ -142,51 +156,65 @@ export default function FilterContainer(props) {
 
             <TargetBox onFilterChange={onFilterChange} initialPrice={initialPrice} filters={filters} />
             <Box>
-                <Grid item style={{ paddingBottom: '0.3rem' }}>
+                <Grid item style={{ paddingBottom: '0.1rem' }}>
+                    <Typography variant="button"><MetricLabel label="hypothetical return" /></Typography>
+                </Grid>
+                <Grid item style={{ paddingBottom: '0.4rem' }}>
+                    <MaterialFilter onFilterChange={(event) => filterChangeHandler(event, 'minTargetPriceProfitRatio')}
+                        options={minTargetPriceProfitRatio} value={filters.minTargetPriceProfitRatio} defaultValue={0} />
+                </Grid>
+            </Box>
+            <Box>
+                <Grid item style={{ paddingBottom: '0.1rem' }}>
+                    <Typography variant="button"><MetricLabel label="probability of profit" /></Typography>
+                </Grid>
+                <Grid item style={{ paddingBottom: '0.4rem' }}>
+                    <MaterialFilter onFilterChange={(event) => filterChangeHandler(event, 'minProfitProb')}
+                        options={minProfitProbOptions} value={filters.minProfitProb} defaultValue={0} />
+                </Grid>
+            </Box>
+            <Box>
+                <Grid item style={{ paddingBottom: '0.1rem' }}>
                     <Typography variant="button"><MetricLabel label="min volume" /></Typography>
                 </Grid>
-                <Grid item>
-                    <MaterialFilter onFilterChange={(event) => filterChangeHandler(event, 'minVolume')} options={minVolumeFilter} value={filters.minVolume} defaultValue={0} />
+                <Grid item style={{ paddingBottom: '0.4rem' }}>
+                    <MaterialFilter onFilterChange={(event) => filterChangeHandler(event, 'minVolume')}
+                        options={minVolumeFilterOptions} value={filters.minVolume} defaultValue={0} />
                 </Grid>
             </Box>
             <Box>
-                <Grid item style={{ paddingBottom: '0.3rem' }}>
+                <Grid item style={{ paddingBottom: '0.1rem' }}>
                     <Typography variant="button"><MetricLabel label="min open interest" /></Typography>
                 </Grid>
-                <Grid item>
-                    <MaterialFilter onFilterChange={(event) => filterChangeHandler(event, 'minOpenInterest')} options={minInterestFilter} value={filters.minOpenInterest} defaultValue={0} />
+                <Grid item style={{ paddingBottom: '0.4rem' }}>
+                    <MaterialFilter onFilterChange={(event) => filterChangeHandler(event, 'minOpenInterest')}
+                        options={minInterestFilterOptions} value={filters.minOpenInterest} defaultValue={0} />
                 </Grid>
             </Box>
             <Box>
-                <Grid item style={{ paddingBottom: '0.3rem' }}>
-                    <Typography variant="button"><MetricLabel label="10% probability loss" /></Typography>
-                </Grid>
-                <Grid item>
-                    <MaterialFilter onFilterChange={(event) => filterChangeHandler(event, 'tenPercentWorstReturnRatio')} options={max10PctLossFilter} value={filters.tenPercentWorstReturnRatio} defaultValue={-1.0} />
-                </Grid>
-            </Box>
-            <Box>
-                <Grid item style={{ paddingBottom: '0.3rem' }}>
+                <Grid item style={{ paddingBottom: '0.1rem' }}>
                     <Typography variant="button"><MetricLabel label="premium price options" /></Typography>
                 </Grid>
-                <Grid item>
-                    <MaterialFilter onFilterChange={(event) => filterChangeHandler(event, 'premiumType')} options={premiumPriceFilter} value={filters.premiumType} defaultValue={"market"} />
+                <Grid item style={{ paddingBottom: '0.4rem' }}>
+                    <MaterialFilter onFilterChange={(event) => filterChangeHandler(event, 'premiumType')}
+                        options={premiumPriceFilterOptions} value={filters.premiumType} defaultValue={"market"} />
                 </Grid>
             </Box>
             <Box>
-                <Grid item style={{ paddingBottom: '0.3rem' }}>
+                <Grid item style={{ paddingBottom: '0.1rem' }}>
                     <Typography variant="button"><MetricLabel label="cash to invest" /></Typography>
                 </Grid>
-                <Grid item>
+                <Grid item style={{ paddingBottom: '0.4rem' }}>
                     <DollarInputField onFilterChange={onFilterChange} placeholder="0 (optional)" value={filters.cashToInvest} />
                 </Grid>
             </Box>
             <Box>
-                <Grid item style={{ paddingBottom: '0.3rem' }}>
+                <Grid item style={{ paddingBottom: '0.1rem' }}>
                     <Typography variant="button"><MetricLabel label="time since last traded" /></Typography>
                 </Grid>
-                <Grid item>
-                    <MaterialFilter onFilterChange={(event) => filterChangeHandler(event, 'lastTraded')} options={lastTradedFilter} value={filters.lastTradedDate} defaultValue={-9999999} />
+                <Grid item style={{ paddingBottom: '0.4rem' }}>
+                    <MaterialFilter onFilterChange={(event) => filterChangeHandler(event, 'lastTraded')}
+                        options={lastTradedFilterOptions} value={filters.lastTradedDate} defaultValue={-9999999} />
                 </Grid>
             </Box>
         </div>

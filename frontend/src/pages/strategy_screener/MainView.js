@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import { Grid, TextField, Typography, Stack, Autocomplete, Pagination, Paper, Divider, Alert, IconButton } from "@material-ui/core";
+import { useOktaAuth } from '@okta/okta-react';
 import NewTradeCard from "../../components/cards/NewTradeCard";
 import TickerAutocomplete from "../../components/TickerAutocomplete";
 import FilterContainer from "../../components/filters/FilterContainer";
@@ -8,6 +10,8 @@ import TuneIcon from "@material-ui/icons/Tune";
 import { PriceFormatter } from '../../utils';
 
 export default function MainView(props) {
+    const { authState } = useOktaAuth();
+
     const {
         allTickers,
         selectedTicker,
@@ -108,9 +112,9 @@ export default function MainView(props) {
                                 <Divider />
                             </>
                             :
-                            <Grid container alignItems="center" spacing={2} paddingBottom={4}>
+                            <Grid container alignItems="center" spacing={2} paddingBottom={1}>
                                 <Grid item>
-                                    <Typography variant="subtitle1">Enter Ticker Symbol</Typography>
+                                    <Typography variant="subtitle1">Ticker Symbol</Typography>
                                 </Grid>
                                 <Grid item sm>
                                     <TickerAutocomplete
@@ -146,6 +150,13 @@ export default function MainView(props) {
                         <NewTickerSummary basicInfo={basicInfo} isMobile={isMobile} />
                     </Grid>
                     <Grid container alignItems="center" justifyContent="center" padding={2}>
+                        {!authState.isAuthenticated &&
+                            (
+                                <Alert severity="warning" style={{ marginBottom: '1rem' }}>
+                                    <a href="/signin"><b>LOG IN</b></a> or <Link to="/signin/register"><b>
+                                        SIGN UP FOR FREE</b></Link> to unlock cash secured put and 3 more vertical spread strategies!
+                                </Alert>
+                            )}
                         <Alert severity="info">
                             Below are the trading ideas with best potential return for each strategy based on price target.
                             Please adjust the settings to discover your favorite ones.

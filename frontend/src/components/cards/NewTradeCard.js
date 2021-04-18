@@ -47,23 +47,30 @@ export default function NewTradeCard({ trade }) {
         <Card>
             <CardActionArea onClick={showMoreInfo}>
                 <CardHeader
-                    title={<Grid container direction="row" spacing={1}>
-                        <Grid item>
-                            <Typography variant="h5" className={classes.capitalize} display="inline" paddingRight={2}>{getTradeTypeDisplay(trade.type)}</Typography>
+                    title=
+                    {
+                        <Grid container direction="row" spacing={1}>
+                            <Grid item>
+                                <Typography variant="h5" className={classes.capitalize}
+                                    display="inline" paddingRight={2}>{getTradeTypeDisplay(trade.type)}</Typography>
+                            </Grid>
+                            <Grid item sm>
+                                <Chip label={
+                                    <>
+                                        <Typography variant="subtitle1" display="inline">
+                                            <MetricLabel label={trade.net_debt_per_unit > 0 ? "Order Net Debt" : "order net credit"} />:
+                                        </Typography>
+                                        <Typography variant="body1" display="inline">{PriceFormatter(Math.abs(trade.net_debt_per_unit))}</Typography>
+                                    </>
+                                } />
+                            </Grid>
+                            <Grid container item sm justifyContent="flex-end" spacing={1}>
+                                <Grid item><ShareTradeBtn trade={trade} /></Grid>
+                                <Grid item><IconButton><ZoomOutMapIcon /></IconButton></Grid>
+                            </Grid>
                         </Grid>
-                        <Grid item sm>
-                            <Chip label={
-                                <>
-                                    <Typography variant="subtitle1" display="inline"><MetricLabel label={trade.net_debt_per_unit > 0 ? "Order Net Debt" : "order net credit"} />:</Typography>
-                                    <Typography variant="body1" display="inline">{PriceFormatter(Math.abs(trade.net_debt_per_unit))}</Typography>
-                                </>
-                            } />
-                        </Grid>
-                        <Grid container item sm justifyContent="flex-end" spacing={1}>
-                            <Grid item><ShareTradeBtn trade={trade} /></Grid>
-                            <Grid item><IconButton><ZoomOutMapIcon /></IconButton></Grid>
-                        </Grid>
-                    </Grid>}
+                    }
+                    style={{ paddingBottom: '0px' }}
                 />
                 <Divider variant="middle" />
                 <CardContent>
@@ -128,7 +135,7 @@ export default function NewTradeCard({ trade }) {
                             <Divider />
                         </>
                     ))}
-                    <Grid container direction="row" justifyContent="space-between" paddingTop={4} spacing={1}>
+                    <Grid container direction="row" justifyContent="space-between" paddingTop={2} spacing={1}>
                         {moreInfo ?
                             <Grid item xs={12}>
                                 <Typography variant="h6">Key Data</Typography>
