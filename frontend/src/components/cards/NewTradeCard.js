@@ -18,14 +18,23 @@ const useStyles = makeStyles(theme => ({
 
 export default function NewTradeCard({ trade }) {
     const [moreInfo, setMoreInfo] = useState(false)
+    const [isRaised, setIsRaised] = useState(false)
 
     const showMoreInfo = () => {
         setMoreInfo(!moreInfo);
     };
     const classes = useStyles();
 
+    const mouseEnter = () => {
+        setIsRaised(true)
+    }
+
+    const mouseExit = () => {
+        setIsRaised(false)
+    }
+
     return (
-        <Card>
+        <Card raised={isRaised} onMouseEnter={mouseEnter} onMouseLeave={mouseExit}>
             <CardActionArea onClick={showMoreInfo}>
                 <CardHeader
                     title=
