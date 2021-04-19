@@ -11,25 +11,6 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import ShareTradeBtn from "../ShareTradeBtn";
 
 const useStyles = makeStyles(theme => ({
-    viewMoreButton: {
-        border: "1px solid #E4E4E4",
-        borderRadius: "22px",
-        background: "#FFFFFF",
-        "&:focus": {
-            outline: "none"
-        },
-        "& .MuiButton-label": {
-            font: "500 14px Roboto",
-            color: "#FF902B",
-        },
-        "&:hover": {
-            background: '#fafafa'
-        }
-    },
-    horizontalLine: {
-        borderBottom: "1px solid #E4E4E4",
-        flex: '1 1 auto'
-    },
     capitalize: {
         textTransform: "capitalize"
     }
