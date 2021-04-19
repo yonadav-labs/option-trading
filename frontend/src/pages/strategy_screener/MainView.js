@@ -156,20 +156,37 @@ export default function MainView(props) {
                                     <a href="/signin"><b>LOG IN</b></a> or <Link to="/signin/register"><b>
                                         SIGN UP FOR FREE</b></Link> to unlock cash secured put and 3 more vertical spread strategies!
                                 </Alert>
-                            )}
-                        <Alert severity="info">
-                            Below are the trading ideas with best potential return for each strategy based on price target.
-                            Please adjust the settings to discover your favorite ones.
-                        </Alert>
+                            )
+                        }
+                        {renderedTrades.length > 0 ?
+                            <Alert severity="info">
+                                Below are the trading ideas with best potential return for each strategy based on price target.
+                                Please adjust the settings to discover your favorite ones.
+                            </Alert>
+                            :
+                            selectedTicker ?
+                                selectedExpirationTimestamp ?
+                                    <Alert severity="error">
+                                        There are no trades that fit the specified settings.
+                                    </Alert>
+                                    :
+                                    <Alert severity="error">
+                                        Select an expiration date.
+                                    </Alert>
+                                :
+                                <Alert severity="error">
+                                    Select a ticker and expiration date.
+                                </Alert>
+                        }
                     </Grid>
                     <Grid container>
                         <Stack paddingX={3} spacing={2} width="inherit">
                             {renderedTrades.map((trade, index) => <NewTradeCard trade={trade} key={index} />)}
                         </Stack>
                     </Grid>
-                    <Grid container justifyContent="flex-end" alignItems="flex-end" paddingY={2}>
+                    {/* <Grid container justifyContent="flex-end" alignItems="flex-end" paddingY={2}>
                         <Pagination count={noOfPages} shape="rounded" onChange={pageChangeHandler} />
-                    </Grid>
+                    </Grid> */}
                 </Grid>
             </Grid>
         </>
