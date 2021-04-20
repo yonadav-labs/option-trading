@@ -19,6 +19,7 @@ export default function TradeProfitLossGraph(props) {
     let xMax = Math.max(...priceMarks) * 1.1;
     let lowerTargetAnnotation = {};
     let upperTargetAnnotation = {};
+    let priceTargetAnnotation = {};
     let data = [];
 
     trade.graph_x_points.forEach((x, i) => {
@@ -43,7 +44,7 @@ export default function TradeProfitLossGraph(props) {
     }
     // share profit/loss end
 
-    // set annotations for price target if the exist
+    // set annotations for price target if they exist
     if (trade.target_price_lower !== null) {
         lowerTargetAnnotation = {
             color: "blue",
@@ -55,6 +56,7 @@ export default function TradeProfitLossGraph(props) {
                 y: 75,
                 style: {
                     fontStyle: "italic",
+                    color: "blue",
                 },
                 text: `Lower Price Target <br /> $${trade.target_price_lower}`,
             },
@@ -72,12 +74,34 @@ export default function TradeProfitLossGraph(props) {
                 y: 105,
                 style: {
                     fontStyle: "italic",
+                    color: "blue",
                 },
                 text: `Upper Price Target <br /> $${trade.target_price_upper}`,
             },
             zIndex: 100,
-        };
+        }
+        if (trade.target_price_lower === trade.target_price_upper) {
+            upperTargetAnnotation = {}
+            lowerTargetAnnotation = {} 
+            priceTargetAnnotation = {
+                color: "blue",
+                dashStyle: "dash",
+                width: 2,
+                value: trade.target_price_upper,
+                label: {
+                    rotation: 0,
+                    y: 105,
+                    style: {
+                        fontStyle: "italic",
+                        color: "blue",
+                    },
+                    text: `Price Target <br /> $${trade.target_price_upper}`,
+                },
+                zIndex: 100,
+            }
+        }
     }
+
 
     // FUNCTIONS FOR BUTTONS
     const resetZoom = () => {
@@ -200,6 +224,8 @@ export default function TradeProfitLossGraph(props) {
                 lowerTargetAnnotation,
                 // annotation for upper price target
                 upperTargetAnnotation,
+                // annotation for price target
+                priceTargetAnnotation,
             ],
         },
         yAxis: [
