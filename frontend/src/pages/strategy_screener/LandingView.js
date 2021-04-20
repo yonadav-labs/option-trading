@@ -68,7 +68,7 @@ export default function LandingView(props) {
                         <Autocomplete
                             id="sentiment"
                             value={sentiment}
-                            options={["Bullish", "Bearish"]}
+                            options={["Neutral (0%)", "Bullish (+5%)", "Bearish (-5%)", "Very Bullish (+10%)", "Very Bearish (-10%)"]}
                             fullWidth
                             disabled={expirationDisabled}
                             onChange={(e, val) => onSentimentChange(val)}
