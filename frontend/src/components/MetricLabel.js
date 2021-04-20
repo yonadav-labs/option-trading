@@ -62,7 +62,7 @@ const HelpTextDict = {
         + 'Mid/Mark price: use the mid/mark price of options contracts.',
     'probability of profit': 'Chance of making at least $0.01 on a trade. Implied by option price.',
     'max return': 'The highest possible return of this trade.',
-    'order net debt': 'The cost to open position for this strategy per contract/spread. Commission cost not included.',
+    'order net debit': 'The cost to open position for this strategy per contract/spread. Commission cost not included.',
     'order net credit': 'The initial payback recieved to open position for this strategy per contract/spread. This is not profit.',
     'quoted at': 'When the market data was quoted. There may be a delay on our data v.s. market.',
     'rho': 'Estimate of an option\'s sensitivity to changes in the risk-free rate of interest.',

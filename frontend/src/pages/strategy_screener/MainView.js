@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { Grid, TextField, Typography, Stack, Autocomplete, Pagination, Paper, Divider, Alert, IconButton } from "@material-ui/core";
+import { Grid, TextField, Typography, Stack, Autocomplete, Pagination, Paper, Divider, Alert, IconButton, useMediaQuery } from "@material-ui/core";
 import { useOktaAuth } from '@okta/okta-react';
 import NewTradeCard from "../../components/cards/NewTradeCard";
 import TickerAutocomplete from "../../components/TickerAutocomplete";
@@ -32,12 +32,7 @@ export default function MainView(props) {
     }
 
     // mobile responsiveness
-    const [screenWidth, setScreenWidth] = useState(window.innerWidth)
-    const isMobile = screenWidth <= 800
-    const handleWindowSizeChange = () => {
-        setScreenWidth(window.innerWidth);
-    };
-    window.addEventListener("resize", handleWindowSizeChange)
+    const isMobile = useMediaQuery(theme => theme.breakpoints.down('md'));
 
     // mobile filter state
     const [showMobileFilter, setShowMobileFilter] = useState(true)

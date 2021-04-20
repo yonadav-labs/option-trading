@@ -1,14 +1,14 @@
 import React, { useState } from "react";
-import { Grid, makeStyles, Typography, Divider, Chip, Card, CardHeader, CardContent, CardActionArea, CardActions, IconButton, Fab } from "@material-ui/core";
+import { Grid, makeStyles, Typography, Divider, Chip, Card, CardHeader, CardContent, CardActionArea, CardActions, IconButton } from "@material-ui/core";
 import TradeProfitLossGraph from "../TradeProfitLossGraph";
 import MetricLabel from '../MetricLabel.js';
 import {
     PriceFormatter, ProfitFormatter, getTradeTypeDisplay, PercentageFormatter,
-    TimestampDateFormatter, TimestampTimeFormatter
+    TimestampTimeFormatter
 } from '../../utils';
 import ZoomOutMapIcon from '@material-ui/icons/ZoomOutMap';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import ShareTradeBtn from "../ShareTradeBtn";
+import NewLegCard from "./NewLegCard";
 
 const useStyles = makeStyles(theme => ({
     capitalize: {
@@ -17,13 +17,13 @@ const useStyles = makeStyles(theme => ({
 }))
 
 export default function NewTradeCard({ trade }) {
+    const classes = useStyles();
     const [moreInfo, setMoreInfo] = useState(false)
     const [isRaised, setIsRaised] = useState(false)
 
     const showMoreInfo = () => {
         setMoreInfo(!moreInfo);
     };
-    const classes = useStyles();
 
     const mouseEnter = () => {
         setIsRaised(true)
@@ -48,7 +48,7 @@ export default function NewTradeCard({ trade }) {
                                 <Chip label={
                                     <>
                                         <Typography variant="subtitle1" display="inline">
-                                            <MetricLabel label={trade.net_debt_per_unit > 0 ? "Order Net Debt" : "order net credit"} />:
+                                            <MetricLabel label={trade.net_debt_per_unit > 0 ? "Order Net Debit" : "order net credit"} />:
                                         </Typography>
                                         <Typography variant="body1" display="inline">{PriceFormatter(Math.abs(trade.net_debt_per_unit))}</Typography>
                                     </>
@@ -66,71 +66,11 @@ export default function NewTradeCard({ trade }) {
                 <CardContent>
                     {trade.legs.map((leg, idx) => (
                         <>
-                            {/* <LegDetailsCard key={index} leg={leg} leg_num={index + 1}></LegDetailsCard> */}
                             <Grid container direction="row" justifyContent="space-around" alignItems="baseline" spacing={2} paddingY={0.5}>
-                                <Grid item xs={12} sm={1}><Typography variant="h6">Leg {idx + 1}</Typography></Grid>
-                                {
-                                    leg.contract ?
-                                        <>
-                                            <Grid item xs={6} sm>
-                                                <Typography variant="button"><MetricLabel label="action" /></Typography>
-                                                <Typography variant="body1">{leg.is_long ? 'Long' : 'Short'}</Typography>
-                                            </Grid>
-                                            <Grid item xs={6} sm>
-                                                <Typography variant="button"><MetricLabel label="strike" /></Typography>
-                                                <Typography variant="body1">{PriceFormatter(leg.contract.strike)}</Typography>
-                                            </Grid>
-                                            <Grid item xs={6} sm>
-                                                <Typography variant="button"><MetricLabel label="type" /></Typography>
-                                                <Typography variant="body1">{leg.contract.is_call ? 'Call' : 'Put'}</Typography>
-                                            </Grid>
-                                            <Grid item xs={6} sm>
-                                                <Typography variant="button"><MetricLabel label="exp date" /></Typography>
-                                                <Typography variant="body1">{TimestampDateFormatter(leg.contract.expiration)}</Typography>
-                                            </Grid>
-                                            <Grid item xs={6} sm>
-                                                <Typography variant="button"><MetricLabel label="quantity" /></Typography>
-                                                <Typography variant="body1">{leg.units}</Typography>
-                                            </Grid>
-                                            {/* <Grid item xs={6} sm>
-                                                <Typography variant="button"><MetricLabel label="last" /></Typography>
-                                                <Typography variant="body1">{PriceFormatter(leg.contract.last_price)}</Typography>
-                                            </Grid> */}
-                                            <Grid item xs={6} sm>
-                                                <Typography variant="button"><MetricLabel label="volume" /></Typography>
-                                                <Typography variant="body1">{leg.contract.volume}</Typography>
-                                            </Grid>
-                                            <Grid item xs={6} sm>
-                                                <Typography variant="button"><MetricLabel label="open interest" /></Typography>
-                                                <Typography variant="body1">{leg.contract.open_interest}</Typography>
-                                            </Grid>
-                                        </>
-                                        :
-                                        <>
-                                            <Grid item xs={6} sm>
-                                                <Typography variant="button"><MetricLabel label="action" /></Typography>
-                                                {leg.stock ? <Typography variant="body1">{leg.is_long ? 'Long' : 'Short'}</Typography>
-                                                    : <Typography variant="body1">Hold as collateral</Typography>}
-                                            </Grid>
-                                            <Grid item xs={6} sm>
-                                                <Typography variant="button"><MetricLabel label="type" /></Typography>
-                                                <Typography variant="body1">{leg.stock ? 'Share' : 'Cash'}</Typography>
-                                            </Grid>
-                                            <Grid item xs={6} sm>
-                                                <Typography variant="button"><MetricLabel label="quantity" /></Typography>
-                                                <Typography variant="body1">{leg.units}</Typography>
-                                            </Grid>
-                                            <Grid item xs={6} sm></Grid>
-                                            <Grid item xs={6} sm></Grid>
-                                            <Grid item xs={6} sm></Grid>
-                                            <Grid item xs={6} sm></Grid>
-                                        </>
-                                }
-                                {moreInfo ?
-                                    <IconButton onClick={(e) => { console.log("leg expand clicked"); e.stopPropagation() }}><ExpandMoreIcon /></IconButton>
-                                    : null}
+                                {/* <Grid item xs={12} sm={1}><Typography variant="h6">Leg {idx + 1}</Typography></Grid> */}
+                                <Grid item sm><NewLegCard leg={leg} index={idx} showAction={moreInfo} /></Grid>
                             </Grid>
-                            <Divider />
+                            <Divider sx={{ paddingBottom: 2 }} />
                         </>
                     ))}
                     <Grid container direction="row" justifyContent="space-between" paddingTop={2} spacing={1}>
@@ -231,25 +171,6 @@ export default function NewTradeCard({ trade }) {
                                 <TradeProfitLossGraph trade={trade} />
                             </Grid>
                         </Grid>
-                        {/* leg details */}
-                        {/* <Box p={2} bgcolor="#f5f6f6">
-                            <Grid
-                                container
-                                direction="row"
-                                justifyContent="flex-start"
-                            >
-                                {
-                                    trade.legs.map((leg, index) => {
-                                        return (
-                                            <Grid item key={index} xs={12}>
-                                                <LegDetailsCard key={index} leg={leg} leg_num={index + 1}></LegDetailsCard>
-                                                {index < trade.legs.length - 1 ? <br /> : null}
-                                            </Grid>
-                                        );
-                                    })
-                                }
-                            </Grid>
-                        </Box> */}
                     </CardActions>
                 </>
                 :

@@ -1,6 +1,5 @@
 import { createMuiTheme, responsiveFontSizes } from '@material-ui/core/styles'
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore"
-import SvgIcon from "@material-ui/core/SvgIcon"
 
 let theme = createMuiTheme({
     palette: {
@@ -70,30 +69,6 @@ let theme = createMuiTheme({
             fontWeight: 'normal',
             lineHeight: 1.5,
         },
-        // title: {
-        //     fontFamily: "Roboto",
-        //     fontWeight: 500,
-        //     fontSize: '1rem',
-        //     lineHeight: 1.4,
-        // },
-        // paragraph: {
-        //     fontWeight: 400,
-        //     fontSize: '1rem',
-        //     lineHeight: 1.4,
-        // },
-        // smallParagraph: {
-        //     fontWeight: 400,
-        //     fontSize: '0.875rem',
-        //     lineHeight: 1.2,
-        // },
-        // label: {
-        //     fontFamily: "Roboto",
-        //     fontWeight: 700,
-        //     fontSize: '0.75rem',
-        //     lineHeight: 1.3,
-        //     letterSpacing: '0.063em',
-        //     textTransform: 'uppercase'
-        // },
         button: {
             fontFamily: "Roboto",
             fontSize: '0.786rem',

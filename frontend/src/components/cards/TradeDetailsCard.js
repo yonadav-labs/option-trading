@@ -37,7 +37,7 @@ export default function TradeDetailsCard(props) {
                             {getTradeTypeDisplay(trade.type)}
                         </Col>
                         <Col sm="2" xs="6">
-                            <MetricLabel label={trade.net_debt_per_unit > 0 ? "order net debt" : "order net credit"} /><br />
+                            <MetricLabel label={trade.net_debt_per_unit > 0 ? "order net debit" : "order net credit"} /><br />
                             {PriceFormatter(Math.abs(trade.net_debt_per_unit))}
                         </Col>
                         <Col sm="2" xs="6"></Col>
