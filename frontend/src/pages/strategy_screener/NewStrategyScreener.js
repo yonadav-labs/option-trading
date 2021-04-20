@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
+import {Helmet} from "react-helmet";
 import Axios from 'axios';
 import ModalSpinner from '../../components/ModalSpinner';
 import LandingView from "./LandingView";
@@ -200,6 +201,9 @@ export default function NewStrategyScreener() {
 
     return (
         <>
+            <Helmet>
+                <title>Tigerstance | Discover</title>
+            </Helmet>
             <ModalSpinner active={modalActive}></ModalSpinner>
             {
                 pageState ?

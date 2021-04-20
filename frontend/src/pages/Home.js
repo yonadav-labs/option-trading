@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import {Helmet} from "react-helmet";
 import { Link } from "react-router-dom";
 import { Row, Col } from 'react-bootstrap';
 import './Home.css';
@@ -8,6 +9,9 @@ export default function Home() {
 
     return (
         <div>
+            <Helmet>
+                <title>Tigerstance | Home</title>
+            </Helmet>
             <div className="container-fluid">
                 {/* <img src={HeroRight} alt="hero-right" /> */}
                 <Row className="mt-5 mb-5 mx-3 top-container">

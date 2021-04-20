@@ -1,4 +1,5 @@
 import React, { useState, useContext, useCallback, useEffect } from 'react';
+import {Helmet} from "react-helmet";
 import { Link } from "react-router-dom";
 import { Alert, Button, Card, CardColumns, Col, Container, Row, Spinner, ToggleButton, ToggleButtonGroup } from 'react-bootstrap';
 import { MdTrendingFlat, MdArrowUpward, MdArrowDownward, MdShowChart } from 'react-icons/md';
@@ -234,6 +235,9 @@ export default function StrategyBuilder() {
 
     return (
         <Container className="min-vh-100" style={{ "marginTop": "2rem" }} fluid>
+            <Helmet>
+                <title>Tigerstance | Build</title>
+            </Helmet>
             <ModalSpinner active={modalActive}></ModalSpinner>
             <h2 className="text-center" style={{ "paddingBottom": '2rem' }}>Build options strategies</h2>
             <Row className="justify-content-md-center">

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import {Helmet} from "react-helmet";
 import TickerTypeahead from '../components/TickerTypeahead';
 import TickerSummary from '../components/TickerSummary.js';
 import Axios from 'axios';
@@ -389,6 +390,9 @@ export default function SellCoveredCall() {
 
     return (
         <Container id="content" className="min-vh-100" style={{ "marginTop": "2rem" }} fluid>
+            <Helmet>
+                <title>Tigerstance | Browse</title>
+            </Helmet>
             <ModalSpinner active={modalActive}></ModalSpinner>
             <h2 className="text-center">Browse option contracts</h2>
             <Row className="justify-content-md-center">

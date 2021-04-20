@@ -1,4 +1,5 @@
 import React, { useEffect, useContext, useState, useRef } from 'react';
+import {Helmet} from "react-helmet";
 import { useOktaAuth } from '@okta/okta-react';
 import UserContext from '../UserContext';
 import './Profile.css';
@@ -181,6 +182,9 @@ const Profile = () => {
 
     return (
         <div className="min-vh-100">
+            <Helmet>
+                <title>Tigerstance | Profile</title>
+            </Helmet>
             <div className="container justify-content-center">
                 <div className="card">
                     <div className="row">

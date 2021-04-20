@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import {Helmet} from "react-helmet";
 import { useParams, Link } from "react-router-dom";
 import { Card } from 'react-bootstrap';
 import Axios from 'axios';
@@ -47,6 +48,9 @@ export default function SingleTrade() {
 
     return (
         <div id="content" className="container min-vh-100" style={{ "marginTop": "4rem" }}>
+            <Helmet>
+                <title>Tigerstance</title>
+            </Helmet>
             {trade ? (
                 <div>
                     <h4>{trade.display_name}</h4>

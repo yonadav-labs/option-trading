@@ -1,4 +1,5 @@
 import React, { useContext, useState } from 'react';
+import {Helmet} from "react-helmet";
 import { Link } from "react-router-dom";
 import { Card, CardDeck, Modal } from 'react-bootstrap';
 import { useOktaAuth } from '@okta/okta-react';
@@ -30,6 +31,9 @@ export default function Pricing() {
 
     return (
         <>
+            <Helmet>
+                <title>Tigerstance | Pricing</title>
+            </Helmet>
             <div className="container-fluid pricing-background">
                 <div className="row m-5">
                     <div className="col-lg-12 text-center">
