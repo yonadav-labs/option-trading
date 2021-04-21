@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { Grid, TextField, Typography, Stack, Autocomplete, Pagination, Paper, Divider, Alert, IconButton, useMediaQuery } from "@material-ui/core";
+import { Grid, Typography, Stack, Pagination, Paper, Divider, Alert, IconButton, useMediaQuery, FormControl, Select, MenuItem } from "@material-ui/core";
 import { useOktaAuth } from '@okta/okta-react';
 import NewTradeCard from "../../components/cards/NewTradeCard";
 import TickerAutocomplete from "../../components/TickerAutocomplete";
@@ -123,22 +123,20 @@ export default function MainView(props) {
                                     <Typography variant="subtitle1">Expiration Date</Typography>
                                 </Grid>
                                 <Grid item sm={3}>
-                                    <Autocomplete
-                                        id="expiration-dates"
-                                        options={expirationTimestampsOptions}
-                                        value={selectedExpirationTimestamp}
-                                        onChange={onExpirationSelectionChange}
-                                        size="small"
-                                        fullWidth
-                                        renderInput={(params) => (
-                                            <TextField
-                                                {...params}
-                                                variant="outlined"
-                                                placeholder="Select an expiration date"
-                                            />
-                                        )}
-                                        getOptionLabel={(option) => option.label}
-                                    />
+                                    <FormControl fullWidth>
+                                        <Select
+                                            id="expiration-dates"
+                                            value={selectedExpirationTimestamp}
+                                            fullWidth
+                                            placeholder="Select an expiration date"
+                                            onChange={(e) => onExpirationSelectionChange(e.target.value)}
+                                            style={{paddingBottom: "5px"}}
+                                            variant="standard"
+                                        >
+                                            <MenuItem disabled value={"none"}><span style={{color: "gray"}}>Select an expiration date</span></MenuItem>
+                                            {expirationTimestampsOptions.map((date, index) => <MenuItem value={date.value} key={index}> {date.label} </MenuItem> )}
+                                        </Select>
+                                    </FormControl>
                                 </Grid>
                             </Grid>
                         }
@@ -179,9 +177,9 @@ export default function MainView(props) {
                             {renderedTrades.map((trade, index) => <NewTradeCard trade={trade} key={index} />)}
                         </Stack>
                     </Grid>
-                    {/* <Grid container justifyContent="flex-end" alignItems="flex-end" paddingY={2}>
+                    <Grid container justifyContent="flex-end" alignItems="flex-end" paddingY={2}>
                         <Pagination count={noOfPages} shape="rounded" onChange={pageChangeHandler} />
-                    </Grid> */}
+                    </Grid>
                 </Grid>
             </Grid>
         </>

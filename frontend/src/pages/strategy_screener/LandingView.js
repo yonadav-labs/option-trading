@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { Paper, TextField, Alert, Autocomplete, Stack, Container, Divider, makeStyles, Typography, Box } from "@material-ui/core";
+import { Paper, TextField, Autocomplete, Stack, Container, Divider, makeStyles, Typography, FormControl, Select, MenuItem, InputLabel } from "@material-ui/core";
 import { useOktaAuth } from '@okta/okta-react';
 import TickerAutocomplete from "../../components/TickerAutocomplete";
 import VerticalCarousel from '../../components/VerticalCarousel';
@@ -46,24 +46,21 @@ export default function LandingView(props) {
                             displayLabel
                         />
 
-                        <Autocomplete
-                            id="expiration-dates"
-                            value={selectedExpirationTimestamp}
-                            options={expirationTimestampsOptions}
-                            getOptionLabel={(option) => option.label}
-                            fullWidth
-                            disabled={expirationDisabled}
-                            onChange={onExpirationSelectionChange}
-                            renderInput={(params) => (
-                                <TextField
-                                    {...params}
-                                    InputLabelProps={{ shrink: true }}
-                                    variant="standard"
-                                    label="Option Expiration Date"
-                                    placeholder="Select an expiration date"
-                                />
-                            )}
-                        />
+                        <FormControl disabled={expirationDisabled} fullWidth>
+                            <InputLabel><Typography variant="h6">Option Expiration Date</Typography></InputLabel>
+                            <Select
+                                id="expiration-dates"
+                                value={selectedExpirationTimestamp}
+                                fullWidth
+                                placeholder="Select an expiration date"
+                                onChange={(e) => onExpirationSelectionChange(e.target.value)}
+                                style={{paddingBottom: "5px"}}
+                                variant="standard"
+                            >
+                                <MenuItem disabled value={"none"}><span style={{color: "gray"}}>Select an expiration date</span></MenuItem>
+                                {expirationTimestampsOptions.map((date, index) => <MenuItem value={date.value} key={index}> {date.label} </MenuItem> )}
+                            </Select>
+                        </FormControl>
 
                         <Autocomplete
                             id="sentiment"
@@ -77,7 +74,7 @@ export default function LandingView(props) {
                                     {...params}
                                     InputLabelProps={{ shrink: true }}
                                     variant="standard"
-                                    label="How are you feeling?"
+                                    label={<Typography variant="h6">How are you feeling?</Typography>}
                                     placeholder="Select a sentiment"
                                 />
                             )}

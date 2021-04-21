@@ -27,7 +27,7 @@ export default function NewStrategyScreener() {
 
     // expiration date states
     const [expirationTimestampsOptions, setExpirationTimestampsOptions] = useState([])
-    const [selectedExpirationTimestamp, setSelectedExpirationTimestamp] = useState(null);
+    const [selectedExpirationTimestamp, setSelectedExpirationTimestamp] = useState("none");
 
     // filter states
     const [filters, setFilters] = useState({
@@ -57,7 +57,7 @@ export default function NewStrategyScreener() {
     const resetStates = () => {
         setSelectedTicker(null);
         setExpirationTimestampsOptions([])
-        setSelectedExpirationTimestamp(null);
+        setSelectedExpirationTimestamp("none");
         setBasicInfo({});
         setModalActive(false);
         setFilters({
@@ -108,8 +108,8 @@ export default function NewStrategyScreener() {
         }
     };
 
-    const onExpirationSelectionChange = (e, selected) => {
-        setSelectedExpirationTimestamp(selected)
+    const onExpirationSelectionChange = (e) => {
+        setSelectedExpirationTimestamp(e)
         debouncedGetBestTrades()
     }
 
@@ -118,7 +118,7 @@ export default function NewStrategyScreener() {
             if (selectedTicker && selectedExpirationTimestamp && filters.targetPriceLower && filters.targetPriceUpper) {
                 let url = `${API_URL}/dev/tickers/${selectedTicker.symbol}/trades/`;
                 let body = {
-                    "expiration_timestamps": [selectedExpirationTimestamp.value],
+                    "expiration_timestamps": [selectedExpirationTimestamp],
                     "strategy_settings": {
                         "premium_type": filters.premiumType,
                         "target_price_lower": filters.targetPriceLower,
