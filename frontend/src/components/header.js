@@ -58,7 +58,7 @@ function Header() {
         <header>
             <Navbar collapseOnSelect expand="lg">
                 <Navbar.Brand as={Link} to="/" className="font-weight-bold">
-                    <Image src="/logo192.png" style={{ 'height': '1.5rem', 'paddingRight': '0.2rem' }} />
+                    <Image src="/gold-logo.png" style={{ 'height': '2.3rem', 'paddingRight': '0.3rem', 'paddingBottom': '0.7rem' }} />
                     Tigerstance
                 </Navbar.Brand>
                 <Navbar.Toggle aria-controls="responsive-navbar-nav" />
