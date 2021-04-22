@@ -63,14 +63,14 @@ export default function MainView(props) {
         setSortState(type)
         if (orderState === "desc") {
             sortDesc(type)
-        } else {sortAsc(type)}
+        } else { sortAsc(type) }
     }
 
     const orderHandler = (e) => {
         setOrderState(e)
         if (e === "desc") {
             sortDesc(sortState)
-        } else {sortAsc(sortState)}
+        } else { sortAsc(sortState) }
     }
 
     const sortDesc = (e) => {
@@ -81,13 +81,10 @@ export default function MainView(props) {
             case "pop":
                 setRenderedTrades(bestTrades.sort((a, b) => b.profit_prob - a.profit_prob))
                 break;
-            case "bp":
-                setRenderedTrades(bestTrades.sort((a, b) => b.break_even_price - a.break_even_price))
-                break;
             case "cost":
                 setRenderedTrades(bestTrades.sort((a, b) => b.cost - a.cost))
                 break;
-        
+
             default:
                 break;
         }
@@ -101,13 +98,10 @@ export default function MainView(props) {
             case "pop":
                 setRenderedTrades(bestTrades.sort((a, b) => a.profit_prob - b.profit_prob))
                 break;
-            case "bp":
-                setRenderedTrades(bestTrades.sort((a, b) => a.break_even_price - b.break_even_price))
-                break;
             case "cost":
                 setRenderedTrades(bestTrades.sort((a, b) => a.cost - b.cost))
                 break;
-        
+
             default:
                 break;
         }
@@ -190,11 +184,11 @@ export default function MainView(props) {
                                             fullWidth
                                             placeholder="Select an expiration date"
                                             onChange={(e) => onExpirationSelectionChange(e.target.value)}
-                                            style={{paddingBottom: "5px"}}
+                                            style={{ paddingBottom: "5px" }}
                                             variant="standard"
                                         >
-                                            <MenuItem disabled value={"none"}><span style={{color: "gray"}}>Select an expiration date</span></MenuItem>
-                                            {expirationTimestampsOptions.map((date, index) => <MenuItem value={date.value} key={index}> {date.label} </MenuItem> )}
+                                            <MenuItem disabled value={"none"}><span style={{ color: "gray" }}>Select an expiration date</span></MenuItem>
+                                            {expirationTimestampsOptions.map((date, index) => <MenuItem value={date.value} key={index}> {date.label} </MenuItem>)}
                                         </Select>
                                     </FormControl>
                                 </Grid>
@@ -234,7 +228,7 @@ export default function MainView(props) {
                                 </Alert>
                         }
                     </Grid >
-                    { renderedTrades.length > 0 ?
+                    {renderedTrades.length > 0 ?
                         <>
                             <Grid container justifyContent="flex-end">
                                 <Box p={3}>
@@ -244,14 +238,13 @@ export default function MainView(props) {
                                     >
                                         <MenuItem value={"hr"}>Hypothetical Return</MenuItem>
                                         <MenuItem value={"pop"}>Probability of Profit</MenuItem>
-                                        <MenuItem value={"bp"}>Breakeven Price</MenuItem>
-                                        <MenuItem value={"cost"}>Cost</MenuItem>
+                                        <MenuItem value={"cost"}>Total Cost</MenuItem>
                                     </Select>
                                     <IconButton disableRipple onClick={() => orderHandler("asc")} edge="start" size="small">
-                                        <ArrowUpwardIcon color={orderState === "asc" ? "primary" : "disabled"}/>
+                                        <ArrowUpwardIcon color={orderState === "asc" ? "primary" : "disabled"} />
                                     </IconButton>
                                     <IconButton disableRipple onClick={() => orderHandler("desc")} edge="start" size="small">
-                                        <ArrowDownwardIcon color={orderState === "desc" ? "primary" : "disabled"}/>
+                                        <ArrowDownwardIcon color={orderState === "desc" ? "primary" : "disabled"} />
                                     </IconButton>
                                 </Box>
                             </Grid>
