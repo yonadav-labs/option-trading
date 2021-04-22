@@ -1,5 +1,5 @@
 import React from "react";
-import { Grid, Box, TextField, Autocomplete, IconButton, Typography, makeStyles } from "@material-ui/core";
+import { Grid, Box, IconButton, Typography, makeStyles, FormControl, Select, MenuItem } from "@material-ui/core";
 import TuneIcon from '@material-ui/icons/Tune';
 import CloseIcon from '@material-ui/icons/Close';
 import MaterialFilter from "./MaterialFilter";
@@ -20,6 +20,12 @@ const useStyles = makeStyles(theme => ({
         "&.MuiAutocomplete-root .Mui-focused .MuiAutocomplete-clearIndicator": {
             color: 'white',
         },
+    },
+    select: {
+        "&.MuiOutlinedInput-root": {
+            color: 'white',
+            background: 'rgba(255, 255, 255, 0.15)',
+        }
     }
 }))
 
@@ -145,23 +151,20 @@ export default function FilterContainer(props) {
                             <Typography variant="button"><MetricLabel label="expiration date" /></Typography>
                         </Grid>
                         <Grid>
-                            <Autocomplete
-                                id="expiration-dates"
-                                className={classes.autocomplete}
-                                options={expirationTimestampsOptions}
-                                value={selectedExpirationTimestamp}
-                                onChange={onExpirationSelectionChange}
-                                size="medium"
-                                fullWidth
-                                renderInput={(params) => (
-                                    <TextField
-                                        {...params}
-                                        variant="outlined"
-                                        placeholder="Select an expiration date"
-                                    />
-                                )}
-                                getOptionLabel={(option) => option.label}
-                            />
+                            <FormControl fullWidth>
+                                <Select
+                                    id="expiration-dates"
+                                    value={selectedExpirationTimestamp}
+                                    fullWidth
+                                    placeholder="Select an expiration date"
+                                    onChange={(e) => onExpirationSelectionChange(e.target.value)}
+                                    variant="outlined"
+                                    className={classes.select}
+                                >
+                                    <MenuItem disabled value={"none"}><span style={{color: "gray"}}>Select an expiration date</span></MenuItem>
+                                    {expirationTimestampsOptions.map((date, index) => <MenuItem value={date.value} key={index}> {date.label} </MenuItem> )}
+                                </Select>
+                            </FormControl>
                         </Grid>
                     </Box>
                 </Box>
