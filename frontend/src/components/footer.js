@@ -19,7 +19,7 @@ function Footer(props) {
                             <a href="https://twitter.com/EaseandExtra" target="_blank"><FaTwitter /></a>&nbsp;
                             <a href="https://www.facebook.com/TigerStanceOfficial" target="_blank"><FaFacebookSquare /></a>&nbsp;
                             <a href="https://www.instagram.com/tigerstance_official" target="_blank"><FaInstagram /></a>&nbsp;
-                            <a href="https://discord.gg/m3NEzRSc6N" target="_blank"><FaDiscord /></a>
+                            <a href="https://discord.gg/MJT5r4x9zK" target="_blank"><FaDiscord /></a>
                         </h4>
                     </div>
                     {/* <div className="col-md-2 col-6">
