@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { Grid, Typography, Stack, Pagination, Paper, Divider, Alert, IconButton, useMediaQuery, FormControl, Select, MenuItem } from "@material-ui/core";
+import { Grid, Typography, Stack, Pagination, Paper, Divider, Alert, IconButton, useMediaQuery, FormControl, Select, MenuItem, Box } from "@material-ui/core";
 import { useOktaAuth } from '@okta/okta-react';
 import NewTradeCard from "../../components/cards/NewTradeCard";
 import TickerAutocomplete from "../../components/TickerAutocomplete";
 import FilterContainer from "../../components/filters/FilterContainer";
 import NewTickerSummary from "../../components/NewTickerSummary";
 import TuneIcon from "@material-ui/icons/Tune";
+import ArrowUpwardIcon from '@material-ui/icons/ArrowUpward';
+import ArrowDownwardIcon from '@material-ui/icons/ArrowDownward';
 import { PriceFormatter } from '../../utils';
 
 export default function MainView(props) {
@@ -48,10 +50,68 @@ export default function MainView(props) {
     }
     useEffect(() => {
         if (bestTrades) {
-            setRenderedTrades(bestTrades.slice(0, 10))
+            sortHandler(sortState)
             setNoOfPages(Math.ceil(bestTrades.length / 10))
         } else { setRenderedTrades([]) }
     }, [bestTrades])
+
+    // sorting
+    const [sortState, setSortState] = useState("hr")
+    const [orderState, setOrderState] = useState("desc")
+
+    const sortHandler = (type) => {
+        setSortState(type)
+        if (orderState === "desc") {
+            sortDesc(type)
+        } else {sortAsc(type)}
+    }
+
+    const orderHandler = (e) => {
+        setOrderState(e)
+        if (e === "desc") {
+            sortDesc(sortState)
+        } else {sortAsc(sortState)}
+    }
+
+    const sortDesc = (e) => {
+        switch (e) {
+            case "hr":
+                setRenderedTrades(bestTrades.sort((a, b) => b.target_price_profit_ratio - a.target_price_profit_ratio))
+                break;
+            case "pop":
+                setRenderedTrades(bestTrades.sort((a, b) => b.profit_prob - a.profit_prob))
+                break;
+            case "bp":
+                setRenderedTrades(bestTrades.sort((a, b) => b.break_even_price - a.break_even_price))
+                break;
+            case "cost":
+                setRenderedTrades(bestTrades.sort((a, b) => b.cost - a.cost))
+                break;
+        
+            default:
+                break;
+        }
+    }
+
+    const sortAsc = (e) => {
+        switch (e) {
+            case "hr":
+                setRenderedTrades(bestTrades.sort((a, b) => a.target_price_profit_ratio - b.target_price_profit_ratio))
+                break;
+            case "pop":
+                setRenderedTrades(bestTrades.sort((a, b) => a.profit_prob - b.profit_prob))
+                break;
+            case "bp":
+                setRenderedTrades(bestTrades.sort((a, b) => a.break_even_price - b.break_even_price))
+                break;
+            case "cost":
+                setRenderedTrades(bestTrades.sort((a, b) => a.cost - b.cost))
+                break;
+        
+            default:
+                break;
+        }
+    }
 
     return (
         <>
@@ -145,12 +205,14 @@ export default function MainView(props) {
                     <Grid container alignItems="center" justifyContent="center" padding={2}>
                         {!authState.isAuthenticated &&
                             (
-                                <Alert severity="warning" style={{ marginBottom: '1rem' }}>
+                                <Alert severity="warning">
                                     <a href="/signin"><b>LOG IN</b></a> or <Link to="/signin/register"><b>
                                         SIGN UP FOR FREE</b></Link> to unlock cash secured put and 3 more vertical spread strategies!
                                 </Alert>
                             )
                         }
+                    </Grid>
+                    <Grid container alignItems="center" justifyContent="center" px={2}>
                         {renderedTrades.length > 0 ?
                             <Alert severity="info">
                                 Below are the trading ideas with best potential return for each strategy based on price target.
@@ -171,15 +233,40 @@ export default function MainView(props) {
                                     Select a ticker and expiration date.
                                 </Alert>
                         }
-                    </Grid>
-                    <Grid container>
-                        <Stack paddingX={3} spacing={2} width="inherit">
-                            {renderedTrades.map((trade, index) => <NewTradeCard trade={trade} key={index} />)}
-                        </Stack>
-                    </Grid>
-                    <Grid container justifyContent="flex-end" alignItems="flex-end" paddingY={2}>
-                        <Pagination count={noOfPages} shape="rounded" onChange={pageChangeHandler} />
-                    </Grid>
+                    </Grid >
+                    { renderedTrades.length > 0 ?
+                        <>
+                            <Grid container justifyContent="flex-end">
+                                <Box p={3}>
+                                    <Select
+                                        value={sortState}
+                                        onChange={(e) => sortHandler(e.target.value)}
+                                    >
+                                        <MenuItem value={"hr"}>Hypothetical Return</MenuItem>
+                                        <MenuItem value={"pop"}>Probability of Profit</MenuItem>
+                                        <MenuItem value={"bp"}>Breakeven Price</MenuItem>
+                                        <MenuItem value={"cost"}>Cost</MenuItem>
+                                    </Select>
+                                    <IconButton disableRipple onClick={() => orderHandler("asc")} edge="start" size="small">
+                                        <ArrowUpwardIcon color={orderState === "asc" ? "primary" : "disabled"}/>
+                                    </IconButton>
+                                    <IconButton disableRipple onClick={() => orderHandler("desc")} edge="start" size="small">
+                                        <ArrowDownwardIcon color={orderState === "desc" ? "primary" : "disabled"}/>
+                                    </IconButton>
+                                </Box>
+                            </Grid>
+                            <Grid container>
+                                <Stack paddingX={3} spacing={2} width="inherit">
+                                    {renderedTrades.map((trade, index) => <NewTradeCard trade={trade} key={index} />)}
+                                </Stack>
+                            </Grid>
+                            <Grid container justifyContent="flex-end" alignItems="flex-end" paddingY={2}>
+                                <Pagination count={noOfPages} shape="rounded" onChange={pageChangeHandler} />
+                            </Grid>
+                        </>
+                        :
+                        null
+                    }
                 </Grid>
             </Grid>
         </>
