@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { Paper, TextField, Autocomplete, Stack, Container, Divider, makeStyles, Typography, FormControl, Select, MenuItem, InputLabel } from "@material-ui/core";
+import { Paper, Stack, Container, Divider, makeStyles, Typography, FormControl, Select, MenuItem, InputLabel } from "@material-ui/core";
 import { useOktaAuth } from '@okta/okta-react';
 import TickerAutocomplete from "../../components/TickerAutocomplete";
 import VerticalCarousel from '../../components/VerticalCarousel';
@@ -62,23 +62,26 @@ export default function LandingView(props) {
                             </Select>
                         </FormControl>
 
-                        <Autocomplete
-                            id="sentiment"
-                            value={sentiment}
-                            options={["Neutral (0%)", "Bullish (+5%)", "Bearish (-5%)", "Very Bullish (+10%)", "Very Bearish (-10%)"]}
-                            fullWidth
-                            disabled={expirationDisabled}
-                            onChange={(e, val) => onSentimentChange(val)}
-                            renderInput={(params) => (
-                                <TextField
-                                    {...params}
-                                    InputLabelProps={{ shrink: true }}
-                                    variant="standard"
-                                    label={<Typography variant="h6">How are you feeling?</Typography>}
-                                    placeholder="Select a sentiment"
-                                />
-                            )}
-                        />
+                        <FormControl disabled={expirationDisabled} fullWidth>
+                            <InputLabel><Typography variant="h6">How are you feeling?</Typography></InputLabel>
+                            <Select
+                                id="sentiment"
+                                value={sentiment}
+                                fullWidth
+                                placeholder="How are you feeling?"
+                                onChange={(e) => onSentimentChange(e.target.value)}
+                                style={{paddingBottom: "5px"}}
+                                variant="standard"
+                            >
+                                <MenuItem disabled value={0}><span style={{color: "gray"}}>Select a sentiment</span></MenuItem>
+                                <MenuItem value={"Neutral (0%)"}>Neutral (0%)</MenuItem>
+                                <MenuItem value={"Bullish (+5%)"}>Bullish (+5%)</MenuItem>
+                                <MenuItem value={"Bearish (-5%)"}>Bearish (-5%)</MenuItem>
+                                <MenuItem value={"Very Bullish (+10%)"}>Very Bullish (+10%)</MenuItem>
+                                <MenuItem value={"Very Bearish (-10%)"}>Very Bearish (-10%)</MenuItem>
+                            </Select>
+                        </FormControl>
+
                     </Stack>
                 </Paper>
             </Container>

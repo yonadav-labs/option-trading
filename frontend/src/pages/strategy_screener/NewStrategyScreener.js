@@ -45,7 +45,7 @@ export default function NewStrategyScreener() {
     })
 
     // component management states
-    const [sentiment, setSentiment] = useState('');
+    const [sentiment, setSentiment] = useState(0);
     const [modalActive, setModalActive] = useState(false);
     const [expirationDisabled, setExpirationDisabled] = useState(true)
     const [pageState, setPageState] = useState(true)
