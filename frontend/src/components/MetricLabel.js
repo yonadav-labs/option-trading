@@ -97,7 +97,12 @@ export default function MetricLabel(props) {
             (
                 <span className={classes.label}>
                     {label}
-                    <Tooltip title={helpText} placement="right-start" arrow sx={{ marginLeft: "0.05rem" }}>
+                    <Tooltip 
+                        title={helpText} 
+                        placement="right-start" 
+                        enterTouchDelay={0}
+                        arrow
+                    >
                         <HelpIcon fontSize="small" color="action" />
                     </Tooltip>
                 </span>
