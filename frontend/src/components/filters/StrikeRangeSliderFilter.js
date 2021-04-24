@@ -2,7 +2,9 @@ import React from 'react'
 import Slider from 'rc-slider';
 import 'rc-slider/assets/index.css';
 import { Comparator } from 'react-bootstrap-table2-filter';
-import { PriceFormatter, PercentageFormatter } from '../../utils';
+import { PriceFormatter, PercentageFormatter, GetGaEventTrackingFunc } from '../../utils';
+
+const GaEvent = GetGaEventTrackingFunc('options screener');
 
 function StrikeRangeSliderFilter(props) {
 
@@ -38,6 +40,7 @@ function StrikeRangeSliderFilter(props) {
             number: upperBound,
             comparator: Comparator.LE
         });
+        GaEvent('adjust strike filter');
     };
 
     function getMoneyness(price) {

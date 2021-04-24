@@ -2,6 +2,9 @@ import React, { useState } from "react";
 import { Box, Grid, withStyles, ToggleButtonGroup, ToggleButton, Typography } from "@material-ui/core";
 import MetricLabel from "../MetricLabel";
 import PriceTargetField from "./PriceTargetField";
+import { GetGaEventTrackingFunc } from '../../utils';
+
+const GaEvent = GetGaEventTrackingFunc('strategy screener');
 
 const StyledToggleButtonGroup = withStyles((theme) => ({
     root: {
@@ -49,6 +52,7 @@ export default function PriceTargetBox({ onFilterChange, initialPrice, filters }
 
     const handleTargetTypeChange = (event, newTargetType) => {
         if (newTargetType !== null) {
+            GaEvent('adjust target price toggle ' + newTargetType);
             setTargetType(newTargetType);
             updateRangeByPrice(filters.targetPriceLower);
         }
@@ -60,17 +64,20 @@ export default function PriceTargetBox({ onFilterChange, initialPrice, filters }
     }
 
     const priceTargetChangeHandler = (e) => {
+        GaEvent('adjust price target');
         const val = parseFloat(e);
         onFilterChange(val, "priceTarget");
         updateRangeByPrice(val);
     }
 
     const lowerRangeChangeHandler = (e) => {
+        GaEvent('adjust lower price target');
         const val = parseFloat(e);
         onFilterChange(val, "targetPriceLower");
     }
 
     const upperRangeChangeHandler = (e) => {
+        GaEvent('adjust uppper price target');
         const val = parseFloat(e);
         onFilterChange(val, "targetPriceUpper");
     }

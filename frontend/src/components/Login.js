@@ -2,10 +2,12 @@ import React, { useEffect, useRef } from 'react';
 import { useOktaAuth } from '@okta/okta-react';
 import * as OktaSignIn from '@okta/okta-signin-widget';
 import { OktaAuth } from '@okta/okta-auth-js';
+import { GetGaEventTrackingFunc } from '../utils';
 import '@okta/okta-signin-widget/dist/css/okta-sign-in.min.css';
-
 import getOktaConfig from "./../oktaConfig";
+
 const oktaAuth = new OktaAuth(getOktaConfig().oidc);
+const GaEvent = GetGaEventTrackingFunc('user');
 
 const Login = () => {
     const { oktaAuth } = useOktaAuth();
@@ -33,8 +35,8 @@ const Login = () => {
                 scopes,
             },
             idps: [
-                {type: 'FACEBOOK', id: idpFbId},
-                {type: 'GOOGLE', id: idpGlId},
+                { type: 'FACEBOOK', id: idpFbId },
+                { type: 'GOOGLE', id: idpGlId },
             ],
             idpDisplay: 'SECONDARY',
             registration: {
@@ -42,6 +44,7 @@ const Login = () => {
                     // handle postsubmit callback
                     onSuccess(response);
                     window.location.assign('/signin');
+                    GaEvent('sign up');
                 }
             },
             features: { registration: true, router: true }
@@ -56,6 +59,7 @@ const Login = () => {
                 const tokenManager = oktaAuth.tokenManager;
                 tokenManager.add('idToken', tokens.idToken);
                 tokenManager.add('accessToken', tokens.accessToken);
+                GaEvent('sign in');
 
                 // Return to the original URL (if auth was initiated from a secure route), falls back to the origin
                 const fromUri = oktaAuth.getOriginalUri();

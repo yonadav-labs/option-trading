@@ -7,6 +7,9 @@ import DollarInputField from "./DollarInputField";
 import MetricLabel from "../MetricLabel";
 import TargetBox from "./TargetBox";
 import TickerAutocomplete from "../TickerAutocomplete";
+import { GetGaEventTrackingFunc } from '../../utils';
+
+const GaEvent = GetGaEventTrackingFunc('strategy screener');
 
 const useStyles = makeStyles(theme => ({
     autocomplete: {
@@ -111,6 +114,7 @@ export default function FilterContainer(props) {
     ];
 
     const filterChangeHandler = (event, key) => {
+        GaEvent('adjust filter ' + key);
         onFilterChange(event.target.value, key)
     }
 
@@ -161,8 +165,8 @@ export default function FilterContainer(props) {
                                     variant="outlined"
                                     className={classes.select}
                                 >
-                                    <MenuItem disabled value={"none"}><span style={{color: "gray"}}>Select an expiration date</span></MenuItem>
-                                    {expirationTimestampsOptions.map((date, index) => <MenuItem value={date.value} key={index}> {date.label} </MenuItem> )}
+                                    <MenuItem disabled value={"none"}><span style={{ color: "gray" }}>Select an expiration date</span></MenuItem>
+                                    {expirationTimestampsOptions.map((date, index) => <MenuItem value={date.value} key={index}> {date.label} </MenuItem>)}
                                 </Select>
                             </FormControl>
                         </Grid>

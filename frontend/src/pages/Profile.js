@@ -1,11 +1,13 @@
 import React, { useEffect, useContext, useState, useRef } from 'react';
-import {Helmet} from "react-helmet";
+import { Helmet } from "react-helmet";
 import { useOktaAuth } from '@okta/okta-react';
 import UserContext from '../UserContext';
 import './Profile.css';
 import { Button, Form, Modal } from 'react-bootstrap';
-import getApiUrl, { getAllTradeTypes, getTradeTypeDisplay } from '../utils';
+import getApiUrl, { getAllTradeTypes, getTradeTypeDisplay, GetGaEventTrackingFunc } from '../utils';
 import { useHistory, Link } from 'react-router-dom';
+
+const GaEvent = GetGaEventTrackingFunc('preference');
 
 const Profile = () => {
     const { oktaAuth, authState } = useOktaAuth();
@@ -49,6 +51,7 @@ const Profile = () => {
     }
 
     const onChangeBrokers = (event) => {
+        GaEvent('adjust broker');
         let selected = [];
         let selected_opt = (event.target.selectedOptions);
         setResultMsg("");
@@ -61,6 +64,7 @@ const Profile = () => {
     };
 
     const onChangeStrategy = (event) => {
+        GaEvent('adjust disabled strategy');
         let strategy = event.target.value;
         let disabled_strategies = disabledStrategies.slice();
 
@@ -77,6 +81,7 @@ const Profile = () => {
     };
 
     const onChangeNickName = (event) => {
+        GaEvent('adjust nickname');
         setErrMsg("");
         setResultMsg("");
         setNickName(event.target.value.trim());

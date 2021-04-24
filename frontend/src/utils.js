@@ -3,6 +3,7 @@ import NumberFormat from 'react-number-format';
 import { Comparator } from 'react-bootstrap-table2-filter';
 import { Col, Row } from 'react-bootstrap';
 import Axios from 'axios';
+import ReactGA from 'react-ga';
 
 // Returns the backend API base url.
 export default function getApiUrl() {
@@ -345,3 +346,9 @@ export async function newLoadTickers(headers, setAllTickers) {
         console.error(error);
     }
 };
+
+export function GetGaEventTrackingFunc(gaCategory) {
+    return function GaEventTracking(gaAction) {
+        ReactGA.event({ category: gaCategory, action: gaAction });
+    }
+}

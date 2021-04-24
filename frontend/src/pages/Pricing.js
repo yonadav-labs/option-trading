@@ -1,14 +1,15 @@
 import React, { useContext, useState } from 'react';
-import {Helmet} from "react-helmet";
+import { Helmet } from "react-helmet";
 import { Link } from "react-router-dom";
 import { Card, CardDeck, Modal } from 'react-bootstrap';
 import { useOktaAuth } from '@okta/okta-react';
 import UserContext from '../UserContext';
 import Subscribe from '../components/Subscribe';
-import { getPaypalMonthlyPlanId, getPaypalYearlyPlanId } from '../utils';
+import { getPaypalMonthlyPlanId, getPaypalYearlyPlanId, GetGaEventTrackingFunc } from '../utils';
 import './Home.css';
 import './Pricing.css';
 
+const GaEvent = GetGaEventTrackingFunc('user');
 
 export default function Pricing() {
     const { authState } = useOktaAuth();
@@ -91,7 +92,12 @@ export default function Pricing() {
                                     isUserMonthlySubscribed() ?
                                         <></>
                                         :
-                                        <button type="button" class="btn btn-md btn-block btn-light" onClick={() => subscribeMonthly()}>BECOME PRO</button>
+                                        <button type="button" class="btn btn-md btn-block btn-light"
+                                            onClick={() => {
+                                                GaEvent('click subscribe monthly');
+                                                subscribeMonthly();
+                                            }
+                                            }>BECOME PRO</button>
                                     :
                                     <a href="/signin" class="btn-block btn-light btn-login">BECOME PRO</a>
                                 }
@@ -118,7 +124,12 @@ export default function Pricing() {
                                     isUserYearlySubscribed() ?
                                         <></>
                                         :
-                                        <button type="button" class="btn btn-md btn-block btn-light" onClick={() => subscribeYearly()}>BECOME PRO</button>
+                                        <button type="button" class="btn btn-md btn-block btn-light"
+                                            onClick={() => {
+                                                GaEvent('click subscribe yearly');
+                                                subscribeYearly();
+                                            }}
+                                        >BECOME PRO</button>
                                     :
                                     <a href="/signin" class="btn-block btn-light btn-login">BECOME PRO</a>
                                 }
@@ -128,10 +139,14 @@ export default function Pricing() {
                 </div>
             </div>
 
-            {user &&
+            {
+                user &&
                 <Modal
                     show={showSubscribeModal}
-                    onHide={() => setShowSubscribeModal(false)}
+                    onHide={() => {
+                        GaEvent('close subscribe modal');
+                        setShowSubscribeModal(false);
+                    }}
                     backdrop="static"
                     keyboard={false}
                     centered

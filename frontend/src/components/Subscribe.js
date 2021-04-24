@@ -2,11 +2,13 @@ import React from 'react';
 import PayPalBtn from './PayPalBtn';
 import { useHistory } from 'react-router-dom';
 import { useOktaAuth } from '@okta/okta-react';
-import getApiUrl from '../utils';
+import getApiUrl, { GetGaEventTrackingFunc } from '../utils';
 
-export default function Subscribe({username, plan_id}) {
+const GaEvent = GetGaEventTrackingFunc('user');
+
+export default function Subscribe({ username, plan_id }) {
     const history = useHistory();
-    const { oktaAuth, authState } = useOktaAuth();
+    const { authState } = useOktaAuth();
     const API_URL = getApiUrl();
 
     const paypalSubscribe = (data, actions) => {
@@ -23,11 +25,12 @@ export default function Subscribe({username, plan_id}) {
         });
     };
     const paypalOnError = (err) => {
+        GaEvent('subscribe paypal error');
         console.log("Error");
     };
     const paypalOnApprove = (data, detail) => {
         // call the backend api to store transaction details
-        console.log("Payapl approved");
+        GaEvent('subscribe paypal approved');
 
         const { accessToken } = authState;
         fetch(`${API_URL}/subscription/update`, {
@@ -38,18 +41,18 @@ export default function Subscribe({username, plan_id}) {
             },
             body: JSON.stringify(data)
         })
-        .then((response) => {
-            if (!response.ok) {
-                return Promise.reject();
-            }
-            return response.json();
-        })
-        .then((data) => {
-            history.go(0);
-        })
-        .catch((err) => {
-            console.error(err);
-        }); 
+            .then((response) => {
+                if (!response.ok) {
+                    return Promise.reject();
+                }
+                return response.json();
+            })
+            .then((data) => {
+                history.go(0);
+            })
+            .catch((err) => {
+                console.error(err);
+            });
     };
 
     return (

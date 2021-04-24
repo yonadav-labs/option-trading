@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import getApiUrl, { PercentageFormatter, PriceFormatter } from '../utils';
+import getApiUrl, { PercentageFormatter, PriceFormatter, GetGaEventTrackingFunc } from '../utils';
 import Axios from 'axios';
 import ContractDetailsCard from './cards/ContractDetailsCard';
 import { Col, Form, Row } from 'react-bootstrap';
 import { isEmpty } from 'lodash';
 import Select from 'react-select';
 import MetricLabel from './MetricLabel.js';
+
+const GaEvent = GetGaEventTrackingFunc('options builder');
 
 export default function LegCardDetails(props) {
     const { legs, index, selectedTicker, updateLeg, selectedStrategy, expirationTimestamps } = props;
@@ -78,7 +80,9 @@ export default function LegCardDetails(props) {
                                     </Col>
                                     <Col sm="4" xs="12">
                                         <MetricLabel label="expiration date" />
-                                        <Form.Control as="select" value={legs[index].expiration || 0} onChange={(e) => onExpirationChange(e)} disabled={selectedStrategy.legs[index].expiration}>
+                                        <Form.Control as="select" value={legs[index].expiration || 0}
+                                            onChange={(e) => { GaEvent('adjust leg exp date'); onExpirationChange(e); }}
+                                            disabled={selectedStrategy.legs[index].expiration}>
                                             {expirationTimestamps.map(val => {
                                                 return (<option value={val} key={val}>{new Date(val < 9999999999 ? val * 1000 : val).toLocaleDateString()}</option>);
                                             })}
@@ -94,7 +98,7 @@ export default function LegCardDetails(props) {
                                             options={strikes}
                                             placeholder="Select a strike..."
                                             value={selectedStrike}
-                                            onChange={(val) => onStrikeSelectChange(val)}
+                                            onChange={(val) => { GaEvent('adjust leg strike'); onStrikeSelectChange(val); }}
                                         />
                                     </Col>
                                 </Form.Row>

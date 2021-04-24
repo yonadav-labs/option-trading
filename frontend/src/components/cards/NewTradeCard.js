@@ -4,11 +4,13 @@ import TradeProfitLossGraph from "../TradeProfitLossGraph";
 import MetricLabel from '../MetricLabel.js';
 import {
     PriceFormatter, ProfitFormatter, getTradeTypeDisplay, PercentageFormatter,
-    TimestampTimeFormatter
+    TimestampTimeFormatter, GetGaEventTrackingFunc
 } from '../../utils';
 import ZoomOutMapIcon from '@material-ui/icons/ZoomOutMap';
 import ShareTradeBtn from "../ShareTradeBtn";
 import NewLegCard from "./NewLegCard";
+
+const GaEvent = GetGaEventTrackingFunc('trade details');
 
 const useStyles = makeStyles(theme => ({
     capitalize: {
@@ -22,6 +24,7 @@ export default function NewTradeCard({ trade }) {
     const [isRaised, setIsRaised] = useState(false)
 
     const showMoreInfo = () => {
+        GaEvent('expand trade card');
         setMoreInfo(!moreInfo);
     };
 

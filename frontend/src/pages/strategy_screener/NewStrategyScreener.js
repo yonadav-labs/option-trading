@@ -1,12 +1,12 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
-import {Helmet} from "react-helmet";
+import { Helmet } from "react-helmet";
 import Axios from 'axios';
 import ModalSpinner from '../../components/ModalSpinner';
 import LandingView from "./LandingView";
 import MainView from "./MainView";
 
 // utils
-import getApiUrl, { newLoadTickers, newLoadExpirationDates, fixedFloat } from "../../utils";
+import getApiUrl, { newLoadTickers, newLoadExpirationDates, fixedFloat, GetGaEventTrackingFunc } from "../../utils";
 import { useOktaAuth } from '@okta/okta-react';
 import { debounce } from "lodash";
 
@@ -15,6 +15,8 @@ const useDebouncedCallback = (callback, delay) => {
     callbackRef.current = callback;
     return useCallback(debounce((...args) => callbackRef.current(...args), delay), []);
 }
+
+const GaEvent = GetGaEventTrackingFunc('strategy screener');
 
 export default function NewStrategyScreener() {
     const API_URL = getApiUrl();
@@ -100,7 +102,8 @@ export default function NewStrategyScreener() {
     }
 
     const onTickerSelectionChange = (e, selected) => {
-        resetStates()
+        GaEvent('adjust ticker');
+        resetStates();
         if (selected) {
             newLoadExpirationDates(headers, selected, setModalActive, setExpirationTimestamps, onBasicInfoChange, setSelectedTicker);
         } else {
@@ -109,6 +112,7 @@ export default function NewStrategyScreener() {
     };
 
     const onExpirationSelectionChange = (e) => {
+        GaEvent('adjust exp date');
         setSelectedExpirationTimestamp(e)
         debouncedGetBestTrades()
     }
@@ -168,6 +172,7 @@ export default function NewStrategyScreener() {
     }
 
     const onSentimentChange = (sentiment) => {
+        GaEvent('adjust sentiment');
         setSentiment(sentiment)
         if (sentiment) {
             switch (sentiment) {

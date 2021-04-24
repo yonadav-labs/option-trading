@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import {Helmet} from "react-helmet";
+import { Helmet } from "react-helmet";
 import TickerTypeahead from '../components/TickerTypeahead';
 import TickerSummary from '../components/TickerSummary.js';
 import Axios from 'axios';
 import { useOktaAuth } from '@okta/okta-react';
 import getApiUrl, {
     PriceFormatter, TimestampDateFormatter, InTheMoneyRowStyle,
-    InTheMoneySign, onLastTradedFilterChange, PriceMovementFormatter, NumberRoundFormatter,
-    loadTickers, loadExpirationDates
+    InTheMoneySign, PriceMovementFormatter, NumberRoundFormatter,
+    loadTickers, loadExpirationDates, GetGaEventTrackingFunc
 } from '../utils';
 import { BsArrowsExpand, BsArrowsCollapse } from 'react-icons/bs';
 import ModalSpinner from '../components/ModalSpinner';
@@ -27,7 +27,7 @@ import ButtonToggleFilter from '../components/filters/ButtonToggleFilter';
 
 // url querying
 import { useHistory, useLocation } from "react-router-dom";
-import { addQuery, useSearch } from '../components/querying'
+import { addQuery, useSearch } from '../components/querying';
 
 let putCallFilter;
 let inTheMoneyFilter;
@@ -38,6 +38,8 @@ let minDeltaFilter;
 let maxDeltaFilter;
 let minStrikeFilter;
 let maxStrikeFilter;
+
+const GaEvent = GetGaEventTrackingFunc('options screener');
 
 export default function SellCoveredCall() {
     const API_URL = getApiUrl();
@@ -68,6 +70,7 @@ export default function SellCoveredCall() {
     }
 
     const onTickerSelectionChange = (selected) => {
+        GaEvent('adjust ticker');
         if (selected.length > 0) {
             loadExpirationDates(headers, selected, setModalActive, setExpirationTimestamps, setbasicInfo, setSelectedTicker);
             addQuery(location, history, 'symbol', selected[0].symbol)
@@ -282,6 +285,7 @@ export default function SellCoveredCall() {
             number: value,
             comparator: Comparator.GE
         });
+        GaEvent('adjust volume filter');
     };
 
     function onOpenInterestFilterChange(event, openInterestFilter) {
@@ -290,6 +294,7 @@ export default function SellCoveredCall() {
             number: value,
             comparator: Comparator.GE
         });
+        GaEvent('adjust open interest filter');
     };
 
     function onDeltaFilterChange(event, minDeltaFilter, maxDeltaFilter) {
@@ -304,6 +309,16 @@ export default function SellCoveredCall() {
             number: max_delta,
             comparator: Comparator.LE
         });
+        GaEvent('adjust delta filter');
+    };
+
+    function onLastTradedFilterChange(event, lastTradedFilter) {
+        const { value } = event.target;
+        lastTradedFilter({
+            number: Date.now() / 1000 - value * 3600,
+            comparator: Comparator.GT
+        });
+        GaEvent('adjust last traded filter');
     };
 
     const handleSubmit = (event) => {
@@ -359,6 +374,7 @@ export default function SellCoveredCall() {
             console.error(error);
             setModalActive(false);
         }
+        GaEvent('fetch contracts');
     };
 
     const expirationTimestampsOptions = [];

@@ -9,7 +9,9 @@ import NewTickerSummary from "../../components/NewTickerSummary";
 import TuneIcon from "@material-ui/icons/Tune";
 import ArrowUpwardIcon from '@material-ui/icons/ArrowUpward';
 import ArrowDownwardIcon from '@material-ui/icons/ArrowDownward';
-import { PriceFormatter } from '../../utils';
+import { PriceFormatter, GetGaEventTrackingFunc } from '../../utils';
+
+const GaEvent = GetGaEventTrackingFunc('strategy screener');
 
 export default function MainView(props) {
     const { authState } = useOktaAuth();
@@ -30,6 +32,7 @@ export default function MainView(props) {
     // web filter slide out
     const [filterOpen, setFilterOpen] = useState(true)
     const handleFilterCollapse = () => {
+        GaEvent('adjust filter collapse');
         setFilterOpen(!filterOpen)
     }
 
@@ -39,6 +42,7 @@ export default function MainView(props) {
     // mobile filter state
     const [showMobileFilter, setShowMobileFilter] = useState(true)
     const handleMobileFilterCollapse = () => {
+        GaEvent('adjust mobile filter collapse');
         setShowMobileFilter(!showMobileFilter)
     }
 
@@ -67,14 +71,14 @@ export default function MainView(props) {
     }
 
     const orderHandler = (e) => {
-        setOrderState(e)
+        setOrderState(e);
         if (e === "desc") {
             sortDesc(sortState)
         } else { sortAsc(sortState) }
     }
 
-    const sortDesc = (e) => {
-        switch (e) {
+    const sortDesc = (sortBy) => {
+        switch (sortBy) {
             case "hr":
                 setRenderedTrades(bestTrades.sort((a, b) => b.target_price_profit_ratio - a.target_price_profit_ratio))
                 break;
@@ -90,8 +94,8 @@ export default function MainView(props) {
         }
     }
 
-    const sortAsc = (e) => {
-        switch (e) {
+    const sortAsc = (sortBy) => {
+        switch (sortBy) {
             case "hr":
                 setRenderedTrades(bestTrades.sort((a, b) => a.target_price_profit_ratio - b.target_price_profit_ratio))
                 break;
@@ -197,28 +201,33 @@ export default function MainView(props) {
                         <NewTickerSummary basicInfo={basicInfo} isMobile={isMobile} />
                     </Grid>
                     <Grid container direction="row-reverse" justifyContent="center" alignItems="center">
-                        { renderedTrades.length > 0 ?
-                            <Box pt={2} px={2} style={{float: "right"}} >
+                        {renderedTrades.length > 0 ?
+                            <Box pt={2} px={2} style={{ float: "right" }} >
                                 <Select
                                     value={sortState}
-                                    onChange={(e) => sortHandler(e.target.value)}
+                                    onChange={(e) => {
+                                        GaEvent('sort by ' + e.target.value + ' ' + orderState);
+                                        sortHandler(e.target.value);
+                                    }}
                                 >
                                     <MenuItem value={"hr"}>Hypothetical Return</MenuItem>
                                     <MenuItem value={"pop"}>Probability of Profit</MenuItem>
                                     <MenuItem value={"cost"}>Total Cost</MenuItem>
                                 </Select>
-                                <IconButton disableRipple onClick={() => orderHandler("asc")} edge="start" size="small">
+                                <IconButton disableRipple edge="start" size="small"
+                                    onClick={() => { GaEvent('sort by ' + sortState + ' asc'); orderHandler("asc"); }}>
                                     <ArrowUpwardIcon color={orderState === "asc" ? "primary" : "disabled"} />
                                 </IconButton>
-                                <IconButton disableRipple onClick={() => orderHandler("desc")} edge="start" size="small">
+                                <IconButton disableRipple edge="start" size="small"
+                                    onClick={() => { GaEvent('sort by ' + sortState + ' desc'); orderHandler("desc") }}>
                                     <ArrowDownwardIcon color={orderState === "desc" ? "primary" : "disabled"} />
                                 </IconButton>
                             </Box>
                             :
                             null
                         }
-                        <Box style={{display: "inline-flex"}} p={2}>
-                            { renderedTrades.length > 0 ?
+                        <Box style={{ display: "inline-flex" }} p={2}>
+                            {renderedTrades.length > 0 ?
                                 <Alert severity="info">
                                     Below are the trading ideas with best potential return for each strategy based on price target.
                                 </Alert>

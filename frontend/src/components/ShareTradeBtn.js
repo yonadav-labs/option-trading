@@ -2,10 +2,12 @@ import React, { useState } from 'react';
 import Axios from 'axios';
 import { useOktaAuth } from '@okta/okta-react';
 import { FacebookShareButton, FacebookIcon, TwitterShareButton, TwitterIcon } from "react-share";
-import getApiUrl from '../utils';
+import getApiUrl, { GetGaEventTrackingFunc } from '../utils';
 import ShareIcon from '@material-ui/icons/Share';
 import { ClickAwayListener, Grid, IconButton, Tooltip } from '@material-ui/core';
 import LinkIcon from '@material-ui/icons/Link';
+
+const GaEvent = GetGaEventTrackingFunc('save trade');
 
 export default function ShareTradeBtn(props) {
     const { trade } = props;
@@ -72,6 +74,7 @@ export default function ShareTradeBtn(props) {
             console.error(error);
             setIsLoading(false);
         }
+        GaEvent('share trade');
     }
 
     function ShareTrade(e) {

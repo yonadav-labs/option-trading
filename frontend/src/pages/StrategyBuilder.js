@@ -1,5 +1,5 @@
 import React, { useState, useContext, useCallback, useEffect } from 'react';
-import {Helmet} from "react-helmet";
+import { Helmet } from "react-helmet";
 import { Link } from "react-router-dom";
 import { Alert, Button, Card, CardColumns, Col, Container, Row, Spinner, ToggleButton, ToggleButtonGroup } from 'react-bootstrap';
 import { MdTrendingFlat, MdArrowUpward, MdArrowDownward, MdShowChart } from 'react-icons/md';
@@ -11,7 +11,10 @@ import TickerTypeahead from '../components/TickerTypeahead';
 import ModalSpinner from '../components/ModalSpinner';
 import TickerSummary from '../components/TickerSummary';
 import Select from "react-select";
-import getApiUrl, { loadTickers, loadExpirationDates, getDefaultDisabledTradeTypes } from '../utils';
+import getApiUrl, {
+    loadTickers, loadExpirationDates, getDefaultDisabledTradeTypes,
+    GetGaEventTrackingFunc
+} from '../utils';
 import Axios from 'axios';
 import LegCardDetails from '../components/LegCardDetails';
 import { useOktaAuth } from '@okta/okta-react';
@@ -24,24 +27,7 @@ import UserContext from '../UserContext';
 import { useLocation, useHistory } from 'react-router-dom';
 import { useSearch, addQuery } from '../components/querying';
 
-// export function useHorizontalScroll() {
-//     const elRef = useRef();
-//     useEffect(() => {
-//         const el = elRef.current;
-//         if (el) {
-//             const onWheel = e => {
-//                 e.preventDefault();
-//                 el.scrollTo({
-//                     left: el.scrollLeft + e.deltaY * 2,
-//                     behavior: "smooth"
-//                 });
-//             };
-//             el.addEventListener("wheel", onWheel);
-//             return () => el.removeEventListener("wheel", onWheel);
-//         }
-//     }, []);
-//     return elRef;
-// }
+const GaEvent = GetGaEventTrackingFunc('options builder');
 
 export default function StrategyBuilder() {
     const premiumPriceOptions = [{ value: "market", label: "Market price" }, { value: "mid", label: "Mid/Mark price" }];
@@ -80,6 +66,7 @@ export default function StrategyBuilder() {
     const querySymbol = useSearch(location, 'symbol');
 
     const onTickerSelectionChange = (selected) => {
+        GaEvent('adjust ticker');
         if (selected.length > 0) {
             loadExpirationDates(headers, selected, setModalActive, setExpirationTimestamps, setbasicInfo, setSelectedTicker);
             addQuery(location, history, 'symbol', selected[0].symbol)
@@ -170,7 +157,7 @@ export default function StrategyBuilder() {
     }
 
     const getStrategyDetails = async () => {
-        // console.log(selectedTicker, basicInfo, selectedStrategy);
+        GaEvent('build strategy');
         setLoadingStrategyDetails(true);
         let strategy = {
             type: selectedStrategy.id,
@@ -260,7 +247,7 @@ export default function StrategyBuilder() {
                         isOptionSelected={(option, array) => array.some(strat => strat.name === option.name)}
                         placeholder="Select a strategy..."
                         value={selectedStrategy}
-                        onChange={(val) => applyStrategy(val)}
+                        onChange={(val) => { GaEvent('select strategy by dropdown'); applyStrategy(val); }}
                         onInputChange={(val) => throttledSetInputText(val)}
                     />
                 </Col>
@@ -322,7 +309,11 @@ export default function StrategyBuilder() {
                                                         <Card.Body>
                                                             <Card.Text>{val.description}</Card.Text>
                                                         </Card.Body>
-                                                        <a href="#" className="stretched-link" onClick={(e) => { e.preventDefault(); applyStrategy(val) }}></a>
+                                                        <a href="#" className="stretched-link" onClick={(e) => {
+                                                            e.preventDefault();
+                                                            GaEvent('select strategy by card');
+                                                            applyStrategy(val);
+                                                        }}></a>
                                                     </Card>
                                                 </Col>
                                             );
@@ -398,11 +389,15 @@ export default function StrategyBuilder() {
                                                 options={premiumPriceOptions}
                                                 placeholder="Premium type..."
                                                 value={selectedPremiumType}
-                                                onChange={(val) => setSelectedPremiumType(val)}
+                                                onChange={(val) => {
+                                                    GaEvent('change premium type');
+                                                    setSelectedPremiumType(val);
+                                                }}
                                             />
                                         </Col>
                                         <Col lg="auto">
-                                            <Button disabled={(selectedTicker.length < 1 || !legs.reduce((prevVal, currVal) => (currVal.type !== "option" || prevVal && !isEmpty(currVal.contract)), true)) || ruleMessage} onClick={getStrategyDetails}>Calculate Strategy Details</Button>
+                                            <Button disabled={(selectedTicker.length < 1 || !legs.reduce((prevVal, currVal) => (currVal.type !== "option" || prevVal && !isEmpty(currVal.contract)), true)) || ruleMessage}
+                                                onClick={getStrategyDetails}>Calculate Strategy Details</Button>
                                         </Col>
                                     </Col>
                                 </Row>

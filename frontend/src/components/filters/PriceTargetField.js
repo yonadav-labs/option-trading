@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { OutlinedInput, makeStyles, InputAdornment, Box, Grid, Button } from "@material-ui/core";
-import { PercentageFormatter } from "../../utils";
+import { PercentageFormatter, GetGaEventTrackingFunc } from "../../utils";
+
+const GaEvent = GetGaEventTrackingFunc('strategy screener');
 
 const useStyles = makeStyles((theme) => ({
     customInput: {
@@ -51,11 +53,12 @@ export default function PriceTargetField({ initialPrice, onValueChange, value })
                 type="number"
                 fullWidth
                 value={value}
-                onChange={(e) => onValueChange(e.target.value)}
+                onChange={(e) => { GaEvent('adjust target price by input'); onValueChange(e.target.value); }}
                 startAdornment={<InputAdornment position="start"> <span style={{ color: "white" }}>$</span></InputAdornment>}
                 endAdornment={
                     <InputAdornment position="end">
-                        <span style={{ color: "#8f8f8f" }}>{value - initialPrice > 0 ? "+" : null}{PercentageFormatter((value - initialPrice) / initialPrice)}</span>
+                        <span style={{ color: "#8f8f8f" }}>{value - initialPrice > 0 ? "+" : null}
+                            {PercentageFormatter((value - initialPrice) / initialPrice)}</span>
                     </InputAdornment>
                 }
             />
@@ -64,7 +67,11 @@ export default function PriceTargetField({ initialPrice, onValueChange, value })
                     {priceTargetOptions.map((option, index) => {
                         return (
                             <Grid xs={6} key={index} item>
-                                <Button className={classes.priceButton} fullWidth onMouseDown={() => selectHandler((initialPrice + (initialPrice * option)).toFixed(2))}>
+                                <Button className={classes.priceButton} fullWidth
+                                    onMouseDown={() => {
+                                        GaEvent('adjust target price by dropdown');
+                                        selectHandler((initialPrice + (initialPrice * option)).toFixed(2));
+                                    }}>
                                     <span>${(initialPrice + (initialPrice * option)).toFixed(2)}</span> <span style={{ color: "#8f8f8f" }}>{option > 0 ? "+" : null}{option * 100}%</span>
                                 </Button>
                             </Grid>

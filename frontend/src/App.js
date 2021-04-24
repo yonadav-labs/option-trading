@@ -13,7 +13,12 @@ import theme from './theme';
 
 // My personal UA tracking code. Move to G tracking code once ReactGA is compatible with that.
 // https://stackoverflow.com/questions/62135901/reactga-not-working-for-g-type-tracking-id
-ReactGA.initialize('UA-40188247-2');
+ReactGA.initialize('UA-40188247-2', {
+  debug: window.location.origin === "http://localhost:3000",
+  gaOptions: {
+    siteSpeedSampleRate: 100
+  }
+});
 
 function App() {
   const [user, setUser] = useState(null);
