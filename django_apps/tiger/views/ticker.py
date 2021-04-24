@@ -54,6 +54,9 @@ class TickerViewSet(viewsets.ModelViewSet):
             data = []
             for contract in contracts:
                 value = getattr(contract, target)
+                if value is None:
+                    continue
+
                 if target == 'implied_volatility':
                     value = float(f'{value:.4f}')
                 data.append((
