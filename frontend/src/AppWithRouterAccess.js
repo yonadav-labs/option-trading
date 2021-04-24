@@ -9,6 +9,7 @@ import Home from './pages/Home';
 import Header from './components/header'
 import Footer from './components/footer'
 import OptionScreener from './pages/OptionScreener'
+import Surface from './pages/Surface'
 import Disclaimer from './components/disclaimer';
 import StrategyScreener from './pages/StrategyScreener';
 import NewStrategyScreener from './pages/strategy_screener/NewStrategyScreener';
@@ -44,6 +45,7 @@ export default withRouter(class AppWithRouterAccess extends Component {
                         <Route path='/' exact={true} component={Home} />
                         <Route path='/option-screener' exact={true} component={OptionScreener} />
                         <Route path='/browse' exact={true} component={OptionScreener} />
+                        <Route path='/surface' exact={true} component={Surface} />
                         <Route path='/discover' exact={true} component={NewStrategyScreener} />
                         <Route path='/strategy-screener' exact={true} component={NewStrategyScreener} />
                         <Route path='/old-discover' exact={true} component={StrategyScreener} />

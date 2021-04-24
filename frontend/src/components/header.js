@@ -67,8 +67,9 @@ function Header() {
                         <Nav.Link eventKey={"1"} className="text-dark" as={Link} to="/discover">Discover</Nav.Link>
                         <Nav.Link eventKey={"2"} className="text-dark" as={Link} to="/build">Build</Nav.Link>
                         <Nav.Link eventKey={"3"} className="text-dark" as={Link} to="/browse">Browse</Nav.Link>
-                        <Nav.Link eventKey={"4"} className="text-dark" as={Link} to="/blogs">Reports</Nav.Link>
-                        <Nav.Link eventKey={"5"} className="text-dark" as={Link} to="/pricing">Pricing</Nav.Link>
+                        <Nav.Link eventKey={"4"} className="text-dark" as={Link} to="/surface">Surface</Nav.Link>
+                        <Nav.Link eventKey={"5"} className="text-dark" as={Link} to="/blogs">Reports</Nav.Link>
+                        <Nav.Link eventKey={"6"} className="text-dark" as={Link} to="/pricing">Pricing</Nav.Link>
                     </Nav>
                     {authState.isAuthenticated ?
                         <Nav>

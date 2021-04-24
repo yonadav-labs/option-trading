@@ -1,3 +1,4 @@
+from django.utils import timezone
 from rest_framework import viewsets
 from rest_framework.response import Response
 from rest_framework.decorators import action
@@ -45,4 +46,48 @@ class TickerViewSet(viewsets.ModelViewSet):
             'ticker_stats': TickerStatsSerializer(ticker.get_latest_stats()).data,
         }
 
+        return Response(resp)
+
+    @action(detail=True, methods=['GET'])
+    def heatmap_data(self, request, *args, **kwargs):
+        def build_heatmap(contracts, expirations, strikes):
+            data = []
+            for contract in contracts:
+                value = getattr(contract, target)
+                if target == 'implied_volatility':
+                    value = float(f'{value:.4f}')
+                data.append((
+                    expirations.index(contract.expiration),
+                    strikes.index(contract.strike),
+                    value
+                ))
+
+            result = {
+                'expiration_dates': expiration_dates,
+                'strike_prices': strikes,
+                'data': data
+            }
+            return result
+
+        ticker = self.get_object()
+
+        contract_type = request.GET.get('contract_type', 'call')
+        target = request.GET.get('target', 'implied_volatility')
+
+        expiration_timestamps = ticker.get_expiration_timestamps()
+        expirations = [ts // 1000 for ts in expiration_timestamps]
+        dates = ticker.expiration_dates.filter(date__gte=timezone.now())
+        expiration_dates = [date.date.strftime('%m/%d/%y') for date in dates]
+
+        contract_lists = []
+
+        for ts in expiration_timestamps:
+            calls, puts = ticker.get_call_puts(ts)
+            contract = calls if contract_type == 'call' else puts
+            contract_lists += list(filter(lambda contract: contract.last_trade_date, contract))
+
+        strikes = list(set([contract.strike for contract in contract_lists]))
+        strikes.sort()
+
+        resp = build_heatmap(contract_lists, expirations, strikes)
         return Response(resp)
