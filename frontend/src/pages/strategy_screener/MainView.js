@@ -196,7 +196,50 @@ export default function MainView(props) {
                         }
                         <NewTickerSummary basicInfo={basicInfo} isMobile={isMobile} />
                     </Grid>
-                    <Grid container alignItems="center" justifyContent="center" padding={2}>
+                    <Grid container direction="row-reverse" justifyContent="center" alignItems="center">
+                        { renderedTrades.length > 0 ?
+                            <Box pt={2} px={2} style={{float: "right"}} >
+                                <Select
+                                    value={sortState}
+                                    onChange={(e) => sortHandler(e.target.value)}
+                                >
+                                    <MenuItem value={"hr"}>Hypothetical Return</MenuItem>
+                                    <MenuItem value={"pop"}>Probability of Profit</MenuItem>
+                                    <MenuItem value={"cost"}>Total Cost</MenuItem>
+                                </Select>
+                                <IconButton disableRipple onClick={() => orderHandler("asc")} edge="start" size="small">
+                                    <ArrowUpwardIcon color={orderState === "asc" ? "primary" : "disabled"} />
+                                </IconButton>
+                                <IconButton disableRipple onClick={() => orderHandler("desc")} edge="start" size="small">
+                                    <ArrowDownwardIcon color={orderState === "desc" ? "primary" : "disabled"} />
+                                </IconButton>
+                            </Box>
+                            :
+                            null
+                        }
+                        <Box style={{display: "inline-flex"}} p={2}>
+                            { renderedTrades.length > 0 ?
+                                <Alert severity="info">
+                                    Below are the trading ideas with best potential return for each strategy based on price target.
+                                </Alert>
+                                :
+                                selectedTicker ?
+                                    selectedExpirationTimestamp ?
+                                        <Alert severity="error">
+                                            There are no trades that fit the specified settings.
+                                        </Alert>
+                                        :
+                                        <Alert severity="error">
+                                            Select an expiration date.
+                                        </Alert>
+                                    :
+                                    <Alert severity="error">
+                                        Select a ticker and expiration date.
+                                    </Alert>
+                            }
+                        </Box>
+                    </Grid>
+                    <Grid container alignItems="center" justifyContent="center" pb={2} px={2}>
                         {!authState.isAuthenticated &&
                             (
                                 <Alert severity="warning">
@@ -206,48 +249,8 @@ export default function MainView(props) {
                             )
                         }
                     </Grid>
-                    <Grid container alignItems="center" justifyContent="center" px={2}>
-                        {renderedTrades.length > 0 ?
-                            <Alert severity="info">
-                                Below are the trading ideas with best potential return for each strategy based on price target.
-                                Please adjust the settings to discover your favorite ones.
-                            </Alert>
-                            :
-                            selectedTicker ?
-                                selectedExpirationTimestamp ?
-                                    <Alert severity="error">
-                                        There are no trades that fit the specified settings.
-                                    </Alert>
-                                    :
-                                    <Alert severity="error">
-                                        Select an expiration date.
-                                    </Alert>
-                                :
-                                <Alert severity="error">
-                                    Select a ticker and expiration date.
-                                </Alert>
-                        }
-                    </Grid >
                     {renderedTrades.length > 0 ?
                         <>
-                            <Grid container justifyContent="flex-end">
-                                <Box p={3}>
-                                    <Select
-                                        value={sortState}
-                                        onChange={(e) => sortHandler(e.target.value)}
-                                    >
-                                        <MenuItem value={"hr"}>Hypothetical Return</MenuItem>
-                                        <MenuItem value={"pop"}>Probability of Profit</MenuItem>
-                                        <MenuItem value={"cost"}>Total Cost</MenuItem>
-                                    </Select>
-                                    <IconButton disableRipple onClick={() => orderHandler("asc")} edge="start" size="small">
-                                        <ArrowUpwardIcon color={orderState === "asc" ? "primary" : "disabled"} />
-                                    </IconButton>
-                                    <IconButton disableRipple onClick={() => orderHandler("desc")} edge="start" size="small">
-                                        <ArrowDownwardIcon color={orderState === "desc" ? "primary" : "disabled"} />
-                                    </IconButton>
-                                </Box>
-                            </Grid>
                             <Grid container>
                                 <Stack paddingX={3} spacing={2} width="inherit">
                                     {renderedTrades.map((trade, index) => <NewTradeCard trade={trade} key={index} />)}
