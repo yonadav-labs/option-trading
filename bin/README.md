@@ -8,7 +8,7 @@ The build scripts in this directory are the temporary build tools that will be u
 
 The commands support a help flag, which returns the following content:
 
-```
+```text
 
 Usage: build-ecs-backend [OPTIONS]
 
@@ -27,9 +27,17 @@ Options:
 
 **To tag the image, use the `--use-latest-tag`,` --use-git-commit-hash-tag`, and/or `--tags` option(s). _Only tagged images can be pushed to the remote repository. It is HIGHLY recommended that pushed images are tagged using the `--use-git-commit-hash-tag` option._**
 
-The build tools are set up to make sure you are building on the `main` branch with no uncommitted modified files. This is meant to ensure that we don't use containers in production that don't represent the the clean main branch. The flags `--ignore-branch-check` and `--ignore-uncommitted-files ` can be used to override these checks, but they are meant only for testing.
+The build tools are set up to make sure you are building on the `main` branch with no uncommitted modified files. This is meant to ensure that we don't use containers in production that don't represent the  clean main branch. The flags `--ignore-branch-check` and `--ignore-uncommitted-files ` can be used to override these checks, but they are meant only for testing.
 
 Providing the `--push` flag will log into the AWS ECS repositories and push the built images to AWS ECR.
+
+For images that are going to be deployed to a customer-visible environment, build the container with a clean `main` branch, and tag it with the current git commit hash. This can be done as follows:
+
+```text
+build-ecs-backend --use-git-commit-hash-tag --push
+```
+
+The above command will fail if you are not on the `main` branch and/or have uncommitted files. 
 
 ## Tunnel Script
 

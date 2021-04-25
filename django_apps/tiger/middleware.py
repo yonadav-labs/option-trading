@@ -11,11 +11,8 @@ class HealthCheckMiddleware:
         self.get_response = get_response
 
     def __call__(self, request):
-        # If this is a not a health check request, just let the request pass through untouched.
-        if not request.path_info.endswith('/healthcheck/'):
-            return self.get_response(request)
-        # Otherwise, intercept the request and perform a health check.
-        else:
+        # This is a health check request, including database connectivity.
+        if request.path_info.endswith('/healthcheck/'):
             healthy = True
 
             # Check the database for connectivity.
@@ -27,8 +24,15 @@ class HealthCheckMiddleware:
                 logger.error(f'Database health check failed: {e}')
                 healthy = False
 
-            # Return the health check response.
             if healthy:
                 return HttpResponse(status=200)
             else:
                 return HttpResponse(status=500)
+
+        # This is a health check request, excluding database connectivity.
+        elif request.path_info.endswith('/healthcheck-no-db/'):
+            return HttpResponse(status=200)
+
+        # Otherwise, this is a not a health check request, so do not interfere with the request.
+        else:
+            return self.get_response(request)

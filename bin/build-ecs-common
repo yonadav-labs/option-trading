@@ -73,7 +73,7 @@ get_current_git_commit_hash() {
 build_image() {
   local TMP_IMAGE_ID_FILE
   TMP_IMAGE_ID_FILE="$( mktemp )"
-  docker build --iidfile "$TMP_IMAGE_ID_FILE" --file "$DOCKER_FILE_PATH" "$CONTAINER_APP_DIR"
+  docker build --progress plain --iidfile "$TMP_IMAGE_ID_FILE" --file "$DOCKER_FILE_PATH" "$CONTAINER_APP_DIR"
   IMAGE_ID="$( cat "$TMP_IMAGE_ID_FILE" )"
 }
 
@@ -105,6 +105,11 @@ push_images_to_ecr() {
     echo
   done
 }
+
+if [[ -z "$BUILD_SCRIPT_NAME" ]] ; then
+  echo -e "${START_RED_TEXT}ERROR: THIS SCRIPT CAN NOT BE DIRECTLY EXECUTED.${CLEAR_TEXT_COLOR}" 1>&2
+  exit 2
+fi
 
 PRINT_HELP=N
 USE_LATEST_TAG=N
@@ -243,35 +248,28 @@ build_image
 tag_image
 
 echo
-echo '========================================'
 
-if [[ ${#IMAGE_TAGS[@]} -eq 0 ]] ; then
-  echo "Built the image '$IMAGE_ID'"
-else
+if [[ ${#IMAGE_TAGS[@]} -ne 0 ]] ; then
+  echo '========================================'
   echo "Built the following image$( [[ ${#IMAGE_TAGS[@]} -gt 1 ]] && echo 's' ):"
 
   for IMAGE_TAG in "${IMAGE_TAGS[@]}" ; do
     echo "    ${ECR_IMAGE_REPOSITORY}:${IMAGE_TAG}"
   done
-fi
 
-echo '========================================'
-echo
+  echo '========================================'
+  echo
+fi
 
 if [[ "$PUSH_IMAGES" = 'Y' ]] ; then
-  AND_PUSHED=" and pushed"
   aws_ecs_docker_login
   push_images_to_ecr
-fi
 
-echo
-echo '========================================'
-
-if [[ ${#IMAGE_TAGS[@]} -gt 0 ]] ; then
-  echo "Built${AND_PUSHED} the following image$( [[ ${#IMAGE_TAGS[@]} -gt 1 ]] && echo 's' )..."
+  echo '========================================'
+  echo "Built and pushed the following image$( [[ ${#IMAGE_TAGS[@]} -gt 1 ]] && echo 's' )..."
   for IMAGE_TAG in "${IMAGE_TAGS[@]}" ; do
     echo "    ${ECR_IMAGE_REPOSITORY}:${IMAGE_TAG}"
   done
+  echo '========================================'
+  echo
 fi
-echo '========================================'
-echo
