@@ -11,6 +11,7 @@ DEFAULT_FIELDS = ['created_time', 'last_updated_time']
 
 UserAdmin.list_display += ('id', 'okta_id', 'date_joined')
 
+
 class ExpirationDateAdmin(admin.TabularInline):
     model = ExpirationDate
 
@@ -28,7 +29,8 @@ class ExternalRequestCacheAdmin(admin.ModelAdmin):
 
 
 class SubscriptionAdmin(admin.ModelAdmin):
-    list_display = ['user', 'type', 'paypal_subscription_id', 'paypal_plan_id', 'status', 'expire_at'] + DEFAULT_FIELDS
+    list_display = ['user', 'type', 'paypal_subscription_id', 'paypal_plan_id', 'status', 'cancellation_reason',
+                    'expire_at'] + DEFAULT_FIELDS
     list_filter = ['status', 'type', 'user']
     search_fields = ['user__id', 'user__email', 'paypal_subscription_id', ]
 
@@ -87,7 +89,8 @@ class BlogAdmin(admin.ModelAdmin):
 
 
 class BrokerAdmin(admin.ModelAdmin):
-    list_display = ['name', 'options_open_commission', 'options_close_commission', 'stock_commission', 'is_active', 'is_default']
+    list_display = ['name', 'options_open_commission', 'options_close_commission', 'stock_commission', 'is_active',
+                    'is_default']
     search_fields = ['name']
     ordering = ['name']
     list_filter = ['is_active', 'is_default']

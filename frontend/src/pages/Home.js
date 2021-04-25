@@ -111,6 +111,7 @@ export default function Home() {
                         <h1>Our Customers Love Us</h1>
                     </div>
                     <div className="col-lg-12 text-center">
+                        <h1>⭐⭐⭐⭐⭐</h1>
                         <h2>“Tigerstance helped me make decisions with ease and confidence when market was volatile.”</h2>
                         <h4> - Jay S, Portfolio Manager, Eystra Capital, LLC.</h4>
                     </div>

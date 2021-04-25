@@ -45,6 +45,7 @@ export default withRouter(class AppWithRouterAccess extends Component {
                         <Route path='/' exact={true} component={Home} />
                         <Route path='/option-screener' exact={true} component={OptionScreener} />
                         <Route path='/browse' exact={true} component={OptionScreener} />
+                        <Route path='/screen' exact={true} component={OptionScreener} />
                         <Route path='/surface' exact={true} component={Surface} />
                         <Route path='/discover' exact={true} component={NewStrategyScreener} />
                         <Route path='/strategy-screener' exact={true} component={NewStrategyScreener} />
@@ -59,8 +60,8 @@ export default withRouter(class AppWithRouterAccess extends Component {
                         <Route path='/verify-email' component={EmailVerified} />
                         <Route path='/callback' component={LoginCallback} />
                         <Route path='/pricing' component={Pricing} />
-                        <SecureRoute path='/blogs/:blogId' exact={true} component={BlogDetail} />
-                        <Route path='/blogs' component={Blog} />
+                        <SecureRoute path='/reports/:blogId' exact={true} component={BlogDetail} />
+                        <Route path='/reports' component={Blog} />
                     </Switch>
                     <Footer className="mt-auto"></Footer>
                 </Security>

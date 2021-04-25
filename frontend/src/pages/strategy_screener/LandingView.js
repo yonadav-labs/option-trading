@@ -54,11 +54,11 @@ export default function LandingView(props) {
                                 fullWidth
                                 placeholder="Select an expiration date"
                                 onChange={(e) => onExpirationSelectionChange(e.target.value)}
-                                style={{paddingBottom: "5px"}}
+                                style={{ paddingBottom: "5px" }}
                                 variant="standard"
                             >
-                                <MenuItem disabled value={"none"}><span style={{color: "gray"}}>Select an expiration date</span></MenuItem>
-                                {expirationTimestampsOptions.map((date, index) => <MenuItem value={date.value} key={index}> {date.label} </MenuItem> )}
+                                <MenuItem disabled value={"none"}><span style={{ color: "gray" }}>Select an expiration date</span></MenuItem>
+                                {expirationTimestampsOptions.map((date, index) => <MenuItem value={date.value} key={index}> {date.label} </MenuItem>)}
                             </Select>
                         </FormControl>
 
@@ -70,10 +70,10 @@ export default function LandingView(props) {
                                 fullWidth
                                 placeholder="How are you feeling?"
                                 onChange={(e) => onSentimentChange(e.target.value)}
-                                style={{paddingBottom: "5px"}}
+                                style={{ paddingBottom: "5px" }}
                                 variant="standard"
                             >
-                                <MenuItem disabled value={0}><span style={{color: "gray"}}>Select a sentiment</span></MenuItem>
+                                <MenuItem disabled value={0}><span style={{ color: "gray" }}>Select a sentiment</span></MenuItem>
                                 <MenuItem value={"Neutral (0%)"}>Neutral (0%)</MenuItem>
                                 <MenuItem value={"Bullish (+5%)"}>Bullish (+5%)</MenuItem>
                                 <MenuItem value={"Bearish (-5%)"}>Bearish (-5%)</MenuItem>
@@ -90,16 +90,16 @@ export default function LandingView(props) {
                 {!authState.isAuthenticated &&
                     (
                         <Typography variant="body1" align="center" pb={5}>
-                            <a href="/signin"><b>LOG IN</b></a> or <Link to="/signin/register"><b>
-                                SIGN UP FOR FREE</b></Link> to unlock Cash Secured Put and 3 more Vertical Spread strategies!
+                            <a href="/signin"><b>Log In</b></a> or <Link to="/signin/register"><b>
+                                Sign Up For Free</b></Link> to unlock Cash Secured Put and 3 more Vertical Spread strategies!
                         </Typography>
                     )}
                 <Typography variant="h4" align="center">Discover option strategies with the best potential return.</Typography>
                 <br />
                 <Typography variant="body1" align="center">
-                    Enter what you think the price of the stock will be and by when.
-                        <br />
-                        See the trades you can make to get the highest potential return.
+                    Enter <b>what price</b> you think the stock will be and by <b>when</b>.
+                    <br />
+                    See the trades you can make to get the highest potential return.
                     </Typography>
             </Container>
             <br />

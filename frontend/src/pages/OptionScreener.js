@@ -407,10 +407,15 @@ export default function SellCoveredCall() {
     return (
         <Container id="content" className="min-vh-100" style={{ "marginTop": "2rem" }} fluid>
             <Helmet>
-                <title>Tigerstance | Browse the options chain with ease and clarity.</title>
+                <title>Tigerstance | Screen the options chain with ease and clarity.</title>
+                <meta name="description" content="Use Tigerstance's Option Screener to find options that match your trading goals. " />
             </Helmet>
             <ModalSpinner active={modalActive}></ModalSpinner>
-            <h2 className="text-center">Browse option contracts</h2>
+            <h2 className="text-center">Screen option contracts</h2>
+            <p className="text-center">
+                Find options that match your trading goals. View the options chains for the stock you selected and
+                use filters to screen for options that match your strategy.
+            </p>
             <Row className="justify-content-md-center">
                 <Col md={4}>
                     <Form>

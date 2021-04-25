@@ -252,8 +252,8 @@ export default function MainView(props) {
                         {!authState.isAuthenticated &&
                             (
                                 <Alert severity="warning">
-                                    <a href="/signin"><b>LOG IN</b></a> or <Link to="/signin/register"><b>
-                                        SIGN UP FOR FREE</b></Link> to unlock cash secured put and 3 more vertical spread strategies!
+                                    <a href="/signin"><b>Log In</b></a> or <Link to="/signin/register"><b>
+                                        Sign Up for Free</b></Link> to unlock cash secured put and 3 more vertical spread strategies!
                                 </Alert>
                             )
                         }

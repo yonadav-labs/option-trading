@@ -224,9 +224,13 @@ export default function StrategyBuilder() {
         <Container className="min-vh-100" style={{ "marginTop": "2rem" }} fluid>
             <Helmet>
                 <title>Tigerstance | Build and share your own option strategies</title>
+                <meta name="description" content="Build and optimize options trading strategies with Tigerstance." />
             </Helmet>
             <ModalSpinner active={modalActive}></ModalSpinner>
-            <h2 className="text-center" style={{ "paddingBottom": '2rem' }}>Build options strategies</h2>
+            <h2 className="text-center">Build options strategies</h2>
+            <p className="text-center" style={{ "paddingBottom": '2rem' }}>
+                Create your options strategy and get real-time feedback. Understand your strategy with interactive graph and profit/loss details.
+            </p>
             <Row className="justify-content-md-center">
                 <Col md="4">
                     <MetricLabel label="ticker" />
@@ -290,7 +294,7 @@ export default function StrategyBuilder() {
                                 !authState.isAuthenticated &&
                                 (
                                     <b className="md-1">
-                                        <a href="/signin">Log in</a> or <Link to="/signin/register">sign up for free</Link> to unlock 4 more strategies!
+                                        <a href="/signin">Log In</a> or <Link to="/signin/register">Sign Up for Free</Link> to unlock 4 more strategies!
                                     </b>
                                 )
                             }

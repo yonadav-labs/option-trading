@@ -25,7 +25,7 @@ const BlogDetail = () => {
                 };
             }
 
-            const response = await Axios.get(`${API_URL}/blogs/${blogId}/`, {
+            const response = await Axios.get(`${API_URL}/reports/${blogId}/`, {
                 headers: headers
             });
 

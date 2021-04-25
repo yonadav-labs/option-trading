@@ -534,7 +534,7 @@ export default function BestCallByPrice() {
                                             !authState.isAuthenticated &&
                                             (
                                                 <b className="md-1">
-                                                    <a href="/signin">Log in</a> or <Link to="/signin/register">sign up for free</Link> to unlock 4 more strategies!
+                                                    <a href="/signin"><b>Log In</b></a> or <Link to="/signin/register">Sign Up for Free</Link> to unlock 4 more strategies!
                                                 </b>
                                             )
                                         }

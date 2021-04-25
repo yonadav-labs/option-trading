@@ -107,12 +107,14 @@ export default function Surface() {
         <Container id="content" style={{ "marginTop": "2rem" }} fluid>
             <Helmet>
                 <title>Tigerstance | Implied Volatility Surface and more</title>
+                <meta name="description"
+                    content="Spot unusual options activities from bird's-eye view of the entire options chain. Gauge the market using Implied Volatility, Open Interest and Volume." />
             </Helmet>
             <ModalSpinner active={modalActive}></ModalSpinner>
             <h2 className="text-center mb-2">Options chain surface</h2>
             <p className="text-center mb-4">
-                Spot unusual options activities from bird's-eye view of the entire options chain.<br />
-                Data could take some time to load, please wait patiently.
+                Spot unusual options activities from bird's-eye view of the entire options chain. Gauge the market using Implied Volatility, Open Interest and Volume.<br />
+                *Data could take some time to load, please wait patiently.
             </p>
             <Row className="justify-content-md-center">
                 <Col md={10}>

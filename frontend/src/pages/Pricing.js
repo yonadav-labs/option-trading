@@ -34,6 +34,8 @@ export default function Pricing() {
         <>
             <Helmet>
                 <title>Tigerstance | Pricing</title>
+                <meta name="description" content="How does Tigerstance's pricing work? Tigerstance BASIC is available for free. 
+                Tigerstance PRO costs $4.91 per month when billed annually and $5.69 per month when billed monthly." />
             </Helmet>
             <div className="container-fluid pricing-background">
                 <div className="row m-5">
@@ -57,7 +59,7 @@ export default function Pricing() {
                                 <div className="pt-3 card-list-left">
                                     <ul class="list-unstyled mt-3 mb-4">
                                         <li>&#10003; Unlock 8 options trading strategies.</li>
-                                        <li>&#10003; Exclusive market <Link to="/blogs" className="text-white"><b>reports</b></Link>.</li>
+                                        <li>&#10003; Exclusive market <Link to="/reports" className="text-white"><b>reports</b></Link>.</li>
                                         {authState.isAuthenticated ?
                                             <li>&#10003; Strategy <Link to="/profile" className="text-white"><b>personalization</b></Link>.</li>
                                             : <li>&#10003; Strategy personalization.</li>}
@@ -69,7 +71,7 @@ export default function Pricing() {
                                 {authState.isAuthenticated ?
                                     <></>
                                     :
-                                    <Link class="btn-block btn-light btn-login" to="/signin/register">SIGN UP</Link>
+                                    <Link class="btn-block btn-light btn-login" to="/signin/register">Sign Up for Free</Link>
                                 }
                             </Card.Body>
                         </Card>
@@ -97,9 +99,9 @@ export default function Pricing() {
                                                 GaEvent('click subscribe monthly');
                                                 subscribeMonthly();
                                             }
-                                            }>BECOME PRO</button>
+                                            }>Become Pro</button>
                                     :
-                                    <a href="/signin" class="btn-block btn-light btn-login">BECOME PRO</a>
+                                    <a href="/signin" class="btn-block btn-light btn-login">Become Pro</a>
                                 }
                             </Card.Body>
                         </Card>
@@ -129,9 +131,9 @@ export default function Pricing() {
                                                 GaEvent('click subscribe yearly');
                                                 subscribeYearly();
                                             }}
-                                        >BECOME PRO</button>
+                                        >Become Pro</button>
                                     :
-                                    <a href="/signin" class="btn-block btn-light btn-login">BECOME PRO</a>
+                                    <a href="/signin" class="btn-block btn-light btn-login">Become Pro</a>
                                 }
                             </Card.Body>
                         </Card>

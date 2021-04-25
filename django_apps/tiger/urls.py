@@ -6,7 +6,7 @@ from tiger import views
 
 router = routers.SimpleRouter()
 router.register(r'tickers', views.TickerViewSet, basename='tickers')
-router.register(r'blogs', views.BlogViewSet, basename='blogs')
+router.register(r'reports', views.BlogViewSet, basename='blogs')
 router.register(r'brokers', views.BrokerViewSet, basename='brokers')
 router.register(r'users', views.UserViewSet, basename='users')
 
