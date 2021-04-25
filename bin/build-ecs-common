@@ -10,6 +10,10 @@ START_YELLOW_TEXT='\033[0;33m'
 START_RED_TEXT='\033[0;31m'
 CLEAR_TEXT_COLOR='\033[0m'
 
+ts_aws() {
+  aws --profile tigerstance "$@"
+}
+
 join_array() {
   local DELIMITER="$1"
   shift
@@ -89,7 +93,7 @@ aws_ecs_docker_login() {
   echo '========================================'
   echo
 
-  aws ecr get-login-password --region us-east-2 \
+  ts_aws ecr get-login-password --region us-east-2 \
     | docker login --username AWS --password-stdin 813539762970.dkr.ecr.us-east-2.amazonaws.com
 }
 
