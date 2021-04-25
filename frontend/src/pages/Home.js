@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import {Helmet} from "react-helmet";
+import { Helmet } from "react-helmet";
 import { Link } from "react-router-dom";
 import { Row, Col } from 'react-bootstrap';
 import './Home.css';
@@ -10,7 +10,7 @@ export default function Home() {
     return (
         <div>
             <Helmet>
-                <title>Tigerstance | Home</title>
+                <title>Tigerstance | Trade Options Smarter</title>
             </Helmet>
             <div className="container-fluid">
                 {/* <img src={HeroRight} alt="hero-right" /> */}
@@ -18,7 +18,7 @@ export default function Home() {
                     <div className="col-md-6 top-left">
                         <div className="text-center my-auto">
                             <h1>We do the math, so you don't have to.</h1>
-                            <h4>Find your next options trading opportunity in one glance.</h4>
+                            <h4>Find your next options trading opportunity at a glance.</h4>
                             <div className="center-buttons">
                                 <Link className="btn btn-lg btn-primary ml-3 btn-gradient" to="/discover" role="button">Discover</Link>
                                 <Link className="btn btn-lg btn-secondary mr-3 btn-white" to="/build" role="button">Build</Link>
@@ -32,8 +32,8 @@ export default function Home() {
 
                 <Row className="p-5 min-vh-100">
                     <Col lg="12" className="text-center my-auto">
-                        <h4 className="text-primary">Discover: how it works</h4>
-                        <h1 className="find-title">Find the right options trading ideas just for you</h1>
+                        <h4 className="text-primary">Discover: how it works.</h4>
+                        <h1 className="find-title">Discover option strategies with the best potential return.</h1>
                     </Col>
                     <VerticalCarousel>
                         <VerticalCarousel.Slide
@@ -54,15 +54,15 @@ export default function Home() {
                         <VerticalCarousel.Slide
                             imgSrc="slider4.png"
                             heading="Get trading ideas."
-                            text="We enumerate tens of thousands trading ideas and present the best ones to you."
+                            text="We present the best trading ideas to you."
                         />
                     </VerticalCarousel>
                 </Row>
 
                 <Row className="p-5 min-vh-100">
                     <Col lg="12" className="text-center my-auto">
-                        <h4 className="text-primary">Strategy Builder</h4>
-                        <h1 className="find-title">Build and visualize an option strategy</h1>
+                        <h4 className="text-primary">Build: how it works.</h4>
+                        <h1 className="find-title">Build and visualize your own option strategy.</h1>
                     </Col>
                     <VerticalCarousel>
                         <VerticalCarousel.Slide
@@ -74,26 +74,26 @@ export default function Home() {
                         <VerticalCarousel.Slide
                             className="w-100"
                             imgSrc="sc_step_2.png"
-                            heading="Select an option strategy"
-                            text="Search for a specific strategy or discover strategies based on your sentiment"
+                            heading="Select an option strategy."
+                            text="Search for a specific strategy or discover strategies based on your sentiment."
                         />
                         <VerticalCarousel.Slide
                             className="w-100"
                             imgSrc="sc_step_3.png"
-                            heading="Complete the legs"
-                            text="Build and tweak your strategy leg by leg"
+                            heading="Complete the legs."
+                            text="Build and tweak your strategy leg by leg."
                         />
                         <VerticalCarousel.Slide
                             className="w-100"
                             imgSrc="sc_step_4.png"
-                            heading="Receive feedback while you build"
-                            text="Not sure how to build the strategy? Informative hints are there to help guide you"
+                            heading="Receive feedback while you build."
+                            text="Not sure how to build the strategy? Informative hints are there to help guide you."
                         />
                         <VerticalCarousel.Slide
                             className="w-75"
                             imgSrc="sc_step_5.png"
-                            heading="Visualize and understand your strategy"
-                            text="Explore your strategy with the interactive graph and analyze the calculated details"
+                            heading="Visualize and understand your strategy."
+                            text="Explore your strategy with the interactive graph and analyze the calculated details."
                         />
                     </VerticalCarousel>
                 </Row>
@@ -101,7 +101,7 @@ export default function Home() {
                 <Row className="p-5">
                     <Col lg="12" className="text-center my-auto">
                         <h4 className="text-primary">Our Mission</h4>
-                        <h2>Tigerstance helps investors like you to find and understand options trading opportunities.</h2>
+                        <h2>Tigerstance helps investors like you trade options smarter.</h2>
                     </Col>
                 </Row>
 
@@ -111,7 +111,8 @@ export default function Home() {
                         <h1>Our Customers Love Us</h1>
                     </div>
                     <div className="col-lg-12 text-center">
-                        <h2>“Tigerstance helps me make decisions with ease and confidence in this volatile market.”</h2>
+                        <h2>“Tigerstance helped me make decisions with ease and confidence when market was volatile.”</h2>
+                        <h4> - Jay S, Portfolio Manager, Eystra Capital, LLC.</h4>
                     </div>
                     {/* <div className="row col-lg-6 justify-content-center">
                         <div className="col-lg-2 text-center">

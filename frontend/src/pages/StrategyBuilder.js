@@ -223,7 +223,7 @@ export default function StrategyBuilder() {
     return (
         <Container className="min-vh-100" style={{ "marginTop": "2rem" }} fluid>
             <Helmet>
-                <title>Tigerstance | Build</title>
+                <title>Tigerstance | Build and share your own option strategies</title>
             </Helmet>
             <ModalSpinner active={modalActive}></ModalSpinner>
             <h2 className="text-center" style={{ "paddingBottom": '2rem' }}>Build options strategies</h2>

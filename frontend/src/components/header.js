@@ -79,7 +79,7 @@ function Header() {
                         :
                         <Nav>
                             <Nav.Link className="text-dark" href="/signin">Log In</Nav.Link>
-                            <Nav.Link className="btn-primary text-light signup-sm btn-gradient" href="/signin/register">Sign Up, It’s Free</Nav.Link>
+                            <Nav.Link className="btn-primary text-light signup-sm btn-gradient" href="/signin/register">Sign Up for Free</Nav.Link>
                         </Nav>
                     }
                 </Navbar.Collapse>

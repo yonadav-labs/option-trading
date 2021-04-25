@@ -407,7 +407,7 @@ export default function SellCoveredCall() {
     return (
         <Container id="content" className="min-vh-100" style={{ "marginTop": "2rem" }} fluid>
             <Helmet>
-                <title>Tigerstance | Browse</title>
+                <title>Tigerstance | Browse the options chain with ease and clarity.</title>
             </Helmet>
             <ModalSpinner active={modalActive}></ModalSpinner>
             <h2 className="text-center">Browse option contracts</h2>

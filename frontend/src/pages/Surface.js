@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Helmet } from "react-helmet";
 import TickerTypeahead from '../components/TickerTypeahead';
 import { useOktaAuth } from '@okta/okta-react';
 import getApiUrl, { loadTickers, loadExpirationDates } from '../utils';
@@ -104,6 +105,9 @@ export default function Surface() {
 
     return (
         <Container id="content" style={{ "marginTop": "2rem" }} fluid>
+            <Helmet>
+                <title>Tigerstance | Implied Volatility Surface and more</title>
+            </Helmet>
             <ModalSpinner active={modalActive}></ModalSpinner>
             <h2 className="text-center mb-2">Options chain surface</h2>
             <p className="text-center mb-4">

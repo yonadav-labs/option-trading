@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import {Helmet} from "react-helmet";
+import { Helmet } from "react-helmet";
 import { Link } from "react-router-dom";
 import getApiUrl from '../utils';
 import { useHistory } from 'react-router-dom';
@@ -20,7 +20,7 @@ const Blog = () => {
     return (
         <div className="blog-background">
             <Helmet>
-                <title>Tigerstance | Report</title>
+                <title>Tigerstance | Member-Only Market Reports</title>
             </Helmet>
             <div id="content" className="container min-vh-100" style={{ "marginTop": "2rem" }} fluid>
                 <h2 className="text-center mt-4 mb-5">Tigerstance market reports</h2>
