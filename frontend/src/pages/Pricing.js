@@ -86,7 +86,7 @@ export default function Pricing() {
                                     <ul class="list-unstyled mt-3 mb-4">
                                         <li>&#10003; Everything in BASIC membership.</li>
                                         <li>&#10003; Unlimited usage for all features.</li>
-                                        <li>&#10003; Unlock all 22 strategies.</li>
+                                        {/* <li>&#10003; Unlock all 22 strategies.</li> */}
                                         <li>&#10003; More Pro member features to come!</li>
                                     </ul>
                                 </div>
