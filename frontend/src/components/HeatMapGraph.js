@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { useRef, useEffect } from "react";
 import Highcharts from "highcharts";
 import HighchartsHeatmap from "highcharts/modules/heatmap";
 import HighchartsReact from "highcharts-react-official";
@@ -14,10 +14,11 @@ function getPointCategoryName(point, dimension) {
 }
 
 export default function HeatMapGraph(props) {
-    const { title, className, zLabel, data, expirationDates, strikePrices } = props;
+    const { title, className, zLabel, data, expirationDates, strikePrices, chartWidth } = props;
     const chartComponent = useRef(null);
 
     const chartHeight = Math.max(Math.min(strikePrices.length * 18, 12000), 400);
+
     // chart options
     const options = {
         credits: {
@@ -25,26 +26,21 @@ export default function HeatMapGraph(props) {
         },
         chart: {
             type: 'heatmap',
-            // zoomType: "xy",
-            // panning: true,
-            // panKey: "shift",
             marginTop: 42,
-            marginBottom: 38,
+            marginBottom: 150,
             plotBorderWidth: 0,
             height: chartHeight
         },
         title: {
             text: title
         },
-        // subtitle: {
-        //     text: "Click and drag to zoom in. Hold down shift key to pan.",
-        // },
         xAxis: {
-            categories: expirationDates
+            categories: expirationDates,
+            title: { text: 'Expiration Date' },
         },
         yAxis: {
             categories: strikePrices,
-            title: null,
+            title: { text: 'Strike' },
             reversed: true
         },
         colorAxis: {
@@ -53,17 +49,12 @@ export default function HeatMapGraph(props) {
             maxColor: '#ff9999'
         },
         legend: {
-            align: 'right',
-            layout: 'vertical',
-            margin: 0,
-            verticalAlign: 'top',
-            y: 25,
-            symbolHeight: chartHeight - 80
+            enabled: false,
         },
         tooltip: {
             formatter: function () {
                 return 'Expiration Date: <b>' + getPointCategoryName(this.point, 'x') +
-                    '</b><br>Strike price: <b>$' + getPointCategoryName(this.point, 'y') +
+                    '</b><br>Strike price: <b>' + getPointCategoryName(this.point, 'y') +
                     '</b><br>' + zLabel + ':<b>' + this.point.value + '</b>';
             }
         },

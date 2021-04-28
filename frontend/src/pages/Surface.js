@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Helmet } from "react-helmet";
 import TickerTypeahead from '../components/TickerTypeahead';
 import { useOktaAuth } from '@okta/okta-react';
-import getApiUrl, { loadTickers, loadExpirationDates } from '../utils';
+import getApiUrl, { loadTickers, GetGaEventTrackingFunc } from '../utils';
 import ModalSpinner from '../components/ModalSpinner';
 import HeatMapGraph from '../components/HeatMapGraph';
 import Select from "react-select";
@@ -14,6 +14,8 @@ import { Form, Container, Row, Col } from 'react-bootstrap';
 import { useHistory, useLocation } from "react-router-dom";
 import { addQuery, useSearch } from '../components/querying'
 
+const GaEvent = GetGaEventTrackingFunc('surface');
+
 export default function Surface() {
     const history = useHistory()
     const location = useLocation()
@@ -21,20 +23,20 @@ export default function Surface() {
 
     const [allTickers, setAllTickers] = useState([]);
     const [selectedTicker, setSelectedTicker] = useState([]);
-    const [basicInfo, setbasicInfo] = useState({});
     const [modalActive, setModalActive] = useState(false);
     const [headers, setHeaders] = useState(null);
     const { oktaAuth, authState } = useOktaAuth();
 
     // heatmap
     const [heatmapData, setHeatmapData] = useState(null);
-    const [selectedContractType, setSelectedContractType] = useState({ value: 'call', label: 'Call' });
-    const [selectedTarget, setSelectedTarget] = useState({ value: 'implied_volatility', label: 'Implied Volatility' });
+    const [baseHeatmapData, setBaseHeatmapData] = useState(null);
+    const [selectedContractType, setSelectedContractType] = useState('call');
+    const [selectedTarget, setSelectedTarget] = useState('Implied Volatility');
+    const [chartWidth, setChartWidth] = useState(0);
+    const chartContainer = useRef(null);
 
     const resetStates = () => {
         setSelectedTicker([]);
-        setbasicInfo({});
-        setHeatmapData(null);
     }
 
     const contractTypeOptions = [
@@ -43,17 +45,20 @@ export default function Surface() {
     ]
 
     const targetOptions = [
-        { value: 'implied_volatility', label: 'Implied Volatility' },
-        { value: 'open_interest', label: 'Open Interest' },
-        { value: 'volume', label: 'Volume' }
+        { value: 'Implied Volatility', label: 'Implied Volatility' },
+        { value: 'Open Interest', label: 'Open Interest' },
+        { value: 'Volume', label: 'Volume' }
     ]
 
-    const loadHeatmapData = (headers, symbol, params) => {
+    const loadHeatmapData = (symbol, params) => {
         try {
             setModalActive(true);
-            Axios.get(`${getApiUrl()}/tickers/${symbol}/heatmap_data/`, { headers, params })
+            setHeatmapData(null);
+            setBaseHeatmapData(null);
+
+            Axios.get(`${getApiUrl()}/tickers/${symbol}/heatmap_data/`, { params })
                 .then(response => {
-                    setHeatmapData(response.data);
+                    setBaseHeatmapData(response.data);
                     setModalActive(false);
                 })
         } catch (error) {
@@ -63,30 +68,43 @@ export default function Surface() {
     };
 
     const onTickerSelectionChange = (selected) => {
+        GaEvent('ajust ticker');
+
         if (selected.length > 0) {
-            loadExpirationDates(headers, selected, () => { }, () => { }, setbasicInfo, setSelectedTicker);
+            setSelectedTicker(selected);
             addQuery(location, history, 'symbol', selected[0].symbol)
-        }
-        if (resetStates) {
-            resetStates([]);
+        } else {
+            if (resetStates) {
+                resetStates();
+            }
         }
     };
 
     const onChangeContractType = (option) => {
-        setSelectedContractType(option);
+        GaEvent('adjust contract type');
+        setSelectedContractType(option.value);
     }
 
     const onChangeTarget = (option) => {
-        setSelectedTarget(option);
+        GaEvent('adjust metric');
+        setSelectedTarget(option.value);
     }
 
     useEffect(() => {
         if (selectedTicker.length > 0) {
-            setHeatmapData(null);
-            let params = { contract_type: selectedContractType.value, target: selectedTarget.value }
-            loadHeatmapData(headers, selectedTicker[0].symbol, params);
+            let params = { contract_type: selectedContractType }
+            loadHeatmapData(selectedTicker[0].symbol, params);
         }
-    }, [selectedTicker, selectedContractType, selectedTarget])
+    }, [selectedTicker, selectedContractType])
+
+    useEffect(() => {
+        if (baseHeatmapData) {
+            let data = baseHeatmapData.data.map(x => ([
+                x[0], x[1], x[2][selectedTarget]
+            ]));
+            setHeatmapData({data, expirationDates: baseHeatmapData.expiration_dates, strikePrices: baseHeatmapData.strike_prices});
+        }
+    }, [baseHeatmapData, selectedTarget]);
 
     useEffect(() => {
         if (authState.isAuthenticated) {
@@ -102,6 +120,12 @@ export default function Surface() {
             loadTickers(headers, setSelectedTicker, setAllTickers, querySymbol, onTickerSelectionChange);
         }
     }, [headers]);
+
+    useEffect(() => {
+        if (chartContainer.current) {
+            setChartWidth(chartContainer.current.offsetWidth);
+        }
+    }, [chartContainer.current]);
 
     return (
         <Container id="content" style={{ "marginTop": "2rem" }} fluid>
@@ -137,7 +161,7 @@ export default function Surface() {
                                         className="basic-single"
                                         options={contractTypeOptions}
                                         onChange={(option) => onChangeContractType(option)}
-                                        defaultValue={selectedContractType}
+                                        defaultValue={{ value: 'call', label: 'Call' }}
                                     />
                                 </Form.Group>
                             </Col>
@@ -148,7 +172,7 @@ export default function Surface() {
                                         className="basic-single"
                                         options={targetOptions}
                                         onChange={(option) => onChangeTarget(option)}
-                                        defaultValue={selectedTarget}
+                                        defaultValue={{ value: 'Implied Volatility', label: 'Implied Volatility' }}
                                     />
                                 </Form.Group>
                             </Col>
@@ -157,14 +181,15 @@ export default function Surface() {
                 </Col>
             </Row>
             <Row className="justify-content-md-center min-vh-100">
-                <Col md={10}>
-                    {selectedTicker.length > 0 && heatmapData &&
+                <Col md={10} ref={chartContainer}>
+                    {heatmapData &&
                         <HeatMapGraph
                             className="my-4"
-                            zLabel={selectedTarget.label}
+                            zLabel={selectedTarget}
                             data={heatmapData.data}
-                            expirationDates={heatmapData.expiration_dates}
-                            strikePrices={heatmapData.strike_prices}
+                            expirationDates={heatmapData.expirationDates}
+                            strikePrices={heatmapData.strikePrices}
+                            chartWidth={chartWidth}
                         />
                     }
                 </Col>

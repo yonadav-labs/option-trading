@@ -53,21 +53,19 @@ class TickerViewSet(viewsets.ModelViewSet):
         def build_heatmap(contracts, expirations, strikes):
             data = []
             for contract in contracts:
-                value = getattr(contract, target)
-                if value is None:
-                    continue
-
-                if target == 'implied_volatility':
-                    value = float(f'{value:.4f}')
                 data.append((
                     expirations.index(contract.expiration),
                     strikes.index(contract.strike),
-                    value
+                    {
+                        'Implied Volatility': float(f'{contract.implied_volatility:.2f}') if contract.implied_volatility is not None else None,
+                        'Open Interest': contract.open_interest,
+                        'Volume': contract.volume
+                    }
                 ))
 
             result = {
                 'expiration_dates': expiration_dates,
-                'strike_prices': strikes,
+                'strike_prices': [f'${strike:,.2f}' for strike in strikes],
                 'data': data
             }
             return result
@@ -75,7 +73,6 @@ class TickerViewSet(viewsets.ModelViewSet):
         ticker = self.get_object()
 
         contract_type = request.GET.get('contract_type', 'call')
-        target = request.GET.get('target', 'implied_volatility')
 
         expiration_timestamps = ticker.get_expiration_timestamps()
         expirations = [ts // 1000 for ts in expiration_timestamps]
