@@ -9,6 +9,7 @@ import {
 import ZoomOutMapIcon from '@material-ui/icons/ZoomOutMap';
 import ShareTradeBtn from "../ShareTradeBtn";
 import NewLegCard from "./NewLegCard";
+import GraphSummary from "../GraphSummary";
 
 const GaEvent = GetGaEventTrackingFunc('trade details');
 
@@ -159,9 +160,18 @@ export default function NewTradeCard({ trade }) {
                             null
                         }
                     </Grid>
-
                 </CardContent>
-
+                {!moreInfo ?
+                    <div style={{
+                        position: "relative",
+                        width: "100%",
+                        height: 100
+                    }}>
+                        <GraphSummary trade={trade} />
+                    </div>
+                    :
+                    null
+                }
             </CardActionArea>
             {/* show more info */}
             {moreInfo ?

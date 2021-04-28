@@ -1,12 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import { Helmet } from "react-helmet";
 import { Link } from "react-router-dom";
-import { Row, Col } from 'react-bootstrap';
-import './Home.css';
-import VerticalCarousel from '../components/VerticalCarousel';
+import { Row, Col } from "react-bootstrap";
+import "./Home.css";
+import VerticalCarousel from "../components/VerticalCarousel";
 
 export default function Home() {
-
     return (
         <div>
             <Helmet>
@@ -18,10 +17,25 @@ export default function Home() {
                     <div className="col-md-6 top-left">
                         <div className="text-center my-auto">
                             <h1>We do the math, so you don't have to.</h1>
-                            <h4>Find your next options trading opportunity at a glance.</h4>
+                            <h4>
+                                Find your next options trading opportunity at a
+                                glance.
+                            </h4>
                             <div className="center-buttons">
-                                <Link className="btn btn-lg btn-primary ml-3 btn-gradient" to="/discover" role="button">Discover</Link>
-                                <Link className="btn btn-lg btn-secondary mr-3 btn-white" to="/build" role="button">Build</Link>
+                                <Link
+                                    className="btn btn-lg btn-primary ml-3 btn-gradient"
+                                    to="/discover"
+                                    role="button"
+                                >
+                                    Discover
+                                </Link>
+                                <Link
+                                    className="btn btn-lg btn-secondary mr-3 btn-white"
+                                    to="/build"
+                                    role="button"
+                                >
+                                    Build
+                                </Link>
                             </div>
                         </div>
                     </div>
@@ -32,8 +46,13 @@ export default function Home() {
 
                 <Row className="p-5 min-vh-100">
                     <Col lg="12" className="text-center my-auto">
-                        <h4 className="text-primary">Discover: how it works.</h4>
-                        <h1 className="find-title">Discover option strategies with the best potential return.</h1>
+                        <h4 className="text-primary">
+                            Discover: how it works.
+                        </h4>
+                        <h1 className="find-title">
+                            Discover option strategies with the best potential
+                            return.
+                        </h1>
                     </Col>
                     <VerticalCarousel>
                         <VerticalCarousel.Slide
@@ -62,7 +81,9 @@ export default function Home() {
                 <Row className="p-5 min-vh-100">
                     <Col lg="12" className="text-center my-auto">
                         <h4 className="text-primary">Build: how it works.</h4>
-                        <h1 className="find-title">Build and visualize your own option strategy.</h1>
+                        <h1 className="find-title">
+                            Build and visualize your own option strategy.
+                        </h1>
                     </Col>
                     <VerticalCarousel>
                         <VerticalCarousel.Slide
@@ -101,7 +122,10 @@ export default function Home() {
                 <Row className="p-5">
                     <Col lg="12" className="text-center my-auto">
                         <h4 className="text-primary">Our Mission</h4>
-                        <h2>Tigerstance helps investors like you trade options smarter.</h2>
+                        <h2>
+                            Tigerstance helps investors like you trade options
+                            smarter.
+                        </h2>
                     </Col>
                 </Row>
 
@@ -112,8 +136,14 @@ export default function Home() {
                     </div>
                     <div className="col-lg-12 text-center">
                         <h1>⭐⭐⭐⭐⭐</h1>
-                        <h2>“Tigerstance helped me make decisions with ease and confidence when market was volatile.”</h2>
-                        <h4> - Jay S, Portfolio Manager, Eystra Capital, LLC.</h4>
+                        <h2>
+                            “Tigerstance helped me make decisions with ease and
+                            confidence when market was volatile.”
+                        </h2>
+                        <h4>
+                            {" "}
+                            - Jay S, Portfolio Manager, Eystra Capital, LLC.
+                        </h4>
                     </div>
                     {/* <div className="row col-lg-6 justify-content-center">
                         <div className="col-lg-2 text-center">
@@ -128,6 +158,6 @@ export default function Home() {
                     </div> */}
                 </Row>
             </div>
-        </div >
+        </div>
     );
 }
