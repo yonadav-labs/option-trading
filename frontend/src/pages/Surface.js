@@ -1,28 +1,32 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Helmet } from "react-helmet";
-import TickerTypeahead from '../components/TickerTypeahead';
 import { useOktaAuth } from '@okta/okta-react';
-import getApiUrl, { loadTickers, GetGaEventTrackingFunc } from '../utils';
+import getApiUrl, { newLoadTickers, GetGaEventTrackingFunc } from '../utils';
 import ModalSpinner from '../components/ModalSpinner';
 import HeatMapGraph from '../components/HeatMapGraph';
-import Select from "react-select";
 import Axios from 'axios';
-
-import { Form, Container, Row, Col } from 'react-bootstrap';
-
-// url querying
-import { useHistory, useLocation } from "react-router-dom";
-import { addQuery, useSearch } from '../components/querying'
+import { Paper, Stack, Container, Divider, makeStyles, Typography, FormControl, Select, MenuItem, InputLabel } from "@material-ui/core";
+import TickerAutocomplete from "../components/TickerAutocomplete";
 
 const GaEvent = GetGaEventTrackingFunc('surface');
 
+const useStyles = makeStyles((theme) => ({
+    customPaper: {
+        padding: theme.spacing(3),
+        [theme.breakpoints.up('sm')]: {
+            paddingLeft: theme.spacing(7),
+            paddingRight: theme.spacing(7),
+            margin: theme.spacing(1),
+            borderRadius: 50
+        }
+    }
+}));
+
 export default function Surface() {
-    const history = useHistory()
-    const location = useLocation()
-    const querySymbol = useSearch(location, 'symbol')
+    const classes = useStyles();
 
     const [allTickers, setAllTickers] = useState([]);
-    const [selectedTicker, setSelectedTicker] = useState([]);
+    const [selectedTicker, setSelectedTicker] = useState(null);
     const [modalActive, setModalActive] = useState(false);
     const [headers, setHeaders] = useState(null);
     const { oktaAuth, authState } = useOktaAuth();
@@ -31,13 +35,7 @@ export default function Surface() {
     const [heatmapData, setHeatmapData] = useState(null);
     const [baseHeatmapData, setBaseHeatmapData] = useState(null);
     const [selectedContractType, setSelectedContractType] = useState('call');
-    const [selectedTarget, setSelectedTarget] = useState('Implied Volatility');
-    const [chartWidth, setChartWidth] = useState(0);
-    const chartContainer = useRef(null);
-
-    const resetStates = () => {
-        setSelectedTicker([]);
-    }
+    const [selectedMetric, setSelectedMetric] = useState('Implied Volatility');
 
     const contractTypeOptions = [
         { value: 'call', label: 'Call' },
@@ -59,6 +57,7 @@ export default function Surface() {
             Axios.get(`${getApiUrl()}/tickers/${symbol}/heatmap_data/`, { params })
                 .then(response => {
                     setBaseHeatmapData(response.data);
+                    buildHeatMapData(response.data)
                     setModalActive(false);
                 })
         } catch (error) {
@@ -67,44 +66,40 @@ export default function Surface() {
         }
     };
 
-    const onTickerSelectionChange = (selected) => {
+    const onTickerSelectionChange = (e, selected) => {
         GaEvent('ajust ticker');
-
-        if (selected.length > 0) {
-            setSelectedTicker(selected);
-            addQuery(location, history, 'symbol', selected[0].symbol)
-        } else {
-            if (resetStates) {
-                resetStates();
-            }
-        }
+        setSelectedTicker(selected);
     };
 
     const onChangeContractType = (option) => {
         GaEvent('adjust contract type');
-        setSelectedContractType(option.value);
+        setSelectedContractType(option);
     }
 
     const onChangeTarget = (option) => {
         GaEvent('adjust metric');
-        setSelectedTarget(option.value);
+        setSelectedMetric(option);
+    }
+
+    const buildHeatMapData = (baseData) => {
+        let data = baseData.data.map(x => ([
+            x[0], x[1], x[2][selectedMetric]
+        ]));
+        setHeatmapData({data, expirationDates: baseData.expiration_dates, strikePrices: baseData.strike_prices});
     }
 
     useEffect(() => {
-        if (selectedTicker.length > 0) {
+        if (selectedTicker) {
             let params = { contract_type: selectedContractType }
-            loadHeatmapData(selectedTicker[0].symbol, params);
+            loadHeatmapData(selectedTicker.symbol, params);
         }
     }, [selectedTicker, selectedContractType])
 
     useEffect(() => {
         if (baseHeatmapData) {
-            let data = baseHeatmapData.data.map(x => ([
-                x[0], x[1], x[2][selectedTarget]
-            ]));
-            setHeatmapData({data, expirationDates: baseHeatmapData.expiration_dates, strikePrices: baseHeatmapData.strike_prices});
+            buildHeatMapData(baseHeatmapData);
         }
-    }, [baseHeatmapData, selectedTarget]);
+    }, [selectedMetric]);
 
     useEffect(() => {
         if (authState.isAuthenticated) {
@@ -117,15 +112,9 @@ export default function Surface() {
 
     useEffect(() => {
         if (headers) {
-            loadTickers(headers, setSelectedTicker, setAllTickers, querySymbol, onTickerSelectionChange);
+            newLoadTickers(headers, setAllTickers);
         }
     }, [headers]);
-
-    useEffect(() => {
-        if (chartContainer.current) {
-            setChartWidth(chartContainer.current.offsetWidth);
-        }
-    }, [chartContainer.current]);
 
     return (
         <Container id="content" style={{ "marginTop": "2rem" }} fluid>
@@ -135,65 +124,69 @@ export default function Surface() {
                     content="Spot unusual options activities from bird's-eye view of the entire options chain. Gauge the market using Implied Volatility, Open Interest and Volume." />
             </Helmet>
             <ModalSpinner active={modalActive}></ModalSpinner>
-            <h2 className="text-center mb-2">Options chain surface</h2>
-            <p className="text-center mb-4">
-                Spot unusual options activities from bird's-eye view of the entire options chain. Gauge the market using Implied Volatility, Open Interest and Volume.<br />
-                *Data could take some time to load, please wait patiently.
-            </p>
-            <Row className="justify-content-md-center">
-                <Col md={10}>
-                    <Form>
-                        <Row>
-                            <Col md={6}>
-                                <Form.Group>
-                                    <Form.Label className="requiredField"><h4>Enter ticker symbol:</h4></Form.Label>
-                                    <TickerTypeahead
-                                        selectedTicker={selectedTicker}
-                                        allTickers={allTickers}
-                                        onTickerSelectionChange={onTickerSelectionChange}
-                                    />
-                                </Form.Group>
-                            </Col>
-                            <Col md={3}>
-                                <Form.Group>
-                                    <Form.Label className="requiredField"><h4>Type:</h4></Form.Label>
-                                    <Select
-                                        className="basic-single"
-                                        options={contractTypeOptions}
-                                        onChange={(option) => onChangeContractType(option)}
-                                        defaultValue={{ value: 'call', label: 'Call' }}
-                                    />
-                                </Form.Group>
-                            </Col>
-                            <Col md={3}>
-                                <Form.Group>
-                                    <Form.Label className="requiredField"><h4>Metric:</h4></Form.Label>
-                                    <Select
-                                        className="basic-single"
-                                        options={targetOptions}
-                                        onChange={(option) => onChangeTarget(option)}
-                                        defaultValue={{ value: 'Implied Volatility', label: 'Implied Volatility' }}
-                                    />
-                                </Form.Group>
-                            </Col>
-                        </Row>
-                    </Form>
-                </Col>
-            </Row>
-            <Row className="justify-content-md-center min-vh-100">
-                <Col md={10} ref={chartContainer}>
-                    {heatmapData &&
-                        <HeatMapGraph
-                            className="my-4"
-                            zLabel={selectedTarget}
-                            data={heatmapData.data}
-                            expirationDates={heatmapData.expirationDates}
-                            strikePrices={heatmapData.strikePrices}
-                            chartWidth={chartWidth}
+            <Container>
+                <Paper className={classes.customPaper} elevation={4}>
+                    <Stack direction={{ xs: 'column', sm: 'row' }} divider={<Divider orientation="vertical" variant="middle" flexItem />} spacing={2}>
+                        <TickerAutocomplete
+                            tickers={allTickers}
+                            onChange={onTickerSelectionChange}
+                            displayLabel
                         />
-                    }
-                </Col>
-            </Row>
+
+                        <FormControl disabled={!selectedTicker} fullWidth>
+                            <InputLabel><Typography variant="h6">Type</Typography></InputLabel>
+                            <Select
+                                id="contract-type"
+                                fullWidth
+                                defaultValue={selectedContractType}
+                                onChange={(e) => onChangeContractType(e.target.value)}
+                                style={{ paddingBottom: "5px" }}
+                                variant="standard"
+                            >
+                                {contractTypeOptions.map((option, index) => <MenuItem value={option.value} key={index}> {option.label} </MenuItem>)}
+                            </Select>
+                        </FormControl>
+
+                        <FormControl disabled={!selectedTicker} fullWidth>
+                            <InputLabel><Typography variant="h6">Metric</Typography></InputLabel>
+                            <Select
+                                id="metric"
+                                defaultValue={selectedMetric}
+                                fullWidth
+                                onChange={(e) => onChangeTarget(e.target.value)}
+                                style={{ paddingBottom: "5px" }}
+                                variant="standard"
+                            >
+                                {targetOptions.map((option, index) => <MenuItem value={option.value} key={index}> {option.label} </MenuItem>)}
+                            </Select>
+                        </FormControl>
+
+                    </Stack>
+                </Paper>
+            </Container>
+            <br />
+            <Container>
+                <Typography variant="h4" align="center">Options chain surface</Typography>
+                <br />
+                <Typography variant="body1" align="center">
+                    Spot unusual options activities from bird's-eye view of the entire options chain. Gauge the market using Implied Volatility, Open Interest and Volume.<br />
+                    *Data could take some time to load, please wait patiently.
+                </Typography>
+            </Container>
+
+            <Container>
+                {heatmapData ?
+                    <HeatMapGraph
+                        className="my-4"
+                        zLabel={selectedMetric}
+                        data={heatmapData.data}
+                        expirationDates={heatmapData.expirationDates}
+                        strikePrices={heatmapData.strikePrices}
+                    />
+                    :
+                    <div style={{height: '320px'}}></div>
+                }
+            </Container>
         </Container >
     );
 }

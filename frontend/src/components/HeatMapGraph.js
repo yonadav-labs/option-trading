@@ -14,7 +14,7 @@ function getPointCategoryName(point, dimension) {
 }
 
 export default function HeatMapGraph(props) {
-    const { title, className, zLabel, data, expirationDates, strikePrices, chartWidth } = props;
+    const { title, className, zLabel, data, expirationDates, strikePrices } = props;
     const chartComponent = useRef(null);
 
     const chartHeight = Math.max(Math.min(strikePrices.length * 18, 12000), 400);
