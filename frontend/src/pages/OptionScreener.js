@@ -130,7 +130,7 @@ export default function SellCoveredCall() {
             headerSortingStyle,
         }, {
             dataField: "mark",
-            text: "Mid/mark premium",
+            text: "Mid/Mark",
             formatter: (cell, row, rowIndex, extraData) => (
                 (
                     <span>
@@ -143,7 +143,7 @@ export default function SellCoveredCall() {
             headerSortingStyle,
         }, {
             dataField: "to_break_even_ratio",
-            text: "Break even",
+            text: "Break Even",
             formatter: (cell, row, rowIndex, extraData) => (
                 <span>
                     At {PriceMovementFormatter(cell, row.break_even_price)}
@@ -158,7 +158,7 @@ export default function SellCoveredCall() {
             headerSortingStyle,
         }, {
             dataField: "open_interest",
-            text: "Open interest",
+            text: "Open Interest",
             sort: true,
             headerSortingStyle,
         }, {
@@ -505,7 +505,7 @@ export default function SellCoveredCall() {
                                 </Col>
                                 <Col sm="4" xs="12">
                                     <Form.Group style={{ paddingBottom: "1.5rem" }}>
-                                        <Form.Label className="font-weight-bold">Strike price:</Form.Label>
+                                        <Form.Label className="font-weight-bold">Strike Price:</Form.Label>
                                         <StrikeRangeSliderFilter
                                             atmPrice={basicInfo.regularMarketPrice}
                                             strikePrices={strikePrices}
@@ -515,7 +515,7 @@ export default function SellCoveredCall() {
                                     </Form.Group>
                                 </Col>
                                 <Col sm="3" xs="6">
-                                    <Form.Label className="font-weight-bold">Min volume:</Form.Label>
+                                    <Form.Label className="font-weight-bold">Min Volume:</Form.Label>
                                     <Form.Control name="volume" as="select" defaultValue={0}
                                         onChange={(e) => onVolumeFilterChange(e, minVolumeFilter)}>
                                         <option key="0" value="0">&#x2265; 0</option>
@@ -528,7 +528,7 @@ export default function SellCoveredCall() {
                                 </Col>
                                 <Col sm="3" xs="6">
                                     <Form.Group>
-                                        <Form.Label className="font-weight-bold">Min open interest:</Form.Label>
+                                        <Form.Label className="font-weight-bold">Min Open Interest:</Form.Label>
                                         <Form.Control name="open_interest" as="select" defaultValue={0}
                                             onChange={(e) => onOpenInterestFilterChange(e, minOpenInterestFilter)}>
                                             <option key="0" value="0">&#x2265; 0</option>

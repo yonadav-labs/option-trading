@@ -71,7 +71,7 @@ let theme = createMuiTheme({
         },
         button: {
             fontFamily: "Roboto",
-            fontSize: '0.786rem',
+            fontSize: '0.9rem',
             fontWeight: 'bold',
             lineHeight: 1.3,
             letterSpacing: '0.071em',

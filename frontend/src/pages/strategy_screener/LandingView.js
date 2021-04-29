@@ -5,6 +5,7 @@ import { useOktaAuth } from '@okta/okta-react';
 import TickerAutocomplete from "../../components/TickerAutocomplete";
 import VerticalCarousel from '../../components/VerticalCarousel';
 import { Row } from 'react-bootstrap';
+import MetricLabel from '../../components/MetricLabel.js';
 
 const useStyles = makeStyles((theme) => ({
     customPaper: {
@@ -63,22 +64,23 @@ export default function LandingView(props) {
                         </FormControl>
 
                         <FormControl disabled={expirationDisabled} fullWidth>
-                            <InputLabel><Typography variant="h6">How are you feeling?</Typography></InputLabel>
+                            <InputLabel><Typography variant="h6"><MetricLabel label='price target'></MetricLabel></Typography></InputLabel>
                             <Select
                                 id="sentiment"
                                 value={sentiment}
                                 fullWidth
-                                placeholder="How are you feeling?"
                                 onChange={(e) => onSentimentChange(e.target.value)}
                                 style={{ paddingBottom: "5px" }}
                                 variant="standard"
                             >
-                                <MenuItem disabled value={0}><span style={{ color: "gray" }}>Select a sentiment</span></MenuItem>
-                                <MenuItem value={"Neutral (0%)"}>Neutral (0%)</MenuItem>
-                                <MenuItem value={"Bullish (+5%)"}>Bullish (+5%)</MenuItem>
-                                <MenuItem value={"Bearish (-5%)"}>Bearish (-5%)</MenuItem>
-                                <MenuItem value={"Very Bullish (+10%)"}>Very Bullish (+10%)</MenuItem>
-                                <MenuItem value={"Very Bearish (-10%)"}>Very Bearish (-10%)</MenuItem>
+                                <MenuItem disabled value={0}><span style={{ color: "gray" }}>Select a Price Target</span></MenuItem>
+                                <MenuItem value={1.2}>+20%</MenuItem>
+                                <MenuItem value={1.1}>+10%</MenuItem>
+                                <MenuItem value={1.05}>+5%</MenuItem>
+                                <MenuItem value={1}>0%</MenuItem>
+                                <MenuItem value={0.95}>-5%</MenuItem>
+                                <MenuItem value={0.9}>-10%</MenuItem>
+                                <MenuItem value={0.8}>-20%</MenuItem>
                             </Select>
                         </FormControl>
 

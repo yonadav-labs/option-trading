@@ -5,13 +5,13 @@ import HelpIcon from '@material-ui/icons/Help';
 
 const CustomTooltip = withStyles((theme) => ({
     tooltip: {
-        fontSize: '0.8rem',
+        fontSize: '0.9rem',
     },
 }))(Tooltip);
 
 const useStyles = makeStyles({
     label: {
-        textTransform: 'uppercase',
+        textTransform: 'capitalize',
     },
 });
 
@@ -69,9 +69,11 @@ const HelpTextDict = {
     'strategy': 'Option strategies are the simultaneous and mixed, buying or selling of one or more options in order '
         + 'to create trading opportunities with unique risk/reward characters.',
     'strike': 'A fixed price at which the owner of the option can buy, or sell, the stock.',
-    'price target': 'Your expected share price of the stock on expiration day.',
-    'price target on exp day': 'Your expected share price of the stock on expiration day.',
-    'price target range': 'Your expected lower and upper bound share price of the stock on expiration day.',
+    'price target': 'Your expected price target of the stock shares on selected expiration date. '
+        + 'Our algorithm finds strategies with the highest potential return for that price target.',
+    'price target on exp day': 'Your expected price target of the stock shares on selected expiration date. '
+        + 'Our algorithm finds strategies with the highest potential return for that price target.',
+    'price target range': 'Your expected lower and upper bound share price of the stock on expiration date.',
     'theta': 'Estimate of how much an option\'s premium may decay each day with all other factors remaining the same.',
     'ticker': 'An abbreviation used to identify a particular stock. For example: AAPL stands for Apple Inc.',
     'to expiration': 'Number of days till the option\'s expiration date, including non-trading days.',
@@ -97,14 +99,14 @@ export default function MetricLabel(props) {
             (
                 <span className={classes.label}>
                     {label}
-                    <Tooltip 
-                        title={helpText} 
-                        placement="right-start" 
+                    <CustomTooltip
+                        title={helpText}
+                        placement="right-start"
                         enterTouchDelay={0}
                         arrow
                     >
                         <HelpIcon fontSize="small" color="action" />
-                    </Tooltip>
+                    </CustomTooltip>
                 </span>
             )
         );
