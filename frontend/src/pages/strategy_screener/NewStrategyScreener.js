@@ -174,7 +174,7 @@ export default function NewStrategyScreener() {
     const onSentimentChange = (sentiment) => {
         GaEvent('adjust sentiment');
         setSentiment(sentiment)
-        if (sentiment !== null) {
+        if (sentiment > 0) {
             onFilterChange(fixedFloat(basicInfo.regularMarketPrice * sentiment), "targetPriceLower")
             onFilterChange(fixedFloat(basicInfo.regularMarketPrice * sentiment), "targetPriceUpper")
         }
