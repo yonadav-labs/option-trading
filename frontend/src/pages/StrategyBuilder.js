@@ -232,15 +232,15 @@ export default function StrategyBuilder() {
                 Create your options strategy and get real-time feedback. Understand your strategy with interactive graph and profit/loss details.
             </p>
             <Row className="justify-content-md-center">
-                <Col md="4">
-                    <MetricLabel label="ticker" />
+                <Col md="3">
+                    <MetricLabel label="ticker symbol" />
                     <TickerTypeahead
                         selectedTicker={selectedTicker}
                         allTickers={allTickers}
                         onTickerSelectionChange={onTickerSelectionChange}
                     />
                 </Col>
-                <Col md="7">
+                <Col md="8">
                     <MetricLabel label="strategy" />
                     <Select
                         className="basic-single"
@@ -257,7 +257,7 @@ export default function StrategyBuilder() {
                 </Col>
             </Row>
             <Row className="justify-content-md-center" style={{ marginTop: "1rem" }}>
-                <Col md="4">
+                <Col md="3">
                     {basicInfo.symbol ?
                         <div className="h-100">
                             <TickerSummary basicInfo={basicInfo} />
@@ -272,7 +272,7 @@ export default function StrategyBuilder() {
                         null
                     }
                 </Col>
-                <Col md="7">
+                <Col md="8">
                     {(!selectedStrategy) ?
                         <Row className="mb-3">
                             <Col className="d-flex justify-content-center">

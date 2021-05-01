@@ -6,7 +6,7 @@ import Axios from 'axios';
 import { useOktaAuth } from '@okta/okta-react';
 import getApiUrl, {
     PriceFormatter, TimestampDateFormatter, InTheMoneyRowStyle,
-    InTheMoneySign, PriceMovementFormatter, NumberRoundFormatter,
+    InTheMoneySign, NumberRoundFormatter,
     loadTickers, loadExpirationDates, GetGaEventTrackingFunc
 } from '../utils';
 import { BsArrowsExpand, BsArrowsCollapse } from 'react-icons/bs';
@@ -14,6 +14,7 @@ import ModalSpinner from '../components/ModalSpinner';
 import ContractDetailsCard from '../components/cards/ContractDetailsCard';
 import Select from "react-select";
 import TradingViewWidget from 'react-tradingview-widget';
+import MetricLabel from '../components/MetricLabel.js';
 
 // Bootstrap
 import BootstrapTable from 'react-bootstrap-table-next';
@@ -103,16 +104,14 @@ export default function SellCoveredCall() {
             formatter: (cell, row, rowIndex, extraData) => (
                 cell ? 'Call' : 'Put'
             ),
-            sort: true,
             headerSortingStyle,
         }, {
             dataField: "expiration",
-            text: "Expiration",
+            text: "Exp date",
             formatter: (cell, row, rowIndex, extraData) => (
                 (
                     <span>
-                        {TimestampDateFormatter(cell)} <br />
-                        <small>{row.days_till_expiration} days</small>
+                        <small>{TimestampDateFormatter(cell)}</small>
                     </span>
                 )
             ),
@@ -122,43 +121,52 @@ export default function SellCoveredCall() {
             dataField: "to_strike_ratio",
             text: "Strike",
             formatter: (cell, row, rowIndex, extraData) => (
-                <span>
-                    At {PriceMovementFormatter(cell, row.strike)}
-                </span>
+                <span>{PriceFormatter(row.strike)}</span >
             ),
             sort: true,
             headerSortingStyle,
         }, {
-            dataField: "mark",
-            text: "Mid/Mark",
+            dataField: "last_price",
+            text: "Last",
             formatter: (cell, row, rowIndex, extraData) => (
                 (
-                    <span>
-                        {PriceFormatter(cell)}<br />
-                        <small>{PriceFormatter(row.bid)} / {PriceFormatter(row.ask)}</small>
-                    </span>
+                    <span>{PriceFormatter(cell)}</span>
                 )
             ),
-            sort: true,
             headerSortingStyle,
         }, {
-            dataField: "to_break_even_ratio",
-            text: "Break Even",
+            dataField: "bid",
+            text: "Bid/Ask",
             formatter: (cell, row, rowIndex, extraData) => (
-                <span>
-                    At {PriceMovementFormatter(cell, row.break_even_price)}
-                </span>
+                (
+                    <span>{PriceFormatter(cell)}/{PriceFormatter(row.ask)}</span>
+                )
             ),
-            sort: true,
             headerSortingStyle,
         }, {
             dataField: "volume",
-            text: "Volume",
+            text: "Vol",
             sort: true,
             headerSortingStyle,
         }, {
             dataField: "open_interest",
-            text: "Open Interest",
+            text: "OI",
+            sort: true,
+            headerSortingStyle,
+        }, {
+            dataField: "vol_oi",
+            text: "Vol/OI",
+            formatter: (cell, row, rowIndex, extraData) => (
+                NumberRoundFormatter(cell)
+            ),
+            sort: true,
+            headerSortingStyle,
+        }, {
+            dataField: "implied_volatility",
+            text: "IV",
+            formatter: (cell, row, rowIndex, extraData) => (
+                NumberRoundFormatter(cell)
+            ),
             sort: true,
             headerSortingStyle,
         }, {
@@ -167,7 +175,15 @@ export default function SellCoveredCall() {
             formatter: (cell, row, rowIndex, extraData) => (
                 NumberRoundFormatter(cell, row)
             ),
-            sort: true,
+            headerSortingStyle,
+        }, {
+            dataField: "to_break_even_ratio",
+            text: "Break Even",
+            formatter: (cell, row, rowIndex, extraData) => (
+                <span>
+                    <span>{PriceFormatter(row.break_even_price)}</span>
+                </span>
+            ),
             headerSortingStyle,
         },
         // Below fields are hidden and used for filtering only.
@@ -411,23 +427,19 @@ export default function SellCoveredCall() {
                 <meta name="description" content="Use Tigerstance's Option Screener to find options that match your trading goals. " />
             </Helmet>
             <ModalSpinner active={modalActive}></ModalSpinner>
-            <h2 className="text-center">Screen option contracts</h2>
+            <h2 className="text-center">Screen Option Contracts</h2>
             <p className="text-center">
                 Find options that match your trading goals. View the options chains for the stock you selected and
                 use filters to screen for options that match your strategy.
             </p>
             <Row className="justify-content-md-center">
-                <Col md={4}>
-                    <Form>
-                        <Form.Group>
-                            <Form.Label className="requiredField"><h4>Enter ticker symbol:</h4></Form.Label>
-                            <TickerTypeahead
-                                selectedTicker={selectedTicker}
-                                allTickers={allTickers}
-                                onTickerSelectionChange={onTickerSelectionChange}
-                            />
-                        </Form.Group>
-                    </Form>
+                <Col md={3}>
+                    <MetricLabel label="ticker symbol" />
+                    <TickerTypeahead
+                        selectedTicker={selectedTicker}
+                        allTickers={allTickers}
+                        onTickerSelectionChange={onTickerSelectionChange}
+                    />
                     {selectedTicker.length > 0 ?
                         <div>
                             <TickerSummary basicInfo={basicInfo} from={'option'} />
@@ -451,11 +463,11 @@ export default function SellCoveredCall() {
                         null
                     }
                 </Col>
-                <Col md={7}>
+                <Col md={8}>
                     {selectedTicker.length > 0 ?
                         <div>
                             <Form onSubmit={handleSubmit}>
-                                <Form.Label className="requiredField"><h4>Expiration Dates:</h4></Form.Label>
+                                <MetricLabel label="Expiration Dates" />
                                 <Row>
                                     <Col md={8}>
                                         <Form.Group>
@@ -481,7 +493,7 @@ export default function SellCoveredCall() {
                                         </Form.Group>
                                     </Col>
                                     <Col md={4}>
-                                        <Button type="submit" className="btn btn-primary">Get options</Button>
+                                        <Button type="submit" className="btn btn-primary">Get Options</Button>
                                     </Col>
                                 </Row>
                             </Form>
@@ -492,8 +504,8 @@ export default function SellCoveredCall() {
                     {contracts.length > 0 ?
                         <div>
                             <h4>Filters</h4>
-                            <Row md={2}>
-                                <Col sm="2" xs="12">
+                            <Row>
+                                <Col sm="3" xs="12">
                                     <Form.Group>
                                         <Form.Label className="font-weight-bold">Call/Put:</Form.Label>
                                         <br />
@@ -503,7 +515,7 @@ export default function SellCoveredCall() {
                                         />
                                     </Form.Group>
                                 </Col>
-                                <Col sm="4" xs="12">
+                                <Col sm="6" xs="12">
                                     <Form.Group style={{ paddingBottom: "1.5rem" }}>
                                         <Form.Label className="font-weight-bold">Strike Price:</Form.Label>
                                         <StrikeRangeSliderFilter
@@ -514,6 +526,8 @@ export default function SellCoveredCall() {
                                         />
                                     </Form.Group>
                                 </Col>
+                            </Row>
+                            <Row>
                                 <Col sm="3" xs="6">
                                     <Form.Label className="font-weight-bold">Min Volume:</Form.Label>
                                     <Form.Control name="volume" as="select" defaultValue={0}
@@ -540,69 +554,43 @@ export default function SellCoveredCall() {
                                         </Form.Control>
                                     </Form.Group>
                                 </Col>
-                                {/* <Col>
-                                    <Form>
-                                        <Form.Group>
-                                            <Form.Label className="font-weight-bold">Premium:</Form.Label>
-                                            <SliderFilter
-                                                min={0}
-                                                max={200}
-                                                // onChange={(e) => onPremiumFilterChange(e, premiumFilter)}
-                                            />
-                                        </Form.Group>
-                                    </Form>
-                                </Col> */}
+                                <Col sm="3" xs="6">
+                                    <Form.Group>
+                                        <Form.Label className="font-weight-bold">Last traded:</Form.Label>
+                                        <Form.Control name="tradeoff" as="select" defaultValue={0}
+                                            onChange={(e) => onLastTradedFilterChange(e, lastTradedFilter)}>
+                                            <option key="9999999" value="9999999">All</option>
+                                            {[1, 4, 8, 24, 48, 72, 120, 240].map((hour, index) => {
+                                                return (
+                                                    <option key={hour} value={hour}>
+                                                        In&nbsp;
+                                                        {(hour <= 24 ? hour + (hour > 1 ? " hours" : " hour") : hour / 24 + " days")}
+                                                    </option>
+                                                );
+                                            })}
+                                        </Form.Control>
+                                    </Form.Group>
+                                </Col>
+                                <Col sm="3" xs="6">
+                                    <Form.Group>
+                                        <Form.Label className="font-weight-bold">Delta:</Form.Label>
+                                        <Form.Control name="delta" as="select" defaultValue="all"
+                                            onChange={(e) => onDeltaFilterChange(e, minDeltaFilter, maxDeltaFilter)}>
+                                            <option key="all" value="all">All</option>
+                                            <option key="-1" value="-1">-1.0 to -0.8</option>
+                                            <option key="-0.8" value="-0.8">-0.8 to -0.6</option>
+                                            <option key="-0.6" value="-0.6">-0.6 to -0.4</option>
+                                            <option key="-0.4" value="-0.4">-0.4 to -0.2</option>
+                                            <option key="-0.2" value="-0.2">-0.2 to 0.0</option>
+                                            <option key="0" value="0">0.0 to 0.2</option>
+                                            <option key="0.2" value="0.2">0.2 to 0.4</option>
+                                            <option key="0.4" value="0.4">0.4 to 0.6</option>
+                                            <option key="0.6" value="0.6">0.6 to 0.8</option>
+                                            <option key="0.8" value="0.8">0.8 to 1.0</option>
+                                        </Form.Control>
+                                    </Form.Group>
+                                </Col>
                             </Row>
-                            <br />
-                            <Accordion>
-                                <Card>
-                                    <Accordion.Toggle as={Button} variant="link" eventKey="0">
-                                        <span className="text-dark">Advanced Filters</span>
-                                    </Accordion.Toggle>
-                                    <Accordion.Collapse eventKey="0">
-                                        <Card.Body>
-                                            <Row className="justify-content-md-center" >
-                                                <Col sm="3" xs="6">
-                                                    <Form.Group>
-                                                        <Form.Label className="font-weight-bold">Last traded:</Form.Label>
-                                                        <Form.Control name="tradeoff" as="select" defaultValue={0}
-                                                            onChange={(e) => onLastTradedFilterChange(e, lastTradedFilter)}>
-                                                            <option key="9999999" value="9999999">All</option>
-                                                            {[1, 4, 8, 24, 48, 72, 120, 240].map((hour, index) => {
-                                                                return (
-                                                                    <option key={hour} value={hour}>
-                                                                        In&nbsp;
-                                                                        {(hour <= 24 ? hour + (hour > 1 ? " hours" : " hour") : hour / 24 + " days")}
-                                                                    </option>
-                                                                );
-                                                            })}
-                                                        </Form.Control>
-                                                    </Form.Group>
-                                                </Col>
-                                                <Col sm="3" xs="6">
-                                                    <Form.Group>
-                                                        <Form.Label className="font-weight-bold">Delta:</Form.Label>
-                                                        <Form.Control name="delta" as="select" defaultValue="all"
-                                                            onChange={(e) => onDeltaFilterChange(e, minDeltaFilter, maxDeltaFilter)}>
-                                                            <option key="all" value="all">All</option>
-                                                            <option key="-1" value="-1">-1.0 to -0.8</option>
-                                                            <option key="-0.8" value="-0.8">-0.8 to -0.6</option>
-                                                            <option key="-0.6" value="-0.6">-0.6 to -0.4</option>
-                                                            <option key="-0.4" value="-0.4">-0.4 to -0.2</option>
-                                                            <option key="-0.2" value="-0.2">-0.2 to 0.0</option>
-                                                            <option key="0" value="0">0.0 to 0.2</option>
-                                                            <option key="0.2" value="0.2">0.2 to 0.4</option>
-                                                            <option key="0.4" value="0.4">0.4 to 0.6</option>
-                                                            <option key="0.6" value="0.6">0.6 to 0.8</option>
-                                                            <option key="0.8" value="0.8">0.8 to 1.0</option>
-                                                        </Form.Control>
-                                                    </Form.Group>
-                                                </Col>
-                                            </Row>
-                                        </Card.Body>
-                                    </Accordion.Collapse>
-                                </Card>
-                            </Accordion>
                             <div>
                                 <Row>
                                     <Col sm="9"></Col>

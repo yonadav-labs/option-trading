@@ -70,6 +70,7 @@ class OptionContractSerializer(serializers.Serializer):
     to_break_even_ratio = ReadOnlyRatioDecimalField()
     notional_value = ReadOnlyDollarDecimalField()
     itm_probability = ReadOnlyRatioDecimalField()
+    vol_oi = ReadOnlyRatioDecimalField()
 
 
 class LegSerializer(serializers.Serializer):

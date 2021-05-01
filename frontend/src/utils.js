@@ -88,14 +88,14 @@ export function formatLargeNumber(num, fixed) {
 }
 
 export function TimestampDateFormatter(ts) {
-    const exp_date = new Date(ts * 1000).toLocaleDateString('en-US')
+    const exp_date = new Date(ts * 1000).toLocaleDateString('en-US', { year: "2-digit", month: "2-digit", day: "2-digit" });
     return (<span>{exp_date}</span>);
 };
 
 export function TimestampTimeFormatter(ts) {
     if (ts === 0) return (<span>N/A</span>);
-    const exp_date = new Date(ts * 1000).toLocaleDateString('en-US')
-    const exp_time = new Date(ts * 1000).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })
+    const exp_date = new Date(ts * 1000).toLocaleDateString('en-US', { year: "2-digit", month: "2-digit", day: "2-digit" });
+    const exp_time = new Date(ts * 1000).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
     return (<span>{exp_date} {exp_time}</span>);
 };
 

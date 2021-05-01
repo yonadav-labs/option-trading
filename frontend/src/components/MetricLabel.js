@@ -76,6 +76,7 @@ const HelpTextDict = {
     'price target range': 'Your expected lower and upper bound share price of the stock on expiration date.',
     'theta': 'Estimate of how much an option\'s premium may decay each day with all other factors remaining the same.',
     'ticker': 'An abbreviation used to identify a particular stock. For example: AAPL stands for Apple Inc.',
+    'ticker symbol': 'An abbreviation used to identify a particular stock. For example: AAPL stands for Apple Inc.',
     'to expiration': 'Number of days till the option\'s expiration date, including non-trading days.',
     'total commission': 'Total cost paid to the trading platform to open and close this position.',
     'total cost': 'The total capital required to enter this trade, including commission cost and collateral if applicable. ' +

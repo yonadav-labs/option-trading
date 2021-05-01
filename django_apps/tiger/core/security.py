@@ -213,6 +213,12 @@ class OptionContract(Security):
                                    exp_years=self.days_till_expiration / 365.0, sigma=self.implied_volatility,
                                    is_call=self.is_call)
 
+    @property
+    def vol_oi(self):
+        if self.open_interest == 0:
+            return None
+        return self.volume / self.open_interest
+
     def get_value_at_price(self, target_price):
         if self.is_call:
             return max(0, target_price - self.strike) * 100
