@@ -54,20 +54,17 @@ export default function ContractDetailsCard(props) {
                                         <MetricLabel label="day range" /><br />
                                         {PriceFormatter(contract.low_price)} - {PriceFormatter(contract.high_price)}
                                     </Col>
-                                    <Col sm="2" xs="6">
-                                        <MetricLabel label="implied volatility" /><br />
-                                        {PercentageFormatter(contract.implied_volatility)}
-                                    </Col>
-                                    <Col sm="2" xs="6">
-                                        <MetricLabel label="itm probability" /><br />
-                                        {PercentageFormatter(contract.itm_probability)}
-                                    </Col>
+
                                     <Col sm="2" xs="12">
                                         <MetricLabel label="last traded" /><br />
                                         {TimestampTimeFormatter(contract.last_trade_date)}
                                     </Col>
                                 </Row>
                                 <Row>
+                                    <Col sm="2" xs="6">
+                                        <MetricLabel label="implied volatility" /><br />
+                                        {PercentageFormatter(contract.implied_volatility)}
+                                    </Col>
                                     <Col sm="2" xs="6">
                                         <MetricLabel label="delta" /><br />
                                         {NumberRoundFormatter(contract.delta)}
@@ -90,6 +87,10 @@ export default function ContractDetailsCard(props) {
                                     </Col>
                                 </Row>
                                 <Row>
+                                    <Col sm="2" xs="6">
+                                        <MetricLabel label="itm probability" /><br />
+                                        {PercentageFormatter(contract.itm_probability)}
+                                    </Col>
                                     <Col sm="2" xs="6">
                                         <MetricLabel label="to expiration" /><br />
                                         {contract.days_till_expiration} days

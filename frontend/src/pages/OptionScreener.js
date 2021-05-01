@@ -7,7 +7,7 @@ import { useOktaAuth } from '@okta/okta-react';
 import getApiUrl, {
     PriceFormatter, TimestampDateFormatter, InTheMoneyRowStyle,
     InTheMoneySign, NumberRoundFormatter,
-    loadTickers, loadExpirationDates, GetGaEventTrackingFunc
+    loadTickers, loadExpirationDates, GetGaEventTrackingFunc, PercentageFormatter
 } from '../utils';
 import { BsArrowsExpand, BsArrowsCollapse } from 'react-icons/bs';
 import ModalSpinner from '../components/ModalSpinner';
@@ -107,11 +107,11 @@ export default function SellCoveredCall() {
             headerSortingStyle,
         }, {
             dataField: "expiration",
-            text: "Exp date",
+            text: "Exp Date",
             formatter: (cell, row, rowIndex, extraData) => (
                 (
                     <span>
-                        <small>{TimestampDateFormatter(cell)}</small>
+                        <small>{TimestampDateFormatter(cell)} ({row.days_till_expiration}d)</small>
                     </span>
                 )
             ),
@@ -165,13 +165,27 @@ export default function SellCoveredCall() {
             dataField: "implied_volatility",
             text: "IV",
             formatter: (cell, row, rowIndex, extraData) => (
-                NumberRoundFormatter(cell)
+                PercentageFormatter(cell)
             ),
             sort: true,
             headerSortingStyle,
         }, {
             dataField: "delta",
             text: "Delta",
+            formatter: (cell, row, rowIndex, extraData) => (
+                NumberRoundFormatter(cell, row)
+            ),
+            headerSortingStyle,
+        }, {
+            dataField: "gamma",
+            text: "Gamma",
+            formatter: (cell, row, rowIndex, extraData) => (
+                NumberRoundFormatter(cell, row)
+            ),
+            headerSortingStyle,
+        }, {
+            dataField: "theta",
+            text: "Theta",
             formatter: (cell, row, rowIndex, extraData) => (
                 NumberRoundFormatter(cell, row)
             ),
@@ -464,7 +478,7 @@ export default function SellCoveredCall() {
                         null
                     }
                 </Col>
-                <Col md={8}>
+                <Col md={9}>
                     {selectedTicker.length > 0 ?
                         <div>
                             <Form onSubmit={handleSubmit}>
