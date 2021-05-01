@@ -1,4 +1,4 @@
-import { Button, Card, CardContent, CardHeader, Collapse, experimentalStyled as styled, Grid, IconButton, Typography, useMediaQuery } from '@material-ui/core';
+import { Card, CardContent, CardHeader, Collapse, experimentalStyled as styled, Grid, IconButton, Typography, useMediaQuery } from '@material-ui/core';
 import React, { useState } from 'react';
 import { PriceFormatter, TimestampDateFormatter } from '../../utils';
 import MetricLabel from '../MetricLabel';
@@ -27,7 +27,7 @@ export default function NewLegCard(props) {
     }
 
     const simpleInfo = (
-        <Grid container spacing={1} paddingY={0.5}>
+        <Grid container spacing={1}>
             {leg.contract ?
                 <>
                     <Grid item xs={6} sm>
@@ -51,9 +51,9 @@ export default function NewLegCard(props) {
                         <Typography variant="body1">{leg.units}</Typography>
                     </Grid>
                     {/* <Grid item xs={6} sm>
-                                                <Typography variant="button"><MetricLabel label="last" /></Typography>
-                                                <Typography variant="body1">{PriceFormatter(leg.contract.last_price)}</Typography>
-                                            </Grid> */}
+                        <Typography variant="button"><MetricLabel label="last" /></Typography>
+                        <Typography variant="body1">{PriceFormatter(leg.contract.last_price)}</Typography>
+                    </Grid> */}
                     <Grid item xs={6} sm>
                         <Typography variant="button"><MetricLabel label="volume" /></Typography>
                         <Typography variant="body1">{leg.contract.volume}</Typography>
@@ -104,7 +104,7 @@ export default function NewLegCard(props) {
                         <ExpandMoreIcon color="primary" />
                     </ExpandMore>
                     :
-                    <IconButton sx={{width: "48px"}} disabled></IconButton>}
+                    <IconButton sx={{ width: "48px" }} disabled></IconButton>}
             />
             {isMobile ?
                 <CardContent>
@@ -112,7 +112,7 @@ export default function NewLegCard(props) {
                 </CardContent>
                 : null}
             <Collapse in={expanded && showAction} timeout="auto" unmountOnExit>
-                <NewContractCard contract={leg.contract} sx={{backgroundColor: 'rgba(228, 228, 228, 0.2)'}} />
+                <NewContractCard contract={leg.contract} sx={{ backgroundColor: 'rgba(228, 228, 228, 0.2)' }} />
             </Collapse>
         </Card>
     );

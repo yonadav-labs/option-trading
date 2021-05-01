@@ -67,14 +67,14 @@ export default function NewTradeCard({ trade }) {
                     style={{ paddingBottom: '0px' }}
                 />
                 <Divider variant="middle" />
-                <CardContent>
+                <CardContent style={{ paddingTop: "0px" }}>
                     {trade.legs.map((leg, idx) => (
                         <>
-                            <Grid container direction="row" justifyContent="space-around" alignItems="baseline" spacing={2} paddingY={0.5}>
+                            <Grid container direction="row" justifyContent="space-around" alignItems="baseline">
                                 {/* <Grid item xs={12} sm={1}><Typography variant="h6">Leg {idx + 1}</Typography></Grid> */}
                                 <Grid item sm><NewLegCard leg={leg} index={idx} showAction={moreInfo} /></Grid>
                             </Grid>
-                            <Divider sx={{ paddingBottom: 2 }} />
+                            <Divider />
                         </>
                     ))}
                     <Grid container direction="row" justifyContent="space-between" paddingTop={2} spacing={1}>
