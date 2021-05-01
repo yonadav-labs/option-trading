@@ -1,7 +1,5 @@
 import React from "react";
-import { Link } from "react-router-dom";
 import { Paper, Stack, Container, Divider, makeStyles, Typography, FormControl, Select, MenuItem, InputLabel } from "@material-ui/core";
-import { useOktaAuth } from '@okta/okta-react';
 import TickerAutocomplete from "../../components/TickerAutocomplete";
 import VerticalCarousel from '../../components/VerticalCarousel';
 import { Row } from 'react-bootstrap';
@@ -20,7 +18,6 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function LandingView(props) {
-    const { authState } = useOktaAuth();
     const classes = useStyles();
     const {
         allTickers,
@@ -89,13 +86,6 @@ export default function LandingView(props) {
             </Container>
             <br />
             <Container>
-                {!authState.isAuthenticated &&
-                    (
-                        <Typography variant="body1" align="center" pb={5}>
-                            <a href="/signin"><b>Log In</b></a> or <Link to="/signin/register"><b>
-                                Sign Up For Free</b></Link> to unlock Cash Secured Put and 3 more Vertical Spread strategies!
-                        </Typography>
-                    )}
                 <Typography variant="h4" align="center">Discover option strategies with the best potential return.</Typography>
                 <br />
                 <Typography variant="body1" align="center">
