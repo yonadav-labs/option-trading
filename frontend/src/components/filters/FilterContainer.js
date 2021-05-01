@@ -107,10 +107,10 @@ export default function FilterContainer(props) {
 
     const lastTradedFilterOptions = [
         { label: "All", value: -9999999 },
-        { label: "Last Traded in 1 Days", value: -1 },
-        { label: "Last Traded in 5 Days", value: -5 },
-        { label: "Last Traded in 10 Days", value: -10 },
-        { label: "Last Traded in 30 Days", value: -30 },
+        { label: "Past 1 Day", value: -1 },
+        { label: "Past 5 Days", value: -5 },
+        { label: "Past 10 Days", value: -10 },
+        { label: "Past 30 Days", value: -30 },
     ];
 
     const filterChangeHandler = (event, key) => {

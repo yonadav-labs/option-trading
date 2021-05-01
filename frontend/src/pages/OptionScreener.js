@@ -233,8 +233,8 @@ export default function SellCoveredCall() {
                 }
             })
         }, {
-            dataField: "open_interest",
-            text: "open_interest",
+            dataField: "min_open_interest",
+            text: "min_open_interest",
             style: { 'display': 'none' },
             headerStyle: { 'display': 'none' },
             filter: numberFilter({
@@ -377,6 +377,7 @@ export default function SellCoveredCall() {
                 // Duplicate fields for table filtering.
                 theArray[index].is_call_dup = theArray[index].is_call;
                 theArray[index].min_volume = theArray[index].volume;
+                theArray[index].min_open_interest = theArray[index].open_interest;
                 theArray[index].min_delta = theArray[index].delta;
                 theArray[index].max_delta = theArray[index].delta;
                 theArray[index].min_strike = theArray[index].strike;
@@ -563,8 +564,7 @@ export default function SellCoveredCall() {
                                             {[1, 4, 8, 24, 48, 72, 120, 240].map((hour, index) => {
                                                 return (
                                                     <option key={hour} value={hour}>
-                                                        In&nbsp;
-                                                        {(hour <= 24 ? hour + (hour > 1 ? " hours" : " hour") : hour / 24 + " days")}
+                                                        Past {(hour <= 24 ? hour + (hour > 1 ? " hours" : " hour") : hour / 24 + " days")}
                                                     </option>
                                                 );
                                             })}
