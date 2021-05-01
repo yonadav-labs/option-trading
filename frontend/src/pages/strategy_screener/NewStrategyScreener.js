@@ -120,7 +120,7 @@ export default function NewStrategyScreener() {
     const getBestTrades = async () => {
         try {
             if (selectedTicker && selectedExpirationTimestamp && filters.targetPriceLower && filters.targetPriceUpper) {
-                let url = `${API_URL}/dev/tickers/${selectedTicker.symbol}/trades/`;
+                let url = `${API_URL}/tickers/${selectedTicker.symbol}/trades/`;
                 let body = {
                     "expiration_timestamps": [selectedExpirationTimestamp],
                     "strategy_settings": {

@@ -11,7 +11,6 @@ import Footer from './components/footer'
 import OptionScreener from './pages/OptionScreener'
 import Surface from './pages/Surface'
 import Disclaimer from './components/disclaimer';
-import StrategyScreener from './pages/StrategyScreener';
 import NewStrategyScreener from './pages/strategy_screener/NewStrategyScreener';
 import SingleTrade from './pages/SingleTrade';
 import Pricing from './pages/Pricing';
@@ -49,7 +48,6 @@ export default withRouter(class AppWithRouterAccess extends Component {
                         <Route path='/surface' exact={true} component={Surface} />
                         <Route path='/discover' exact={true} component={NewStrategyScreener} />
                         <Route path='/strategy-screener' exact={true} component={NewStrategyScreener} />
-                        <Route path='/old-discover' exact={true} component={StrategyScreener} />
                         <Route path='/t/:tradeId' exact={true} component={SingleTrade} />
                         <Route path='/strategy-builder' exact={true} component={StrategyBuilder} />
                         <Route path='/build' exact={true} component={StrategyBuilder} />
