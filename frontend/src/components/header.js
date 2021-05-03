@@ -7,6 +7,7 @@ import ReactGA from 'react-ga';
 import UserContext from '../UserContext';
 import getApiUrl from '../utils';
 import '../index.css';
+import LiveChat from 'react-livechat'
 
 function Header() {
     const { oktaAuth, authState } = useOktaAuth();
@@ -42,6 +43,7 @@ function Header() {
                 })
                 .then((data) => {
                     setUser(data);
+                    window.hj('identity', data.email);
                 })
                 .catch((err) => {
                     /* eslint-disable no-console */
@@ -84,6 +86,11 @@ function Header() {
                     }
                 </Navbar.Collapse>
             </Navbar>
+            {user ?
+                <LiveChat license={'12791829'} visitor={{name: user.nick_name||user.email, email: user.email}} />
+                :
+                <LiveChat license={'12791829'} />
+            }
         </header>
     );
 }
