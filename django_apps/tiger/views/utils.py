@@ -90,9 +90,9 @@ def get_filtered_contracts(ticker, expiration_timestamps, filters={}):
                 calls = list(filter(lambda call: filter_object_on_attribute(call, key, value), calls))
                 puts = list(filter(lambda put: filter_object_on_attribute(put, key, value), puts))
 
-        # filter out inactive contracts.
-        call_lists.append(list(filter(lambda call: call.last_trade_date, calls)))
-        put_lists.append(list(filter(lambda put: put.last_trade_date, puts)))
+        # filter out inactive or invalid contracts.
+        call_lists.append(list(filter(lambda call: call.last_trade_date and call.implied_volatility, calls)))
+        put_lists.append(list(filter(lambda put: put.last_trade_date and put.implied_volatility, puts)))
     return call_lists, put_lists
 
 
