@@ -50,9 +50,11 @@ class Stock(Security):
     def from_snapshot(cls, stock_snapshot):
         cache = stock_snapshot.external_cache
         if 'yahoo' in cache.request_url:
-            stock_price = blob_reader.get_quote(cache.json_response, True).get('regularMarketPrice')
+            stock_price = blob_reader.get_quote(
+                cache.json_response, True).get('regularMarketPrice')
         else:
-            stock_price = blob_reader.get_quote(cache.json_response, False).get('last')
+            stock_price = blob_reader.get_quote(
+                cache.json_response, False).get('last')
         return cls(stock_snapshot.ticker, stock_price, stock_snapshot.external_cache_id, stock_snapshot.ticker_stats)
 
     @property
@@ -72,7 +74,8 @@ class OptionContract(Security):
         super().__init__(external_cache_id)
         if 'contractSymbol' in data_dict:
             # Yahoo.
-            self.is_call = is_call  # There are only 2 types of options: "call" and "put".
+            # There are only 2 types of options: "call" and "put".
+            self.is_call = is_call
             self.ask = data_dict.get('ask')  # Could be None.
             self.bid = data_dict.get('bid')  # Could be None.
             self.contract_symbol = data_dict.get('contractSymbol')
@@ -101,7 +104,8 @@ class OptionContract(Security):
             self.expiration = int(data_dict.get('expirationDate') / 1000)
             self.strike = data_dict.get('strikePrice')
             self.change = data_dict.get('netChange')
-            self.contract_size = data_dict.get('multiplier')  # 100, different from 'REGULAR' of yahoo
+            # 100, different from 'REGULAR' of yahoo
+            self.contract_size = data_dict.get('multiplier')
             self.currency = None
             if data_dict.get('volatility') is not None:
                 self.implied_volatility = data_dict.get('volatility') / 100.0
@@ -111,7 +115,8 @@ class OptionContract(Security):
             self.last_price = data_dict.get('last')
             self.last_trade_date = int(data_dict.get('tradeTimeInLong') / 1000)
             self.open_interest = data_dict.get('openInterest')
-            self.percent_change = data_dict.get('percentChange')  # TODO: verify data is correct.
+            # TODO: verify data is correct.
+            self.percent_change = data_dict.get('percentChange')
             self.volume = data_dict.get('totalVolume')
 
             # TD specific data.
@@ -127,8 +132,10 @@ class OptionContract(Security):
             self.theta = data_dict.get('theta')
             self.vega = data_dict.get('vega')
             self.rho = data_dict.get('rho')
-            self.theoretical_volatility = data_dict.get('theoreticalVolatility') / 100.0
-            self.theoretical_option_value = data_dict.get('theoreticalOptionValue')
+            self.theoretical_volatility = data_dict.get(
+                'theoreticalVolatility') / 100.0
+            self.theoretical_option_value = data_dict.get(
+                'theoreticalOptionValue')
             self.quote_time = int(data_dict.get('quoteTimeInLong') / 1000)
             '''
             TD data not used.
@@ -164,7 +171,8 @@ class OptionContract(Security):
 
     @property
     def display_name(self):
-        expiration_date_str = timestamp_to_datetime_with_default_tz(self.expiration).strftime("%m/%d/%Y")
+        expiration_date_str = timestamp_to_datetime_with_default_tz(
+            self.expiration).strftime("%m/%d/%Y")
         strike = int(self.strike) if self.strike.is_integer() else self.strike
         return '{} {} strike ${} {}'.format(self.ticker.symbol, expiration_date_str,
                                             strike, 'call' if self.is_call else 'put')
@@ -227,22 +235,17 @@ class OptionContract(Security):
 
     def get_value_in_price_range(self, price_lower, price_upper):
         # TODO: upgrade from uniformed distribution.
-        if self.is_call:
-            if self.strike <= price_lower:
-                return (self.get_value_at_price(price_lower) + self.get_value_at_price(price_upper)) / 2.0
-            elif self.strike >= price_upper:
-                return 0.0
+        # calculate average value of option at the lower and upper prices
+        average = (self.get_value_at_price(price_lower) +
+                   self.get_value_at_price(price_upper)) / 2.0
+        # check if strike is in between the lower and upper prices
+        if self.strike > price_lower and self.strike < price_upper:
+            if self.is_call:
+                return average * (price_upper - self.strike) / (price_upper - price_lower)
             else:
-                return self.get_value_at_price(price_upper) / 2.0 * \
-                       ((price_upper - self.strike) / (price_upper - price_lower))
+                return average * (self.strike - price_lower) / (price_upper - price_lower)
         else:
-            if self.strike <= price_lower:
-                return 0.0
-            elif self.strike >= price_upper:
-                return (self.get_value_at_price(price_lower) + self.get_value_at_price(price_upper)) / 2.0
-            else:
-                return self.get_value_at_price(price_lower) / 2.0 * \
-                       ((self.strike - price_lower) / (price_upper - price_lower))
+            return average
 
     def __str__(self):
         return self.contract_symbol
