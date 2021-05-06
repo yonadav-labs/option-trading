@@ -1,8 +1,6 @@
 import React from "react";
-import { Paper, Stack, Container, Divider, makeStyles, Typography, FormControl, Select, MenuItem, InputLabel } from "@material-ui/core";
+import { Grid, Paper, Stack, Container, Divider, makeStyles, Typography, FormControl, Select, MenuItem, InputLabel, Box } from "@material-ui/core";
 import TickerAutocomplete from "../../components/TickerAutocomplete";
-import VerticalCarousel from '../../components/VerticalCarousel';
-import { Row } from 'react-bootstrap';
 import MetricLabel from '../../components/MetricLabel.js';
 
 const useStyles = makeStyles((theme) => ({
@@ -32,7 +30,7 @@ export default function LandingView(props) {
     } = props
 
     return (
-        <>
+        <Container style={{ minHeight: "inherit", padding: 0 }}>
             <br />
             <Container>
                 <Paper className={classes.customPaper} elevation={4}>
@@ -95,33 +93,40 @@ export default function LandingView(props) {
                     </Typography>
             </Container>
             <br />
-            {/* TODO replace with material ui */}
-            <Container>
-                <Row className="p-5">
-                    <VerticalCarousel>
-                        <VerticalCarousel.Slide
-                            imgSrc="slider1.png"
-                            heading="Select a stock"
-                            text="AAPL, AMZN, TSLA..."
-                        />
-                        <VerticalCarousel.Slide
-                            imgSrc="slider2.png"
-                            heading="Select an expiration date"
-                            text="Your timeframe for the strategy."
-                        />
-                        <VerticalCarousel.Slide
-                            imgSrc="slider3.png"
-                            heading="Enter a price target"
-                            text="Where do you think the stock price will be?"
-                        />
-                        <VerticalCarousel.Slide
-                            imgSrc="slider4.png"
-                            heading="Discover the best strategies"
-                            text="We calculate thousands of permutations for each strategy and show you the best ones."
-                        />
-                    </VerticalCarousel>
-                </Row>
-            </Container>
-        </>
+            <Grid container direction="row" justifyContent="space-evenly" alignItems="center" >
+                <Box px={2} py={4} bgcolor="white" borderRadius={1}>
+                    <Grid container direction="column" alignItems="center">
+                        <img style={{ height: 200, width: 270, marginBottom: 8 }} src="discover_step_1.png" alt="step 1" />
+                        <Typography variant="button">Step 1</Typography>
+                        <Typography variant="subtitle1">Select a stock by its ticker</Typography>
+                        <Typography variant="body2">AAPL, AMZN, TSLA...</Typography>
+                    </Grid>
+                </Box>
+                <Box px={2} py={4} bgcolor="white" borderRadius={1}>
+                    <Grid container direction="column" alignItems="center">
+                        <img style={{ height: 200, width: 270, marginBottom: 8 }} src="discover_step_2.png" alt="step 2" />
+                        <Typography variant="button">Step 2</Typography>
+                        <Typography variant="subtitle1">Select an expiration date</Typography>
+                        <Typography variant="body2">Your timeframe for the strategy</Typography>
+                    </Grid>
+                </Box>
+                <Box px={2} py={4} bgcolor="white" borderRadius={1}>
+                    <Grid container direction="column" alignItems="center">
+                        <img style={{ height: 200, width: 270, marginBottom: 8 }} src="discover_step_3.png" alt="step 3" />
+                        <Typography variant="button">Step 3</Typography>
+                        <Typography variant="subtitle1">Enter a price target</Typography>
+                        <Typography variant="body2">Where do you think the price will be?</Typography>
+                    </Grid>
+                </Box>
+                <Box px={2} py={4} bgcolor="white" borderRadius={1}>
+                    <Grid container direction="column" alignItems="center">
+                        <img style={{ height: 200, width: 270, marginBottom: 8 }} src="discover_step_4.png" alt="step 4" />
+                        <Typography variant="button">Step 4</Typography>
+                        <Typography variant="subtitle1">Discover the best strategies</Typography>
+                        <Typography variant="body2">We calculate and show you the best one</Typography>
+                    </Grid>
+                </Box>
+            </Grid>
+        </Container>
     );
 }
