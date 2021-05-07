@@ -32,7 +32,6 @@ export default function Surface() {
     const { oktaAuth, authState } = useOktaAuth();
 
     // heatmap
-    const [heatmapData, setHeatmapData] = useState(null);
     const [baseHeatmapData, setBaseHeatmapData] = useState(null);
     const [selectedContractType, setSelectedContractType] = useState('call');
     const [selectedMetric, setSelectedMetric] = useState('Implied Volatility');
@@ -51,13 +50,11 @@ export default function Surface() {
     const loadHeatmapData = (symbol, params) => {
         try {
             setModalActive(true);
-            setHeatmapData(null);
             setBaseHeatmapData(null);
 
             Axios.get(`${getApiUrl()}/tickers/${symbol}/heatmap_data/`, { params })
                 .then(response => {
                     setBaseHeatmapData(response.data);
-                    buildHeatMapData(response.data)
                     setModalActive(false);
                 })
         } catch (error) {
@@ -81,25 +78,12 @@ export default function Surface() {
         setSelectedMetric(option);
     }
 
-    const buildHeatMapData = (baseData) => {
-        let data = baseData.data.map(x => ([
-            x[0], x[1], x[2][selectedMetric]
-        ]));
-        setHeatmapData({data, expirationDates: baseData.expiration_dates, strikePrices: baseData.strike_prices});
-    }
-
     useEffect(() => {
         if (selectedTicker) {
             let params = { contract_type: selectedContractType }
             loadHeatmapData(selectedTicker.symbol, params);
         }
     }, [selectedTicker, selectedContractType])
-
-    useEffect(() => {
-        if (baseHeatmapData) {
-            buildHeatMapData(baseHeatmapData);
-        }
-    }, [selectedMetric]);
 
     useEffect(() => {
         if (authState.isAuthenticated) {
@@ -175,13 +159,11 @@ export default function Surface() {
             </Container>
 
             <Container>
-                {heatmapData ?
+                {baseHeatmapData ?
                     <HeatMapGraph
                         className="my-4"
                         zLabel={selectedMetric}
-                        data={heatmapData.data}
-                        expirationDates={heatmapData.expirationDates}
-                        strikePrices={heatmapData.strikePrices}
+                        data={baseHeatmapData}
                     />
                     :
                     <div style={{height: '320px'}}></div>

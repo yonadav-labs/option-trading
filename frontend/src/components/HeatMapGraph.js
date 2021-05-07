@@ -14,10 +14,10 @@ function getPointCategoryName(point, dimension) {
 }
 
 export default function HeatMapGraph(props) {
-    const { title, className, zLabel, data, expirationDates, strikePrices } = props;
+    const { title, className, zLabel, data } = props;
     const chartComponent = useRef(null);
 
-    const chartHeight = Math.max(Math.min(strikePrices.length * 18, 12000), 400);
+    const chartHeight = Math.max(Math.min(data.strike_prices.length * 18, 12000), 400);
 
     // chart options
     const options = {
@@ -35,11 +35,11 @@ export default function HeatMapGraph(props) {
             text: title
         },
         xAxis: {
-            categories: expirationDates,
+            categories: data.expiration_dates,
             title: { text: 'Expiration Date' },
         },
         yAxis: {
-            categories: strikePrices,
+            categories: data.strike_prices,
             title: { text: 'Strike' },
             reversed: true
         },
@@ -53,14 +53,19 @@ export default function HeatMapGraph(props) {
         },
         tooltip: {
             formatter: function () {
+                let zValue = data.data.find(x => x[0] == this.point.x && x[1] == this.point.y);
                 return 'Expiration Date: <b>' + getPointCategoryName(this.point, 'x') +
                     '</b><br>Strike price: <b>' + getPointCategoryName(this.point, 'y') +
-                    '</b><br>' + zLabel + ':<b>' + this.point.value + '</b>';
+                    '</b><br>Implied Volatility:<b>' + zValue[2]['Implied Volatility'] + 
+                    '</b><br>Open Interest:<b>' + zValue[2]['Open Interest'] + 
+                    '</b><br>Volume:<b>' + zValue[2]['Volume'] + '</b>';
             }
         },
         series: [{
             borderWidth: 0,
-            data: data,
+            data: data.data.map(x => ([
+                x[0], x[1], x[2][zLabel]
+            ])),
             dataLabels: {
                 enabled: true,
                 color: '#000000'
