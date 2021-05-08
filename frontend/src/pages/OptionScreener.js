@@ -34,6 +34,7 @@ let putCallFilter;
 let inTheMoneyFilter;
 let lastTradedFilter;
 let minVolumeFilter;
+let maxBidAskSpreadFilter;
 let minOpenInterestFilter;
 let minDeltaFilter;
 let maxDeltaFilter;
@@ -296,6 +297,16 @@ export default function SellCoveredCall() {
                     maxStrikeFilter = filter;
                 }
             })
+        }, {
+            dataField: "max_bid_ask_spread",
+            text: "max_bid_ask_spread",
+            style: { 'display': 'none' },
+            headerStyle: { 'display': 'none' },
+            filter: numberFilter({
+                getFilter: (filter) => {
+                    maxBidAskSpreadFilter = filter;
+                }
+            })
         },
     ];
     const defaultSorted = [{
@@ -316,6 +327,15 @@ export default function SellCoveredCall() {
             comparator: Comparator.GE
         });
         GaEvent('adjust volume filter');
+    };
+
+    function onBidAskSpreadFilterChange(event, bidAskSpreadFilter) {
+        const { value } = event.target;
+        bidAskSpreadFilter({
+            number: value,
+            comparator: Comparator.LE
+        });
+        GaEvent('adjust bid ask spread filter');
     };
 
     function onOpenInterestFilterChange(event, openInterestFilter) {
@@ -396,6 +416,7 @@ export default function SellCoveredCall() {
                 theArray[index].max_delta = theArray[index].delta;
                 theArray[index].min_strike = theArray[index].strike;
                 theArray[index].max_strike = theArray[index].strike;
+                theArray[index].max_bid_ask_spread = theArray[index].bid_ask_spread;
                 strikes.push(part.strike);
             });
             setContracts(contracts);
@@ -569,6 +590,20 @@ export default function SellCoveredCall() {
                                         </Form.Control>
                                     </Form.Group>
                                 </Col>
+                                <Col sm="3" xs="6">
+                                    <Form.Label className="font-weight-bold">Max Bid Ask Spread:</Form.Label>
+                                    <Form.Control name="bid_ask_spread" as="select" defaultValue={99999}
+                                        onChange={(e) => onBidAskSpreadFilterChange(e, maxBidAskSpreadFilter)}>
+                                        <option key="0" value="99999">All</option>
+                                        {[0.01, 0.02, 0.05, 0.1, 0.2, 0.5, 1, 2, 5, 10].map((v, index) => {
+                                            return (
+                                                <option key={v} value={v}>&#x2266; ${v}</option>
+                                            );
+                                        })}
+                                    </Form.Control>
+                                </Col>
+                            </Row>
+                            <Row>
                                 <Col sm="3" xs="6">
                                     <Form.Group>
                                         <Form.Label className="font-weight-bold">Last traded:</Form.Label>

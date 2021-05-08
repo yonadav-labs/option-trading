@@ -93,6 +93,20 @@ export default function FilterContainer(props) {
         { label: "≥ 5000", value: 5000 },
     ];
 
+    const maxBidAskSpreadFilterOptions = [
+        { label: "All", value: 99999 },
+        { label: "≤ $0.01", value: 0.01 },
+        { label: "≤ $0.02", value: 0.02 },
+        { label: "≤ $0.05", value: 0.05 },
+        { label: "≤ $0.1", value: 0.1 },
+        { label: "≤ $0.2", value: 0.2 },
+        { label: "≤ $0.5", value: 0.5 },
+        { label: "≤ $1", value: 1 },
+        { label: "≤ $2", value: 2 },
+        { label: "≤ $5", value: 5 },
+        { label: "≤ $10", value: 10 },
+    ];
+
     const minInterestFilterOptions = [
         { label: "All", value: 0 },
         { label: "≥ 1", value: 1 },
@@ -211,6 +225,15 @@ export default function FilterContainer(props) {
                 <Grid item paddingBottom='0.4rem'>
                     <MaterialFilter onFilterChange={(event) => filterChangeHandler(event, 'minOpenInterest')}
                         options={minInterestFilterOptions} value={filters.minOpenInterest} defaultValue={0} />
+                </Grid>
+            </Box>
+            <Box paddingY="0.5rem">
+                <Grid item paddingBottom='0.1rem'>
+                    <Typography variant="button"><MetricLabel label="max bid ask spread" /></Typography>
+                </Grid>
+                <Grid item paddingBottom='0.4rem'>
+                    <MaterialFilter onFilterChange={(event) => filterChangeHandler(event, 'maxBidAskSpread')}
+                        options={maxBidAskSpreadFilterOptions} value={filters.maxBidAskSpread} defaultValue={99999} />
                 </Grid>
             </Box>
             <Box paddingY="0.5rem">

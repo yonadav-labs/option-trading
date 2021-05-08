@@ -95,28 +95,8 @@ class Trade(ABC):
         return min(attributes) if use_min else max(attributes)
 
     @property
-    def min_expiration(self):
-        return self._get_aggr_contract_attribute('expiration', use_min=True)
-
-    @property
     def min_days_till_expiration(self):
         return self._get_aggr_contract_attribute('days_till_expiration', use_min=True)
-
-    @property
-    def min_last_trade_date(self):
-        return self._get_aggr_contract_attribute('last_trade_date', use_min=True)
-
-    @property
-    def min_volume(self):
-        return self._get_aggr_contract_attribute('volume', use_min=True)
-
-    @property
-    def min_open_interest(self):
-        return self._get_aggr_contract_attribute('open_interest', use_min=True)
-
-    @property
-    def max_bid_ask_spread(self):
-        return self._get_aggr_contract_attribute('bid_ask_spread', use_min=False)
 
     @property
     def target_price_profit(self):

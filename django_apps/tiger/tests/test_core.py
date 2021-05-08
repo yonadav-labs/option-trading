@@ -208,8 +208,6 @@ class CallTradesTestCase(TestCase):
         self.assertAlmostEqual(sell_call.break_even_price, 343.65)
         self.assertAlmostEqual(sell_call.profit_cap, 10133.7)
         self.assertAlmostEqual(sell_call.profit_cap_ratio, 0.29487317517)
-        self.assertAlmostEqual(sell_call.min_volume, 1)
-        self.assertAlmostEqual(sell_call.min_open_interest, 203)
 
     @mock.patch('django.utils.timezone.now')
     def test_bull_call_spread(self, mock_now):
@@ -310,8 +308,6 @@ class PutTradesTestCase(TestCase):
         self.assertAlmostEqual(sell_put.break_even_price, 67.3)
         self.assertAlmostEqual(sell_put.to_break_even_ratio, -0.08497620666)
         self.assertAlmostEqual(sell_put.target_price_profit, -1.3)
-        self.assertAlmostEqual(sell_put.min_volume, 3)
-        self.assertAlmostEqual(sell_put.min_open_interest, 10)
         self.assertAlmostEqual(sell_put.profit_cap, 68.7)
 
     @mock.patch('django.utils.timezone.now')

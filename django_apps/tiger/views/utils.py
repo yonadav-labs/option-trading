@@ -31,16 +31,17 @@ def filter_object_on_attribute(object, filter_key, filter_value):
     attribute = tokens[1]
 
     if hasattr(object, attribute):
+        attr_val = getattr(object, attribute)
         if operator == 'eq':
-            return getattr(object, attribute) == filter_value
+            return attr_val == filter_value
         elif operator == 'max':
             assert (type(filter_value) is float
                     or type(filter_value) is int), 'invalid filter_value: not a float or int'
-            return getattr(object, attribute) <= filter_value
+            return attr_val is not None and attr_val <= filter_value
         elif operator == 'min':
             assert (type(filter_value) is float
                     or type(filter_value) is int), 'invalid filter_value: not a float or int'
-            return getattr(object, attribute) >= filter_value
+            return attr_val is not None and attr_val >= filter_value
 
     return True
 

@@ -132,7 +132,8 @@ export default function NewStrategyScreener() {
                     "contract_filters": {
                         "min.open_interest": filters.minOpenInterest,
                         "min.volume": filters.minVolume,
-                        "min.last_trade_date": filters.lastTradedDate
+                        "min.last_trade_date": filters.lastTradedDate,
+                        "max.bid_ask_spread": filters.maxBidAskSpread
                     },
                     "trade_filters": {
                         "min.target_price_profit_ratio": filters.minTargetPriceProfitRatio,
