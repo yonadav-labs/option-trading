@@ -1,5 +1,5 @@
-import logging
 import itertools
+import logging
 
 from django.shortcuts import get_object_or_404
 from rest_framework.decorators import api_view
@@ -10,14 +10,21 @@ from tiger.core.trade import LongCall, LongPut, CoveredCall, CashSecuredPut, Bul
     BearCallSpread, BearPutSpread
 from tiger.models import Ticker
 from tiger.serializers import TradeSerializer, BrokerSerializer
-from tiger.utils import days_from_timestamp
-from tiger.views.utils import get_valid_contracts, get_filtered_contracts, get_broker, user_disabled_strategy, \
+from tiger.views.utils import get_filtered_contracts, get_broker, user_disabled_strategy, \
     filter_object_on_attribute
 
 logger = logging.getLogger('console_info')
 
 
 def save_best_trade_by_type(best_trade_dict, strategy_type, trade, trade_filters={}):
+    if strategy_type not in best_trade_dict:
+        best_trade_dict[strategy_type] = {
+            'num_combinations': 0,
+            'trade': None
+        }
+
+    best_trade_dict[strategy_type]['num_combinations'] += 1
+
     if trade is None or trade.cost < 0.1 or trade.target_price_profit <= 0.0:
         return
 
@@ -25,9 +32,9 @@ def save_best_trade_by_type(best_trade_dict, strategy_type, trade, trade_filters
         if not filter_object_on_attribute(trade, key, value):
             return
 
-    if strategy_type not in best_trade_dict \
-            or best_trade_dict[strategy_type].target_price_profit_ratio < trade.target_price_profit_ratio:
-        best_trade_dict[strategy_type] = trade
+    if not best_trade_dict[strategy_type]['trade'] \
+            or best_trade_dict[strategy_type]['trade'].target_price_profit_ratio < trade.target_price_profit_ratio:
+        best_trade_dict[strategy_type]['trade'] = trade
 
 
 def build_trades(stock, call_contract_lists, put_contract_lists, strategy_settings, trade_filters, broker_settings,
@@ -90,7 +97,16 @@ def build_trades(stock, call_contract_lists, put_contract_lists, strategy_settin
                                                           target_price_lower, target_price_upper, available_cash)
                     save_best_trade_by_type(best_trade_dict, 'bull_put_spread', bull_put_spread, trade_filters)
 
-    return list(best_trade_dict.values())
+    resp = []
+    for key, val in best_trade_dict.items():
+        trade = val['trade']
+        if not trade:
+            continue
+
+        trade.meta = {'num_combinations': val['num_combinations']}
+        resp.append(trade)
+
+    return resp
 
 
 @api_view(['POST'])

@@ -94,6 +94,7 @@ class TradeSerializer(serializers.Serializer):
     premium_type = serializers.ReadOnlyField()
     target_price_lower = ReadOnlyDollarDecimalField()
     target_price_upper = ReadOnlyDollarDecimalField()
+    meta = serializers.JSONField(required=False)
 
     break_even_price = ReadOnlyDollarDecimalField()
     to_break_even_ratio = ReadOnlyRatioDecimalField()

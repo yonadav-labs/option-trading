@@ -20,6 +20,7 @@ class Trade(ABC):
         self.target_price_lower = target_price_lower
         self.target_price_upper = target_price_upper
         self.premium_type = premium_type
+        self.meta = {}  # meta info including number of comparisons among combinations
 
         self.common_validate()
 

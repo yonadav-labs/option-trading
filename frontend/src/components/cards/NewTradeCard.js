@@ -57,6 +57,12 @@ export default function NewTradeCard({ trade }) {
                                         <Typography variant="body1" display="inline">{PriceFormatter(Math.abs(trade.net_debt_per_unit))}</Typography>
                                     </>
                                 } />
+                                &nbsp;
+                                <Chip label={
+                                    <Typography variant="subtitle1" display="inline">
+                                        No.1 of {trade.meta.num_combinations} Possibilities
+                                    </Typography>
+                                } />
                             </Grid>
                             <Grid container item sm justifyContent="flex-end" spacing={1}>
                                 <Grid item><ShareTradeBtn trade={trade} /></Grid>
