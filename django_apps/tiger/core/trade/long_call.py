@@ -20,8 +20,8 @@ class LongCall(Trade):
     def build(stock, call_contract, premium_type, broker_settings, target_price_lower=None, target_price_upper=None,
               available_cash=None):
         long_call_leg = OptionLeg(True, 1, call_contract, premium_type, broker_settings)
-        new_trade = LongCall(stock, [long_call_leg], premium_type, target_price_lower=target_price_lower,
-                             target_price_upper=target_price_upper)
+        new_trade = LongCall(stock, [long_call_leg], premium_type,
+                             target_price_lower=target_price_lower, target_price_upper=target_price_upper)
         if available_cash and not new_trade.max_out(available_cash):
             return None
         return new_trade
@@ -37,7 +37,7 @@ class LongCall(Trade):
 
     @property
     def break_even_price(self):
-        return self.get_long_call_leg().contract.strike + self.get_long_call_leg().premium_used
+        return self.get_long_call_leg().contract.strike + self.get_long_call_leg().cost_per_share
 
     @property
     def profit_cap_price(self):

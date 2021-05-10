@@ -38,7 +38,7 @@ export default function LegDetailsCard(props) {
                         </Col>
                         {/* <Col sm="2" xs="6">
                             <MetricLabel label="order price" />
-                            {PriceFormatter(leg.premium_used)} ({leg.premium_type === 'market' ? (leg.is_long ? 'Ask' : 'Bid') : 'Mid/Mark'})
+                            {PriceFormatter(leg.cost_per_share)} ({leg.premium_type === 'market' ? (leg.is_long ? 'Ask' : 'Bid') : 'Mid/Mark'})
                         </Col> */}
                     </Row>
                 </Card.Header>

@@ -54,8 +54,7 @@ class BearCallSpread(Trade):
 
     @property
     def break_even_price(self):
-        return self.get_short_call_leg().contract.strike \
-               + (self.get_short_call_leg().premium_used - self.get_long_call_leg().premium_used)
+        return self.get_short_call_leg().contract.strike + (self.get_short_call_leg().cost_per_share - self.get_long_call_leg().cost_per_share)
 
     @property
     def profit_cap_price(self):

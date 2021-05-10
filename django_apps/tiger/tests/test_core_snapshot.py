@@ -83,8 +83,10 @@ class LoadFromSnapshotTestCase(TestCase):
                                                                       external_cache=self.external_cache_td)
         contract_leg_snapshot2 = LegSnapshot.objects.create(is_long=True, units=2,
                                                             contract_snapshot=contract_snapshot_td2)
-        self.assertAlmostEqual(Leg.from_snapshot(contract_leg_snapshot2, 'mid', self.broker_settings).cost, 42.5 * 2 + 1.3)
-        self.assertAlmostEqual(Leg.from_snapshot(contract_leg_snapshot2, 'market', self.broker_settings).cost, 75 * 2 + 1.3)
+        self.assertAlmostEqual(Leg.from_snapshot(contract_leg_snapshot2, 'mid',
+                               self.broker_settings).cost, 42.5 * 2 + 1.3)
+        self.assertAlmostEqual(Leg.from_snapshot(contract_leg_snapshot2,
+                               'market', self.broker_settings).cost, 75 * 2 + 1.3)
 
     def testLoadTradeFromSnapshot(self):
         creator = User.objects.create_user(username='testuser', password='12345')

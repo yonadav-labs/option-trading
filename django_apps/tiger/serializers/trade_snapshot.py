@@ -92,7 +92,6 @@ class TradeSnapshotSerializer(serializers.ModelSerializer):
                 leg_snapshot.stock_snapshot.save()
             elif leg_snapshot.contract_snapshot:
                 leg_snapshot.contract_snapshot.save()
-
             leg_snapshot.save()
             trade_snapshot.leg_snapshots.add(leg_snapshot)
 
@@ -100,6 +99,6 @@ class TradeSnapshotSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = TradeSnapshot
-        fields = ('type', 'stock_snapshot', 'leg_snapshots', 'is_public', 'creator_id', 'premium_type',
-                  'target_price_lower', 'target_price_upper')
+        fields = ('type', 'stock_snapshot', 'leg_snapshots', 'is_public', 'creator_id',
+                  'premium_type', 'target_price_lower', 'target_price_upper')
         depth = 2

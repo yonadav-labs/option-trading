@@ -81,8 +81,8 @@ class LegSerializer(serializers.Serializer):
     stock = StockSerializer(allow_null=True)
     contract = OptionContractSerializer(allow_null=True)
     premium_type = serializers.ReadOnlyField()
-    premium_used = serializers.ReadOnlyField()
-    cost = ReadOnlyDollarDecimalField()
+    cost_per_share = serializers.ReadOnlyField()
+    total_cost = ReadOnlyDollarDecimalField()
     display_name = serializers.ReadOnlyField()
 
 

@@ -28,7 +28,7 @@ class BullCallSpread(Trade):
         lower_strike_call, higher_strike_call = (call_contract_1, call_contract_2) \
             if call_contract_1.strike < call_contract_2.strike else (call_contract_2, call_contract_1)
 
-        long_call_leg = OptionLeg(True, 1, lower_strike_call,premium_type, broker_settings)
+        long_call_leg = OptionLeg(True, 1, lower_strike_call, premium_type, broker_settings)
         short_call_leg = OptionLeg(False, 1, higher_strike_call, premium_type, broker_settings)
         new_trade = BullCallSpread(stock, [long_call_leg, short_call_leg], premium_type,
                                    target_price_lower=target_price_lower, target_price_upper=target_price_upper)
@@ -50,9 +50,7 @@ class BullCallSpread(Trade):
 
     @property
     def break_even_price(self):
-        return self.get_long_call_leg().contract.strike \
-               + self.get_long_call_leg().premium_used \
-               - self.get_short_call_leg().premium_used
+        return self.get_long_call_leg().contract.strike + self.get_long_call_leg().cost_per_share - self.get_short_call_leg().cost_per_share
 
     @property
     def profit_cap_price(self):

@@ -7,7 +7,8 @@ class Leg(ABC):
     def __init__(self, is_long, units, cash=None, stock=None, contract=None):
         if (not cash and not stock and not contract) or (stock and contract) or (cash and contract) or (cash and stock):
             raise ValueError('Leg must have exactly 1 security.')
-        self.is_long = is_long  # True means "long"/"buy", False means "short"/"sell".
+        # True means "long"/"buy", False means "short"/"sell".
+        self.is_long = is_long
         self.units = units
         self.cash = cash
         self.stock = stock
@@ -41,15 +42,21 @@ class Leg(ABC):
 
     @property
     @abstractmethod
-    def cost(self):
+    def total_cost(self):
+        pass
+
+    @property
+    @abstractmethod
+    def cost_per_share(self):
         pass
 
     @abstractmethod
     def get_value_in_price_range(self, price_lower, price_upper):
         pass
 
-    def get_profit_in_price_range(self, price_lower, price_upper):
-        return self.get_value_in_price_range(price_lower, price_upper) - self.cost
+    def get_return_at_expiration(self, price_lower, price_upper):
+        '''gets profit or loss of leg at expiration'''
+        return self.get_value_in_price_range(price_lower, price_upper) - self.total_cost
 
 
 # Represent units US dollar. Currently only long.
@@ -63,14 +70,18 @@ class CashLeg(Leg):
 
     @property
     def display_name(self):
-        return 'Keep ${} cash as collateral'.format(self.units)
+        return f"Keep ${self.units} cash as collateral"
 
     @property
-    def cost(self):
+    def total_cost(self):
         return self.units
 
+    @property
+    def cost_per_share(self):
+        return 1
+
     def get_value_in_price_range(self, price_lower, price_upper):
-        return self.cost
+        return self.total_cost
 
 
 # Represent `units` shares of stock. Currently only long.
@@ -84,15 +95,18 @@ class StockLeg(Leg):
 
     @property
     def display_name(self):
-        return 'Long {} share{} of {} at ${:.2f} per share as collateral' \
-            .format(self.units, 's' if self.units > 1 else '', self.stock.display_name, self.stock.stock_price)
+        return f"Long {self.units} share{'s' if self.units > 1 else ''} of {self.stock.display_name} at ${self.stock.stock_price:.2f} per share as collateral"
 
     @property
-    def cost(self):
-        return self.stock.stock_price * self.units
+    def total_cost(self):
+        return self.cost_per_share * (self.units if self.is_long else -self.units)
+
+    @property
+    def cost_per_share(self):
+        return self.stock.stock_price
 
     def get_value_in_price_range(self, price_lower, price_upper):
-        return self.stock.get_value_in_price_range(price_lower, price_upper) * self.units
+        return self.stock.get_value_in_price_range(price_lower, price_upper) * (self.units if self.is_long else -self.units)
 
 
 # Represent `units` contract of option.
@@ -100,7 +114,7 @@ class OptionLeg(Leg):
     def __init__(self, is_long, units, contract, premium_type, broker_settings):
         assert premium_type in ('mid', 'market')
         super().__init__(is_long, units, contract=contract)
-        self.premium_type = premium_type
+        self.use_market_price = premium_type == 'market'
         self.open_commission = broker_settings['open_commission']
         self.close_commission = broker_settings['close_commission']
 
@@ -110,35 +124,33 @@ class OptionLeg(Leg):
 
     @property
     def display_name(self):
-        if self.premium_type == 'market':
+        if self.use_market_price:
             premium_name = 'ask' if self.is_long else 'bid'
         else:
             premium_name = 'mid/mark'
-        return '{} {} contract{} of {} at ${:.2f}({}) per contract' \
-            .format('Long' if self.is_long else 'Short', self.units,
-                    's' if self.units > 1 else '', self.contract.display_name, abs(self.cost), premium_name)
+        return f"{'Long' if self.is_long else 'Short'} {self.units} contract{'s' if self.units > 1 else ''} of {self.contract.display_name} at ${abs(self.total_cost):.2f}({premium_name}) per contract"
 
     @property
-    def premium_used(self):
-        if self.premium_type == 'mid':
-            return self.contract.mark
-        else:
+    def cost_per_share(self):
+        if self.use_market_price:
             return self.contract.ask if self.is_long else self.contract.bid
-
-    def get_cost(self, include_commission=True):
-        cost = self.premium_used * 100 * (self.units if self.is_long else -self.units)
-        if include_commission:
-            cost += (self.open_commission + self.close_commission)
-        return cost
+        else:
+            return self.contract.mark
 
     @property
-    def cost(self):
+    def total_cost(self):
         return self.get_cost()
 
     @property
     def net_cost(self):
         return self.get_cost(False)
 
+    def get_cost(self, include_commission=True):
+        cost = self.cost_per_share * 100 * \
+            (self.units if self.is_long else -self.units)
+        if include_commission:
+            cost += (self.open_commission + self.close_commission)
+        return cost
+
     def get_value_in_price_range(self, price_lower, price_upper):
-        return self.contract.get_value_in_price_range(price_lower, price_upper) * (
-            self.units if self.is_long else -self.units)
+        return self.contract.get_value_in_price_range(price_lower, price_upper) * (self.units if self.is_long else -self.units)

@@ -70,7 +70,7 @@ class Trade(ABC):
     def cost(self):
         cost_sum = 0.0
         for leg in self.legs:
-            cost_sum += leg.cost
+            cost_sum += leg.total_cost
         return cost_sum
 
     @property
@@ -194,7 +194,8 @@ class Trade(ABC):
         if not historical_volatility:
             return []
         # TODO: change to count actual trading days.
-        trading_days_till_exp = int(self.min_days_till_expiration * 5.0 / 7.0)  # Estimation to exclude weekends.
+        # Estimation to exclude weekends.
+        trading_days_till_exp = int(self.min_days_till_expiration * 5.0 / 7.0)
         daily_volatility = historical_volatility / math.sqrt(253)
         sigma = daily_volatility * math.sqrt(trading_days_till_exp)
         return [max(0.0, self.stock.stock_price * (1 + n * sigma)) for n in (-sigma_num, sigma_num)]
@@ -240,7 +241,8 @@ class Trade(ABC):
         if not historical_volatility:
             return None
         # TODO: change to count actual trading days.
-        trading_days_till_exp = int(self.min_days_till_expiration * 5.0 / 7.0)  # Estimation to exclude weekends.
+        # Estimation to exclude weekends.
+        trading_days_till_exp = int(self.min_days_till_expiration * 5.0 / 7.0)
         daily_volatility = historical_volatility / math.sqrt(252)
         return daily_volatility * math.sqrt(trading_days_till_exp)
 
@@ -310,7 +312,8 @@ class Trade(ABC):
     def get_profit_in_price_range(self, price_lower, price_upper):
         profit_sum = 0.0
         for leg in self.legs:
-            profit_sum += leg.get_profit_in_price_range(price_lower, price_upper)
+            if not leg.is_cash:
+                profit_sum += leg.get_return_at_expiration(price_lower, price_upper)
         return profit_sum
 
     def max_out(self, available_cash):
@@ -340,7 +343,7 @@ class Trade(ABC):
             if leg.contract:
                 net_debt += leg.net_cost / leg.units
             elif leg.stock:
-                net_debt += leg.cost * (leg.units / 100)
+                net_debt += leg.total_cost * (leg.units / 100)
         return net_debt
 
     @property

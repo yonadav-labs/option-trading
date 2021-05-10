@@ -41,7 +41,7 @@ class CoveredCall(Trade):
 
     @property
     def break_even_price(self):
-        return self.stock.stock_price - self.get_short_call_leg().premium_used
+        return self.stock.stock_price - self.get_short_call_leg().cost_per_share
 
     @property
     def profit_cap_price(self):

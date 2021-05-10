@@ -51,8 +51,7 @@ class BearPutSpread(Trade):
 
     @property
     def break_even_price(self):
-        return self.get_long_put_leg().contract.strike \
-               - (self.get_long_put_leg().premium_used - self.get_short_put_leg().premium_used)
+        return self.get_long_put_leg().contract.strike - (self.get_long_put_leg().cost_per_share - self.get_short_put_leg().cost_per_share)
 
     @property
     def profit_cap_price(self):

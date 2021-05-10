@@ -19,8 +19,8 @@ class LongPut(Trade):
     @staticmethod
     def build(stock, put_contract, premium_type, broker_settings, target_price_lower=None, target_price_upper=None, available_cash=None):
         long_put_leg = OptionLeg(True, 1, put_contract, premium_type, broker_settings)
-        new_trade = LongPut(stock, [long_put_leg], premium_type, target_price_lower=target_price_lower,
-                            target_price_upper=target_price_upper)
+        new_trade = LongPut(stock, [long_put_leg], premium_type,
+                            target_price_lower=target_price_lower, target_price_upper=target_price_upper)
         if available_cash and not new_trade.max_out(available_cash):
             return None
         return new_trade
@@ -36,7 +36,7 @@ class LongPut(Trade):
 
     @property
     def break_even_price(self):
-        return self.get_long_put_leg().contract.strike - self.get_long_put_leg().premium_used
+        return self.get_long_put_leg().contract.strike - self.get_long_put_leg().cost_per_share
 
     @property
     def profit_cap_price(self):

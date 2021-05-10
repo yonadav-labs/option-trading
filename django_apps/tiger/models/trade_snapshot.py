@@ -41,8 +41,7 @@ class LegSnapshot(BaseModel):
     contract_snapshot = models.ForeignKey(OptionContractSnapshot, null=True, blank=True, on_delete=models.SET_NULL)
 
     def __str__(self):
-        return "({}) {}-{}{}{}".format(self.id, 'LONG' if self.is_long else 'SHORT', self.cash_snapshot,
-                                       self.stock_snapshot, self.contract_snapshot)
+        return f"({self.id}) {'LONG' if self.is_long else 'SHORT'}-{self.cash_snapshot}{self.security_snapshot}"
 
 
 class TradeSnapshot(BaseModel):
@@ -58,11 +57,13 @@ class TradeSnapshot(BaseModel):
         ('bull_put_spread', 'Bull put spread'),
     )
     type = models.CharField(max_length=100, choices=TRADE_TYPE_CHOICES, default="unspecified")
-    stock_snapshot = models.ForeignKey(StockSnapshot, on_delete=models.CASCADE)  # Snapshot of underlying asset.
+    # Snapshot of underlying asset.
+    stock_snapshot = models.ForeignKey(StockSnapshot, on_delete=models.CASCADE)
     leg_snapshots = models.ManyToManyField(LegSnapshot)
 
     creator = models.ForeignKey(User, on_delete=models.CASCADE, related_name='trades', null=True, blank=True)
-    is_public = models.BooleanField(default=False)  # If non-creator can view this trade.
+    # If non-creator can view this trade.
+    is_public = models.BooleanField(default=False)
 
     # Market assumptions.
     target_price_lower = models.FloatField(null=True, blank=True)
