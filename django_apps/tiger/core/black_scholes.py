@@ -1,6 +1,8 @@
 import numpy as np
 import scipy.stats as si
 
+# import tiger.core.interest_rates as ir
+# rfr = ir.get_rfr('180')
 INTEREST_RATE = 0.005  # Risk free interest rate.
 
 
