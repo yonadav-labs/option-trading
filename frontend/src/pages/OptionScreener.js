@@ -112,7 +112,7 @@ export default function SellCoveredCall() {
             formatter: (cell, row, rowIndex, extraData) => (
                 (
                     <span>
-                        <small>{TimestampDateFormatter(cell)} ({row.days_till_expiration}d)</small>
+                        <small>{TimestampDateFormatter(cell)}({row.days_till_expiration}d)</small>
                     </span>
                 )
             ),
@@ -140,10 +140,20 @@ export default function SellCoveredCall() {
             text: "Bid/Ask",
             formatter: (cell, row, rowIndex, extraData) => (
                 (
-                    <span>{PriceFormatter(cell)}/{PriceFormatter(row.ask)}</span>
+                    <small>{PriceFormatter(cell)}/{PriceFormatter(row.ask)}</small>
                 )
             ),
             headerSortingStyle,
+        }, {
+            dataField: "percent_change",
+            text: "Change",
+            formatter: (cell, row, rowIndex, extraData) => (
+                (
+                    <small>{cell >= 0 ? '+' : '-'}{NumberRoundFormatter(Math.abs(cell))}%({PriceFormatter(row.change)})</small>
+                )
+            ),
+            headerSortingStyle,
+            sort: true,
         }, {
             dataField: "volume",
             text: "Vol",
