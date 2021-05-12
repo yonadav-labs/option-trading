@@ -19,6 +19,7 @@ import EmailVerified from './pages/EmailVerified';
 import Blog from './pages/Blog';
 import BlogDetail from './pages/BlogDetail';
 import { Container } from '@material-ui/core';
+import NewOptionScreener from './pages/option_screener/NewOptionScreener';
 
 const oktaAuth = new OktaAuth(getOktaConfig().oidc);
 
@@ -45,6 +46,7 @@ export default withRouter(class AppWithRouterAccess extends Component {
                         <Route path='/option-screener' exact={true} component={OptionScreener} />
                         <Route path='/browse' exact={true} component={OptionScreener} />
                         <Route path='/screen' exact={true} component={OptionScreener} />
+                        <Route path='/new-screen' exact={true} component={NewOptionScreener} />
                         <Route path='/surface' exact={true} component={Surface} />
                         <Route path='/discover' exact={true} component={NewStrategyScreener} />
                         <Route path='/strategy-screener' exact={true} component={NewStrategyScreener} />
