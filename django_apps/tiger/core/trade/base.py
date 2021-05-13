@@ -1,7 +1,10 @@
 import math
+import more_itertools
 from abc import ABC, abstractmethod
-
+from tiger.core import Leg
 from tiger.core.black_scholes import get_target_price_probability
+
+INFINITE = 'infinite'
 
 
 class Trade(ABC):
@@ -21,8 +24,13 @@ class Trade(ABC):
         self.target_price_upper = target_price_upper
         self.premium_type = premium_type
         self.meta = {}  # meta info including number of comparisons among combinations
+        self.max_loss = 0
+        # same as profit_cap
+        self.max_profit = 0
+        self.break_evens = []
 
         self.common_validate()
+        self.calc_properties()
 
     def common_validate(self):
         if self.target_price_lower is not None and self.target_price_upper is not None:
@@ -65,6 +73,16 @@ class Trade(ABC):
     def get_short_put_leg(self):
         return self.get_leg(is_long=False, type='option', is_call=False)
 
+    # same as profit_cap_ratio
+    @property
+    def reward_to_risk_ratio(self):
+        '''calculate how many multiples of the amount at risk that can be gained in an ideal case'''
+        # check if max profit is actualy positive and not infinite, max loss is actually negative and not infinite
+        if self.max_profit != INFINITE and self.max_profit > 0 and self.max_loss != INFINITE and self.max_loss < 0:
+            return abs(self.max_profit / self.max_loss)
+        else:
+            return None
+
     # TODO: self.cost could be 0 in a spread. How to prevent this?
     @property
     def cost(self):
@@ -104,7 +122,7 @@ class Trade(ABC):
         '''Expected profit within target price range.'''
         if not self.has_target_prices():
             return None
-        return self.get_profit_in_price_range(self.target_price_lower, self.target_price_upper)
+        return self.get_total_return(self.target_price_lower, self.target_price_upper)
 
     @property
     def target_price_profit_ratio(self):
@@ -150,7 +168,7 @@ class Trade(ABC):
         profit_cap_price = self.profit_cap_price
         if profit_cap_price is None:
             return None
-        return self.get_profit_in_price_range(profit_cap_price, profit_cap_price)
+        return self.get_total_return(profit_cap_price, profit_cap_price)
 
     @property
     def profit_cap_ratio(self):
@@ -184,7 +202,7 @@ class Trade(ABC):
 
     @property
     def graph_y_points(self):
-        return [self.get_profit_in_price_range(price, price) for price in self.graph_x_points]
+        return [self.get_total_return(price, price) for price in self.graph_x_points]
 
     # TODO: deprecated.
     def get_sigma_prices(self, sigma_num):
@@ -212,8 +230,8 @@ class Trade(ABC):
         if not self.two_sigma_prices:
             return None
         lower_price, higher_price = self.two_sigma_prices
-        return max(-self.cost, min(self.get_profit_in_price_range(lower_price, lower_price),
-                                   self.get_profit_in_price_range(higher_price, higher_price)))
+        return max(-self.cost, min(self.get_total_return(lower_price, lower_price),
+                                   self.get_total_return(higher_price, higher_price)))
 
     # TODO: deprecated.
     @property
@@ -222,8 +240,8 @@ class Trade(ABC):
         if not self.two_sigma_prices:
             return None
         lower_price, higher_price = self.two_sigma_prices
-        lower_price_profit = self.get_profit_in_price_range(lower_price, lower_price)
-        higer_price_profit = self.get_profit_in_price_range(higher_price, higher_price)
+        lower_price_profit = self.get_total_return(lower_price, lower_price)
+        higer_price_profit = self.get_total_return(higher_price, higher_price)
         return lower_price if lower_price_profit < higer_price_profit else higer_price_profit
 
     # TODO: deprecated.
@@ -264,8 +282,10 @@ class Trade(ABC):
         # 1.282: 10% percentile.
         ten_percent_low_price = max(0, stock_price * (1 - 1.282 * self.sigma))
         ten_percent_high_price = max(0, stock_price * (1 + 1.282 * self.sigma))
-        low_price_return = max(-self.cost, self.get_profit_in_price_range(lowest_price, ten_percent_low_price))
-        high_price_return = max(-self.cost, self.get_profit_in_price_range(ten_percent_high_price, highest_price))
+        low_price_return = max(-self.cost,
+                               self.get_total_return(lowest_price, ten_percent_low_price))
+        high_price_return = max(-self.cost,
+                                self.get_total_return(ten_percent_high_price, highest_price))
         if is_profit:
             return [ten_percent_low_price, low_price_return] if low_price_return > high_price_return \
                 else [ten_percent_high_price, high_price_return]
@@ -309,12 +329,16 @@ class Trade(ABC):
             return None
         return self.ten_percent_worst_return / self.cost
 
-    def get_profit_in_price_range(self, price_lower, price_upper):
-        profit_sum = 0.0
+    def get_total_return(self, price_lower, price_upper):
+        '''gets profit or loss of strategy at expiration for a given underlying price range'''
+        # given: stock price
+        # calculate p/l of each option leg
+        total_return = 0.0
+        leg: Leg
         for leg in self.legs:
             if not leg.is_cash:
-                profit_sum += leg.get_return_at_expiration(price_lower, price_upper)
-        return profit_sum
+                total_return += leg.get_return_at_expiration(price_lower, price_upper)
+        return total_return
 
     def max_out(self, available_cash):
         '''Returns True if succeeded, otherwise False.'''
@@ -373,5 +397,62 @@ class Trade(ABC):
                 sigma=leg.contract.implied_volatility, aims_above=self.is_bullish)
             probs.append(prob)
         return sum(probs) / len(probs)
+
+    def calc_properties(self):
+        '''calculates max loss, max profit, and break even points of strategy'''
+        # important price points (possible inflection points): 0, each leg's strike, infinity
+        points = {}
+        # calculate total profit and loss at 0
+        points[0] = self.get_total_return(0, 0)
+        # calculate total profit and loss at each strike
+        leg: Leg
+        for leg in self.legs:
+            if leg.contract:
+                strike = leg.contract.strike
+                points[strike] = self.get_total_return(strike, strike)
+        # sort the points by strike
+        points = {k: points[k] for k in sorted(points)}
+        # get the highest strike to calculate "infinity"
+        highest_strike = max(points.keys())
+        infinity = highest_strike + 1
+        # calculate the total profit and loss at "infinity"
+        points[infinity] = self.get_total_return(infinity, infinity)
+
+        # find break even points
+        # for each pair of adjacent points check if points have opposite signs indicating there is a breakeven in between
+        # use formula of line to calculate exact break even point: y = mx + c [m = slope, c = y intercept]
+        for x1, x2 in more_itertools.pairwise(sorted(points.keys())):
+            # calculate slope: rise/run or delta y / delta x
+            slope = (points[x2] - points[x1]) / (x2 - x1)
+            # if slope is zero then it is a flat line, no break even in between points
+            if slope == 0:
+                continue
+            # edge case: for the last pair (largest strike and "infinity") compare sign of largest strike with sign of slope
+            if x1 == highest_strike and x2 == infinity:
+                if math.copysign(1, points[x1]) == math.copysign(1, slope):
+                    continue
+            else:
+                # check if sign of first point and second point are the same (indicating no break even)
+                if math.copysign(1, points[x1]) == math.copysign(1, points[x2]):
+                    continue
+            # find y intercept
+            c = points[x1] - slope * x1
+            # solve for x when y is zero, a.k.a find strike where return is 0
+            self.break_evens.append((0 - c) / slope)
+
+        # set max profit and max loss
+        # check if the slope of the two highest points are positive, indicating infinite profit
+        if points[infinity] > points[highest_strike]:
+            self.max_profit = INFINITE
+        else:
+            # otherwise there is a max profit
+            self.max_profit = max(points.values())
+
+        # check if the slope of the two highest points are negative, indicating infinite loss
+        if points[infinity] < points[highest_strike]:
+            self.max_loss = INFINITE
+        else:
+            # otherwise there is a max loss
+            self.max_loss = min(points.values())
 
 # TODO: add a sell everything now and hold cash trade and a long stock trade.

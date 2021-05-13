@@ -32,3 +32,4 @@ toml==0.10.1
 urllib3==1.25.11
 wrapt==1.12.1
 mailchimp-marketing==3.0.36
+more-itertools==8.7.0

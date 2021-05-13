@@ -1,5 +1,4 @@
 from django.test import TestCase
-
 from tiger.core import Stock, OptionContract, Leg, Trade
 from tiger.core.trade.trade_factory import TradeFactory
 from tiger.models import ExternalRequestCache, Ticker, StockSnapshot, OptionContractSnapshot, LegSnapshot, \
@@ -76,7 +75,7 @@ class LoadFromSnapshotTestCase(TestCase):
         self.assertEqual(contract_leg.contract.stock_price, 74.13)
         self.assertEqual(contract_leg.contract.is_call, False)
         self.assertEqual(contract_leg.contract.mark, 0.25)
-        self.assertEqual(contract_leg.cost, 25 * 2 + 1.3)
+        self.assertEqual(contract_leg.total_cost, 25 * 2 + 1.3)
 
         contract_snapshot_td2 = OptionContractSnapshot.objects.create(ticker=self.ticker, is_call=False, strike=65.0,
                                                                       expiration_timestamp=1610744400,
@@ -84,9 +83,9 @@ class LoadFromSnapshotTestCase(TestCase):
         contract_leg_snapshot2 = LegSnapshot.objects.create(is_long=True, units=2,
                                                             contract_snapshot=contract_snapshot_td2)
         self.assertAlmostEqual(Leg.from_snapshot(contract_leg_snapshot2, 'mid',
-                               self.broker_settings).cost, 42.5 * 2 + 1.3)
+                               self.broker_settings).total_cost, 42.5 * 2 + 1.3)
         self.assertAlmostEqual(Leg.from_snapshot(contract_leg_snapshot2,
-                               'market', self.broker_settings).cost, 75 * 2 + 1.3)
+                               'market', self.broker_settings).total_cost, 75 * 2 + 1.3)
 
     def testLoadTradeFromSnapshot(self):
         creator = User.objects.create_user(username='testuser', password='12345')
@@ -109,3 +108,10 @@ class LoadFromSnapshotTestCase(TestCase):
         self.assertAlmostEqual(trade.cost, 7389.3)
         self.assertAlmostEqual(trade.break_even_price, 65.75)
         self.assertAlmostEqual(trade.target_price_profit, 23.7)
+        self.assertAlmostEqual(trade.max_profit, 23.7)
+        # strike * 100 - premium (this trade is selling a put)
+        self.assertAlmostEqual(trade.max_loss, -(6600 - 23.7))
+        self.assertEqual(len(trade.break_evens), 1)
+        # includes commission cost
+        self.assertAlmostEqual(trade.break_evens[0], 65.763)
+        self.assertAlmostEqual(trade.reward_to_risk_ratio, 0.00360385018)
