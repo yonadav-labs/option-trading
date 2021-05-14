@@ -34,10 +34,14 @@ export default function HeatMapGraph(props) {
         title: {
             text: title
         },
-        xAxis: {
+        xAxis: [{
+            categories: data.expiration_dates,
+        },{
             categories: data.expiration_dates,
             title: { text: 'Expiration Date' },
-        },
+            opposite: true,
+            linkedTo: 0
+        }],
         yAxis: {
             categories: data.strike_prices,
             title: { text: 'Strike' },
