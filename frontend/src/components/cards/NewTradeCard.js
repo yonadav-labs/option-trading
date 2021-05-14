@@ -16,6 +16,9 @@ const GaEvent = GetGaEventTrackingFunc('trade details');
 const useStyles = makeStyles(theme => ({
     capitalize: {
         textTransform: "capitalize"
+    },
+    tradeMeta:{
+        flexGrow:4
     }
 }))
 
@@ -48,7 +51,7 @@ export default function NewTradeCard({ trade }) {
                                 <Typography variant="h5" className={classes.capitalize}
                                     display="inline" paddingRight={2}>{getTradeTypeDisplay(trade.type)}</Typography>
                             </Grid>
-                            <Grid item sm>
+                            <Grid item sm className={classes.tradeMeta}>
                                 <Chip label={
                                     <>
                                         <Typography variant="subtitle1" display="inline">
