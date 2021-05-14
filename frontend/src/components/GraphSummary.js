@@ -12,7 +12,8 @@ export default function GraphSummary({ trade }) {
         data.push(point);
     });
 
-    let colorBreakpoint = (trade.break_even_price / trade.stock.stock_price)
+    // fix this with break evens
+    let colorBreakpoint = (trade.break_even_prices_and_ratios[0].price / trade.stock.stock_price)
     let backgroundColor = {}
     if (data[0].y < 0) {
         backgroundColor = {

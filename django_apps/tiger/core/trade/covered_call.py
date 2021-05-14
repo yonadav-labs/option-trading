@@ -40,13 +40,5 @@ class CoveredCall(Trade):
                     expiration_date_str, short_call_leg.contract.strike, self.cost / short_call_leg.units)
 
     @property
-    def break_even_price(self):
-        return self.stock.stock_price - self.get_short_call_leg().cost_per_share
-
-    @property
-    def profit_cap_price(self):
-        return self.get_short_call_leg().contract.strike
-
-    @property
     def is_bullish(self):
         return True

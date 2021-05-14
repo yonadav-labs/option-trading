@@ -106,11 +106,10 @@ class LoadFromSnapshotTestCase(TestCase):
         self.assertEqual(trade.type, 'cash_secured_put')
         self.assertEqual(trade.target_price_lower, 100)
         self.assertAlmostEqual(trade.cost, 7389.3)
-        self.assertAlmostEqual(trade.break_even_price, 65.75)
         self.assertAlmostEqual(trade.target_price_profit, 23.7)
-        self.assertAlmostEqual(trade.max_profit, 23.7)
+        self.assertAlmostEqual(trade.best_return, 23.7)
         # strike * 100 - premium (this trade is selling a put)
-        self.assertAlmostEqual(trade.max_loss, -(6600 - 23.7))
+        self.assertAlmostEqual(trade.worst_return, -(6600 - 23.7))
         self.assertEqual(len(trade.break_evens), 1)
         # includes commission cost
         self.assertAlmostEqual(trade.break_evens[0], 65.763)

@@ -24,10 +24,11 @@ class Trade(ABC):
         self.target_price_upper = target_price_upper
         self.premium_type = premium_type
         self.meta = {}  # meta info including number of comparisons among combinations
-        self.max_loss = 0
-        # same as profit_cap
-        self.max_profit = 0
+        self.worst_return = 0
+        self.best_return = 0
         self.break_evens = []
+        # important price points (possible inflection points): 0, each leg's strike, infinity
+        self.key_points = {}
 
         self.common_validate()
         self.calc_properties()
@@ -73,13 +74,12 @@ class Trade(ABC):
     def get_short_put_leg(self):
         return self.get_leg(is_long=False, type='option', is_call=False)
 
-    # same as profit_cap_ratio
     @property
     def reward_to_risk_ratio(self):
         '''calculate how many multiples of the amount at risk that can be gained in an ideal case'''
         # check if max profit is actualy positive and not infinite, max loss is actually negative and not infinite
-        if self.max_profit != INFINITE and self.max_profit > 0 and self.max_loss != INFINITE and self.max_loss < 0:
-            return abs(self.max_profit / self.max_loss)
+        if self.best_return != INFINITE and self.best_return > 0 and self.worst_return != INFINITE and self.worst_return < 0:
+            return abs(self.best_return / self.worst_return)
         else:
             return None
 
@@ -143,66 +143,37 @@ class Trade(ABC):
         return self.target_price_upper / self.stock.stock_price - 1.0
 
     @property
-    def to_break_even_ratio(self):
-        return (self.break_even_price - self.stock.stock_price) / self.stock.stock_price
-
-    @property
-    @abstractmethod
-    def break_even_price(self):
-        pass
+    def break_even_prices_and_ratios(self):
+        result = []
+        for break_even in self.break_evens:
+            result.append({
+                'price': break_even,
+                'ratio': (break_even - self.stock.stock_price) / self.stock.stock_price
+            })
+        return result
 
     @property
     @abstractmethod
     def display_name(self):
         pass
 
+    # currently unused property
     @property
-    @abstractmethod
-    def profit_cap_price(self):
-        ''' None means no cap.'''
-        pass
-
-    @property
-    def profit_cap(self):
-        ''' None means no cap.'''
-        profit_cap_price = self.profit_cap_price
-        if profit_cap_price is None:
+    def prices_for_best_return(self):
+        ''' None means unlimited return.'''
+        if self.best_return == INFINITE:
             return None
-        return self.get_total_return(profit_cap_price, profit_cap_price)
-
-    @property
-    def profit_cap_ratio(self):
-        if self.profit_cap is None:
-            return None
-        return self.profit_cap / self.cost
+        else:
+            return list(self.key_points.keys())[list(self.key_points.values()).index(self.best_return)]
 
     # TODO: make this a separate API call to reduce payload.
     @property
     def graph_x_points(self):
-        '''Currently all trade types we have strike prices as key points so we can share this.'''
-        graph_prices = []
-        step = max(0.05, self.stock.stock_price / 200.0)
-        price = 0.0
-        while price < self.stock.stock_price * 2:
-            graph_prices.append(price)
-            price += step
-
-        for leg in self.legs:
-            if leg.contract and leg.contract.strike not in graph_prices:
-                graph_prices.append(leg.contract.strike)
-
-        graph_prices.append(self.stock.stock_price)
-        graph_prices.append(self.break_even_price)
-        if self.target_price_lower:
-            graph_prices.append(self.target_price_lower)
-        if self.target_price_upper:
-            graph_prices.append(self.target_price_upper)
-        graph_prices = sorted(graph_prices)
-        return graph_prices
+        return self.key_points.keys()
 
     @property
     def graph_y_points(self):
-        return [self.get_total_return(price, price) for price in self.graph_x_points]
+        return self.key_points.values()
 
     # TODO: deprecated.
     def get_sigma_prices(self, sigma_num):
@@ -386,21 +357,20 @@ class Trade(ABC):
     @property
     def profit_prob(self):
         '''Probability of profit， implied from options pricing.'''
+        # not sure what is best way to calculate probability for multiple break evens and multiple legs
         probs = []
         for leg in self.legs:
-            if not leg.contract:
-                continue
-            prob = get_target_price_probability(
-                stock_price=self.stock.stock_price,
-                target_price=self.break_even_price + (0.01 if self.is_bullish else -0.01),
-                exp_years=leg.contract.days_till_expiration / 365.0,
-                sigma=leg.contract.implied_volatility, aims_above=self.is_bullish)
-            probs.append(prob)
+            if leg.contract:
+                prob = get_target_price_probability(
+                    stock_price=self.stock.stock_price,
+                    target_price=self.break_even_prices_and_ratios[0].price + (0.01 if self.is_bullish else -0.01),
+                    exp_years=leg.contract.days_till_expiration / 365.0,
+                    sigma=leg.contract.implied_volatility, aims_above=self.is_bullish)
+                probs.append(prob)
         return sum(probs) / len(probs)
 
     def calc_properties(self):
         '''calculates max loss, max profit, and break even points of strategy'''
-        # important price points (possible inflection points): 0, each leg's strike, infinity
         points = {}
         # calculate total profit and loss at 0
         points[0] = self.get_total_return(0, 0)
@@ -417,6 +387,7 @@ class Trade(ABC):
         infinity = highest_strike + 1
         # calculate the total profit and loss at "infinity"
         points[infinity] = self.get_total_return(infinity, infinity)
+        self.key_points = points
 
         # find break even points
         # for each pair of adjacent points check if points have opposite signs indicating there is a breakeven in between
@@ -443,16 +414,16 @@ class Trade(ABC):
         # set max profit and max loss
         # check if the slope of the two highest points are positive, indicating infinite profit
         if points[infinity] > points[highest_strike]:
-            self.max_profit = INFINITE
+            self.best_return = INFINITE
         else:
             # otherwise there is a max profit
-            self.max_profit = max(points.values())
+            self.best_return = max(points.values())
 
         # check if the slope of the two highest points are negative, indicating infinite loss
         if points[infinity] < points[highest_strike]:
-            self.max_loss = INFINITE
+            self.worst_return = INFINITE
         else:
             # otherwise there is a max loss
-            self.max_loss = min(points.values())
+            self.worst_return = min(points.values())
 
 # TODO: add a sell everything now and hold cash trade and a long stock trade.

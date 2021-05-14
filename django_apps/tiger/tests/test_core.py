@@ -82,8 +82,6 @@ class CallTradesTestCase(TestCase):
         self.assertAlmostEqual(long_call.to_target_price_lower_ratio, 0.42857142857)
         self.assertAlmostEqual(long_call.target_price_profit, 15028.7)
         self.assertAlmostEqual(long_call.target_price_profit_ratio, 0.92934396121)
-        self.assertAlmostEqual(long_call.break_even_price, 449.7)
-        self.assertAlmostEqual(long_call.to_break_even_ratio, 0.07071428571)
         self.assertAlmostEqual(long_call.stock.historical_volatility, 0.8)
         self.assertSequenceEqual(long_call.two_sigma_prices, [0.0, 918.0998518877443])
         self.assertAlmostEqual(long_call.two_sigma_profit_lower, -16171.3)
@@ -108,11 +106,12 @@ class CallTradesTestCase(TestCase):
         self.assertAlmostEqual(
             LongCall.build(self.stock, call_contract, 'mid', self.broker_settings, 260, 280).target_price_profit,
             -16171.3)
-        self.assertAlmostEqual(long_call.max_profit, 'infinite')
-        self.assertAlmostEqual(long_call.max_loss, -16171.3)
+        self.assertAlmostEqual(long_call.best_return, 'infinite')
+        self.assertAlmostEqual(long_call.worst_return, -16171.3)
         self.assertEqual(len(long_call.break_evens), 1)
         # includes commission cost
         self.assertAlmostEqual(long_call.break_evens[0], 449.713)
+        self.assertAlmostEqual(long_call.break_even_prices_and_ratios[0]['ratio'], 0.07074523809523801)
         self.assertIsNone(long_call.reward_to_risk_ratio)
 
     def test_value_in_price_range(self):
@@ -191,13 +190,11 @@ class CallTradesTestCase(TestCase):
                                       target_price_upper=258.3)
         self.assertEqual(call_contract.to_strike, -132.0)
         self.assertAlmostEqual(call_contract.to_strike_ratio, -0.31428571428)
-        self.assertAlmostEqual(sell_call.break_even_price, 258.3)
-        self.assertAlmostEqual(sell_call.profit_cap, 2968.7)
-        self.assertAlmostEqual(sell_call.profit_cap_ratio, 0.11492646517)
+        self.assertAlmostEqual(sell_call.best_return, 2968.7)
         self.assertAlmostEqual(sell_call.target_price_profit, -1.3)
         self.assertAlmostEqual(sell_call.cost, 25831.3)
-        self.assertAlmostEqual(sell_call.max_profit, 2968.7)
-        self.assertAlmostEqual(sell_call.max_loss, -sell_call.cost)
+        self.assertAlmostEqual(sell_call.best_return, 2968.7)
+        self.assertAlmostEqual(sell_call.worst_return, -sell_call.cost)
         self.assertEqual(len(sell_call.break_evens), 1)
         # includes commission cost
         self.assertAlmostEqual(sell_call.break_evens[0], 258.313)
@@ -217,11 +214,9 @@ class CallTradesTestCase(TestCase):
         sell_call = CoveredCall.build(self.stock, call_contract, 'mid', self.broker_settings)
         self.assertEqual(call_contract.to_strike, 25.0)
         self.assertAlmostEqual(call_contract.to_strike_ratio, 0.05952380952)
-        self.assertAlmostEqual(sell_call.break_even_price, 343.65)
-        self.assertAlmostEqual(sell_call.profit_cap, 10133.7)
-        self.assertAlmostEqual(sell_call.profit_cap_ratio, 0.29487317517)
-        self.assertAlmostEqual(sell_call.max_profit, 10133.7)
-        self.assertAlmostEqual(sell_call.max_loss, -sell_call.cost)
+        self.assertAlmostEqual(sell_call.best_return, 10133.7)
+        self.assertAlmostEqual(sell_call.best_return, 10133.7)
+        self.assertAlmostEqual(sell_call.worst_return, -sell_call.cost)
         self.assertEqual(len(sell_call.break_evens), 1)
         # includes commission cost
         self.assertAlmostEqual(sell_call.break_evens[0], 343.663)
@@ -235,11 +230,10 @@ class CallTradesTestCase(TestCase):
         bull_call_spread = BullCallSpread.build(self.stock, call_contract_1, call_contract_2, 'mid',
                                                 self.broker_settings, 400, 400, available_cash=10000)
         self.assertAlmostEqual(bull_call_spread.cost, 8537.6)
-        self.assertAlmostEqual(bull_call_spread.break_even_price, 373.35)
-        self.assertAlmostEqual(bull_call_spread.profit_cap, 7162.4)  # ((445 - 288) - 85.35) * 100
+        self.assertAlmostEqual(bull_call_spread.best_return, 7162.4)  # ((445 - 288) - 85.35) * 100
         self.assertAlmostEqual(bull_call_spread.target_price_profit, 2662.4)  # ((400 - 288) - 85.35) * 100
-        self.assertAlmostEqual(bull_call_spread.max_profit, 7162.4)
-        self.assertAlmostEqual(bull_call_spread.max_loss, -bull_call_spread.cost)
+        self.assertAlmostEqual(bull_call_spread.best_return, 7162.4)
+        self.assertAlmostEqual(bull_call_spread.worst_return, -bull_call_spread.cost)
         self.assertEqual(len(bull_call_spread.break_evens), 1)
         # includes commission cost
         self.assertAlmostEqual(bull_call_spread.break_evens[0], 373.376)
@@ -253,11 +247,10 @@ class CallTradesTestCase(TestCase):
         bear_call_spread = BearCallSpread.build(self.stock, call_contract_1, call_contract_2, 'mid',
                                                 self.broker_settings, 400, 400, available_cash=10000)
         self.assertAlmostEqual(bear_call_spread.cost, 7167.6)
-        self.assertAlmostEqual(bear_call_spread.break_even_price, 373.35)
-        self.assertAlmostEqual(bear_call_spread.profit_cap, 8532.4)
+        self.assertAlmostEqual(bear_call_spread.best_return, 8532.4)
         self.assertAlmostEqual(bear_call_spread.target_price_profit, -2667.6)
-        self.assertAlmostEqual(bear_call_spread.max_profit, 8532.4)
-        self.assertAlmostEqual(bear_call_spread.max_loss, -bear_call_spread.cost)
+        self.assertAlmostEqual(bear_call_spread.best_return, 8532.4)
+        self.assertAlmostEqual(bear_call_spread.worst_return, -bear_call_spread.cost)
         self.assertEqual(len(bear_call_spread.break_evens), 1)
         # includes commission cost
         self.assertAlmostEqual(bear_call_spread.break_evens[0], 373.324)
@@ -338,15 +331,14 @@ class PutTradesTestCase(TestCase):
         self.assertAlmostEqual(put_contract.to_strike_ratio, -0.07545887151)
         # Test derived methods.
         self.assertAlmostEqual(sell_put.cost, 6731.3)
-        self.assertAlmostEqual(sell_put.break_even_price, 67.3)
-        self.assertAlmostEqual(sell_put.to_break_even_ratio, -0.08497620666)
         self.assertAlmostEqual(sell_put.target_price_profit, -1.3)
-        self.assertAlmostEqual(sell_put.profit_cap, 68.7)
-        self.assertAlmostEqual(sell_put.max_profit, 68.7)
-        self.assertAlmostEqual(sell_put.max_loss, -sell_put.cost)
+        self.assertAlmostEqual(sell_put.best_return, 68.7)
+        self.assertAlmostEqual(sell_put.best_return, 68.7)
+        self.assertAlmostEqual(sell_put.worst_return, -sell_put.cost)
         self.assertEqual(len(sell_put.break_evens), 1)
         # includes commission cost
         self.assertAlmostEqual(sell_put.break_evens[0], 67.313)
+        self.assertAlmostEqual(sell_put.break_even_prices_and_ratios[0]['ratio'], -0.0847994561522773)
         self.assertAlmostEqual(sell_put.reward_to_risk_ratio, 0.01020605232)
 
     @mock.patch('django.utils.timezone.now')
@@ -368,17 +360,16 @@ class PutTradesTestCase(TestCase):
         self.assertAlmostEqual(put_contract.to_strike_ratio, -0.07545887151)
         # Test derived methods.
         self.assertAlmostEqual(long_put.cost, 71.3)
-        self.assertAlmostEqual(long_put.break_even_price, 67.3)
-        self.assertAlmostEqual(long_put.to_break_even_ratio, -0.08497620666)
         self.assertAlmostEqual(long_put.target_price_profit, 228.7)
         self.assertAlmostEqual(long_put.target_price_profit_ratio, 3.20757363253)
         self.assertAlmostEqual(long_put.to_target_price_lower_ratio, -0.11624745071)
-        self.assertAlmostEqual(long_put.profit_cap, 6728.7)
-        self.assertAlmostEqual(long_put.max_profit, 6728.7)
-        self.assertAlmostEqual(long_put.max_loss, -long_put.cost)
+        self.assertAlmostEqual(long_put.best_return, 6728.7)
+        self.assertAlmostEqual(long_put.best_return, 6728.7)
+        self.assertAlmostEqual(long_put.worst_return, -long_put.cost)
         self.assertEqual(len(long_put.break_evens), 1)
         # includes commission cost
         self.assertAlmostEqual(long_put.break_evens[0], 67.287)
+        self.assertAlmostEqual(long_put.break_even_prices_and_ratios[0]['ratio'], -0.08515295717199192)
         self.assertAlmostEqual(long_put.reward_to_risk_ratio, 94.3716690042)
 
     def test_value_in_price_range(self):
@@ -402,11 +393,10 @@ class PutTradesTestCase(TestCase):
         bear_put_spread = BearPutSpread.build(self.stock, put_contract_1, put_contract_2, 'mid',
                                               self.broker_settings, 70, 70)
         self.assertAlmostEqual(bear_put_spread.cost, 202.6)
-        self.assertAlmostEqual(bear_put_spread.break_even_price, 72)
-        self.assertAlmostEqual(bear_put_spread.profit_cap, 397.4)
+        self.assertAlmostEqual(bear_put_spread.best_return, 397.4)
         self.assertAlmostEqual(bear_put_spread.target_price_profit, 197.4)
-        self.assertAlmostEqual(bear_put_spread.max_profit, 397.4)
-        self.assertAlmostEqual(bear_put_spread.max_loss, -bear_put_spread.cost)
+        self.assertAlmostEqual(bear_put_spread.best_return, 397.4)
+        self.assertAlmostEqual(bear_put_spread.worst_return, -bear_put_spread.cost)
         self.assertEqual(len(bear_put_spread.break_evens), 1)
         # includes commission cost
         self.assertAlmostEqual(bear_put_spread.break_evens[0], 71.974)
@@ -418,11 +408,10 @@ class PutTradesTestCase(TestCase):
         bull_put_spread = BullPutSpread.build(self.stock, put_contract_1, put_contract_2, 'mid',
                                               self.broker_settings, 70, 70)
         self.assertAlmostEqual(bull_put_spread.cost, 402.6)
-        self.assertAlmostEqual(bull_put_spread.break_even_price, 72)
-        self.assertAlmostEqual(bull_put_spread.profit_cap, 197.4)
+        self.assertAlmostEqual(bull_put_spread.best_return, 197.4)
         self.assertAlmostEqual(bull_put_spread.target_price_profit, -202.6)
-        self.assertAlmostEqual(bull_put_spread.max_profit, 197.4)
-        self.assertAlmostEqual(bull_put_spread.max_loss, -bull_put_spread.cost)
+        self.assertAlmostEqual(bull_put_spread.best_return, 197.4)
+        self.assertAlmostEqual(bull_put_spread.worst_return, -bull_put_spread.cost)
         self.assertEqual(len(bull_put_spread.break_evens), 1)
         # includes commission cost
         self.assertAlmostEqual(bull_put_spread.break_evens[0], 72.026)

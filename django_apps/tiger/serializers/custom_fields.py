@@ -1,5 +1,6 @@
 from rest_framework import serializers
 
+
 class ReadOnlyDollarDecimalField(serializers.ReadOnlyField):
     def to_representation(self, value):
         if value is not None:

@@ -202,7 +202,7 @@ export default function SellCoveredCall() {
             ),
             headerSortingStyle,
         }, {
-            dataField: "to_break_even_ratio",
+            dataField: "break_even_price",
             text: "Break Even",
             formatter: (cell, row, rowIndex, extraData) => (
                 <span>

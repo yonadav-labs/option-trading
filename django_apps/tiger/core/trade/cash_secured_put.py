@@ -39,13 +39,5 @@ class CashSecuredPut(Trade):
                     self.cost / short_put_leg.units)
 
     @property
-    def break_even_price(self):
-        return self.get_short_put_leg().contract.strike - self.get_short_put_leg().cost_per_share
-
-    @property
-    def profit_cap_price(self):
-        return self.get_short_put_leg().contract.strike
-
-    @property
     def is_bullish(self):
         return True

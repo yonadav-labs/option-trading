@@ -102,13 +102,13 @@ export default function NewTradeCard({ trade }) {
                             <Typography variant="body1" color="#4F4F4F">{PercentageFormatter(trade.profit_prob)}</Typography>
                         </Grid>
                         <Grid item xs={6} sm={3}>
-                            <Typography variant="button"><MetricLabel label="break-even at" /></Typography>
-                            <Typography variant="body1" color="#4F4F4F">{ProfitFormatter(trade.to_break_even_ratio)} (at {PriceFormatter(trade.break_even_price)})</Typography>
+                            <Typography variant="button"><MetricLabel label="break-evens at" /></Typography>
+                            {trade.break_even_prices_and_ratios.map(break_even => <Typography variant="body1" color="#4F4F4F">{ProfitFormatter(break_even.ratio)} (at {PriceFormatter(break_even.price)})</Typography>)}
                         </Grid>
                         <Grid item xs={6} sm={3}>
                             <Typography variant="button"><MetricLabel label="max return" /></Typography>
-                            <Typography variant="body1" color="#4F4F4F">{trade.profit_cap ?
-                                <>{ProfitFormatter(trade.profit_cap / trade.cost)} ({PriceFormatter(trade.profit_cap)})</>
+                            <Typography variant="body1" color="#4F4F4F">{trade.best_return && trade.best_return != 'infinite' ?
+                                <>{ProfitFormatter(trade.best_return / trade.cost)} ({PriceFormatter(trade.best_return)})</>
                                 :
                                 'UNLIMITED'}
                             </Typography>

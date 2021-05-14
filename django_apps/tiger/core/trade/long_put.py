@@ -35,13 +35,5 @@ class LongPut(Trade):
                     expiration_date_str, long_put_leg.contract.strike, long_put_leg.cost)
 
     @property
-    def break_even_price(self):
-        return self.get_long_put_leg().contract.strike - self.get_long_put_leg().cost_per_share
-
-    @property
-    def profit_cap_price(self):
-        return 0.0
-
-    @property
     def is_bullish(self):
         return False

@@ -7,7 +7,8 @@ export default function TradeProfitLossGraph(props) {
     const { trade } = props;
     const chartComponent = useRef(null);
 
-    let priceMarks = [trade.break_even_price, trade.stock.stock_price]
+    // fix this with break evens
+    let priceMarks = [trade.break_even_prices_and_ratios[0].price, trade.stock.stock_price]
     if (trade.target_price_lower !== null) {
         priceMarks.push(trade.target_price_lower);
     }
@@ -82,7 +83,7 @@ export default function TradeProfitLossGraph(props) {
         }
         if (trade.target_price_lower === trade.target_price_upper) {
             upperTargetAnnotation = {}
-            lowerTargetAnnotation = {} 
+            lowerTargetAnnotation = {}
             priceTargetAnnotation = {
                 color: "blue",
                 dashStyle: "dash",
@@ -193,7 +194,8 @@ export default function TradeProfitLossGraph(props) {
                 {
                     color: "green",
                     width: 2,
-                    value: trade.break_even_price,
+                    // fix this with break evens
+                    value: trade.break_even_prices_and_ratios[0].price,
                     label: {
                         rotation: 0,
                         y: 45,
@@ -201,7 +203,8 @@ export default function TradeProfitLossGraph(props) {
                             fontStyle: "italic",
                             color: "green",
                         },
-                        text: `Breakeven Price <br /> $${trade.break_even_price}`,
+                        // fix this with break evens
+                        text: `Breakeven Price <br /> $${trade.break_even_prices_and_ratios[0].price}`,
                     },
                     zIndex: 100,
                 },

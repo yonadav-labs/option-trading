@@ -53,13 +53,5 @@ class BearCallSpread(Trade):
                     abs(short_call_leg.cost + long_call_leg.cost))
 
     @property
-    def break_even_price(self):
-        return self.get_short_call_leg().contract.strike + (self.get_short_call_leg().cost_per_share - self.get_long_call_leg().cost_per_share)
-
-    @property
-    def profit_cap_price(self):
-        return self.get_short_call_leg().contract.strike
-
-    @property
     def is_bullish(self):
         return False

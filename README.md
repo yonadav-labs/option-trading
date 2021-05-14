@@ -14,6 +14,7 @@
 * `docker-compose exec web python manage.py migrate`
 * `docker-compose exec web python tiger/scripts/fetch_tickers.py`
 * `docker-compose exec web python tiger/scripts/disable_tickers.py`
+* `docker-compose exec web python manage.py iexcloud_fetch_ticker_info`
 
 ## Deployment
 
