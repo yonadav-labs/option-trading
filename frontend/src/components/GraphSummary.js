@@ -5,10 +5,10 @@ import HighchartsReact from "highcharts-react-official";
 export default function GraphSummary({ trade }) {
     let data = [];
 
-    trade.graph_x_points.forEach((x, i) => {
+    trade.graph_points['x'].forEach((x, i) => {
         let point = {};
         point.x = x;
-        point.y = trade.graph_y_points[i];
+        point.y = trade.graph_points['y'][i];
         data.push(point);
     });
 

@@ -8,25 +8,18 @@ export default function TradeProfitLossGraph(props) {
     const chartComponent = useRef(null);
 
     // fix this with break evens
-    let priceMarks = [trade.break_even_prices_and_ratios[0].price, trade.stock.stock_price]
-    if (trade.target_price_lower !== null) {
-        priceMarks.push(trade.target_price_lower);
-    }
-    if (trade.target_price_upper !== null) {
-        priceMarks.push(trade.target_price_upper);
-    }
-
-    let xMin = Math.min(...priceMarks) * 0.9;
-    let xMax = Math.max(...priceMarks) * 1.1;
+    let priceMarks = trade.graph_points['x'];
+    let xMin = Math.min(...priceMarks);
+    let xMax = Math.max(...priceMarks);
     let lowerTargetAnnotation = {};
     let upperTargetAnnotation = {};
     let priceTargetAnnotation = {};
     let data = [];
 
-    trade.graph_x_points.forEach((x, i) => {
+    trade.graph_points['x'].forEach((x, i) => {
         let point = {};
         point.x = x;
-        point.y = trade.graph_y_points[i];
+        point.y = trade.graph_points['y'][i];
         data.push(point);
     });
 
@@ -256,7 +249,7 @@ export default function TradeProfitLossGraph(props) {
                 },
                 labels: {
                     formatter: function () {
-                        return ((this.value / trade.cost) * 100).toFixed(2) + ' %';
+                        return ((this.value / trade.cost) * 100).toFixed(2) + '%';
                     }
                 },
                 linkedTo: 0,

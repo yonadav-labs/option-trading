@@ -1,5 +1,6 @@
 import math
 import more_itertools
+import numpy as np
 from abc import ABC, abstractmethod
 from tiger.core import Leg
 from tiger.core.black_scholes import get_target_price_probability
@@ -166,14 +167,24 @@ class Trade(ABC):
         else:
             return list(self.key_points.keys())[list(self.key_points.values()).index(self.best_return)]
 
-    # TODO: make this a separate API call to reduce payload.
     @property
-    def graph_x_points(self):
-        return self.key_points.keys()
-
-    @property
-    def graph_y_points(self):
-        return self.key_points.values()
+    def graph_points(self):
+        x = sorted(self.key_points.keys())[1:-1]
+        if self.target_price_lower:
+            x.append(self.target_price_lower)
+        if self.target_price_upper:
+            x.append(self.target_price_upper)
+        x = sorted(x)
+        x = [x[0] * 0.9] + x + [x[0] * 1.1]
+        # generate interval points
+        additional_x = np.linspace(x[0], x[len(x) - 1], 100).tolist()
+        x = set(x)
+        additional_x = set(additional_x)
+        # join important points with interval points
+        x.update(additional_x)
+        x = sorted(list(x))
+        y = [self.get_total_return(val, val) for val in x]
+        return {'x': x, 'y': y}
 
     # TODO: deprecated.
     def get_sigma_prices(self, sigma_num):
