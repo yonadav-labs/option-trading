@@ -142,6 +142,11 @@ export default function Surface() {
                                 variant="standard"
                             >
                                 {targetOptions.map((option, index) => <MenuItem value={option.value} key={index}> {option.label} </MenuItem>)}
+                                {selectedContractType == 'call' ?
+                                    <MenuItem value={"apr"} key={4}> Annualized Covered Call Premium Profit if OTM </MenuItem>
+                                    :
+                                    <MenuItem value={"apr"} key={4}> Annualized Cash Secured Put Premium Profit if OTM </MenuItem>
+                                }
                             </Select>
                         </FormControl>
 
@@ -150,7 +155,7 @@ export default function Surface() {
             </Container>
             <br />
             <Container>
-                <Typography variant="h4" align="center">Options chain surface</Typography>
+                <Typography variant="h4" align="center">Options Chain Surface</Typography>
                 <br />
                 <Typography variant="body1" align="center">
                     Spot unusual options activities from bird's-eye view of the entire options chain. Gauge the market using Implied Volatility, Open Interest and Volume.<br />
@@ -166,7 +171,7 @@ export default function Surface() {
                         data={baseHeatmapData}
                     />
                     :
-                    <div style={{height: '320px'}}></div>
+                    <div style={{ height: '320px' }}></div>
                 }
             </Container>
         </Container >

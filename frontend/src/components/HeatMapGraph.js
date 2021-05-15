@@ -26,8 +26,8 @@ export default function HeatMapGraph(props) {
         },
         chart: {
             type: 'heatmap',
-            marginTop: 42,
-            marginBottom: 150,
+            marginTop: 80,
+            marginBottom: 100,
             plotBorderWidth: 0,
             height: chartHeight
         },
@@ -36,7 +36,7 @@ export default function HeatMapGraph(props) {
         },
         xAxis: [{
             categories: data.expiration_dates,
-        },{
+        }, {
             categories: data.expiration_dates,
             title: { text: 'Expiration Date' },
             opposite: true,
@@ -58,11 +58,20 @@ export default function HeatMapGraph(props) {
         tooltip: {
             formatter: function () {
                 let zValue = data.data.find(x => x[0] == this.point.x && x[1] == this.point.y);
-                return 'Expiration Date: <b>' + getPointCategoryName(this.point, 'x') +
-                    '</b><br>Strike price: <b>' + getPointCategoryName(this.point, 'y') +
-                    '</b><br>Implied Volatility:<b>' + zValue[2]['Implied Volatility'] + 
-                    '</b><br>Open Interest:<b>' + zValue[2]['Open Interest'] + 
-                    '</b><br>Volume:<b>' + zValue[2]['Volume'] + '</b>';
+                let iv = (zValue[2]['Implied Volatility'] * 100.0).toFixed(2) + '%';
+                let oi = zValue[2]['Open Interest'];
+                let vol = zValue[2]['Volume'];
+                let apr = (zValue[2]['apr'] ? (zValue[2]['apr'] * 100.0).toFixed(2) + '%' : 'Empty');
+                let p_otm = (zValue[2]['p_otm'] * 100.0).toFixed(2) + '%';
+
+                let text = 'Expiration Date: <b>' + getPointCategoryName(this.point, 'x') + '</b><br>' +
+                    'Strike price: <b>' + getPointCategoryName(this.point, 'y') + '</b><br>' +
+                    'Implied Volatility: <b>' + iv + '</b><br>' +
+                    'Open Interest: <b>' + oi + '</b><br>' +
+                    'Volume: <b>' + vol + '</b><br>' +
+                    'Annualized Premium Profit if OTM: <b>' + apr + '</b><br>' +
+                    'Probability of OTM: <b>' + p_otm + '</b>';
+                return text;
             }
         },
         series: [{
@@ -72,7 +81,20 @@ export default function HeatMapGraph(props) {
             ])),
             dataLabels: {
                 enabled: true,
-                color: '#000000'
+                color: '#000000',
+                formatter: function () {
+                    if (zLabel == 'apr') {
+                        if (this.point.value) {
+                            return (this.point.value * 100.0).toFixed(2) + '%';
+                        }
+                    }
+                    if (zLabel == 'Implied Volatility') {
+                        if (this.point.value) {
+                            return (this.point.value * 100.0).toFixed(2) + '%';
+                        }
+                    }
+                    return this.point.value;
+                }
             }
         }]
     }
