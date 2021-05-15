@@ -1,7 +1,5 @@
 import math
 
-from interest_rates import get_rfr
-
 
 # Multiple methods to do this
 # Here we're taking the risk free rate, number of dividends per year, 
@@ -34,16 +32,13 @@ def get_realized_div_yield(past_12, cur_price):
 
 
 # Returns a list of [realized dividend yield, implied dividend yield]
-def get_div_yield(ttm_div_amount, next_div_amount, dividends_per_year, current_price):
+def get_div_yield(ttm_div_amount, next_div_amount, dividends_per_year, current_price, rfr_30d):
     # Will need to fill these from a Stock object
-
-    # Pull the interest rate
-    rfr = get_rfr('30') # 30-day average chosen, any of them are fine. Can add in a parameter to specify duration.
 
     # Get realized div yield
     realized_div_yield = get_realized_div_yield(ttm_div_amount, current_price)
 
     # Get implied dividend yield
-    implied_div_yield = get_implied_yield(rfr, dividends_per_year, current_price, next_div_amount)
+    implied_div_yield = get_implied_yield(rfr_30d, dividends_per_year, current_price, next_div_amount)
 
     return [realized_div_yield, implied_div_yield]
