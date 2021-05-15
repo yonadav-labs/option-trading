@@ -24,7 +24,7 @@ if [ "$DATABASE" = "postgres" ] ; then
   echo "$(log_prefix) PostgreSQL connection established at $SQL_HOST:$SQL_PORT"
 fi
 
-python manage.py migrate
+python manage.py migrate_locked
 python manage.py collectstatic --no-input --clear
 
 gunicorn django_apps.wsgi:application --bind 0.0.0.0:8080

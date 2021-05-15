@@ -10,6 +10,6 @@ if [ "$DATABASE" = "postgres" ]; then
   echo "PostgreSQL started"
 fi
 
-python manage.py migrate
+python manage.py migrate_locked
 
 exec "$@"
