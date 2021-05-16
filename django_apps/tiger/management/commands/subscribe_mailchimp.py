@@ -1,7 +1,6 @@
 from django.core.management.base import BaseCommand
-
-from tiger.models import User
 from tiger.mailchimp import *
+from tiger.models import User
 
 
 class Command(BaseCommand):
@@ -16,7 +15,12 @@ class Command(BaseCommand):
 
             tags = [
                 {'name': 'all', 'status': 'active'},
-                {'name': 'subscriber', 'status': 'active' if user.get_subscription() else 'inactive'}
+                {'name': 'pro', 'status': 'active' if user.get_subscription() else 'inactive'}
             ]
+
+            # If not production environment, append '-dev' to every tag.
+            if not settings.IS_PROD:
+                tags = [{'name': t['name'] + '-dev', 'status': t['status']} for t in tags]
+
             update_tags(user, tags)
-        print('completed.')
+        print('Mailchimp contacts export completed.')
