@@ -4,42 +4,34 @@ import HighchartsReact from "highcharts-react-official";
 
 export default function GraphSummary({ trade }) {
     let data = [];
+    let x_plotbands = [];
+    let plotband_start_index = null;
 
     trade.graph_points['x'].forEach((x, i) => {
         let point = {};
         point.x = x;
         point.y = trade.graph_points['y'][i];
+        point.color = point.y >= 0 ? "rgba(39, 166, 154, 0.7)" : "rgba(220, 53, 69, 0.7)";
+        if (plotband_start_index === null) {
+            plotband_start_index = i;
+        } else {
+            if ((trade.graph_points['y'][plotband_start_index] >= 0 && point.y < 0) || (trade.graph_points['y'][plotband_start_index] < 0 && point.y >= 0) || i === trade.graph_points['x'].length - 1) {
+                x_plotbands.push({
+                    color: trade.graph_points['y'][plotband_start_index] >= 0 ? 'rgba(39, 166, 154, 0.1)' : 'rgba(220, 53, 69, 0.1)', // Color value
+                    from: trade.graph_points['x'][plotband_start_index], // Start of the plot band
+                    to: point.x // End of the plot band
+                });
+                plotband_start_index = i;
+            }
+        }
         data.push(point);
     });
-
-    // fix this with break evens
-    let colorBreakpoint = (trade.break_even_prices_and_ratios[0].price / trade.stock.stock_price)
-    let backgroundColor = {}
-    if (data[0].y < 0) {
-        backgroundColor = {
-            linearGradient: { x1: 0, x2: colorBreakpoint, y1: 0, y2: 0 },
-            stops: [
-                [0, 'rgba(220, 53, 69, 0.1)'],
-                [1, 'rgba(39, 166, 154, 0.1)']
-            ]
-        }
-    } else {
-        backgroundColor = {
-            linearGradient: { x1: 0, x2: colorBreakpoint, y1: 0, y2: 0 },
-            stops: [
-                [0, 'rgba(39, 166, 154, 0.1)'],
-                [1, 'rgba(220, 53, 69, 0.1)']
-            ]
-        }
-    }
-
 
     // chart options
     const options = {
         chart: {
             height: 100,
-            backgroundColor: backgroundColor,
-            margin: [0, 0, 0, 0]
+            margin: [0, -15, 0, -15],
         },
         title: {
             text: null
@@ -66,7 +58,8 @@ export default function GraphSummary({ trade }) {
         },
         tooltip: { enabled: false },
         xAxis: {
-            visible: false,
+            visible: true,
+            plotBands: x_plotbands,
         },
         yAxis: {
             visible: false,
@@ -74,25 +67,8 @@ export default function GraphSummary({ trade }) {
         series: [
             {
                 data: data,
-                color: {
-                    // change x gradient based on +/- slope
-                    linearGradient: {
-                        x1: 0,
-                        x2: 0,
-                        y1: 0,
-                        y2: 1,
-                    },
-                    stops: [
-                        [
-                            0,
-                            "rgba(39, 166, 154, 0.7)"
-                        ],
-                        [
-                            1,
-                            "rgba(220, 53, 69, 0.7)"
-                        ],
-                    ],
-                },
+                color: "rgba(39, 166, 154, 0.7)",
+                negativeColor: "rgba(220, 53, 69, 0.7)"
             },
         ],
     };
