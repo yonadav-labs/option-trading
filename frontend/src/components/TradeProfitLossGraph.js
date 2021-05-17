@@ -7,13 +7,10 @@ export default function TradeProfitLossGraph(props) {
     const { trade } = props;
     const chartComponent = useRef(null);
 
-    // fix this with break evens
     let priceMarks = trade.graph_points['x'];
     let xMin = Math.min(...priceMarks);
     let xMax = Math.max(...priceMarks);
-    let lowerTargetAnnotation = {};
-    let upperTargetAnnotation = {};
-    let priceTargetAnnotation = {};
+    let plotline_annotations = []
     let data = [];
 
     trade.graph_points['x'].forEach((x, i) => {
@@ -21,6 +18,40 @@ export default function TradeProfitLossGraph(props) {
         point.x = x;
         point.y = trade.graph_points['y'][i];
         data.push(point);
+    });
+
+    trade.break_even_prices_and_ratios.forEach(breakeven => {
+        plotline_annotations.push({
+            color: "green",
+            width: 2,
+            value: breakeven.price,
+            label: {
+                rotation: 0,
+                y: 45,
+                style: {
+                    fontStyle: "italic",
+                    color: "green",
+                },
+                text: `Breakeven Price <br /> $${breakeven.price}`,
+            },
+            zIndex: 100,
+        });
+    });
+
+    // annotation for last price
+    plotline_annotations.push({
+        color: "black",
+        width: 2,
+        value: trade.stock.stock_price,
+        label: {
+            rotation: 0,
+            y: 15,
+            style: {
+                fontStyle: "italic",
+            },
+            text: `Last Price <br /> $${trade.stock.stock_price}`,
+        },
+        zIndex: 100,
     });
 
     // Share profit/loss data
@@ -38,27 +69,9 @@ export default function TradeProfitLossGraph(props) {
     }
     // share profit/loss end
 
-    // set annotations for price target if they exist
-    if (trade.target_price_lower !== null) {
-        lowerTargetAnnotation = {
-            color: "blue",
-            dashStyle: "dash",
-            width: 2,
-            value: trade.target_price_lower,
-            label: {
-                rotation: 0,
-                y: 75,
-                style: {
-                    fontStyle: "italic",
-                    color: "blue",
-                },
-                text: `Lower Price Target <br /> $${trade.target_price_lower}`,
-            },
-            zIndex: 100,
-        };
-    }
-    if (trade.target_price_upper !== null) {
-        upperTargetAnnotation = {
+    // set annotations for price target if they exist    
+    if (trade.target_price_lower !== null && trade.target_price_lower === trade.target_price_upper) {
+        plotline_annotations.push({
             color: "blue",
             dashStyle: "dash",
             width: 2,
@@ -70,14 +83,31 @@ export default function TradeProfitLossGraph(props) {
                     fontStyle: "italic",
                     color: "blue",
                 },
-                text: `Upper Price Target <br /> $${trade.target_price_upper}`,
+                text: `Price Target <br /> $${trade.target_price_upper}`,
             },
             zIndex: 100,
+        });
+    } else {
+        if (trade.target_price_lower) {
+            plotline_annotations.push({
+                color: "blue",
+                dashStyle: "dash",
+                width: 2,
+                value: trade.target_price_lower,
+                label: {
+                    rotation: 0,
+                    y: 75,
+                    style: {
+                        fontStyle: "italic",
+                        color: "blue",
+                    },
+                    text: `Lower Price Target <br /> $${trade.target_price_lower}`,
+                },
+                zIndex: 100,
+            });
         }
-        if (trade.target_price_lower === trade.target_price_upper) {
-            upperTargetAnnotation = {}
-            lowerTargetAnnotation = {}
-            priceTargetAnnotation = {
+        if (trade.target_price_upper) {
+            plotline_annotations.push({
                 color: "blue",
                 dashStyle: "dash",
                 width: 2,
@@ -89,13 +119,12 @@ export default function TradeProfitLossGraph(props) {
                         fontStyle: "italic",
                         color: "blue",
                     },
-                    text: `Price Target <br /> $${trade.target_price_upper}`,
+                    text: `Upper Price Target <br /> $${trade.target_price_upper}`,
                 },
                 zIndex: 100,
-            }
+            });
         }
     }
-
 
     // FUNCTIONS FOR BUTTONS
     const resetZoom = () => {
@@ -182,47 +211,7 @@ export default function TradeProfitLossGraph(props) {
             title: {
                 text: "Stock Price",
             },
-            plotLines: [
-                // annotation for breakeven
-                {
-                    color: "green",
-                    width: 2,
-                    // fix this with break evens
-                    value: trade.break_even_prices_and_ratios[0].price,
-                    label: {
-                        rotation: 0,
-                        y: 45,
-                        style: {
-                            fontStyle: "italic",
-                            color: "green",
-                        },
-                        // fix this with break evens
-                        text: `Breakeven Price <br /> $${trade.break_even_prices_and_ratios[0].price}`,
-                    },
-                    zIndex: 100,
-                },
-                // annotation for last price
-                {
-                    color: "black",
-                    width: 2,
-                    value: trade.stock.stock_price,
-                    label: {
-                        rotation: 0,
-                        y: 15,
-                        style: {
-                            fontStyle: "italic",
-                        },
-                        text: `Last Price <br /> $${trade.stock.stock_price}`,
-                    },
-                    zIndex: 100,
-                },
-                // annotation for lower price target
-                lowerTargetAnnotation,
-                // annotation for upper price target
-                upperTargetAnnotation,
-                // annotation for price target
-                priceTargetAnnotation,
-            ],
+            plotLines: plotline_annotations,
         },
         yAxis: [
             {
