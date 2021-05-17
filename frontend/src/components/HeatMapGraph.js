@@ -14,7 +14,7 @@ function getPointCategoryName(point, dimension) {
 }
 
 export default function HeatMapGraph(props) {
-    const { title, className, zLabel, data } = props;
+    const { title, className, zLabel, data, contractType } = props;
     const chartComponent = useRef(null);
 
     const chartHeight = Math.max(Math.min(data.strike_prices.length * 18, 12000), 400);
@@ -64,8 +64,9 @@ export default function HeatMapGraph(props) {
                 let apr = (zValue[2]['apr'] ? (zValue[2]['apr'] * 100.0).toFixed(2) + '%' : 'Empty');
                 let p_otm = (zValue[2]['p_otm'] * 100.0).toFixed(2) + '%';
 
-                let text = 'Expiration Date: <b>' + getPointCategoryName(this.point, 'x') + '</b><br>' +
-                    'Strike price: <b>' + getPointCategoryName(this.point, 'y') + '</b><br>' +
+                let text = '<b>' + getPointCategoryName(this.point, 'x') + ' ' +
+                    getPointCategoryName(this.point, 'y') + ' ' +
+                    contractType.charAt(0).toUpperCase() + contractType.slice(1) + '</b><br>' +
                     'Implied Volatility: <b>' + iv + '</b><br>' +
                     'Open Interest: <b>' + oi + '</b><br>' +
                     'Volume: <b>' + vol + '</b><br>' +

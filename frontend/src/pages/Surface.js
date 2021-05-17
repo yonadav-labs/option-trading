@@ -169,6 +169,7 @@ export default function Surface() {
                         className="my-4"
                         zLabel={selectedMetric}
                         data={baseHeatmapData}
+                        contractType={selectedContractType}
                     />
                     :
                     <div style={{ height: '320px' }}></div>
