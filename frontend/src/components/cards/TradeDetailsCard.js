@@ -63,9 +63,7 @@ export default function TradeDetailsCard(props) {
                     <Row>
                         <Col sm="2" xs="6">
                             <MetricLabel label="break-even at" /><br />
-                            {trade.break_even_prices_and_ratios.map(break_even => {
-                                return `${ProfitFormatter(break_even.ratio)} (at ${PriceFormatter(break_even.price)})`
-                            })}
+                            {trade.break_even_prices_and_ratios.map(break_even => <span>{ProfitFormatter(break_even.ratio)} (at {PriceFormatter(break_even.price)})</span>)}
                         </Col>
                         <Col sm="2" xs="6">
                             <MetricLabel label="max return" /><br />
