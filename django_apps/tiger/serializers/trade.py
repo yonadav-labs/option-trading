@@ -83,7 +83,6 @@ class LegSerializer(serializers.Serializer):
     premium_type = serializers.ReadOnlyField()
     cost_per_share = serializers.ReadOnlyField()
     total_cost = ReadOnlyDollarDecimalField()
-    display_name = serializers.ReadOnlyField()
 
 
 class TradeSerializer(serializers.Serializer):

@@ -37,11 +37,6 @@ class Leg(ABC):
 
     @property
     @abstractmethod
-    def display_name(self):
-        pass
-
-    @property
-    @abstractmethod
     def total_cost(self):
         pass
 
@@ -69,10 +64,6 @@ class CashLeg(Leg):
         return 'long_cash_leg'
 
     @property
-    def display_name(self):
-        return f"Keep ${self.units} cash as collateral"
-
-    @property
     def total_cost(self):
         return self.units
 
@@ -92,10 +83,6 @@ class StockLeg(Leg):
     @property
     def name(self):
         return 'long_stock_leg'
-
-    @property
-    def display_name(self):
-        return f"Long {self.units} share{'s' if self.units > 1 else ''} of {self.stock.display_name} at ${self.stock.stock_price:.2f} per share as collateral"
 
     @property
     def total_cost(self):
@@ -121,14 +108,6 @@ class OptionLeg(Leg):
     @property
     def name(self):
         return ('long_' if self.is_long else 'short_') + ('call_' if self.contract.is_call else 'put_') + 'leg'
-
-    @property
-    def display_name(self):
-        if self.use_market_price:
-            premium_name = 'ask' if self.is_long else 'bid'
-        else:
-            premium_name = 'mid/mark'
-        return f"{'Long' if self.is_long else 'Short'} {self.units} contract{'s' if self.units > 1 else ''} of {self.contract.display_name} at ${abs(self.total_cost):.2f}({premium_name}) per contract"
 
     @property
     def cost_per_share(self):
