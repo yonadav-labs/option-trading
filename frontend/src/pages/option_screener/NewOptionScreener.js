@@ -6,15 +6,15 @@ import LandingView from "./LandingView";
 import MainView from "./MainView";
 
 // utils
-import getApiUrl, { newLoadTickers, newLoadExpirationDates, fixedFloat, GetGaEventTrackingFunc } from "../../utils";
+import getApiUrl, { newLoadTickers, newLoadExpirationDates, GetGaEventTrackingFunc, fixedFloat } from "../../utils";
 import { useOktaAuth } from '@okta/okta-react';
 import { debounce } from "lodash";
 
-// const useDebouncedCallback = (callback, delay) => {
-//     const callbackRef = useRef();
-//     callbackRef.current = callback;
-//     return useCallback(debounce((...args) => callbackRef.current(...args), delay), []);
-// }
+const useDebouncedCallback = (callback, delay) => {
+    const callbackRef = useRef();
+    callbackRef.current = callback;
+    return useCallback(debounce((...args) => callbackRef.current(...args), delay), []);
+}
 
 const GaEvent = GetGaEventTrackingFunc('strategy screener');
 
@@ -26,7 +26,6 @@ export default function NewOptionScreener() {
     const [selectedTicker, setSelectedTicker] = useState(null);
     const [basicInfo, setBasicInfo] = useState({});
     const [contracts, setContracts] = useState([]);
-    const [strikePrices, setStrikePrices] = useState([]);
 
     // expiration date states
     const [expirationTimestampsOptions, setExpirationTimestampsOptions] = useState([])
@@ -36,21 +35,21 @@ export default function NewOptionScreener() {
     const [filters, setFilters] = useState({
         // Set both lower/upper price to the same for single price target UI.
         // Use targetPriceLower as default for single price target UI.
-        targetPriceLower: basicInfo.regularMarketPrice || 0,
-        targetPriceUpper: basicInfo.regularMarketPrice || 0,
-        premiumType: 'market',
-        cashToInvest: null,
+        callToggle: true,
+        putToggle: true,
+        minStrike: 0,
+        maxStrike: basicInfo.regularMarketPrice * 2 || 0,
         minVolume: 0,
         minOpenInterest: 0,
+        maxBidAskSpread: 99999,
+        delta: 1,
         lastTradedDate: -9999999,
-        minProfitProb: 0.0,
-        minTargetPriceProfitRatio: 0.0,
     })
 
     // component management states
     const [modalActive, setModalActive] = useState(false);
-    const [expirationDisabled, setExpirationDisabled] = useState(true)
-    const [pageState, setPageState] = useState(true)
+    const [expirationDisabled, setExpirationDisabled] = useState(true);
+    const [pageState, setPageState] = useState(true);
 
     // okta states
     const [headers, setHeaders] = useState({});
@@ -58,23 +57,22 @@ export default function NewOptionScreener() {
 
     const resetStates = () => {
         setSelectedTicker(null);
-        setExpirationTimestampsOptions([])
+        setExpirationTimestampsOptions([]);
         setSelectedExpirationTimestamps("none");
         setBasicInfo({});
         setModalActive(false);
-        setContracts([])
+        setContracts([]);
         setFilters({
-            targetPriceLower: basicInfo.regularMarketPrice || 0,
-            targetPriceUpper: basicInfo.regularMarketPrice || 0,
-            premiumType: 'market',
-            cashToInvest: null,
-            strategyType: 'all',
+            callToggle: true,
+            putToggle: true,
+            minStrike: 0,
+            maxStrike: basicInfo.regularMarketPrice * 2 || 0,
             minVolume: 0,
             minOpenInterest: 0,
+            maxBidAskSpread: 99999,
+            delta: 1,
             lastTradedDate: -9999999,
-            minProfitProb: 0.0,
-            minTargetPriceProfitRatio: 0.0,
-        })
+        });
     }
 
     const setExpirationTimestamps = (val) => {
@@ -93,11 +91,17 @@ export default function NewOptionScreener() {
         }
     }
 
+    const onBasicInfoChange = (val) => {
+        setBasicInfo(val);
+        onFilterChange(0, "minStrike");
+        onFilterChange(val.regularMarketPrice * 2, "maxStrike");
+    }
+
     const onTickerSelectionChange = (e, selected) => {
         GaEvent('adjust ticker');
         resetStates();
         if (selected) {
-            newLoadExpirationDates(headers, selected, setModalActive, setExpirationTimestamps, setBasicInfo, setSelectedTicker);
+            newLoadExpirationDates(headers, selected, setModalActive, setExpirationTimestamps, onBasicInfoChange, setSelectedTicker);
         } else {
             setExpirationDisabled(true)
         }
@@ -106,7 +110,7 @@ export default function NewOptionScreener() {
     const onExpirationSelectionChange = (e) => {
         GaEvent('adjust exp date');
         setSelectedExpirationTimestamps(e)
-        // debouncedGetBestTrades()
+        debouncedGetContracts()
     }
 
     // function to change filter states.
@@ -116,6 +120,21 @@ export default function NewOptionScreener() {
             return;
         }
         setFilters(prevState => ({ ...prevState, [filterChoice]: value }));
+        debouncedGetContracts()
+    }
+
+    const onPutToggle = () => {
+        if (filters.callToggle) {
+            setFilters(prevState => ({ ...prevState, putToggle: !prevState.putToggle }));
+            debouncedGetContracts()
+        }
+    }
+
+    const onCallToggle = () => {
+        if (filters.putToggle) {
+            setFilters(prevState => ({ ...prevState, callToggle: !prevState.callToggle }));
+            debouncedGetContracts()
+        }
     }
 
     useEffect(() => {
@@ -133,17 +152,40 @@ export default function NewOptionScreener() {
 
     const getContracts = async () => {
         try {
+            let deltaMin
+            let deltaMax
+            if (filters.delta === 1) { deltaMin = -1; deltaMax = 1; }
+            else { deltaMin = filters.delta; deltaMax = filters.delta + 0.2; }
+
+            let bodyFilters = {
+                "min.strike": parseFloat(filters.minStrike),
+                "max.strike": parseFloat(filters.maxStrike),
+                "min.volume": filters.minVolume,
+                "min.open_interest": filters.minOpenInterest,
+                "max.bid_ask_spread": filters.maxBidAskSpread,
+                "min.delta": deltaMin,
+                "max.delta": deltaMax,
+                "min.last_trade_date": filters.lastTradedDate,
+            }
+            // add type filter based on toggles
+            if (filters.callToggle && !filters.putToggle) {
+                bodyFilters["eq.is_call"] = true
+            }
+            if (!filters.callToggle && filters.putToggle) {
+                bodyFilters["eq.is_call"] = false
+            }
+
+            console.log(bodyFilters)
+
             let url = `${API_URL}/tickers/${selectedTicker.symbol}/contracts/`;
             let body = {
                 expiration_timestamps: [selectedExpirationTimestamps],
-                filters: {}
+                filters: bodyFilters
             };
             setModalActive(true);
             const response = await Axios.post(url, body);
             let contracts = response.data.contracts;
-            let strikes = [];
             setContracts(contracts);
-            setStrikePrices(strikes);
             setModalActive(false);
             setPageState(false)
         } catch (error) {
@@ -152,6 +194,9 @@ export default function NewOptionScreener() {
         }
         GaEvent('fetch contracts');
     };
+
+    const debouncedGetContracts = useDebouncedCallback(getContracts, 1000);
+
 
     return (
         <>
@@ -183,6 +228,8 @@ export default function NewOptionScreener() {
                         onExpirationSelectionChange={onExpirationSelectionChange}
                         basicInfo={basicInfo}
                         onFilterChange={onFilterChange}
+                        onPutToggle={onPutToggle}
+                        onCallToggle={onCallToggle}
                         filters={filters}
                         contracts={contracts}
                     />

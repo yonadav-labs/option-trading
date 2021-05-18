@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { Paper, Stack, Container, Divider, makeStyles, Typography, FormControl, Select, MenuItem, InputLabel, Card, Grid, Button } from "@material-ui/core";
+import { Paper, Stack, Container, Divider, makeStyles, Typography, FormControl, Select, MenuItem, InputLabel, Grid, Button } from "@material-ui/core";
 import { useOktaAuth } from '@okta/okta-react';
 import TickerAutocomplete from "../../components/TickerAutocomplete";
 
@@ -58,8 +58,6 @@ export default function LandingView(props) {
                                 {expirationTimestampsOptions.map((date, index) => <MenuItem value={date.value} key={index}> {date.label} </MenuItem>)}
                             </Select>
                         </FormControl>
-
-                        <Button onClick={getContracts}>Submit</Button>
                     </Stack>
                 </Paper>
             </Container>

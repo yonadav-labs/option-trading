@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { makeStyles } from '@material-ui/core/styles';
 import { Grid, Typography, Paper, Pagination, Divider, IconButton, useMediaQuery, FormControl, Select, MenuItem, Table, TableHead, TableRow, TableCell, TableBody, Box, TableContainer } from "@material-ui/core";
-import { useOktaAuth } from '@okta/okta-react';
 import TickerAutocomplete from "../../components/TickerAutocomplete";
-import FilterContainer from "../../components/filters/FilterContainer";
+import ScreenFilterContainer from "../../components/filters/ScreenFilterContainer";
 import NewTickerSummary from "../../components/NewTickerSummary";
 import TuneIcon from "@material-ui/icons/Tune";
 import { GetGaEventTrackingFunc } from '../../utils';
@@ -15,14 +14,9 @@ const useStyles = makeStyles({
     root: {
         overflowX: "auto",
     },
-    table: {
-        border: 1,
-        borderColor: "red"
-    },
 });
 
 export default function MainView(props) {
-    const { authState } = useOktaAuth();
     const classes = useStyles();
 
     const {
@@ -34,6 +28,8 @@ export default function MainView(props) {
         expirationTimestampsOptions,
         onExpirationSelectionChange,
         onFilterChange,
+        onPutToggle,
+        onCallToggle,
         filters,
         contracts
     } = props
@@ -63,12 +59,10 @@ export default function MainView(props) {
     }
     useEffect(() => {
         if (contracts) {
-            console.log(contracts)
             setRenderedContracts(contracts.slice(0, 20))
             setNoOfPages(Math.ceil(contracts.length / 20))
         } else { setRenderedContracts([]) }
     }, [contracts])
-
 
     return (
         <>
@@ -77,7 +71,7 @@ export default function MainView(props) {
                     <>
                         <Grid container item sm={2.3} direction="column" alignItems="center"
                             bgcolor='#333741' color="white" style={{ display: filterOpen ? "block" : "none" }}>
-                            <FilterContainer onFilterChange={onFilterChange} filters={filters}
+                            <ScreenFilterContainer onFilterChange={onFilterChange} filters={filters} onPutToggle={onPutToggle} onCallToggle={onCallToggle}
                                 handleFilterCollapse={handleFilterCollapse} initialPrice={basicInfo.regularMarketPrice} />
                         </Grid>
                         <Grid item py={2} bgcolor='#333741' color="white" style={{ display: filterOpen ? "none" : "block" }} >
@@ -100,8 +94,10 @@ export default function MainView(props) {
                                     </Grid>
                                     <div style={{ position: "absolute", right: 0, top: "9vh", zIndex: 100, display: showMobileFilter ? "block" : "none" }}>
                                         <Grid container direction="column" justifyContent="center" alignItems="center" bgcolor='#333741' color="white" height="100%">
-                                            <FilterContainer
+                                            <ScreenFilterContainer
                                                 onFilterChange={onFilterChange}
+                                                onPutToggle={onPutToggle}
+                                                onCallToggle={onCallToggle}
                                                 filters={filters}
                                                 initialPrice={basicInfo.regularMarketPrice}
                                                 isMobile={isMobile}
