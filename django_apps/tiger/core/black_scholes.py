@@ -1,5 +1,6 @@
 import numpy as np
 import scipy.stats as si
+import QuantLib as ql
 
 # import tiger.core.interest_rates as ir
 # rfr = ir.get_rfr('180')
@@ -77,3 +78,72 @@ def get_target_price_probability(stock_price, target_price, exp_years, sigma, ai
         return si.norm.cdf(d2, 0.0, 1.0)
     else:
         return si.norm.cdf(-d2, 0.0, 1.0)
+
+
+# Price an American Option given the expiry, date as of which to calculate the value, 
+# the price of the underlying, the strike, the right (put or call), the volatility,
+# continuous annualized dividend yield, and continuous annualized risk free rate.
+def price_american_option(expiry_date, calculation_date, underlying_price, strike_price, option_right, volatility, dividend_yield, risk_free_rate):
+
+    # Set up the QuantLib Calendar objects
+    calendar = ql.UnitedStates()
+    days_in_year = ql.Actual365Fixed()
+    calculation_date = ql.Date(calculation_date.day, calculation_date.month, calculation_date.year)
+    expiry_date = ql.Date(expiry_date.day, expiry_date.month, expiry_date.year)
+    
+    ql.Settings.instance().evaluationDate = calculation_date
+
+    # Set up the Payoff, Exercise, and Option objects
+    if option_right == 'C':
+        oright = ql.Option.Call
+    else:
+        oright = ql.Option.Put
+
+    payoff = ql.PlainVanillaPayoff(oright, strike_price)
+    exercise = ql.AmericanExercise(calculation_date, expiry_date)
+    option = ql.VanillaOption(payoff, exercise)
+    
+    # Set up the Quote Handle for the stock given its current price
+    quote_handle = ql.QuoteHandle(ql.SimpleQuote(underlying_price))
+
+    # Set up the Yield Term Structure Handle to properly handle the risk free rate and annualization over the calendar
+    rfr_ts = ql.YieldTermStructureHandle(ql.FlatForward(calculation_date, risk_free_rate, days_in_year))
+
+    # Set up the Yield Term Structure Handle to properly handle dividend yield over the calendar
+    dividend_yield_ts = ql.YieldTermStructureHandle(ql.FlatForward(calculation_date, dividend_yield, days_in_year))
+
+    # Set up the Yield Term Structure Handle to properly handle volatility over the calendar
+    vol_ts = ql.BlackVolTermStructureHandle(ql.BlackConstantVol(calculation_date, calendar, volatility, days_in_year))
+
+    # Instantiate the BSM process
+    bsm_process = ql.BlackScholesMertonProcess(
+        quote_handle, 
+        dividend_yield_ts, 
+        rfr_ts, 
+        vol_ts
+    )
+
+    # There are various methods to price options:
+    # Analytic - using Barone-Adesi-Whaley or Bjerksund-Stensland
+    # Finite Differences
+    # or the Binomial Method - with various binomial trees: CRR, EQP, JR, Joshi4, LR, Tian, and Trigeorgis
+
+    # We can use binomial pricing - its quite accurate and won't use much computational power relative to the other methods.
+    # We use 250 steps to ensure proper convergence.
+
+    steps = 250
+    binomial_engine = ql.BinomialVanillaEngine(bsm_process, "crr", steps)
+    option.setPricingEngine(binomial_engine)
+
+    # The option object itself contains:
+    # NPV (value of the option on the given calculation date)
+    # delta
+    # gamma
+    # theta (including per day)
+    # vega
+    # rho
+    # itm cash probability
+    # implied volatility
+    # - all of which we can use for additional features.
+
+    return option

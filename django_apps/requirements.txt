@@ -24,6 +24,7 @@ pylint==2.6.0
 pyOpenSSL==20.0.0
 python-dateutil==2.8.1
 pytz==2020.1
+QuantLib==1.21
 requests==2.24.0
 scipy==1.6.2
 six==1.15.0
