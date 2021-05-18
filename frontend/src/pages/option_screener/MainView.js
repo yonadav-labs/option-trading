@@ -161,7 +161,7 @@ export default function MainView(props) {
                         </Box>
                     </Grid>
                     <Grid container>
-                        <Box px={3} className={classes.root}>
+                        <Grid item xs={12} px={3} className={classes.root}>
                             <TableContainer component={Box} border={1} borderColor="rgba(228, 228, 228, 1)" borderRadius={1}>
                                 <Table size="small">
                                     <TableHead >
@@ -186,7 +186,7 @@ export default function MainView(props) {
                                     </TableBody>
                                 </Table>
                             </TableContainer>
-                        </Box>
+                        </Grid>
                     </Grid>
                     <Grid container justifyContent="flex-end" alignItems="flex-end" paddingY={2}>
                         <Pagination count={noOfPages} shape="rounded" onChange={pageChangeHandler} />
