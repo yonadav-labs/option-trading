@@ -1,10 +1,11 @@
 import React from 'react';
 import { Card, Row, Col } from 'react-bootstrap';
 import ShareTradeBtn from '../ShareTradeBtn.js';
-import { PriceFormatter, ProfitFormatter, PercentageFormatter, getTradeTypeDisplay, TimestampTimeFormatter } from '../../utils';
+import { PriceFormatter, ProfitFormatter, PercentageFormatter, getTradeTypeDisplay, TimestampTimeFormatter, TimestampDateFormatter, GenerateTradeTitle } from '../../utils';
 import LegDetailsCard from './LegDetailsCard.js';
 import TradeProfitLossGraph from '../TradeProfitLossGraph.js';
 import MetricLabel from '../MetricLabel.js';
+import { startCase } from 'lodash';
 
 export default function TradeDetailsCard(props) {
     const { trade, latestTrade, hideShareButton, hideDisclaimer, hideTitle, broker } = props;
@@ -20,7 +21,13 @@ export default function TradeDetailsCard(props) {
 
     return (
         <Card>
-            {hideTitle ? null : <Card.Header>{trade.display_name}</Card.Header>}
+            {hideTitle ?
+                null
+                :
+                <Card.Header>
+                    {GenerateTradeTitle(trade)}
+                </Card.Header>
+            }
             <Card.Body>
                 <Row>
                     <Col><h5>Overview</h5></Col>
@@ -37,8 +44,8 @@ export default function TradeDetailsCard(props) {
                             {getTradeTypeDisplay(trade.type)}
                         </Col>
                         <Col sm="2" xs="6">
-                            <MetricLabel label={trade.net_debt_per_unit > 0 ? "order net debit" : "order net credit"} /><br />
-                            {PriceFormatter(Math.abs(trade.net_debt_per_unit))}
+                            <MetricLabel label={trade.net_debit_per_unit > 0 ? "order net debit" : "order net credit"} /><br />
+                            {PriceFormatter(Math.abs(trade.net_debit_per_unit))}
                         </Col>
                         <Col sm="2" xs="6"></Col>
                         <Col sm="2" xs="6"></Col>

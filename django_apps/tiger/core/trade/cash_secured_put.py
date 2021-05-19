@@ -29,15 +29,5 @@ class CashSecuredPut(Trade):
         return new_trade
 
     @property
-    def display_name(self):
-        short_put_leg = self.get_short_put_leg()
-        expiration_date_str = timestamp_to_datetime_with_default_tz(short_put_leg.contract.expiration) \
-            .strftime("%m/%d/%Y")
-        return '[{}][Cash secured put] {} {} strike ${} at ${:.2f} per position' \
-            .format(self.stock.ticker.symbol, '{}X'.format(short_put_leg.units) if short_put_leg.units > 1 else '',
-                    expiration_date_str, short_put_leg.contract.strike, short_put_leg.contract.strike,
-                    self.cost / short_put_leg.units)
-
-    @property
     def is_bullish(self):
         return True

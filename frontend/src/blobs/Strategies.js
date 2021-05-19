@@ -1,12 +1,3 @@
-// cash;
-// contract;
-// cost;
-// display_name;
-// is_long;
-// name;
-// stock;
-// units;
-
 class Leg {
     type = "";
 

@@ -4,6 +4,7 @@ import { Comparator } from 'react-bootstrap-table2-filter';
 import { Col, Row } from 'react-bootstrap';
 import Axios from 'axios';
 import ReactGA from 'react-ga';
+import { startCase } from 'lodash';
 
 // Returns the backend API base url.
 export default function getApiUrl() {
@@ -351,4 +352,33 @@ export function GetGaEventTrackingFunc(gaCategory) {
     return function GaEventTracking(gaAction) {
         ReactGA.event({ category: gaCategory, action: gaAction });
     }
+}
+
+export function GenerateTradeTitle(trade) {
+    let call_strikes = [];
+    let put_strikes = [];
+    let expirations = [];
+    let exps = new Set();
+    trade.legs.forEach(leg => {
+        if (leg.contract) {
+            const contract = leg.contract;
+            exps.add(contract.expiration);
+            if (contract.is_call) {
+                call_strikes.push(contract.strike);
+            } else {
+                put_strikes.push(contract.strike);
+            }
+        }
+        expirations = Array.from(exps).sort();
+    });
+    return (
+        <h4>
+            {trade.stock.ticker.symbol}&nbsp;
+            {expirations.map(exp => <span>{TimestampDateFormatter(exp)}, </span>)}
+            {call_strikes.map((strike, idx) => idx === call_strikes.length - 1 ? `$${strike} Calls` : `$${strike}/`)}
+            {put_strikes.map((strike, idx) => idx === put_strikes.length - 1 ? `$${strike} Puts` : `$${strike}/`)}:&nbsp;
+            {startCase(trade.type)} with&nbsp;
+            {trade.net_debit_per_unit >= 0 ? `$${Math.abs(trade.net_debit_per_unit)} net Debit` : `$${Math.abs(trade.net_debit_per_unit)} net Credit`}
+        </h4>
+    );
 }

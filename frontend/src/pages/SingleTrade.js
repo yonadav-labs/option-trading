@@ -4,8 +4,8 @@ import { useParams, Link } from "react-router-dom";
 import { Card } from 'react-bootstrap';
 import Axios from 'axios';
 import { useOktaAuth } from '@okta/okta-react';
-
-import getApiUrl from '../utils';
+import { startCase } from 'lodash';
+import getApiUrl, { GenerateTradeTitle, TimestampDateFormatter } from '../utils';
 import TradeDetailsCard from '../components/cards/TradeDetailsCard';
 import TickerSummary from '../components/TickerSummary.js';
 
@@ -53,7 +53,7 @@ export default function SingleTrade() {
             </Helmet>
             {trade ? (
                 <div>
-                    <h4>{trade.display_name}</h4>
+                    {GenerateTradeTitle(trade)}
                     <h5><Link to="/discover" role="button">Discover</Link> your own options trading ideas now!</h5>
                     <TradeDetailsCard trade={trade} latestTrade={latestTrade} hideShareButton={true} hideTitle={true} broker={broker} />
                 </div>

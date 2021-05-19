@@ -153,11 +153,6 @@ class Trade(ABC):
             })
         return result
 
-    @property
-    @abstractmethod
-    def display_name(self):
-        pass
-
     # currently unused property
     @property
     def prices_for_best_return(self):
@@ -342,15 +337,15 @@ class Trade(ABC):
         return None
 
     @property
-    def net_debt_per_unit(self):
+    def net_debit_per_unit(self):
         '''Nagtive number means net credit.'''
-        net_debt = 0.0
+        net_debit = 0.0
         for leg in self.legs:
             if leg.contract:
-                net_debt += leg.net_cost / leg.units
+                net_debit += leg.net_cost / leg.units
             elif leg.stock:
-                net_debt += leg.total_cost * (leg.units / 100)
-        return net_debt
+                net_debit += leg.total_cost * (leg.units / 100)
+        return net_debit
 
     @property
     def commission_cost(self):

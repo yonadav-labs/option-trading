@@ -97,7 +97,6 @@ class TradeSerializer(serializers.Serializer):
 
     break_evens = serializers.ListField(child=ReadOnlyDollarDecimalField())
     break_even_prices_and_ratios = serializers.JSONField(read_only=True)
-    display_name = serializers.ReadOnlyField()
     cost = ReadOnlyDollarDecimalField()
     to_target_price_lower_ratio = ReadOnlyRatioDecimalField()
     to_target_price_upper_ratio = ReadOnlyRatioDecimalField()
@@ -120,6 +119,6 @@ class TradeSerializer(serializers.Serializer):
     ten_percent_worst_return = ReadOnlyDollarDecimalField()
     ten_percent_worst_return_ratio = ReadOnlyRatioDecimalField()
     quote_time = serializers.ReadOnlyField()
-    net_debt_per_unit = ReadOnlyDollarDecimalField()
+    net_debit_per_unit = ReadOnlyDollarDecimalField()
     commission_cost = ReadOnlyDollarDecimalField()
     profit_prob = ReadOnlyRatioDecimalField()

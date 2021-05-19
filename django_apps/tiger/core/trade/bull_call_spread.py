@@ -38,16 +38,5 @@ class BullCallSpread(Trade):
         return new_trade
 
     @property
-    def display_name(self):
-        long_call_leg = self.get_long_call_leg()
-        short_call_leg = self.get_short_call_leg()
-        expiration_date_str = timestamp_to_datetime_with_default_tz(long_call_leg.contract.expiration) \
-            .strftime("%m/%d/%Y")
-        return '[{}][Bull call spread] {} {} strike ${} / ${} at ${:.2f} net debt per spread' \
-            .format(self.stock.ticker.symbol, '{}X'.format(long_call_leg.units) if long_call_leg.units > 1 else '',
-                    expiration_date_str, long_call_leg.contract.strike, short_call_leg.contract.strike,
-                    abs(short_call_leg.cost + long_call_leg.cost))
-
-    @property
     def is_bullish(self):
         return True

@@ -27,14 +27,5 @@ class LongCall(Trade):
         return new_trade
 
     @property
-    def display_name(self):
-        long_call_leg = self.get_long_call_leg()
-        expiration_date_str = timestamp_to_datetime_with_default_tz(long_call_leg.contract.expiration) \
-            .strftime("%m/%d/%Y")
-        return '[{}][Long call] {} {} strike ${} at ${:.2f} per contract' \
-            .format(self.stock.ticker.symbol, '{}X'.format(long_call_leg.units) if long_call_leg.units > 1 else '',
-                    expiration_date_str, long_call_leg.contract.strike, long_call_leg.cost)
-
-    @property
     def is_bullish(self):
         return True

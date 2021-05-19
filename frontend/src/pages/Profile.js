@@ -6,6 +6,7 @@ import './Profile.css';
 import { Button, Form, Modal } from 'react-bootstrap';
 import getApiUrl, { getAllTradeTypes, getTradeTypeDisplay, GetGaEventTrackingFunc } from '../utils';
 import { useHistory, Link } from 'react-router-dom';
+import { startCase } from 'lodash';
 
 const GaEvent = GetGaEventTrackingFunc('preference');
 
@@ -296,9 +297,17 @@ const Profile = () => {
                                         {
                                             tradeHistory.length > 0 ?
                                                 <ul>
-                                                    {tradeHistory.map(x => (
-                                                        <li key={x.id}>
-                                                            <Link className="d-inline-block" to={"/t/" + x.id} target="_blank">{x.display_name}</Link>
+                                                    {tradeHistory.map(trade => (
+                                                        <li key={trade.id}>
+                                                            <Link className="d-inline-block" to={"/t/" + trade.id} target="_blank">
+                                                                {trade.stock.ticker.symbol} {startCase(trade.type)} -
+                                                                {trade.legs.map(leg => {
+                                                                    if (leg.contract) {
+                                                                        return `${leg.is_long ? ' Long ' : ' Short '} ${new Date(leg.contract.expiration * 1000).toLocaleDateString('en-US', { year: "2-digit", month: "numeric", day: "2-digit" })} $${leg.contract.strike} ${leg.contract.is_call ? 'Call' : 'Put'}, `;
+                                                                    }
+                                                                })}
+                                                                {trade.net_debit_per_unit >= 0 ? `$${Math.abs(trade.net_debit_per_unit)} Credit` : `$${Math.abs(trade.net_debit_per_unit)} Debit`}
+                                                            </Link>
                                                         </li>
                                                     ))}
                                                 </ul> :

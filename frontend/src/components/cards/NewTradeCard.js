@@ -17,8 +17,8 @@ const useStyles = makeStyles(theme => ({
     capitalize: {
         textTransform: "capitalize"
     },
-    tradeMeta:{
-        flexGrow:4
+    tradeMeta: {
+        flexGrow: 4
     }
 }))
 
@@ -55,9 +55,9 @@ export default function NewTradeCard({ trade }) {
                                 <Chip label={
                                     <>
                                         <Typography variant="subtitle1" display="inline">
-                                            <MetricLabel label={trade.net_debt_per_unit > 0 ? "Order Net Debit" : "order net credit"} />:
+                                            <MetricLabel label={trade.net_debit_per_unit > 0 ? "Order Net Debit" : "order net credit"} />:
                                         </Typography>
-                                        <Typography variant="body1" display="inline">{PriceFormatter(Math.abs(trade.net_debt_per_unit))}</Typography>
+                                        <Typography variant="body1" display="inline">{PriceFormatter(Math.abs(trade.net_debit_per_unit))}</Typography>
                                     </>
                                 } />
                                 &nbsp;

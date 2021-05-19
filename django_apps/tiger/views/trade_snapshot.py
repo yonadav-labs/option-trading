@@ -101,6 +101,7 @@ def trade_snapshots_history(request):
     resp = []
     for trade_snapshot in trade_snapshots:
         trade = TradeFactory.from_snapshot(trade_snapshot, broker_settings)
-        resp.append({'id': trade_snapshot.id, 'display_name': trade.display_name})
+        trade_serializer = TradeSerializer(trade)
+        resp.append(trade_serializer.data)
 
     return Response(resp)
