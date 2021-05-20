@@ -1,12 +1,14 @@
 import React from "react";
-import { Grid, Box, IconButton, Typography, makeStyles, FormControl, Select, MenuItem, FormGroup, FormControlLabel, Checkbox } from "@material-ui/core";
+import { Grid, Box, IconButton, Typography, makeStyles, FormControl, Select, MenuItem, FormGroup, FormControlLabel, Checkbox, Chip } from "@material-ui/core";
 import TuneIcon from '@material-ui/icons/Tune';
 import CloseIcon from '@material-ui/icons/Close';
+import CancelIcon from '@material-ui/icons/Cancel';
 import MaterialFilter from "./MaterialFilter";
 import MetricLabel from "../MetricLabel";
 import TickerAutocomplete from "../TickerAutocomplete";
 import { GetGaEventTrackingFunc } from '../../utils';
 import PriceTargetField from "./PriceTargetField";
+
 
 const GaEvent = GetGaEventTrackingFunc('strategy screener');
 
@@ -28,6 +30,10 @@ const useStyles = makeStyles(theme => ({
             color: 'white',
             background: 'rgba(255, 255, 255, 0.15)',
         }
+    },
+    chip: {
+        backgroundColor: "#FFF",
+        marginRight: 2,
     }
 }))
 
@@ -46,8 +52,10 @@ export default function ScreenFilterContainer(props) {
         onTickerSelectionChange,
         selectedTicker,
         expirationTimestampsOptions,
-        selectedExpirationTimestamp,
-        onExpirationSelectionChange
+        selectedExpirationTimestamps,
+        onExpirationSelectionChange,
+        debouncedGetContracts,
+        deleteExpirationChip,
     } = props
 
     const minVolumeFilterOptions = [
@@ -95,20 +103,6 @@ export default function ScreenFilterContainer(props) {
         { label: "Past 10 Days", value: -10 },
         { label: "Past 30 Days", value: -30 },
     ];
-
-    // const deltaFilterOptions = [
-    //     { label: "All", value: [-1, 1] },
-    //     { label: "-1.0 to -0.8", value: [-1, -0.8] },
-    //     { label: "-0.8 to -0.6", value: [-0.8, -0.6] },
-    //     { label: "-0.6 to -0.4", value: [-0.6, -0.4] },
-    //     { label: "-0.4 to -0.2", value: [-0.4, -0.2] },
-    //     { label: "-0.2 to 0.0", value: [-0.2, 0.0] },
-    //     { label: "0.0 to 0.2", value: [0.0, 0.2] },
-    //     { label: "0.2 to 0.4", value: [0.2, 0.4] },
-    //     { label: "0.4 to 0.6", value: [0.4, 0.6] },
-    //     { label: "0.6 to 0.8", value: [0.6, 0.8] },
-    //     { label: "0.8 to 1.0", value: [0.8, 1] },
-    // ];
 
     const deltaFilterOptions = [
         { label: "All", value: 1 },
@@ -169,14 +163,44 @@ export default function ScreenFilterContainer(props) {
                             <FormControl fullWidth>
                                 <Select
                                     id="expiration-dates"
-                                    value={selectedExpirationTimestamp}
+                                    value={selectedExpirationTimestamps}
                                     fullWidth
                                     placeholder="Select an expiration date"
                                     onChange={(e) => onExpirationSelectionChange(e.target.value)}
+                                    onClose={debouncedGetContracts}
                                     variant="outlined"
                                     className={classes.select}
+                                    MenuProps={{
+                                        anchorOrigin: {
+                                            vertical: "bottom",
+                                            horizontal: "left"
+                                        },
+                                        getContentAnchorEl: () => null,
+                                    }}
+                                    renderValue={
+                                        (selectedExpirationTimestamps) => {
+                                            let sorted = selectedExpirationTimestamps.sort((a, b) => (a.value > b.value) ? 1 : -1)
+                                            return (
+                                                <Box sx={{ display: 'flex', flexWrap: 'wrap' }}>
+                                                    {sorted.map((date) => (
+                                                        <Chip
+                                                            key={date.value}
+                                                            label={date.label}
+                                                            className={classes.chip}
+                                                            clickable
+                                                            deleteIcon={
+                                                                <CancelIcon
+                                                                    onMouseDown={(event) => event.stopPropagation()}
+                                                                />
+                                                            }
+                                                            onDelete={(e) => deleteExpirationChip(e, date.value)}
+                                                        />
+                                                    ))}
+                                                </Box>
+                                            )
+                                        }
+                                    }
                                 >
-                                    <MenuItem disabled value={"none"}><span style={{ color: "gray" }}>Select an expiration date</span></MenuItem>
                                     {expirationTimestampsOptions.map((date, index) => <MenuItem value={date.value} key={index}> {date.label} </MenuItem>)}
                                 </Select>
                             </FormControl>

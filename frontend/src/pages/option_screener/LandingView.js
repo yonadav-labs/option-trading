@@ -1,7 +1,5 @@
 import React from "react";
-import { Link } from "react-router-dom";
-import { Paper, Stack, Container, Divider, makeStyles, Typography, FormControl, Select, MenuItem, InputLabel, Grid, Button } from "@material-ui/core";
-import { useOktaAuth } from '@okta/okta-react';
+import { Paper, Stack, Container, Divider, makeStyles, Typography, FormControl, Select, MenuItem, InputLabel, Grid, Chip, Box } from "@material-ui/core";
 import TickerAutocomplete from "../../components/TickerAutocomplete";
 
 const useStyles = makeStyles((theme) => ({
@@ -17,7 +15,6 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function LandingView(props) {
-    const { authState } = useOktaAuth();
     const classes = useStyles();
     const {
         allTickers,
@@ -27,11 +24,11 @@ export default function LandingView(props) {
         expirationTimestampsOptions,
         selectedExpirationTimestamps,
         onExpirationSelectionChange,
-        getContracts
+        debouncedGetContracts,
     } = props
 
     return (
-        <>
+        <Container style={{ minHeight: "inherit", padding: 0 }}>
             <br />
             <Container >
                 <Paper className={classes.customPaper} elevation={4}>
@@ -43,19 +40,34 @@ export default function LandingView(props) {
                             displayLabel
                         />
 
-                        <FormControl disabled={expirationDisabled} fullWidth>
+                        <FormControl disabled={expirationDisabled} fullWidth style={{ overflowX: "auto", }}>
                             <InputLabel><Typography variant="h6">Option Expiration Date</Typography></InputLabel>
                             <Select
                                 id="expiration-dates"
                                 value={selectedExpirationTimestamps}
+                                multiple
                                 fullWidth
                                 placeholder="Select an expiration date"
                                 onChange={(e) => onExpirationSelectionChange(e.target.value)}
+                                onClose={debouncedGetContracts}
                                 style={{ paddingBottom: "5px" }}
                                 variant="standard"
+                                MenuProps={{
+                                    anchorOrigin: {
+                                        vertical: "bottom",
+                                        horizontal: "left"
+                                    },
+                                    getContentAnchorEl: () => null,
+                                }}
+                                renderValue={
+                                    (selectedExpirationTimestamps) => {
+                                        let sorted
+                                        sorted = selectedExpirationTimestamps.sort((a, b) => (a.value > b.value) ? 1 : -1)
+                                        return <Box>{sorted.map(date => <Chip key={date.value} label={date.label} />)}</Box>
+                                    }
+                                }
                             >
-                                <MenuItem disabled value={"none"}><span style={{ color: "gray" }}>Select an expiration date</span></MenuItem>
-                                {expirationTimestampsOptions.map((date, index) => <MenuItem value={date.value} key={index}> {date.label} </MenuItem>)}
+                                {expirationTimestampsOptions.map((date, index) => <MenuItem value={date} key={index}> {date.label} </MenuItem>)}
                             </Select>
                         </FormControl>
                     </Stack>
@@ -63,13 +75,6 @@ export default function LandingView(props) {
             </Container>
             <br />
             <Container>
-                {!authState.isAuthenticated &&
-                    (
-                        <Typography variant="body1" align="center" pb={5}>
-                            <a href="/signin"><b>Log In</b></a> or <Link to="/signin/register"><b>
-                                Sign Up For Free</b></Link> to unlock Cash Secured Put and 3 more Vertical Spread strategies!
-                        </Typography>
-                    )}
                 <Typography variant="h4" align="center">Lorem ipsum dolor sit amet, consectetur adipiscing elit. </Typography>
                 <br />
                 <Typography variant="body1" align="center">
@@ -84,6 +89,6 @@ export default function LandingView(props) {
                 <img style={{ height: 344, width: 319 }} src="screen_step_4.png" alt="alt" />
             </Grid>
             <br />
-        </>
+        </Container>
     );
 }

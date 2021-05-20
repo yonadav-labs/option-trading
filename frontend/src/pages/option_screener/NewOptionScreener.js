@@ -6,7 +6,7 @@ import LandingView from "./LandingView";
 import MainView from "./MainView";
 
 // utils
-import getApiUrl, { newLoadTickers, newLoadExpirationDates, GetGaEventTrackingFunc, fixedFloat } from "../../utils";
+import getApiUrl, { newLoadTickers, newLoadExpirationDates, GetGaEventTrackingFunc } from "../../utils";
 import { useOktaAuth } from '@okta/okta-react';
 import { debounce } from "lodash";
 
@@ -29,7 +29,7 @@ export default function NewOptionScreener() {
 
     // expiration date states
     const [expirationTimestampsOptions, setExpirationTimestampsOptions] = useState([])
-    const [selectedExpirationTimestamps, setSelectedExpirationTimestamps] = useState("none");
+    const [selectedExpirationTimestamps, setSelectedExpirationTimestamps] = useState([]);
 
     // filter states
     const [filters, setFilters] = useState({
@@ -57,8 +57,8 @@ export default function NewOptionScreener() {
 
     const resetStates = () => {
         setSelectedTicker(null);
-        setExpirationTimestampsOptions([]);
-        setSelectedExpirationTimestamps("none");
+        setExpirationTimestampsOptions([])
+        setSelectedExpirationTimestamps([]);
         setBasicInfo({});
         setModalActive(false);
         setContracts([]);
@@ -110,6 +110,10 @@ export default function NewOptionScreener() {
     const onExpirationSelectionChange = (e) => {
         GaEvent('adjust exp date');
         setSelectedExpirationTimestamps(e)
+    }
+
+    const deleteExpirationChip = (e, value) => {
+        setSelectedExpirationTimestamps(selectedExpirationTimestamps.filter(date => date.value !== value))
         debouncedGetContracts()
     }
 
@@ -152,42 +156,44 @@ export default function NewOptionScreener() {
 
     const getContracts = async () => {
         try {
-            let deltaMin
-            let deltaMax
-            if (filters.delta === 1) { deltaMin = -1; deltaMax = 1; }
-            else { deltaMin = filters.delta; deltaMax = filters.delta + 0.2; }
+            if (selectedTicker && selectedExpirationTimestamps.length > 0) {
+                let deltaMin
+                let deltaMax
+                if (filters.delta === 1) { deltaMin = -1; deltaMax = 1; }
+                else { deltaMin = filters.delta; deltaMax = filters.delta + 0.2; }
 
-            let bodyFilters = {
-                "min.strike": parseFloat(filters.minStrike),
-                "max.strike": parseFloat(filters.maxStrike),
-                "min.volume": filters.minVolume,
-                "min.open_interest": filters.minOpenInterest,
-                "max.bid_ask_spread": filters.maxBidAskSpread,
-                "min.delta": deltaMin,
-                "max.delta": deltaMax,
-                "min.last_trade_date": filters.lastTradedDate,
-            }
-            // add type filter based on toggles
-            if (filters.callToggle && !filters.putToggle) {
-                bodyFilters["eq.is_call"] = true
-            }
-            if (!filters.callToggle && filters.putToggle) {
-                bodyFilters["eq.is_call"] = false
-            }
+                let bodyFilters = {
+                    "min.strike": parseFloat(filters.minStrike),
+                    "max.strike": parseFloat(filters.maxStrike),
+                    "min.volume": filters.minVolume,
+                    "min.open_interest": filters.minOpenInterest,
+                    "max.bid_ask_spread": filters.maxBidAskSpread,
+                    "min.delta": deltaMin,
+                    "max.delta": deltaMax,
+                    "min.last_trade_date": filters.lastTradedDate,
+                }
+                // add type filter based on toggles
+                if (filters.callToggle && !filters.putToggle) {
+                    bodyFilters["eq.is_call"] = true
+                }
+                if (!filters.callToggle && filters.putToggle) {
+                    bodyFilters["eq.is_call"] = false
+                }
 
-            console.log(bodyFilters)
+                console.log(bodyFilters)
 
-            let url = `${API_URL}/tickers/${selectedTicker.symbol}/contracts/`;
-            let body = {
-                expiration_timestamps: [selectedExpirationTimestamps],
-                filters: bodyFilters
-            };
-            setModalActive(true);
-            const response = await Axios.post(url, body);
-            let contracts = response.data.contracts;
-            setContracts(contracts);
-            setModalActive(false);
-            setPageState(false)
+                let url = `${API_URL}/tickers/${selectedTicker.symbol}/contracts/`;
+                let body = {
+                    expiration_timestamps: selectedExpirationTimestamps.map(date => date.value),
+                    filters: bodyFilters
+                };
+                setModalActive(true);
+                const response = await Axios.post(url, body);
+                let contracts = response.data.contracts;
+                setContracts(contracts);
+                setModalActive(false);
+                setPageState(false)
+            }
         } catch (error) {
             console.error(error);
             setModalActive(false);
@@ -216,6 +222,7 @@ export default function NewOptionScreener() {
                         selectedExpirationTimestamps={selectedExpirationTimestamps}
                         onExpirationSelectionChange={onExpirationSelectionChange}
                         getContracts={getContracts}
+                        debouncedGetContracts={debouncedGetContracts}
                     />
                     :
                     <MainView
@@ -226,12 +233,14 @@ export default function NewOptionScreener() {
                         expirationDisabled={expirationDisabled}
                         selectedExpirationTimestamps={selectedExpirationTimestamps}
                         onExpirationSelectionChange={onExpirationSelectionChange}
-                        basicInfo={basicInfo}
+                        deleteExpirationChip={deleteExpirationChip}
                         onFilterChange={onFilterChange}
                         onPutToggle={onPutToggle}
                         onCallToggle={onCallToggle}
+                        basicInfo={basicInfo}
                         filters={filters}
                         contracts={contracts}
+                        debouncedGetContracts={debouncedGetContracts}
                     />
             }
         </>

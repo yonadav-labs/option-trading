@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { makeStyles } from '@material-ui/core/styles';
-import { Grid, Typography, Paper, Pagination, Divider, IconButton, useMediaQuery, FormControl, Select, MenuItem, Table, TableHead, TableRow, TableCell, TableBody, Box, TableContainer } from "@material-ui/core";
+import { Grid, Typography, Paper, Pagination, Divider, IconButton, useMediaQuery, FormControl, Select, MenuItem, Table, TableHead, TableRow, TableCell, TableBody, Box, TableContainer, Chip } from "@material-ui/core";
 import TickerAutocomplete from "../../components/TickerAutocomplete";
 import ScreenFilterContainer from "../../components/filters/ScreenFilterContainer";
 import NewTickerSummary from "../../components/NewTickerSummary";
 import TuneIcon from "@material-ui/icons/Tune";
 import { GetGaEventTrackingFunc } from '../../utils';
 import ScreenRow from "../../components/ScreenRow";
+import CancelIcon from '@material-ui/icons/Cancel';
 
 const GaEvent = GetGaEventTrackingFunc('strategy screener');
 
@@ -23,15 +24,17 @@ export default function MainView(props) {
         allTickers,
         selectedTicker,
         onTickerSelectionChange,
-        basicInfo,
         selectedExpirationTimestamps,
         expirationTimestampsOptions,
         onExpirationSelectionChange,
+        deleteExpirationChip,
         onFilterChange,
         onPutToggle,
         onCallToggle,
+        basicInfo,
+        contracts,
         filters,
-        contracts
+        debouncedGetContracts
     } = props
 
     // web filter slide out
@@ -72,7 +75,8 @@ export default function MainView(props) {
                         <Grid container item sm={2.3} direction="column" alignItems="center"
                             bgcolor='#333741' color="white" style={{ display: filterOpen ? "block" : "none" }}>
                             <ScreenFilterContainer onFilterChange={onFilterChange} filters={filters} onPutToggle={onPutToggle} onCallToggle={onCallToggle}
-                                handleFilterCollapse={handleFilterCollapse} initialPrice={basicInfo.regularMarketPrice} />
+                                handleFilterCollapse={handleFilterCollapse} initialPrice={basicInfo.regularMarketPrice}
+                                deleteExpirationChip={deleteExpirationChip} debouncedGetContracts={debouncedGetContracts} />
                         </Grid>
                         <Grid item py={2} bgcolor='#333741' color="white" style={{ display: filterOpen ? "none" : "block" }} >
                             <IconButton color="inherit" onClick={handleFilterCollapse}><TuneIcon fontSize="large" /></IconButton>
@@ -108,6 +112,8 @@ export default function MainView(props) {
                                                 expirationTimestampsOptions={expirationTimestampsOptions}
                                                 selectedExpirationTimestamps={selectedExpirationTimestamps}
                                                 onExpirationSelectionChange={onExpirationSelectionChange}
+                                                deleteExpirationChip={deleteExpirationChip}
+                                                debouncedGetContracts={debouncedGetContracts}
                                             />
                                         </Grid>
                                     </div>
@@ -135,14 +141,43 @@ export default function MainView(props) {
                                         <Select
                                             id="expiration-dates"
                                             value={selectedExpirationTimestamps}
-                                            fullWidth
+                                            multiple
                                             placeholder="Select an expiration date"
                                             onChange={(e) => onExpirationSelectionChange(e.target.value)}
+                                            onClose={debouncedGetContracts}
                                             style={{ paddingBottom: "5px" }}
                                             variant="standard"
+                                            MenuProps={{
+                                                anchorOrigin: {
+                                                    vertical: "bottom",
+                                                    horizontal: "left"
+                                                },
+                                                getContentAnchorEl: () => null,
+                                            }}
+                                            renderValue={
+                                                (selectedExpirationTimestamps) => {
+                                                    let sorted = selectedExpirationTimestamps.sort((a, b) => (a.value > b.value) ? 1 : -1)
+                                                    return (
+                                                        <Box sx={{ display: 'flex', flexWrap: 'wrap' }}>
+                                                            {sorted.map((date) => (
+                                                                <Chip
+                                                                    key={date.value}
+                                                                    label={date.label}
+                                                                    clickable
+                                                                    deleteIcon={
+                                                                        <CancelIcon
+                                                                            onMouseDown={(event) => event.stopPropagation()}
+                                                                        />
+                                                                    }
+                                                                    onDelete={(e) => deleteExpirationChip(e, date.value)}
+                                                                />
+                                                            ))}
+                                                        </Box>
+                                                    )
+                                                }
+                                            }
                                         >
-                                            <MenuItem disabled value={"none"}><span style={{ color: "gray" }}>Select an expiration date</span></MenuItem>
-                                            {expirationTimestampsOptions.map((date, index) => <MenuItem value={date.value} key={index}> {date.label} </MenuItem>)}
+                                            {expirationTimestampsOptions.map((date, index) => <MenuItem value={date} key={index}> {date.label} </MenuItem>)}
                                         </Select>
                                     </FormControl>
                                 </Grid>
