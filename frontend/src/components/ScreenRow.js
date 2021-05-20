@@ -1,9 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { makeStyles, Box, Collapse, IconButton, TableCell, TableRow } from "@material-ui/core";
 import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
 import { NumberRoundFormatter, PercentageFormatter, PriceFormatter, TimestampDateFormatter } from '../utils';
-import NewContractDetailsCard from './cards/NewContractDetailsCard';
+import ScreenExpandedRow from './ScreenExpandedRow';
 
 const useRowStyles = makeStyles({
     root: {
@@ -16,7 +16,7 @@ const useRowStyles = makeStyles({
 
 export default function ScreenRow(props) {
     const { row } = props;
-    const [open, setOpen] = React.useState(false);
+    const [open, setOpen] = useState(false);
     const classes = useRowStyles();
 
     return (
@@ -53,10 +53,10 @@ export default function ScreenRow(props) {
                 <TableCell align="center">{PriceFormatter(row.break_even_price)}</TableCell>
             </TableRow>
             <TableRow>
-                <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
+                <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={13}>
                     <Collapse in={open} timeout="auto" unmountOnExit>
                         <Box sx={{ margin: 1 }}>
-                            <NewContractDetailsCard contract={row} expandReadMore={true} />
+                            <ScreenExpandedRow contract={row} />
                         </Box>
                     </Collapse>
                 </TableCell>

@@ -174,7 +174,7 @@ export default function MainView(props) {
                                             <TableCell align="center"> <Typography variant="button"> DELTA </Typography></TableCell>
                                             <TableCell align="center"> <Typography variant="button"> GAMMA </Typography></TableCell>
                                             <TableCell align="center"> <Typography variant="button"> THETA </Typography></TableCell>
-                                            <TableCell align="center"> <Typography variant="button"> BREAK EVEN </Typography></TableCell>
+                                            <TableCell align="center"> <Typography variant="button"> BREAKEVEN </Typography></TableCell>
                                         </TableRow>
                                     </TableHead>
                                     <TableBody>
