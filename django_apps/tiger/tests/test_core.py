@@ -5,7 +5,7 @@ from django.test import TestCase
 from django.utils.timezone import make_aware, get_default_timezone
 from tiger.core import Cash, Stock, OptionContract, OptionLeg
 from tiger.core.trade import LongCall, LongPut, CoveredCall, CashSecuredPut, BullPutSpread, BullCallSpread, \
-    BearCallSpread, BearPutSpread
+    BearCallSpread, BearPutSpread, Trade
 from tiger.models import Ticker, TickerStats
 
 MOCK_NOW_TIMESTAMP = 1609664400  # 01/03/2021
@@ -45,6 +45,24 @@ class CallTradesTestCase(TestCase):
             # mid: 76.35
             "contractSize": "REGULAR",
             "expiration": 1626393600,
+            "lastTradeDate": 1603466039,
+            "impliedVolatility": 0.6474034283447265,
+            "inTheMoney": False
+        }
+        self.yahoo_input3 = {
+            "contractSymbol": "TSLA210219P00445000",
+            "strike": 324.0,
+            "currency": "USD",
+            "lastPrice": 74.0,
+            "change": -1.0,
+            "percentChange": -1.3333334,
+            "volume": 1,
+            "openInterest": 203,
+            "bid": 75.5,
+            "ask": 77.2,
+            # mid: 76.35
+            "contractSize": "REGULAR",
+            "expiration": 1626374800,
             "lastTradeDate": 1603466039,
             "impliedVolatility": 0.6474034283447265,
             "inTheMoney": False
@@ -113,6 +131,62 @@ class CallTradesTestCase(TestCase):
         self.assertAlmostEqual(long_call.break_evens[0], 449.713)
         self.assertAlmostEqual(long_call.break_even_prices_and_ratios[0]['ratio'], 0.07074523809523801)
         self.assertIsNone(long_call.reward_to_risk_ratio)
+
+    def test_organized_option_legs(self):
+        call_contract_1 = OptionContract(self.ticker, True, self.yahoo_input, self.stock_price, 'mid')
+        call_contract_2 = OptionContract(self.ticker, True, self.yahoo_input2, self.stock_price, 'mid')
+        call_contract_3 = OptionContract(self.ticker, True, self.yahoo_input3, self.stock_price, 'mid')
+        put_contract_1 = OptionContract(self.ticker, False, self.yahoo_input, self.stock_price, 'mid')
+        put_contract_2 = OptionContract(self.ticker, False, self.yahoo_input2, self.stock_price, 'mid')
+        # long call 1626393600 $288
+        call_leg_1 = OptionLeg(True, 1, call_contract_1, 'mid', self.broker_settings)
+        # long call 1626393600 $445
+        call_leg_2 = OptionLeg(True, 1, call_contract_2, 'mid', self.broker_settings)
+        # short call 1626393600 $288
+        call_leg_3 = OptionLeg(False, 1, call_contract_1, 'mid', self.broker_settings)
+        # short call 1626393600 $445
+        call_leg_4 = OptionLeg(False, 1, call_contract_2, 'mid', self.broker_settings)
+        # short call 1626374800 $324
+        call_leg_5 = OptionLeg(False, 1, call_contract_3, 'mid', self.broker_settings)
+        # long put 1626393600 $288
+        put_leg_1 = OptionLeg(True, 1, put_contract_1, 'mid', self.broker_settings)
+        # long put 1626393600 $445
+        put_leg_2 = OptionLeg(True, 1, put_contract_2, 'mid', self.broker_settings)
+        # short put 1626393600 $288
+        put_leg_3 = OptionLeg(False, 1, put_contract_1, 'mid', self.broker_settings)
+        # short put 1626393600 $445
+        put_leg_4 = OptionLeg(False, 1, put_contract_2, 'mid', self.broker_settings)
+
+        class CustomTrade(Trade):
+            def __init__(self, stock, legs, premium_type, target_price_lower=None, target_price_upper=None):
+                super().__init__('custom', stock, legs, premium_type, target_price_lower, target_price_upper)
+
+            def validate(self):
+                pass
+
+            @property
+            def is_bullish(self):
+                return False
+
+        new_trade = CustomTrade(self.stock, [call_leg_1, call_leg_2, call_leg_3,
+                                call_leg_4, call_leg_5, put_leg_1, put_leg_2, put_leg_3, put_leg_4], 'mid')
+        # should be 3 short calls
+        self.assertEqual(len(new_trade.organized_option_legs['short']['call']), 3)
+        # should be 2 long calls
+        self.assertEqual(len(new_trade.organized_option_legs['long']['call']), 2)
+        # should be 2 short puts
+        self.assertEqual(len(new_trade.organized_option_legs['short']['put']), 2)
+        # should be 2 long puts
+        self.assertEqual(len(new_trade.organized_option_legs['long']['put']), 2)
+        # expirations should be ordered
+        self.assertLessEqual(new_trade.get_nth_option_leg('short', 'call', 0).contract.expiration,
+                             new_trade.get_nth_option_leg('short', 'call', 1).contract.expiration)
+        # strikes should be ordered
+        self.assertLessEqual(new_trade.get_nth_option_leg('long', 'call', 0).contract.strike,
+                             new_trade.get_nth_option_leg('long', 'call', 1).contract.strike)
+        # 3rd short call should be call_leg_3 since they are sorted by expiration then strike
+        self.assertEqual(new_trade.get_nth_option_leg('short', 'call', 2).contract.contract_symbol,
+                         call_leg_4.contract.contract_symbol)
 
     def test_value_in_price_range(self):
         call_contract = OptionContract(self.ticker, True, self.yahoo_input, self.stock_price)

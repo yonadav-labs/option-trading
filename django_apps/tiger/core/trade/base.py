@@ -1,6 +1,8 @@
 import math
 import more_itertools
 import numpy as np
+import itertools
+from collections import defaultdict
 from abc import ABC, abstractmethod
 from tiger.core import Leg
 from tiger.core.black_scholes import get_target_price_probability
@@ -30,7 +32,19 @@ class Trade(ABC):
         self.break_evens = []
         # important price points (possible inflection points): 0, each leg's strike, infinity
         self.key_points = {}
+        '''
+        group legs into this structure:
+        action (is_long): {
+            type (is_call): [leg_a, leg_b] (Note: leg_a, leg_b is sorted by expiration and strike)
+        }
+        example for a long call:
+        'long': {
+            'call': [OptionLeg]
+        }
+        '''
+        self.organized_option_legs = defaultdict(lambda: defaultdict(list))
 
+        self.organize_option_legs()
         self.common_validate()
         self.calc_properties()
 
@@ -44,36 +58,17 @@ class Trade(ABC):
         '''Custom validation logic per strategy type.'''
         pass
 
-    def get_leg(self, is_long, type, is_call=None):
-        assert type in ('cash', 'stock', 'option')
-        for leg in self.legs:
-            if leg.is_long != is_long:
-                continue
-            if type == 'cash' and leg.cash:
-                return leg
-            if type == 'stock' and leg.stock:
-                return leg
-            if type == 'option' and leg.contract and leg.contract.is_call == is_call:
-                return leg
-        return None
+    @property
+    def option_legs(self):
+        return list(filter(lambda x: x.contract, self.legs))
 
-    def get_long_cash_leg(self):
-        return self.get_leg(is_long=True, type='cash')
+    @property
+    def stock_legs(self):
+        return list(filter(lambda x: x.stock, self.legs))
 
-    def get_long_stock_leg(self):
-        return self.get_leg(is_long=True, type='stock')
-
-    def get_long_call_leg(self):
-        return self.get_leg(is_long=True, type='option', is_call=True)
-
-    def get_short_call_leg(self):
-        return self.get_leg(is_long=False, type='option', is_call=True)
-
-    def get_long_put_leg(self):
-        return self.get_leg(is_long=True, type='option', is_call=False)
-
-    def get_short_put_leg(self):
-        return self.get_leg(is_long=False, type='option', is_call=False)
+    @property
+    def cash_legs(self):
+        return list(filter(lambda x: x.cash, self.legs))
 
     @property
     def reward_to_risk_ratio(self):
@@ -382,10 +377,9 @@ class Trade(ABC):
         points[0] = self.get_total_return(0, 0)
         # calculate total profit and loss at each strike
         leg: Leg
-        for leg in self.legs:
-            if leg.contract:
-                strike = leg.contract.strike
-                points[strike] = self.get_total_return(strike, strike)
+        for leg in self.option_legs:
+            strike = leg.contract.strike
+            points[strike] = self.get_total_return(strike, strike)
         # sort the points by strike
         points = {k: points[k] for k in sorted(points)}
         # get the highest strike to calculate "infinity"
@@ -431,5 +425,18 @@ class Trade(ABC):
         else:
             # otherwise there is a max loss
             self.worst_return = min(points.values())
+
+    def organize_option_legs(self):
+        organized = sorted(self.option_legs, key=lambda x: (x.is_long, x.contract.is_call))
+        grouped = itertools.groupby(organized, key=lambda x: (x.is_long, x.contract.is_call))
+        for groups, option_legs in grouped:
+            is_long, is_call = groups
+            action_alias = 'long' if is_long else 'short'
+            type_alias = 'call' if is_call else 'put'
+            self.organized_option_legs[action_alias][type_alias] = sorted(
+                list(option_legs), key=lambda x: (x.contract.expiration, x.contract.strike))
+
+    def get_nth_option_leg(self, action, type, n):
+        return self.organized_option_legs[action][type][n]
 
 # TODO: add a sell everything now and hold cash trade and a long stock trade.
