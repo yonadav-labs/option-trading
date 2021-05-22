@@ -164,8 +164,9 @@ class Trade(ABC):
             x.append(self.target_price_lower)
         if self.target_price_upper:
             x.append(self.target_price_upper)
+        x.extend(self.break_evens)
         x = sorted(x)
-        x = [x[0] * 0.9] + x + [x[0] * 1.1]
+        x = [x[0] * 0.9] + x + [x[len(x) - 1] * 1.1]
         # generate interval points
         additional_x = np.linspace(x[0], x[len(x) - 1], 100).tolist()
         x = set(x)
