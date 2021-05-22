@@ -42,6 +42,8 @@ const HelpTextDict = {
         + 'Total cost is used to calculate the return rate.',
     'initial value': 'The value of this trade when it was was saved or shared.',
     'implied volatility': 'Expected annualized volatility of a stock over the life of the option.',
+    'IV': 'Expected annualized volatility of a stock over the life of the option.',
+    'itm prob': 'Probability of the contract to be in the money on expiration date.',
     'itm probability': 'Probability of the contract to be in the money on expiration date.',
     'latest stock return': 'The latest return from the stock, for comparison of the options trade\'s return.',
     'latest return': 'The latest return from the trade since the time it was saved or shared. Calculated as latest value ÷ initial value - 1.',
@@ -55,6 +57,7 @@ const HelpTextDict = {
     'mid/mark': 'The average of the bid and ask prices.',
     'notional value': 'Total value of the underlying stock this position controls.',
     'open interest': 'The number of active contracts that are not closed or exercised. An indicator for market liquidity.',
+    'OI': 'The number of active contracts that are not closed or exercised. An indicator for market liquidity.',
     'min open interest': 'The number of active contracts that are not closed or exercised. An indicator for market liquidity.',
     'p/e ratio': 'The price to earnings ratio.',
     'premium price to use': 'The options price to use in return calculation.'
@@ -83,33 +86,47 @@ const HelpTextDict = {
         'Can also be considered as the value of this position.',
     'vega': 'Estimate of change in an option premium based on a 1% change in implied volatility',
     'volume': 'Total number of option contracts transacted for the day. An indicator for market liquidity.',
+    'VOL': 'Total number of option contracts transacted for the day. An indicator for market liquidity.',
+    'VOL/OI': 'Volume as a percentage of open interest.',
     'min volume': 'Total number of option contracts transacted for the day. An indicator for market liquidity.',
 }
 
 export default function MetricLabel(props) {
-    let { label, helpText } = props;
+    let { label, helpText, hideIcon } = props;
 
     const classes = useStyles();
 
     if (!helpText) {
-        helpText = HelpTextDict[label.toLowerCase()];
+        helpText = HelpTextDict[label];
     }
 
     if (helpText) {
-        return (
-            (
+        if (hideIcon) {
+            return (
                 <span className={classes.label}>
-                    {label}
                     <CustomTooltip
                         title={helpText}
                         placement="right-start"
                         enterTouchDelay={0}
                         arrow
                     >
-                        <HelpIcon fontSize="small" color="action" />
+                        <span>{label}</span>
                     </CustomTooltip>
                 </span>
-            )
+            );
+        }
+        return (
+            <span className={classes.label}>
+                {label}
+                <CustomTooltip
+                    title={helpText}
+                    placement="right-start"
+                    enterTouchDelay={0}
+                    arrow
+                >
+                    <HelpIcon fontSize="small" color="action" />
+                </CustomTooltip>
+            </span>
         );
     } else {
         return (

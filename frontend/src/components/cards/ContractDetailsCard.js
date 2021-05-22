@@ -20,7 +20,7 @@ export default function ContractDetailsCard(props) {
                         <Card.Text>
                             <Row>
                                 <Col sm="2" xs="6">
-                                    <MetricLabel label="last" /><br />
+                                    <MetricLabel label="last" hideIcon /><br />
                                     {PriceFormatter(contract.last_price)}
                                 </Col>
                                 <Col sm="2" xs="6">

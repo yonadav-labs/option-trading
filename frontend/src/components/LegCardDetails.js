@@ -90,7 +90,7 @@ export default function LegCardDetails(props) {
                                         </Form.Control>
                                     </Col>
                                     <Col sm="4" xs="12">
-                                        <MetricLabel label="strike" />
+                                        <MetricLabel label="strike" hideIcon />
                                         <Select
                                             className="basic-single"
                                             isSearchable

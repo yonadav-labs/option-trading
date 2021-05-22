@@ -36,13 +36,14 @@ export default function ScreenRow(props) {
                         >
                             {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
                         </IconButton>
-                        {row.is_call ? "CALL" : "PUT"}
+                        {row.is_call ? "Call" : "Put"}
                     </span>
                 </TableCell>
-                <TableCell align="center">{TimestampDateFormatter(row.expiration)} <br /> ({row.days_till_expiration}d)</TableCell>
+                <TableCell align="center">{TimestampDateFormatter(row.expiration)} ({row.days_till_expiration}d)</TableCell>
                 <TableCell align="center">{PriceFormatter(row.strike)}</TableCell>
+                <TableCell align="center">{PriceFormatter(row.mark)}</TableCell>
                 <TableCell align="center">{PriceFormatter(row.last_price)}</TableCell>
-                <TableCell align="center">{`$${row.bid}/$${row.ask}`}</TableCell>
+                <TableCell align="center">{row.percent_change >= 0 ? '+' : '-'}{NumberRoundFormatter(Math.abs(row.percent_change))}%</TableCell>
                 <TableCell align="center">{row.volume}</TableCell>
                 <TableCell align="center">{row.open_interest}</TableCell>
                 <TableCell align="center">{NumberRoundFormatter(row.vol_oi)}</TableCell>
@@ -50,6 +51,7 @@ export default function ScreenRow(props) {
                 <TableCell align="center">{NumberRoundFormatter(row.delta)}</TableCell>
                 <TableCell align="center">{NumberRoundFormatter(row.gamma)}</TableCell>
                 <TableCell align="center">{NumberRoundFormatter(row.theta)}</TableCell>
+                <TableCell align="center">{PercentageFormatter(row.itm_probability)}</TableCell>
                 <TableCell align="center">{PriceFormatter(row.break_even_price)}</TableCell>
             </TableRow>
             <TableRow>

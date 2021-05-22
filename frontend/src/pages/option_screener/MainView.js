@@ -8,6 +8,7 @@ import TuneIcon from "@material-ui/icons/Tune";
 import { GetGaEventTrackingFunc } from '../../utils';
 import ScreenRow from "../../components/ScreenRow";
 import CancelIcon from '@material-ui/icons/Cancel';
+import MetricLabel from '../../components/MetricLabel.js';
 
 const GaEvent = GetGaEventTrackingFunc('strategy screener');
 
@@ -185,31 +186,27 @@ export default function MainView(props) {
                         }
                         <NewTickerSummary basicInfo={basicInfo} isMobile={isMobile} />
                     </Grid>
-                    <br />
-                    <Grid container alignItems="center" pb={2} px={3}>
-                        <Box p={1} border={1} borderColor="rgba(228, 228, 228, 1)" borderRadius={1} style={{ backgroundColor: "rgb(242, 246, 255)" }}>
-                            Blue cards are in the money.
-                        </Box>
-                    </Grid>
                     <Grid container>
-                        <Grid item xs={12} px={3} className={classes.root}>
+                        <Grid item xs={12} px={3} paddingTop={3} className={classes.root}>
                             <TableContainer component={Box} border={1} borderColor="rgba(228, 228, 228, 1)" borderRadius={1}>
                                 <Table size="small">
                                     <TableHead >
                                         <TableRow style={{ position: 'sticky', top: 0, }}>
-                                            <TableCell align="center"> <Typography variant="button"> TYPE </Typography></TableCell>
-                                            <TableCell align="center"> <Typography variant="button"> EXP DAY </Typography></TableCell>
-                                            <TableCell align="center"> <Typography variant="button"> STRIKE </Typography></TableCell>
-                                            <TableCell align="center"> <Typography variant="button"> LAST </Typography></TableCell>
-                                            <TableCell align="center"> <Typography variant="button"> BID/ASK</Typography></TableCell>
-                                            <TableCell align="center"> <Typography variant="button"> VOL </Typography></TableCell>
-                                            <TableCell align="center"> <Typography variant="button"> OI </Typography></TableCell>
-                                            <TableCell align="center"> <Typography variant="button"> VOL/OI </Typography></TableCell>
-                                            <TableCell align="center"> <Typography variant="button"> IV </Typography></TableCell>
-                                            <TableCell align="center"> <Typography variant="button"> DELTA </Typography></TableCell>
-                                            <TableCell align="center"> <Typography variant="button"> GAMMA </Typography></TableCell>
-                                            <TableCell align="center"> <Typography variant="button"> THETA </Typography></TableCell>
-                                            <TableCell align="center"> <Typography variant="button"> BREAKEVEN </Typography></TableCell>
+                                            <TableCell align="center"><b><MetricLabel label="type" /></b></TableCell>
+                                            <TableCell align="center"><b><MetricLabel label="exp date" /></b></TableCell>
+                                            <TableCell align="center"><b><MetricLabel label="strike" hideIcon /></b></TableCell>
+                                            <TableCell align="center"><b><MetricLabel label="mark" /></b></TableCell>
+                                            <TableCell align="center"><b><MetricLabel label="last" hideIcon /></b></TableCell>
+                                            <TableCell align="center"><b><MetricLabel label="change" /></b></TableCell>
+                                            <TableCell align="center"><b><MetricLabel label="VOL" hideIcon /></b></TableCell>
+                                            <TableCell align="center"><b><MetricLabel label="OI" hideIcon /></b></TableCell>
+                                            <TableCell align="center"><b><MetricLabel label="VOL/OI" hideIcon /></b></TableCell>
+                                            <TableCell align="center"><b><MetricLabel label="IV" hideIcon /></b></TableCell>
+                                            <TableCell align="center"><b><MetricLabel label="delta" hideIcon /></b></TableCell>
+                                            <TableCell align="center"><b><MetricLabel label="gamma" hideIcon /></b></TableCell>
+                                            <TableCell align="center"><b><MetricLabel label="theta" hideIcon /></b></TableCell>
+                                            <TableCell align="center"><b><MetricLabel label="itm prob" /></b></TableCell>
+                                            <TableCell align="center"><b><MetricLabel label="breakeven" /></b></TableCell>
                                         </TableRow>
                                     </TableHead>
                                     <TableBody>
@@ -220,6 +217,9 @@ export default function MainView(props) {
                         </Grid>
                     </Grid>
                     <Grid container justifyContent="flex-end" alignItems="flex-end" paddingY={2}>
+                        <Box p={1} border={1} borderColor="rgba(228, 228, 228, 1)" borderRadius={1} style={{ backgroundColor: "rgb(242, 246, 255)" }}>
+                            Blue cards are in the money.
+                        </Box>
                         <Pagination count={noOfPages} shape="rounded" onChange={pageChangeHandler} />
                     </Grid>
                 </Grid>

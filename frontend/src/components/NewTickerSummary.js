@@ -27,7 +27,7 @@ export default function NewTickerSummary({ basicInfo, isMobile }) {
     const id = open ? 'simple-popper' : undefined;
 
     return (
-        <> 
+        <>
             <div
                 style={{
                     display: "inherit",
@@ -37,8 +37,8 @@ export default function NewTickerSummary({ basicInfo, isMobile }) {
                     justifyContent: "space-between"
                 }}
             >
-                <div style={{flex: "0 0 auto", paddingRight: "0.3rem"}}>
-                    <Typography variant="button" color="primary"><MetricLabel label="last price" /></Typography>
+                <div style={{ flex: "0 0 auto", paddingRight: "0.3rem" }}>
+                    <Typography variant="button" color="primary"><MetricLabel label="last price" hideIcon /></Typography>
                     <br />
                     <Typography variant="body1">
                         {basicInfo.regularMarketPrice
@@ -46,8 +46,8 @@ export default function NewTickerSummary({ basicInfo, isMobile }) {
                             : "N/A"}
                     </Typography>
                 </div>
-                <div style={{flex: "0 0 auto", paddingRight: "0.3rem"}}>
-                    <Typography variant="button" color="primary"><MetricLabel label="day range" /></Typography>
+                <div style={{ flex: "0 0 auto", paddingRight: "0.3rem" }}>
+                    <Typography variant="button" color="primary"><MetricLabel label="day range" hideIcon /></Typography>
                     <br />
                     <Typography variant="body1">
                         {basicInfo.regularMarketDayLow &&
@@ -58,8 +58,8 @@ export default function NewTickerSummary({ basicInfo, isMobile }) {
                             : "N/A"}
                     </Typography>
                 </div>
-                <div style={{flex: "0 0 auto", paddingRight: "0.3rem"}}>
-                    <Typography variant="button" color="primary"><MetricLabel label="52 week range" /></Typography>
+                <div style={{ flex: "0 0 auto", paddingRight: "0.3rem" }}>
+                    <Typography variant="button" color="primary"><MetricLabel label="52 week range" hideIcon /></Typography>
                     <br />
                     <Typography variant="body1">
                         {basicInfo.fiftyTwoWeekLow && basicInfo.fiftyTwoWeekHigh
@@ -69,8 +69,8 @@ export default function NewTickerSummary({ basicInfo, isMobile }) {
                             : "N/A"}
                     </Typography>
                 </div>
-                <div style={{flex: "0 0 auto", paddingRight: "0.3rem"}}>
-                    <Typography variant="button" color="primary"><MetricLabel label="market cap" /></Typography>
+                <div style={{ flex: "0 0 auto", paddingRight: "0.3rem" }}>
+                    <Typography variant="button" color="primary"><MetricLabel label="market cap" hideIcon /></Typography>
                     <br />
                     <Typography variant="body1">
                         {basicInfo.marketCap
@@ -78,8 +78,8 @@ export default function NewTickerSummary({ basicInfo, isMobile }) {
                             : "N/A"}
                     </Typography>
                 </div>
-                <div style={{flex: "0 0 auto", paddingRight: "0.3rem"}}>
-                    <Typography variant="button" color="primary"><MetricLabel label="p/e ratio" /></Typography>
+                <div style={{ flex: "0 0 auto", paddingRight: "0.3rem" }}>
+                    <Typography variant="button" color="primary"><MetricLabel label="p/e ratio" hideIcon /></Typography>
                     <br />
                     <Typography variant="body1">
                         {basicInfo.trailingPE
@@ -87,8 +87,8 @@ export default function NewTickerSummary({ basicInfo, isMobile }) {
                             : "N/A"}
                     </Typography>
                 </div>
-                <div style={{flex: "0 0 auto", paddingRight: "0.3rem"}}>
-                    <Typography variant="button" color="primary"><MetricLabel label="eps" /></Typography>
+                <div style={{ flex: "0 0 auto", paddingRight: "0.3rem" }}>
+                    <Typography variant="button" color="primary"><MetricLabel label="eps" hideIcon /></Typography>
                     <br />
                     <Typography variant="body1">
                         {basicInfo.epsTrailingTwelveMonths
@@ -96,8 +96,8 @@ export default function NewTickerSummary({ basicInfo, isMobile }) {
                             : "N/A"}
                     </Typography>
                 </div>
-                <div style={{flex: "0 0 auto", paddingRight: "0.3rem"}}>
-                    <Typography variant="button" color="primary"><MetricLabel label="earnings date" /></Typography>
+                <div style={{ flex: "0 0 auto", paddingRight: "0.3rem" }}>
+                    <Typography variant="button" color="primary"><MetricLabel label="earnings date" hideIcon /></Typography>
                     <br />
                     <Typography variant="body1">
                         {basicInfo.earningsTimestamp &&
@@ -106,8 +106,8 @@ export default function NewTickerSummary({ basicInfo, isMobile }) {
                             : "N/A"}
                     </Typography>
                 </div>
-                <div style={{flex: "0 0 auto", paddingRight: "0.3rem"}}>
-                    <Typography variant="button" color="primary"><MetricLabel label="dividend date" /></Typography>
+                <div style={{ flex: "0 0 auto", paddingRight: "0.3rem" }}>
+                    <Typography variant="button" color="primary"><MetricLabel label="dividend date" hideIcon /></Typography>
                     <br />
                     <Typography variant="body1">
                         {basicInfo.dividendDate &&
@@ -116,11 +116,11 @@ export default function NewTickerSummary({ basicInfo, isMobile }) {
                             : "N/A"}
                     </Typography>
                 </div>
-                {isMobile? 
-                    null 
+                {isMobile ?
+                    null
                     :
                     <>
-                        <div style={{flex: "0 0 auto", paddingRight: "0.3rem"}}>
+                        <div style={{ flex: "0 0 auto", paddingRight: "0.3rem" }}>
                             <Button className={classes.viewChartButton} size="large" onClick={handleClick}>
                                 <ZoomInIcon />
                                 <Typography variant="button" color="primary">View Chart</Typography>
@@ -140,10 +140,10 @@ export default function NewTickerSummary({ basicInfo, isMobile }) {
             </div>
             { isMobile ?
                 <div style={{
-                        display: "flex",
-                        width: "100%",
-                        justifyContent: "center"
-                    }}
+                    display: "flex",
+                    width: "100%",
+                    justifyContent: "center"
+                }}
                 >
                     <Button className={classes.viewChartButton} size="large" onClick={handleClick}>
                         <ZoomInIcon />

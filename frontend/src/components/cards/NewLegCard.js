@@ -35,7 +35,7 @@ export default function NewLegCard(props) {
                         <Typography variant="body1">{leg.is_long ? 'Long' : 'Short'}</Typography>
                     </Grid>
                     <Grid item xs={6} sm>
-                        <Typography variant="button"><MetricLabel label="strike" /></Typography>
+                        <Typography variant="button"><MetricLabel label="strike" hideIcon /></Typography>
                         <Typography variant="body1">{PriceFormatter(leg.contract.strike)}</Typography>
                     </Grid>
                     <Grid item xs={6} sm>

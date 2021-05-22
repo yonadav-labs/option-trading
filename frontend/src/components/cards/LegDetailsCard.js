@@ -29,7 +29,7 @@ export default function LegDetailsCard(props) {
                             {TimestampDateFormatter(leg.contract.expiration)}
                         </Col>
                         <Col sm="2" xs="6">
-                            <MetricLabel label="strike" /><br />
+                            <MetricLabel label="strike" hideIcon /><br />
                             {PriceFormatter(leg.contract.strike)}
                         </Col>
                         <Col sm="2" xs="6">
