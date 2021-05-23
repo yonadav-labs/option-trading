@@ -4,7 +4,7 @@ import { useOktaAuth } from '@okta/okta-react';
 import UserContext from '../UserContext';
 import './Profile.css';
 import { Button, Form, Modal } from 'react-bootstrap';
-import getApiUrl, { getAllTradeTypes, getTradeTypeDisplay, GetGaEventTrackingFunc } from '../utils';
+import getApiUrl, { getAllTradeTypes, GetGaEventTrackingFunc } from '../utils';
 import { useHistory, Link } from 'react-router-dom';
 import { startCase } from 'lodash';
 
@@ -270,7 +270,7 @@ const Profile = () => {
                                                     key={type}
                                                     id={type}
                                                     type="switch"
-                                                    label={getTradeTypeDisplay(type)}
+                                                    label={startCase(type)}
                                                     value={type}
                                                     defaultChecked={!user.disabled_strategies || (user.disabled_strategies.indexOf(type) === -1)}
                                                     onChange={onChangeStrategy}

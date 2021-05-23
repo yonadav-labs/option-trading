@@ -1,7 +1,7 @@
 import React from 'react';
 import { Card, Row, Col } from 'react-bootstrap';
 import ShareTradeBtn from '../ShareTradeBtn.js';
-import { PriceFormatter, ProfitFormatter, PercentageFormatter, getTradeTypeDisplay, TimestampTimeFormatter, TimestampDateFormatter, GenerateTradeTitle } from '../../utils';
+import { PriceFormatter, ProfitFormatter, PercentageFormatter, TimestampTimeFormatter, TimestampDateFormatter, GenerateTradeTitle } from '../../utils';
 import LegDetailsCard from './LegDetailsCard.js';
 import TradeProfitLossGraph from '../TradeProfitLossGraph.js';
 import MetricLabel from '../MetricLabel.js';
@@ -41,7 +41,7 @@ export default function TradeDetailsCard(props) {
                         </Col>
                         <Col sm="2" xs="6">
                             <MetricLabel label="strategy" /><br />
-                            {getTradeTypeDisplay(trade.type)}
+                            {startCase(trade.type)}
                         </Col>
                         <Col sm="2" xs="6">
                             <MetricLabel label={trade.net_debit_per_unit > 0 ? "order net debit" : "order net credit"} /><br />
@@ -70,11 +70,11 @@ export default function TradeDetailsCard(props) {
                     <Row>
                         <Col sm="2" xs="6">
                             <MetricLabel label="break-even at" /><br />
-                            {trade.break_even_prices_and_ratios.map(break_even => <span>{ProfitFormatter(break_even.ratio)} (at {PriceFormatter(break_even.price)})</span>)}
+                            {trade.break_even_prices_and_ratios.map(break_even => <span>{ProfitFormatter(break_even.ratio)} (at {PriceFormatter(break_even.price)})<br /></span>)}
                         </Col>
                         <Col sm="2" xs="6">
                             <MetricLabel label="max return" /><br />
-                            {trade.best_return != null ?
+                            {trade.best_return != null && trade.best_return != 'infinite' ?
                                 (
                                     <span>
                                         {trade.reward_to_risk_ratio >= 0 ? '+' : '-'}{PercentageFormatter(Math.abs(trade.reward_to_risk_ratio))} ({PriceFormatter(trade.best_return)})

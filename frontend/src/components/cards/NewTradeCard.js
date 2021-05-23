@@ -1,12 +1,17 @@
 import React, { useState } from "react";
-import { Grid, makeStyles, Typography, Divider, Chip, Card, CardHeader, CardContent, CardActionArea, CardActions, IconButton } from "@material-ui/core";
+import {
+    Grid, makeStyles, Typography, Divider, Chip, Card, CardHeader,
+    CardContent, CardActionArea, CardActions, IconButton
+} from "@material-ui/core";
+import ZoomOutMapIcon from '@material-ui/icons/ZoomOutMap';
+import { startCase } from 'lodash';
+
 import TradeProfitLossGraph from "../TradeProfitLossGraph";
 import MetricLabel from '../MetricLabel.js';
 import {
-    PriceFormatter, ProfitFormatter, getTradeTypeDisplay, PercentageFormatter,
+    PriceFormatter, ProfitFormatter, PercentageFormatter,
     TimestampTimeFormatter, GetGaEventTrackingFunc
 } from '../../utils';
-import ZoomOutMapIcon from '@material-ui/icons/ZoomOutMap';
 import ShareTradeBtn from "../ShareTradeBtn";
 import NewLegCard from "./NewLegCard";
 import GraphSummary from "../GraphSummary";
@@ -49,7 +54,7 @@ export default function NewTradeCard({ trade }) {
                         <Grid container direction="row" spacing={1}>
                             <Grid item>
                                 <Typography variant="h5" className={classes.capitalize}
-                                    display="inline" paddingRight={2}>{getTradeTypeDisplay(trade.type)}</Typography>
+                                    display="inline" paddingRight={2}>{startCase(trade.type)}</Typography>
                             </Grid>
                             <Grid item sm className={classes.tradeMeta}>
                                 <Chip label={

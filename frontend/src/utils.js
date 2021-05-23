@@ -148,16 +148,6 @@ export function onLastTradedFilterChange(event, lastTradedFilter) {
     });
 };
 
-export function getLegByName(trade, name) {
-    let return_leg = null;
-    trade.legs.forEach(function (leg) {
-        if (leg.name === name) {
-            return_leg = leg;
-        }
-    });
-    return return_leg;
-};
-
 export function getAllTradeTypes(type) {
     return ['long_call', 'covered_call', 'long_put', 'cash_secured_put', 'bull_call_spread', 'bear_call_spread',
         'bear_put_spread', 'bull_put_spread'];
@@ -177,63 +167,6 @@ export function getContractName(contract) {
         </Row>
     );
 };
-
-export function getTradeTypeDisplay(type) {
-    let typeToName = {
-        'long_call': 'Long call',
-        'covered_call': 'Covered call',
-        'long_put': 'Long put',
-        'cash_secured_put': 'Cash secured put',
-        'bull_call_spread': 'Bull call spread',
-        'bear_call_spread': 'Bear call spread',
-        'bear_put_spread': 'Bear put spread',
-        'bull_put_spread': 'Bull put spread',
-    }
-    return typeToName[type];
-}
-
-export function getTradeStrikeStr(row) {
-    switch (row.type) {
-        case ("long_call"): {
-            let longCallLeg = getLegByName(row, 'long_call_leg');
-            return `Strike $${longCallLeg.contract.strike}`;
-        }
-        case ("covered_call"): {
-            let shortCallLeg = getLegByName(row, 'short_call_leg');
-            return `Strike $${shortCallLeg.contract.strike}`;
-        }
-        case ("long_put"): {
-            let longPutLeg = getLegByName(row, 'long_put_leg');
-            return `Strike $${longPutLeg.contract.strike}`;
-        }
-        case ("cash_secured_put"): {
-            let shortPutLeg = getLegByName(row, 'short_put_leg');
-            return `Strike $${shortPutLeg.contract.strike}`;
-        }
-        case ("bull_call_spread"): {
-            let longCallLeg = getLegByName(row, 'long_call_leg');
-            let shortCallLeg = getLegByName(row, 'short_call_leg');
-            return `Strike $${longCallLeg.contract.strike} / $${shortCallLeg.contract.strike}`;
-        }
-        case ("bear_call_spread"): {
-            let longCallLeg = getLegByName(row, 'long_call_leg');
-            let shortCallLeg = getLegByName(row, 'short_call_leg');
-            return `Strike $${shortCallLeg.contract.strike} / $${longCallLeg.contract.strike}`;
-        }
-        case ("bear_put_spread"): {
-            let longPutLeg = getLegByName(row, 'long_put_leg');
-            let shortPutLeg = getLegByName(row, 'short_put_leg');
-            return `Strike $${shortPutLeg.contract.strike} / $${longPutLeg.contract.strike}`;
-        }
-        case ("bull_put_spread"): {
-            let longPutLeg = getLegByName(row, 'long_put_leg');
-            let shortPutLeg = getLegByName(row, 'short_put_leg');
-            return `Strike $${longPutLeg.contract.strike} / $${shortPutLeg.contract.strike}`;
-        }
-        default:
-            break;
-    }
-}
 
 // fetch tickers
 export async function loadTickers(headers, setSelectedTicker, setAllTickers, querySymbol, onTickerSelectionChange) {
