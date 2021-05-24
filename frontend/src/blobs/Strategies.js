@@ -29,6 +29,7 @@ class OptionLeg extends Leg {
     action = ""; // is_long
     optionType = ""; // is_call boolean
     contract = {}; // contract
+    strike = 0;
 
     constructor(data) {
         super("option");
@@ -299,6 +300,36 @@ export const strategies = [
                 new CashLeg(
                     {
                         value: 0
+                    }
+                )
+            ]
+        }
+    ),
+    new Strategy(
+        {
+            name: "Long Straddle",
+            type: "long_straddle",
+            description: "A basic strategy that profits when the stock price moves dratistically up or down. \
+                            Pay a premium to buy a call and a put at the same strike. \
+                            You profit when the stock price moves: above the strike + premium paid OR below the strike - premium paid \
+                            Losses are capped at the premium paid to initiate this strategy.",
+            sentiment: ["volitile"],
+            linkedProperties: ["expiration", "strike"],
+            rules: [],
+            relationships: [],
+            legs: [
+                new OptionLeg(
+                    {
+                        action: "long",
+                        expiration: 0,
+                        optionType: "call"
+                    }
+                ),
+                new OptionLeg(
+                    {
+                        action: "long",
+                        expiration: 0,
+                        optionType: "put"
                     }
                 )
             ]

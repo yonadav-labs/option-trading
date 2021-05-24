@@ -85,7 +85,7 @@ export default function TradeDetailsCard(props) {
                         <Col sm="2" xs="6">
                             <MetricLabel label="10% probability loss" /><br />
                             {
-                                trade.two_sigma_profit_lower ?
+                                trade.ten_percent_worst_return_ratio != null ?
                                     <>
                                         {ProfitFormatter(trade.ten_percent_worst_return_ratio)}
                                                 ({PriceFormatter(trade.ten_percent_worst_return)})
@@ -99,7 +99,7 @@ export default function TradeDetailsCard(props) {
                         <Col sm="2" xs="6">
                             <MetricLabel label="10% probability profit" /><br />
                             {
-                                trade.two_sigma_profit_lower ?
+                                trade.ten_percent_best_return_ratio != null ?
                                     <>
                                         {ProfitFormatter(trade.ten_percent_best_return_ratio)}
                                                 ({PriceFormatter(trade.ten_percent_best_return)})

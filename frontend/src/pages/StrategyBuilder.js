@@ -6,7 +6,7 @@ import { MdTrendingFlat, MdArrowUpward, MdArrowDownward, MdShowChart } from 'rea
 import 'react-bootstrap-typeahead/css/Typeahead.css';
 import './StrategyBuilder.css';
 import { strategies } from '../blobs/Strategies';
-import { cloneDeep, get, isEmpty, throttle } from 'lodash';
+import { cloneDeep, get, isEmpty, set, throttle } from 'lodash';
 import TickerTypeahead from '../components/TickerTypeahead';
 import ModalSpinner from '../components/ModalSpinner';
 import TickerSummary from '../components/TickerSummary';
@@ -107,14 +107,11 @@ export default function StrategyBuilder() {
     }
 
     const updateLeg = (key, value, index) => {
-        // if (legs[index][key]) {
-        //     setRuleMessage(enforceRules(selectedStrategy.rules, legs));
-        // }
         // check if key is a linkedProperty
         if (selectedStrategy && selectedStrategy.linkedProperties.includes(key)) {
             // set value for all legs
             setLegs(prevState => {
-                const newState = prevState.map(val => { val[key] = value; return val });
+                const newState = prevState.map(val => { set(val, key, value); return val });
                 return checkRulesAndRelationships(prevState, newState, index, key);
             });
         } else {

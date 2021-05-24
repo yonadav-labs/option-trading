@@ -139,7 +139,7 @@ export default function NewTradeCard({ trade }) {
                                 <Grid item xs={6} sm={3}>
                                     <Typography variant="button"><MetricLabel label="10% probability loss" /></Typography>
                                     {
-                                        trade.two_sigma_profit_lower ?
+                                        trade.ten_percent_worst_return_ratio != null ?
                                             <>
                                                 <Typography variant="body1" color="#4F4F4F">{ProfitFormatter(trade.ten_percent_worst_return_ratio)} ({PriceFormatter(trade.ten_percent_worst_return)})</Typography>
                                                 <Typography variant="body2" color="#828282">
@@ -153,7 +153,7 @@ export default function NewTradeCard({ trade }) {
                                 <Grid item xs={6} sm={3}>
                                     <Typography variant="button"><MetricLabel label="10% probability profit" /></Typography>
                                     {
-                                        trade.two_sigma_profit_lower ?
+                                        trade.ten_percent_best_return_ratio != null ?
                                             <>
                                                 <Typography variant="body1" color="#4F4F4F">{ProfitFormatter(trade.ten_percent_best_return_ratio)} ({PriceFormatter(trade.ten_percent_best_return)})</Typography>
                                                 <Typography variant="body2" color="#828282">

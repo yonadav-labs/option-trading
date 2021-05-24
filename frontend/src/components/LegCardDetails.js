@@ -12,15 +12,12 @@ const GaEvent = GetGaEventTrackingFunc('options builder');
 export default function LegCardDetails(props) {
     const { legs, index, selectedTicker, updateLeg, selectedStrategy, expirationTimestamps } = props;
     const [strikes, setStrikes] = useState([]);
-    const [contracts, setContracts] = useState([]);
     const [selectedStrike, setSelectedStrike] = useState(0);
     const API_URL = getApiUrl();
 
     useEffect(async () => {
         const leg = legs[index];
-        setSelectedStrike(0);
         setStrikes([]);
-        updateLeg("contract", {}, index);
 
         if (leg.type === "option" && leg.action && leg.optionType && leg.expiration) {
             // call api to get option chain
@@ -32,24 +29,32 @@ export default function LegCardDetails(props) {
                 };
                 const response = await Axios.post(url, body);
                 const filteredContracts = response.data.contracts.filter(contract => (leg.optionType === "call" && contract.is_call) || (leg.optionType === "put" && !contract.is_call));
+                let selectedStrikeIsValid = false;
                 let strikes = filteredContracts.map(val => {
                     const percentageChange = ((props.atmPrice - val.strike) / props.atmPrice) * -1;
+                    const option = { value: val.strike, label: <>{PriceFormatter(val.strike)} ({percentageChange > 0 ? "+" : ""}{PercentageFormatter(percentageChange)})</> };
 
-                    return { value: val.strike, label: <>{PriceFormatter(val.strike)} ({percentageChange > 0 ? "+" : ""}{PercentageFormatter(percentageChange)})</> };
+                    if (legs[index].strike === '') {
+                        setSelectedStrike('')
+                    } else if (val.strike === legs[index].strike) {
+                        selectedStrikeIsValid = true;
+                        setSelectedStrike(option);
+                    }
+                    return option;
                 });
 
                 strikes.push({ value: props.atmPrice, label: <>{PriceFormatter(props.atmPrice)} (Current Price)</>, isDisabled: true });
-                setContracts(filteredContracts);
                 setStrikes(strikes.sort((a, b) => a.value - b.value));
+                updateLeg("contract", selectedStrikeIsValid ? filteredContracts.filter((val) => val.strike === legs[index].strike)[0] : {}, index);
             } catch (error) {
                 console.error(error);
             }
         }
-    }, [props.legs[props.index].expiration, props.legs[props.index].action, props.legs[props.index].optionType, selectedStrategy]);
+    }, [props.legs[props.index].expiration, props.legs[props.index].action, props.legs[props.index].optionType, props.legs[props.index].strike, selectedStrategy]);
 
     const onStrikeSelectChange = (option) => {
         setSelectedStrike(option);
-        updateLeg("contract", option ? contracts.filter((val) => val.strike === option.value)[0] : {}, index);
+        updateLeg("strike", option ? option.value : '', index);
     }
 
     const onExpirationChange = (event) => {

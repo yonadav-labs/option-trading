@@ -1,9 +1,10 @@
+import itertools
 import math
+from abc import ABC, abstractmethod
+from collections import defaultdict
+
 import more_itertools
 import numpy as np
-import itertools
-from collections import defaultdict
-from abc import ABC, abstractmethod
 from tiger.core import Leg
 from tiger.core.black_scholes import get_target_price_probability
 
@@ -237,6 +238,10 @@ class Trade(ABC):
         daily_volatility = historical_volatility / math.sqrt(252)
         return daily_volatility * math.sqrt(trading_days_till_exp)
 
+    def is_disabled_for_prob(self):
+        # TODO: temporily disable for some strategies till we fix the probability calculation.
+        return self.sigma is None or self.type in ('long_straddle')
+
     def get_ten_percent_prices_and_returns(self, is_profit):
         '''
         Use stock's historic volatility to estimate an extreme price range that has 10% probability to happen.
@@ -245,7 +250,7 @@ class Trade(ABC):
         :param is_profit: if True, return the price and return of 10% profit case, otherwise, return for the losee case.
         :return: a 10% chance price and it's return.
         '''
-        if self.sigma is None:
+        if self.is_disabled_for_prob():
             return None
         stock_price = self.stock.stock_price
         # TODO: use 3 sigma when profit calculation is using normal distribution.
@@ -268,37 +273,37 @@ class Trade(ABC):
 
     @property
     def ten_percent_best_return_price(self):
-        if self.sigma is None:
+        if self.is_disabled_for_prob():
             return None
         return self.get_ten_percent_prices_and_returns(is_profit=True)[0]
 
     @property
     def ten_percent_best_return(self):
-        if self.sigma is None:
+        if self.is_disabled_for_prob():
             return None
         return self.get_ten_percent_prices_and_returns(is_profit=True)[1]
 
     @property
     def ten_percent_best_return_ratio(self):
-        if self.sigma is None:
+        if self.is_disabled_for_prob():
             return None
         return self.ten_percent_best_return / self.cost
 
     @property
     def ten_percent_worst_return_price(self):
-        if self.sigma is None:
+        if self.is_disabled_for_prob():
             return None
         return self.get_ten_percent_prices_and_returns(is_profit=False)[0]
 
     @property
     def ten_percent_worst_return(self):
-        if self.sigma is None:
+        if self.is_disabled_for_prob():
             return None
         return self.get_ten_percent_prices_and_returns(is_profit=False)[1]
 
     @property
     def ten_percent_worst_return_ratio(self):
-        if self.sigma is None:
+        if self.is_disabled_for_prob():
             return None
         return self.ten_percent_worst_return / self.cost
 
