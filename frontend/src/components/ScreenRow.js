@@ -55,7 +55,7 @@ export default function ScreenRow(props) {
                 <TableCell align="center">{PriceFormatter(row.break_even_price)}</TableCell>
             </TableRow>
             <TableRow>
-                <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={13}>
+                <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={15}>
                     <Collapse in={open} timeout="auto" unmountOnExit>
                         <Box sx={{ margin: 1 }}>
                             <ScreenExpandedRow contract={row} />

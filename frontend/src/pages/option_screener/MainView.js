@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { makeStyles } from '@material-ui/core/styles';
-import { Grid, Typography, Paper, Pagination, Divider, IconButton, useMediaQuery, FormControl, Select, MenuItem, Table, TableHead, TableRow, TableCell, TableBody, Box, TableContainer, Chip } from "@material-ui/core";
+import { Grid, Typography, Paper, Divider, IconButton, useMediaQuery, FormControl, Select, MenuItem, Table, TableHead, TableRow, TableCell, TableBody, Box, TableContainer, Chip, TablePagination, TableSortLabel } from "@material-ui/core";
 import TickerAutocomplete from "../../components/TickerAutocomplete";
 import ScreenFilterContainer from "../../components/filters/ScreenFilterContainer";
 import NewTickerSummary from "../../components/NewTickerSummary";
@@ -9,6 +9,9 @@ import { GetGaEventTrackingFunc } from '../../utils';
 import ScreenRow from "../../components/ScreenRow";
 import CancelIcon from '@material-ui/icons/Cancel';
 import MetricLabel from '../../components/MetricLabel.js';
+import { visuallyHidden } from '@material-ui/utils';
+import { isNull } from "lodash";
+
 
 const GaEvent = GetGaEventTrackingFunc('strategy screener');
 
@@ -56,17 +59,134 @@ export default function MainView(props) {
     }
 
     // pagination
-    const [renderedContracts, setRenderedContracts] = useState([])
-    const [noOfPages, setNoOfPages] = useState(null)
-    const pageChangeHandler = (event, page) => {
-        setRenderedContracts(contracts.slice((20 * (page - 1)), (20 * page)))
+    const [rowsPerPage, setRowsPerPage] = useState(20);
+    const [page, setPage] = useState(0);
+
+    const handleChangePage = (event, newPage) => {
+        setPage(newPage);
+    };
+
+    const handleChangeRowsPerPage = (event) => {
+        setRowsPerPage(parseInt(event.target.value, 10));
+        setPage(0);
+    };
+
+    // sorting 
+    const [order, setOrder] = useState('desc');
+    const [orderBy, setOrderBy] = useState('is_call');
+    function descendingComparator(a, b, orderBy) {
+        if (b[orderBy] < a[orderBy]) {
+            return -1;
+        }
+        if (b[orderBy] > a[orderBy]) {
+            return 1;
+        }
+        return 0;
     }
-    useEffect(() => {
-        if (contracts) {
-            setRenderedContracts(contracts.slice(0, 20))
-            setNoOfPages(Math.ceil(contracts.length / 20))
-        } else { setRenderedContracts([]) }
-    }, [contracts])
+
+    function getComparator(order, orderBy) {
+        return order === 'desc'
+            ? (a, b) => descendingComparator(a, b, orderBy)
+            : (a, b) => -descendingComparator(a, b, orderBy);
+    }
+
+    function stableSort(array, comparator) {
+        const stabilizedThis = array.map((el, index) => [el, index]);
+        stabilizedThis.sort((a, b) => {
+            const order = comparator(a[0], b[0]);
+            if (order !== 0) return order;
+            return a[1] - b[1];
+        });
+        return stabilizedThis.map((el) => el[0]);
+    }
+
+    const handleRequestSort = (event, property) => {
+        const isAsc = orderBy === property && order === 'asc';
+        setOrder(isAsc ? 'desc' : 'asc');
+        setOrderBy(property);
+    };
+
+    const createSortHandler = (property) => (event) => {
+        handleRequestSort(event, property);
+    };
+
+    const headCells = [
+        {
+            id: 'is_call',
+            label: "type",
+            hideIcon: true,
+        },
+        {
+            id: 'days_till_expiration',
+            label: "exp date",
+            hideIcon: false,
+        },
+        {
+            id: 'strike',
+            label: "strike",
+            hideIcon: true,
+        },
+        {
+            id: 'mark',
+            label: "mark",
+            hideIcon: false,
+        },
+        {
+            id: 'last_price',
+            label: "last",
+            hideIcon: true,
+        },
+        {
+            id: 'percent_change',
+            label: "change",
+            hideIcon: false,
+        },
+        {
+            id: 'volume',
+            label: "VOL",
+            hideIcon: true,
+        },
+        {
+            id: 'open_interest',
+            label: "OI",
+            hideIcon: true,
+        },
+        {
+            id: 'vol_oi',
+            label: "VOL/OI",
+            hideIcon: true,
+        },
+        {
+            id: 'implied_volatility',
+            label: "IV",
+            hideIcon: true,
+        },
+        {
+            id: 'delta',
+            label: "delta",
+            hideIcon: true,
+        },
+        {
+            id: 'gamma',
+            label: "gamma",
+            hideIcon: true,
+        },
+        {
+            id: 'theta',
+            label: "theta",
+            hideIcon: true,
+        },
+        {
+            id: 'itm_probability',
+            label: "itm prob",
+            hideIcon: false,
+        },
+        {
+            id: 'break_even_price',
+            label: "breakeven",
+            hideIcon: false,
+        },
+    ];
 
     return (
         <>
@@ -191,36 +311,51 @@ export default function MainView(props) {
                             <TableContainer component={Box} border={1} borderColor="rgba(228, 228, 228, 1)" borderRadius={1}>
                                 <Table size="small">
                                     <TableHead >
-                                        <TableRow style={{ position: 'sticky', top: 0, }}>
-                                            <TableCell align="center"><b><MetricLabel label="type" /></b></TableCell>
-                                            <TableCell align="center"><b><MetricLabel label="exp date" /></b></TableCell>
-                                            <TableCell align="center"><b><MetricLabel label="strike" hideIcon /></b></TableCell>
-                                            <TableCell align="center"><b><MetricLabel label="mark" /></b></TableCell>
-                                            <TableCell align="center"><b><MetricLabel label="last" hideIcon /></b></TableCell>
-                                            <TableCell align="center"><b><MetricLabel label="change" /></b></TableCell>
-                                            <TableCell align="center"><b><MetricLabel label="VOL" hideIcon /></b></TableCell>
-                                            <TableCell align="center"><b><MetricLabel label="OI" hideIcon /></b></TableCell>
-                                            <TableCell align="center"><b><MetricLabel label="VOL/OI" hideIcon /></b></TableCell>
-                                            <TableCell align="center"><b><MetricLabel label="IV" hideIcon /></b></TableCell>
-                                            <TableCell align="center"><b><MetricLabel label="delta" hideIcon /></b></TableCell>
-                                            <TableCell align="center"><b><MetricLabel label="gamma" hideIcon /></b></TableCell>
-                                            <TableCell align="center"><b><MetricLabel label="theta" hideIcon /></b></TableCell>
-                                            <TableCell align="center"><b><MetricLabel label="itm prob" /></b></TableCell>
-                                            <TableCell align="center"><b><MetricLabel label="breakeven" /></b></TableCell>
+                                        <TableRow>
+                                            {headCells.map((headCell) => (
+                                                <TableCell align="center" style={orderBy === headCell.id ? { backgroundColor: "orange" } : null}>
+                                                    <TableSortLabel
+                                                        active={orderBy === headCell.id}
+                                                        direction={orderBy === headCell.id ? order : 'asc'}
+                                                        onClick={createSortHandler(headCell.id)}
+                                                    >
+                                                        <b><MetricLabel label={headCell.label} hideIcon={headCell.hideIcon} style={{ display: "block" }} /></b>
+                                                        {orderBy === headCell.id ? (
+                                                            <Box component="span" sx={visuallyHidden}>
+                                                                {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
+                                                            </Box>
+                                                        ) : null}
+                                                    </TableSortLabel>
+                                                </TableCell>
+                                            ))}
                                         </TableRow>
                                     </TableHead>
                                     <TableBody>
-                                        {renderedContracts.map((row, index) => <ScreenRow row={row} key={index} />)}
+                                        {stableSort(contracts, getComparator(order, orderBy))
+                                            .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                                            .map((row, index) => {
+                                                return (
+                                                    <ScreenRow row={row} key={index} />
+                                                );
+                                            })}
                                     </TableBody>
                                 </Table>
                             </TableContainer>
                         </Grid>
                     </Grid>
-                    <Grid container justifyContent="flex-end" alignItems="flex-end" paddingY={2}>
+                    <Grid container justifyContent="space-between" alignItems="space-between" paddingY={2} px={3}>
                         <Box p={1} border={1} borderColor="rgba(228, 228, 228, 1)" borderRadius={1} style={{ backgroundColor: "rgb(242, 246, 255)" }}>
                             Blue cards are in the money.
                         </Box>
-                        <Pagination count={noOfPages} shape="rounded" onChange={pageChangeHandler} />
+                        <TablePagination
+                            rowsPerPageOptions={[10, 20, 50, 100]}
+                            component="div"
+                            count={contracts.length}
+                            rowsPerPage={rowsPerPage}
+                            page={page}
+                            onPageChange={handleChangePage}
+                            onRowsPerPageChange={handleChangeRowsPerPage}
+                        />
                     </Grid>
                 </Grid>
             </Grid>
