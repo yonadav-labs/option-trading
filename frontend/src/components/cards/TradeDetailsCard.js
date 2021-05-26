@@ -1,7 +1,7 @@
 import React from 'react';
 import { Card, Row, Col } from 'react-bootstrap';
 import ShareTradeBtn from '../ShareTradeBtn.js';
-import { PriceFormatter, ProfitFormatter, PercentageFormatter, TimestampTimeFormatter, TimestampDateFormatter, GenerateTradeTitle } from '../../utils';
+import { PriceFormatter, ProfitFormatter, PercentageFormatter, TimestampTimeFormatter, GenerateTradeTitle } from '../../utils';
 import LegDetailsCard from './LegDetailsCard.js';
 import TradeProfitLossGraph from '../TradeProfitLossGraph.js';
 import MetricLabel from '../MetricLabel.js';

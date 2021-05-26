@@ -10,6 +10,7 @@ from .covered_call import CoveredCall
 from .long_call import LongCall
 from .long_put import LongPut
 from .long_straddle import LongStraddle
+from .long_strangle import LongStrangle
 
 
 class TradeFactory:
@@ -36,6 +37,8 @@ class TradeFactory:
             trade_class = BullPutSpread
         elif trade_type == 'long_straddle':
             trade_class = LongStraddle
+        elif trade_type == 'long_strangle':
+            trade_class = LongStrangle
 
         trade = trade_class(stock, legs, premium_type=premium_type,
                             target_price_lower=target_price_lower,
