@@ -83,10 +83,10 @@ export default function LandingView(props) {
                 </Typography>
             </Container>
             <br />
-            {/* <Grid container direction="row" justifyContent="space-evenly" alignItems="center" >
+            <Grid container direction="row" justifyContent="space-evenly" alignItems="center" >
                 <Box px={2} py={4} bgcolor="white" borderRadius={1}>
                     <Grid container direction="column" alignItems="center">
-                        <img style={{ height: 200, width: 270, marginBottom: 8 }} src="discover_step_1.png" alt="step 1" />
+                        <img style={{ height: 200, width: 270, marginBottom: 8 }} src="screen_step_1.png" alt="step 1" />
                         <Typography variant="button">Step 1</Typography>
                         <Typography variant="subtitle1">Select a stock by its ticker</Typography>
                         <Typography variant="body2">AAPL, AMZN, TSLA...</Typography>
@@ -94,29 +94,29 @@ export default function LandingView(props) {
                 </Box>
                 <Box px={2} py={4} bgcolor="white" borderRadius={1}>
                     <Grid container direction="column" alignItems="center">
-                        <img style={{ height: 200, width: 270, marginBottom: 8 }} src="discover_step_2.png" alt="step 2" />
+                        <img style={{ height: 200, width: 270, marginBottom: 8 }} src="screen_step_2.png" alt="step 2" />
                         <Typography variant="button">Step 2</Typography>
                         <Typography variant="subtitle1">Select an expiration date</Typography>
-                        <Typography variant="body2">Your timeframe for the strategy</Typography>
+                        <Typography variant="body2">Your timeframe(s) for your trade</Typography>
                     </Grid>
                 </Box>
                 <Box px={2} py={4} bgcolor="white" borderRadius={1}>
                     <Grid container direction="column" alignItems="center">
-                        <img style={{ height: 200, width: 270, marginBottom: 8 }} src="discover_step_3.png" alt="step 3" />
+                        <img style={{ height: 200, width: 270, marginBottom: 8 }} src="screen_step_3.png" alt="step 3" />
                         <Typography variant="button">Step 3</Typography>
-                        <Typography variant="subtitle1">Enter a price target</Typography>
-                        <Typography variant="body2">Where do you think the price will be?</Typography>
+                        <Typography variant="subtitle1">Personalize filters</Typography>
+                        <Typography variant="body2">Use filters to screen the options chain</Typography>
                     </Grid>
                 </Box>
                 <Box px={2} py={4} bgcolor="white" borderRadius={1}>
                     <Grid container direction="column" alignItems="center">
-                        <img style={{ height: 200, width: 270, marginBottom: 8 }} src="discover_step_4.png" alt="step 4" />
+                        <img style={{ height: 200, width: 270, marginBottom: 8 }} src="screen_step_4.png" alt="step 4" />
                         <Typography variant="button">Step 4</Typography>
-                        <Typography variant="subtitle1">Discover the best strategies</Typography>
-                        <Typography variant="body2">We calculate and show you the best one</Typography>
+                        <Typography variant="subtitle1">Browse the options</Typography>
+                        <Typography variant="body2">Find the option contracts that suit your needs</Typography>
                     </Grid>
                 </Box>
-            </Grid> */}
+            </Grid>
         </Container>
     );
 }
