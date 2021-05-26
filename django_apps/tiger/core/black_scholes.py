@@ -1,6 +1,9 @@
+import datetime
 import numpy as np
 import scipy.stats as si
 import QuantLib as ql
+
+from collections import defaultdict
 
 # import tiger.core.interest_rates as ir
 # rfr = ir.get_rfr('180')
@@ -147,3 +150,70 @@ def price_american_option(expiry_date, calculation_date, underlying_price, strik
     # - all of which we can use for additional features.
 
     return option
+
+
+# Returns a matrix of the value of an option for every given day, for every given price; as a dict with dt keys
+def build_option_value_matrix(is_call, expiry_date, strike_price, volatility, dividend_yield, risk_free_rate, calculation_dates, underlying_prices):
+
+    # Set up the QuantLib Calendar objects
+    calendar = ql.UnitedStates()
+    days_in_year = ql.Actual365Fixed()
+    expiry_date = ql.Date(expiry_date.day, expiry_date.month, expiry_date.year)
+
+    # Set up the Payoff, Exercise, and Option objects
+    if is_call:
+        oright = ql.Option.Call
+    else:
+        oright = ql.Option.Put
+
+    # Create a dict to store value per strike per date (datetime of calculation as key)
+    final_matrix = defaultdict(list)
+
+    for dt in calculation_dates:
+
+        calculation_date = ql.Date(dt.day, dt.month, dt.year)
+        
+        ql.Settings.instance().evaluationDate = calculation_date
+
+        payoff = ql.PlainVanillaPayoff(oright, strike_price)
+        exercise = ql.AmericanExercise(calculation_date, expiry_date)
+        option = ql.VanillaOption(payoff, exercise)
+
+        # Set up the Yield Term Structure Handle to properly handle the risk free rate and annualization over the calendar
+        rfr_ts = ql.YieldTermStructureHandle(ql.FlatForward(calculation_date, risk_free_rate, days_in_year))
+
+        # Set up the Yield Term Structure Handle to properly handle dividend yield over the calendar
+        dividend_yield_ts = ql.YieldTermStructureHandle(ql.FlatForward(calculation_date, dividend_yield, days_in_year))
+
+        # Set up the Yield Term Structure Handle to properly handle volatility over the calendar
+        vol_ts = ql.BlackVolTermStructureHandle(ql.BlackConstantVol(calculation_date, calendar, volatility, days_in_year))
+
+        for underlying_price in underlying_prices:
+            # Set up the Quote Handle for the stock given its current price
+            quote_handle = ql.QuoteHandle(ql.SimpleQuote(underlying_price))
+
+            # Instantiate the BSM process
+            bsm_process = ql.BlackScholesMertonProcess(
+                quote_handle, 
+                dividend_yield_ts, 
+                rfr_ts, 
+                vol_ts
+            )
+
+            steps = 250
+            binomial_engine = ql.BinomialVanillaEngine(bsm_process, "crr", steps)
+            option.setPricingEngine(binomial_engine)
+
+            final_matrix[dt].append((underlying_price, option.NPV()))
+
+    return final_matrix
+
+
+# Returns a list of [underlying_price, value], for an option on a given date across an upper and lower range of possible underlying values on that date
+def value_across_range_for_contract(is_call, expiry_date, strike_price, volatility, dividend_yield, risk_free_rate, calculation_date, underlying_prices):
+
+    # Use option value matrix to yield the single day values
+    value_matrix = build_option_value_matrix(is_call, expiry_date, strike_price, volatility, dividend_yield, risk_free_rate, [calculation_date], underlying_prices)
+
+    # Return the list inside the return dict for the given calculation date
+    return value_matrix[calculation_date]

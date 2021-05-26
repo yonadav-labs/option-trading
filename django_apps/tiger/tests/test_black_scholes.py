@@ -2,7 +2,9 @@ import datetime
 
 from django.test import TestCase
 
-from tiger.core.black_scholes import get_black_scholes_price, get_delta, get_itm_probability, price_american_option
+from tiger.core.black_scholes import (get_black_scholes_price, get_delta, get_itm_probability, 
+price_american_option, value_across_range_for_contract, build_option_value_matrix)
+
 
 STOCK_PRICE = 22.91
 
@@ -157,6 +159,7 @@ class TestBlackScholes(TestCase):
                                 is_call=False),
             0.26674391319893187)
 
+
     # New BSM testing
     
     # Let's do a short term call
@@ -216,9 +219,9 @@ class TestBlackScholes(TestCase):
         dividend_yield = 0.014732776773671574
         risk_free_rate = 0.0001000
 
-        # Calculated - 1.5544273607991688
-        # IBKR Reported: 1.58 Bid/Ask avg - 1.554 matches slightly above the bid, between 1.55-1.56 - the spread is wide here so it's hard to tell.
-        ibkr_price = 1.5544
+        # Calculated - 1.5144273607991688
+        # IBKR Reported: 1.58 Bid/Ask avg - 1.514 matches slightly above the bid, between 1.51-1.52 - the spread is wide here so it's hard to tell.
+        ibkr_price = 1.5144
 
         option = price_american_option(expiry_date, calculation_date, underlying_price, strike_price, option_right, volatility, dividend_yield, risk_free_rate)
 
@@ -250,3 +253,170 @@ class TestBlackScholes(TestCase):
             ibkr_price, 
             places=3
         )
+
+
+    # Test receiving values of an option across a given range of possible underlying for a contract on a given date, right, strike, and expiry
+    def test_value_across_range_for_contract(self):
+        is_call = True
+        expiry_date = datetime.datetime(year=2021, month=5, day=21)
+        strike_price = 420.0
+        volatility = 0.15152
+        dividend_yield = 0.014732776773671574
+        risk_free_rate = 0.0001000
+
+        # Set up necesssary parameters for pricing
+        calculation_date = datetime.datetime(year=2021, month=5, day=13)
+        underlying_prices = [360, 390, 420, 450, 473]
+
+        # Yield the range values
+        range_values = value_across_range_for_contract(is_call, expiry_date, strike_price, volatility, dividend_yield, risk_free_rate, calculation_date, underlying_prices)
+
+        # We return a list of lists, so we can test that the front and back are valid, and that we have a length of 5 of the list.
+
+        # We begin by testing the lowest possible underlying value, given the range.
+        first_range = range_values[0]
+        strike1 = 360.0
+        option_value1 = 1.5328443532467722e-12
+
+        # Assert strike valid
+        self.assertAlmostEqual(
+            first_range[0], 
+            strike1, 
+            places=4
+        )
+
+        # Assert value valid
+        self.assertAlmostEqual(
+            first_range[1], 
+            option_value1, 
+            places=4
+        )
+        
+        # We then test the highest possible underlying value, given the range.
+        last_range = range_values[-1]
+        strike2 = 473.00000000000006
+        option_value2 = 53.00000000000006
+
+        # Assert strike valid
+        self.assertAlmostEqual(
+            last_range[0], 
+            strike2, 
+            places=4
+        )
+
+        # Assert value valid
+        self.assertAlmostEqual(
+            last_range[1], 
+            option_value2, 
+            places=4
+        )
+        
+
+        # Now, assert the length of the return list is of length 5
+        self.assertEqual(
+            5,
+            len(range_values)
+        )
+
+
+    def test_option_matrix(self):
+        is_call = True
+        expiry_date = datetime.datetime(year=2021, month=6, day=18)
+        strike_price = 410.0
+        volatility = 0.1812
+        dividend_yield = 0.014732776773671574
+        risk_free_rate = 0.0001000
+
+        # We can get dates and price levels to compare against from somewhere else, but this works.
+        base_date = datetime.datetime(year=2021, month=5, day=13)
+        calculation_dates = [base_date + datetime.timedelta(days=i) for i in range((expiry_date-base_date).days+1)]
+        underlying_prices = [(380.0+i*5.0) for i in range(13)]
+
+        option_matrix = build_option_value_matrix(is_call, expiry_date, strike_price, volatility, dividend_yield, risk_free_rate, calculation_dates, underlying_prices)
+
+        # Make sure we have the right amount of datetimes
+        self.assertEqual(
+            len(option_matrix),
+            37
+        )
+
+        # Make sure we have the right amount of strikes per datetime
+
+        # First one
+        self.assertEqual(
+            len(option_matrix[base_date]),
+            13
+        )
+
+        # Last one
+        self.assertEqual(
+            len(option_matrix[expiry_date]),
+            13
+        )
+
+        # print(option_matrix)
+
+        # We then test a given underlying and date (front date).
+        date = base_date
+        underlying = 395.0
+        option_value = 3.38957
+
+        underlying_value_pair = option_matrix[date]
+
+        # Assert underlying valid
+        self.assertAlmostEqual(
+            underlying_value_pair[3][0], 
+            underlying, 
+            places=4
+        )
+
+        # Assert value valid
+        self.assertAlmostEqual(
+            underlying_value_pair[3][1], 
+            option_value, 
+            places=4
+        )
+
+        # We then test another underlying value and date (somewhere in the middle).
+        date = datetime.datetime(year=2021, month=6, day=5)
+        underlying = 425.0
+        option_value = 15.94067
+
+        underlying_value_pair = option_matrix[date]
+
+        # Assert underlying valid
+        self.assertAlmostEqual(
+            underlying_value_pair[9][0], 
+            underlying, 
+            places=4
+        )
+
+        # Assert value valid
+        self.assertAlmostEqual(
+            underlying_value_pair[9][1], 
+            option_value, 
+            places=4
+        )
+
+        # And a third (end date).
+        date = datetime.datetime(year=2021, month=6, day=17)
+        underlying = 415.0
+        option_value = 5.17484
+
+        underlying_value_pair = option_matrix[date]
+
+        # Assert underlying valid
+        self.assertAlmostEqual(
+            underlying_value_pair[7][0], 
+            underlying, 
+            places=4
+        )
+
+        # Assert value valid
+        self.assertAlmostEqual(
+            underlying_value_pair[7][1], 
+            option_value, 
+            places=4
+        )
+
+
