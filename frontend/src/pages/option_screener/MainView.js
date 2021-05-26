@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { makeStyles } from '@material-ui/core/styles';
-import { Grid, Typography, Paper, Divider, IconButton, useMediaQuery, FormControl, Select, MenuItem, Table, TableHead, TableRow, TableCell, TableBody, Box, TableContainer, Chip, TablePagination, TableSortLabel } from "@material-ui/core";
+import { Alert, Grid, Typography, Paper, Divider, IconButton, useMediaQuery, FormControl, Select, MenuItem, Table, TableHead, TableRow, TableCell, TableBody, Box, TableContainer, Chip, TablePagination, TableSortLabel } from "@material-ui/core";
 import TickerAutocomplete from "../../components/TickerAutocomplete";
 import ScreenFilterContainer from "../../components/filters/ScreenFilterContainer";
 import NewTickerSummary from "../../components/NewTickerSummary";
@@ -10,8 +10,6 @@ import ScreenRow from "../../components/ScreenRow";
 import CancelIcon from '@material-ui/icons/Cancel';
 import MetricLabel from '../../components/MetricLabel.js';
 import { visuallyHidden } from '@material-ui/utils';
-import { isNull } from "lodash";
-
 
 const GaEvent = GetGaEventTrackingFunc('strategy screener');
 
@@ -111,254 +109,211 @@ export default function MainView(props) {
     };
 
     const headCells = [
-        {
-            id: 'is_call',
-            label: "type",
-            hideIcon: true,
-        },
-        {
-            id: 'days_till_expiration',
-            label: "exp date",
-            hideIcon: false,
-        },
-        {
-            id: 'strike',
-            label: "strike",
-            hideIcon: true,
-        },
-        {
-            id: 'mark',
-            label: "mark",
-            hideIcon: false,
-        },
-        {
-            id: 'last_price',
-            label: "last",
-            hideIcon: true,
-        },
-        {
-            id: 'percent_change',
-            label: "change",
-            hideIcon: false,
-        },
-        {
-            id: 'volume',
-            label: "VOL",
-            hideIcon: true,
-        },
-        {
-            id: 'open_interest',
-            label: "OI",
-            hideIcon: true,
-        },
-        {
-            id: 'vol_oi',
-            label: "VOL/OI",
-            hideIcon: true,
-        },
-        {
-            id: 'implied_volatility',
-            label: "IV",
-            hideIcon: true,
-        },
-        {
-            id: 'delta',
-            label: "delta",
-            hideIcon: true,
-        },
-        {
-            id: 'gamma',
-            label: "gamma",
-            hideIcon: true,
-        },
-        {
-            id: 'theta',
-            label: "theta",
-            hideIcon: true,
-        },
-        {
-            id: 'itm_probability',
-            label: "itm prob",
-            hideIcon: false,
-        },
-        {
-            id: 'break_even_price',
-            label: "breakeven",
-            hideIcon: false,
-        },
+        { id: 'is_call', label: "type", hideIcon: true, },
+        { id: 'days_till_expiration', label: "exp date", hideIcon: false, },
+        { id: 'strike', label: "strike", hideIcon: true, },
+        { id: 'mark', label: "mark", hideIcon: false, },
+        { id: 'last_price', label: "last", hideIcon: true, },
+        { id: 'percent_change', label: "change", hideIcon: false, },
+        { id: 'volume', label: "VOL", hideIcon: true, },
+        { id: 'open_interest', label: "OI", hideIcon: true, },
+        { id: 'vol_oi', label: "VOL/OI", hideIcon: true, },
+        { id: 'implied_volatility', label: "IV", hideIcon: true, },
+        { id: 'delta', label: "delta", hideIcon: true, },
+        { id: 'gamma', label: "gamma", hideIcon: true, },
+        { id: 'theta', label: "theta", hideIcon: true, },
+        { id: 'itm_probability', label: "itm prob", hideIcon: false, },
+        { id: 'break_even_price', label: "breakeven", hideIcon: false, },
     ];
 
     return (
-        <>
-            <Grid container minHeight="inherit">
-                {!isMobile &&
-                    <>
-                        <Grid container item sm={2.3} direction="column" alignItems="center"
-                            bgcolor='#333741' color="white" style={{ display: filterOpen ? "block" : "none" }}>
-                            <ScreenFilterContainer onFilterChange={onFilterChange} filters={filters} onPutToggle={onPutToggle} onCallToggle={onCallToggle}
-                                handleFilterCollapse={handleFilterCollapse} initialPrice={basicInfo.regularMarketPrice}
-                                deleteExpirationChip={deleteExpirationChip} debouncedGetContracts={debouncedGetContracts} />
+        <Grid container minHeight="inherit">
+            {!isMobile &&
+                <>
+                    <Grid container item sm={2.3} direction="column" alignItems="center"
+                        bgcolor='#333741' color="white" style={{ display: filterOpen ? "block" : "none" }}>
+                        <ScreenFilterContainer onFilterChange={onFilterChange} filters={filters} onPutToggle={onPutToggle} onCallToggle={onCallToggle}
+                            handleFilterCollapse={handleFilterCollapse} initialPrice={basicInfo.regularMarketPrice}
+                            deleteExpirationChip={deleteExpirationChip} debouncedGetContracts={debouncedGetContracts} />
+                    </Grid>
+                    <Grid item py={2} bgcolor='#333741' color="white" style={{ display: filterOpen ? "none" : "block" }} >
+                        <IconButton color="inherit" onClick={handleFilterCollapse}><TuneIcon fontSize="large" /></IconButton>
+                    </Grid>
+                </>
+            }
+            <Grid item sm className={classes.root}>
+                <Grid component={Paper} container sm={12} elevation={4} square padding={2} style={isMobile ? { width: "100vw" } : null}>
+                    {isMobile ?
+                        <>
+                            <Grid container>
+                                <Grid item xs>
+                                    <Typography variant="subtitle1">{basicInfo ? `${basicInfo.symbol} - ${basicInfo.shortName}` : <br />}</Typography>
+                                </Grid>
+                                <Grid item>
+                                    <IconButton color="inherit" onClick={handleMobileFilterCollapse}>
+                                        <TuneIcon fontSize="large" />
+                                    </IconButton>
+                                </Grid>
+                                <div style={{ position: "absolute", right: 0, top: "9vh", zIndex: 100, display: showMobileFilter ? "block" : "none" }}>
+                                    <Grid container direction="column" justifyContent="center" alignItems="center" bgcolor='#333741' color="white" height="100%">
+                                        <ScreenFilterContainer
+                                            onFilterChange={onFilterChange}
+                                            onPutToggle={onPutToggle}
+                                            onCallToggle={onCallToggle}
+                                            filters={filters}
+                                            initialPrice={basicInfo.regularMarketPrice}
+                                            isMobile={isMobile}
+                                            handleMobileFilterCollapse={handleMobileFilterCollapse}
+                                            allTickers={allTickers}
+                                            onTickerSelectionChange={onTickerSelectionChange}
+                                            selectedTicker={selectedTicker}
+                                            expirationTimestampsOptions={expirationTimestampsOptions}
+                                            selectedExpirationTimestamps={selectedExpirationTimestamps}
+                                            onExpirationSelectionChange={onExpirationSelectionChange}
+                                            deleteExpirationChip={deleteExpirationChip}
+                                            debouncedGetContracts={debouncedGetContracts}
+                                        />
+                                    </Grid>
+                                </div>
+                            </Grid>
+                            <Divider />
+                        </>
+                        :
+                        <Grid container alignItems="center" spacing={2} paddingBottom={1}>
+                            <Grid item>
+                                <Typography variant="subtitle1">Ticker Symbol</Typography>
+                            </Grid>
+                            <Grid item sm>
+                                <TickerAutocomplete
+                                    tickers={allTickers}
+                                    onChange={onTickerSelectionChange}
+                                    size={'small'}
+                                    value={selectedTicker}
+                                />
+                            </Grid>
+                            <Grid item>
+                                <Typography variant="subtitle1">Expiration Date</Typography>
+                            </Grid>
+                            <Grid item sm={4.8}>
+                                <FormControl fullWidth>
+                                    <Select
+                                        id="expiration-dates"
+                                        value={selectedExpirationTimestamps}
+                                        multiple
+                                        placeholder="Select an expiration date"
+                                        onChange={(e) => onExpirationSelectionChange(e.target.value)}
+                                        onClose={debouncedGetContracts}
+                                        style={{ paddingBottom: "5px" }}
+                                        variant="standard"
+                                        MenuProps={{
+                                            anchorOrigin: {
+                                                vertical: "bottom",
+                                                horizontal: "left"
+                                            },
+                                            getContentAnchorEl: () => null,
+                                        }}
+                                        renderValue={
+                                            (selectedExpirationTimestamps) => {
+                                                let sorted = selectedExpirationTimestamps.sort((a, b) => (a.value > b.value) ? 1 : -1)
+                                                return (
+                                                    <Box sx={{ display: 'flex', flexWrap: 'wrap' }}>
+                                                        {sorted.map((date) => (
+                                                            <Chip
+                                                                key={date.value}
+                                                                label={date.label}
+                                                                clickable
+                                                                deleteIcon={
+                                                                    <CancelIcon
+                                                                        onMouseDown={(event) => event.stopPropagation()}
+                                                                    />}
+                                                                onDelete={(e) => deleteExpirationChip(e, date.value)}
+                                                            />
+                                                        ))}
+                                                    </Box>)
+                                            }}
+                                    >
+                                        {expirationTimestampsOptions.map((date, index) => <MenuItem value={date} key={index}> {date.label} </MenuItem>)}
+                                    </Select>
+                                </FormControl>
+                            </Grid>
                         </Grid>
-                        <Grid item py={2} bgcolor='#333741' color="white" style={{ display: filterOpen ? "none" : "block" }} >
-                            <IconButton color="inherit" onClick={handleFilterCollapse}><TuneIcon fontSize="large" /></IconButton>
+                    }
+                    <NewTickerSummary basicInfo={basicInfo} isMobile={isMobile} />
+                </Grid>
+                <Grid container justifyContent="center">
+                    <Box style={{ display: "inline-flex" }} p={2}>
+                        {contracts.length > 0 ?
+                            null
+                            :
+                            selectedTicker ?
+                                <Alert severity="error">
+                                    There are no contracts that fit the specified settings.
+                                </Alert>
+                                :
+                                <Alert severity="error">
+                                    Select a ticker and expiration date.
+                                </Alert>
+                        }
+                    </Box>
+                </Grid>
+                {contracts.length > 0 ?
+                    <>
+                        <Grid container>
+                            <Grid item xs={12} px={3} className={classes.root}>
+                                <TableContainer component={Box} border={1} borderColor="rgba(228, 228, 228, 1)" borderRadius={1}>
+                                    <Table size="small">
+                                        <TableHead >
+                                            <TableRow>
+                                                {headCells.map((headCell) => (
+                                                    <TableCell align="center" style={orderBy === headCell.id ? { backgroundColor: "orange" } : null}>
+                                                        <TableSortLabel
+                                                            active={orderBy === headCell.id}
+                                                            direction={orderBy === headCell.id ? order : 'asc'}
+                                                            onClick={createSortHandler(headCell.id)}
+                                                        >
+                                                            <b><MetricLabel label={headCell.label} hideIcon={headCell.hideIcon} style={{ display: "block" }} /></b>
+                                                            {orderBy === headCell.id ? (
+                                                                <Box component="span" sx={visuallyHidden}>
+                                                                    {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
+                                                                </Box>
+                                                            ) : null}
+                                                        </TableSortLabel>
+                                                    </TableCell>
+                                                ))}
+                                            </TableRow>
+                                        </TableHead>
+                                        <TableBody>
+                                            {stableSort(contracts, getComparator(order, orderBy))
+                                                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                                                .map((row, index) => {
+                                                    return (
+                                                        <ScreenRow row={row} key={index} />
+                                                    );
+                                                })}
+                                        </TableBody>
+                                    </Table>
+                                </TableContainer>
+                            </Grid>
+                        </Grid>
+                        <Grid container justifyContent="space-between" alignItems="space-between" paddingY={2} px={3}>
+                            <Box p={1} border={1} borderColor="rgba(228, 228, 228, 1)" borderRadius={1} style={{ backgroundColor: "rgb(242, 246, 255)" }}>
+                                Blue cards are in the money.
+                                </Box>
+                            <TablePagination
+                                rowsPerPageOptions={[10, 20, 50, 100]}
+                                component="div"
+                                count={contracts.length}
+                                rowsPerPage={rowsPerPage}
+                                page={page}
+                                onPageChange={handleChangePage}
+                                onRowsPerPageChange={handleChangeRowsPerPage}
+                            />
                         </Grid>
                     </>
+                    :
+                    null
                 }
-                <Grid item sm className={classes.root}>
-                    <Grid component={Paper} container sm={12} elevation={4} square padding={2} style={isMobile ? { width: "100vw" } : null}>
-                        {isMobile ?
-                            <>
-                                <Grid container>
-                                    <Grid item xs>
-                                        <Typography variant="subtitle1">{basicInfo ? `${basicInfo.symbol} - ${basicInfo.shortName}` : <br />}</Typography>
-                                    </Grid>
-                                    <Grid item>
-                                        <IconButton color="inherit" onClick={handleMobileFilterCollapse}>
-                                            <TuneIcon fontSize="large" />
-                                        </IconButton>
-                                    </Grid>
-                                    <div style={{ position: "absolute", right: 0, top: "9vh", zIndex: 100, display: showMobileFilter ? "block" : "none" }}>
-                                        <Grid container direction="column" justifyContent="center" alignItems="center" bgcolor='#333741' color="white" height="100%">
-                                            <ScreenFilterContainer
-                                                onFilterChange={onFilterChange}
-                                                onPutToggle={onPutToggle}
-                                                onCallToggle={onCallToggle}
-                                                filters={filters}
-                                                initialPrice={basicInfo.regularMarketPrice}
-                                                isMobile={isMobile}
-                                                handleMobileFilterCollapse={handleMobileFilterCollapse}
-                                                allTickers={allTickers}
-                                                onTickerSelectionChange={onTickerSelectionChange}
-                                                selectedTicker={selectedTicker}
-                                                expirationTimestampsOptions={expirationTimestampsOptions}
-                                                selectedExpirationTimestamps={selectedExpirationTimestamps}
-                                                onExpirationSelectionChange={onExpirationSelectionChange}
-                                                deleteExpirationChip={deleteExpirationChip}
-                                                debouncedGetContracts={debouncedGetContracts}
-                                            />
-                                        </Grid>
-                                    </div>
-                                </Grid>
-                                <Divider />
-                            </>
-                            :
-                            <Grid container alignItems="center" spacing={2} paddingBottom={1}>
-                                <Grid item>
-                                    <Typography variant="subtitle1">Ticker Symbol</Typography>
-                                </Grid>
-                                <Grid item sm>
-                                    <TickerAutocomplete
-                                        tickers={allTickers}
-                                        onChange={onTickerSelectionChange}
-                                        size={'small'}
-                                        value={selectedTicker}
-                                    />
-                                </Grid>
-                                <Grid item>
-                                    <Typography variant="subtitle1">Expiration Date</Typography>
-                                </Grid>
-                                <Grid item sm={3}>
-                                    <FormControl fullWidth>
-                                        <Select
-                                            id="expiration-dates"
-                                            value={selectedExpirationTimestamps}
-                                            multiple
-                                            placeholder="Select an expiration date"
-                                            onChange={(e) => onExpirationSelectionChange(e.target.value)}
-                                            onClose={debouncedGetContracts}
-                                            style={{ paddingBottom: "5px" }}
-                                            variant="standard"
-                                            MenuProps={{
-                                                anchorOrigin: {
-                                                    vertical: "bottom",
-                                                    horizontal: "left"
-                                                },
-                                                getContentAnchorEl: () => null,
-                                            }}
-                                            renderValue={
-                                                (selectedExpirationTimestamps) => {
-                                                    let sorted = selectedExpirationTimestamps.sort((a, b) => (a.value > b.value) ? 1 : -1)
-                                                    return (
-                                                        <Box sx={{ display: 'flex', flexWrap: 'wrap' }}>
-                                                            {sorted.map((date) => (
-                                                                <Chip
-                                                                    key={date.value}
-                                                                    label={date.label}
-                                                                    clickable
-                                                                    deleteIcon={
-                                                                        <CancelIcon
-                                                                            onMouseDown={(event) => event.stopPropagation()}
-                                                                        />
-                                                                    }
-                                                                    onDelete={(e) => deleteExpirationChip(e, date.value)}
-                                                                />
-                                                            ))}
-                                                        </Box>
-                                                    )
-                                                }
-                                            }
-                                        >
-                                            {expirationTimestampsOptions.map((date, index) => <MenuItem value={date} key={index}> {date.label} </MenuItem>)}
-                                        </Select>
-                                    </FormControl>
-                                </Grid>
-                            </Grid>
-                        }
-                        <NewTickerSummary basicInfo={basicInfo} isMobile={isMobile} />
-                    </Grid>
-                    <Grid container>
-                        <Grid item xs={12} px={3} paddingTop={3} className={classes.root}>
-                            <TableContainer component={Box} border={1} borderColor="rgba(228, 228, 228, 1)" borderRadius={1}>
-                                <Table size="small">
-                                    <TableHead >
-                                        <TableRow>
-                                            {headCells.map((headCell) => (
-                                                <TableCell align="center" style={orderBy === headCell.id ? { backgroundColor: "orange" } : null}>
-                                                    <TableSortLabel
-                                                        active={orderBy === headCell.id}
-                                                        direction={orderBy === headCell.id ? order : 'asc'}
-                                                        onClick={createSortHandler(headCell.id)}
-                                                    >
-                                                        <b><MetricLabel label={headCell.label} hideIcon={headCell.hideIcon} style={{ display: "block" }} /></b>
-                                                        {orderBy === headCell.id ? (
-                                                            <Box component="span" sx={visuallyHidden}>
-                                                                {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
-                                                            </Box>
-                                                        ) : null}
-                                                    </TableSortLabel>
-                                                </TableCell>
-                                            ))}
-                                        </TableRow>
-                                    </TableHead>
-                                    <TableBody>
-                                        {stableSort(contracts, getComparator(order, orderBy))
-                                            .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                                            .map((row, index) => {
-                                                return (
-                                                    <ScreenRow row={row} key={index} />
-                                                );
-                                            })}
-                                    </TableBody>
-                                </Table>
-                            </TableContainer>
-                        </Grid>
-                    </Grid>
-                    <Grid container justifyContent="space-between" alignItems="space-between" paddingY={2} px={3}>
-                        <Box p={1} border={1} borderColor="rgba(228, 228, 228, 1)" borderRadius={1} style={{ backgroundColor: "rgb(242, 246, 255)" }}>
-                            Blue cards are in the money.
-                        </Box>
-                        <TablePagination
-                            rowsPerPageOptions={[10, 20, 50, 100]}
-                            component="div"
-                            count={contracts.length}
-                            rowsPerPage={rowsPerPage}
-                            page={page}
-                            onPageChange={handleChangePage}
-                            onRowsPerPageChange={handleChangeRowsPerPage}
-                        />
-                    </Grid>
-                </Grid>
             </Grid>
-        </>
+        </Grid>
     );
 }

@@ -180,8 +180,6 @@ export default function NewOptionScreener() {
                     bodyFilters["eq.is_call"] = false
                 }
 
-                console.log(bodyFilters)
-
                 let url = `${API_URL}/tickers/${selectedTicker.symbol}/contracts/`;
                 let body = {
                     expiration_timestamps: selectedExpirationTimestamps.map(date => date.value),
@@ -194,6 +192,7 @@ export default function NewOptionScreener() {
                 setModalActive(false);
                 setPageState(false)
             }
+            else { setContracts([]) }
         } catch (error) {
             console.error(error);
             setModalActive(false);
@@ -202,7 +201,6 @@ export default function NewOptionScreener() {
     };
 
     const debouncedGetContracts = useDebouncedCallback(getContracts, 1000);
-
 
     return (
         <>
