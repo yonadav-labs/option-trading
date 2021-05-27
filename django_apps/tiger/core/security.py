@@ -217,6 +217,8 @@ class OptionContract(Security):
 
     @property
     def itm_probability(self):
+        if self.implied_volatility is None:
+            return None
         return get_itm_probability(stock_price=self.stock_price, strike=self.strike,
                                    exp_years=self.days_till_expiration / 365.0, sigma=self.implied_volatility,
                                    is_call=self.is_call)

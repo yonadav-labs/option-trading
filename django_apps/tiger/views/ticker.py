@@ -79,7 +79,8 @@ class TickerViewSet(viewsets.ModelViewSet):
                             f'{contract.implied_volatility:.4f}') if contract.implied_volatility is not None else None,
                         'Open Interest': contract.open_interest,
                         'Volume': contract.volume,
-                        'p_otm': float(f'{1 - contract.itm_probability:.4f}'),
+                        'p_otm': float(
+                            f'{1 - contract.itm_probability:.4f}') if contract.itm_probability is not None else None,
                         'apr': float(f'{apr:.4f}') if apr is not None else None,
                         'vol_per_oi': float(f'{vol_per_oi:.4f}') if vol_per_oi is not None else None
                     }
