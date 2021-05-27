@@ -414,5 +414,54 @@ export const strategies = [
                 )
             ]
         }
+    ),
+    new Strategy(
+        {
+            name: "Iron Butterfly",
+            type: "iron_butterfly",
+            description: "A strategy that profits when the stock price does not move much. \
+                            Receive a premium after selling a call and buying a call at a higher strike, selling a put and buying a put at a lower strike. \
+                            You profit when the stock price stays within the range: strike of put you sold + premium received < stock price < strike of call sold - premium received \
+                            Depending on which direction the stock goes, losses are capped at: \
+                            difference between the strikes of the calls - premium received OR difference between the strikes of the puts - premium received.",
+            sentiment: ["neutral"],
+            linkedProperties: ["expiration"],
+            rules: [
+                new Rule(1, "contract.strike", "==", 3, "contract.strike"),
+                new Rule(2, "contract.strike", "<", 3, "contract.strike"),
+                new Rule(0, "contract.strike", ">", 1, "contract.strike")
+            ],
+            relationships: [],
+            legs: [
+                new OptionLeg(
+                    {
+                        action: "long",
+                        expiration: 0,
+                        optionType: "call"
+                    }
+                ),
+                new OptionLeg(
+                    {
+                        action: "short",
+                        expiration: 0,
+                        optionType: "call"
+                    }
+                ),
+                new OptionLeg(
+                    {
+                        action: "long",
+                        expiration: 0,
+                        optionType: "put"
+                    }
+                ),
+                new OptionLeg(
+                    {
+                        action: "short",
+                        expiration: 0,
+                        optionType: "put"
+                    }
+                )
+            ]
+        }
     )
 ];

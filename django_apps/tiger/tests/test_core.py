@@ -6,7 +6,7 @@ from django.test import TestCase
 from django.utils.timezone import make_aware, get_default_timezone
 from tiger.core import Cash, Stock, OptionContract, OptionLeg
 from tiger.core.trade import LongCall, LongPut, CoveredCall, CashSecuredPut, BullPutSpread, BullCallSpread, \
-    BearCallSpread, BearPutSpread, Trade, LongStraddle, LongStrangle, IronCondor
+    BearCallSpread, BearPutSpread, Trade, LongStraddle, LongStrangle, IronCondor, IronButterfly
 
 MOCK_NOW_TIMESTAMP = 1609664400  # 01/03/2021
 
@@ -547,6 +547,23 @@ class PutTradesTestCase(TestCase):
         self.assertAlmostEqual(long_straddle.break_evens[0], 64.574)
         self.assertAlmostEqual(long_straddle.break_evens[1], 71.426)
         self.assertEqual(long_straddle.reward_to_risk_ratio, None)
+
+    def test_iron_butterfly(self):
+        call_contract = OptionContract(self.ticker, True, self.yahoo_input4, self.stock_price, 'mid')
+        call_contract2 = OptionContract(self.ticker, True, self.yahoo_input, self.stock_price, 'mid')
+        put_contract = OptionContract(self.ticker, False, self.yahoo_input5, self.stock_price, 'mid')
+        put_contract2 = OptionContract(self.ticker, False, self.yahoo_input3, self.stock_price, 'mid')
+        iron_butterfly = IronButterfly.build(self.stock, call_contract, call_contract2,
+                                             put_contract, put_contract2, 'mid', self.broker_settings, 70, 70)
+        self.assertAlmostEqual(iron_butterfly.cost, -234.8)
+        self.assertAlmostEqual(iron_butterfly.best_return, -iron_butterfly.cost)
+        self.assertAlmostEqual(iron_butterfly.target_price_profit, 34.8)
+        self.assertAlmostEqual(iron_butterfly.worst_return, -665.2)
+        self.assertEqual(len(iron_butterfly.break_evens), 2)
+        # includes commission cost
+        self.assertAlmostEqual(iron_butterfly.break_evens[0], 65.652)
+        self.assertAlmostEqual(iron_butterfly.break_evens[1], 70.348)
+        self.assertEqual(iron_butterfly.reward_to_risk_ratio, 0.3529765484064943)
 
     def test_iron_condor(self):
         call_contract = OptionContract(self.ticker, True, self.yahoo_input4, self.stock_price, 'mid')

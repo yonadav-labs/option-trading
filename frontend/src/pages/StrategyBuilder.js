@@ -36,6 +36,7 @@ export default function StrategyBuilder() {
         "<=": (a, aProperty, b, bProperty) => { return get(a, aProperty) <= get(b, bProperty) },
         ">": (a, aProperty, b, bProperty) => { return get(a, aProperty) > get(b, bProperty) },
         ">=": (a, aProperty, b, bProperty) => { return get(a, aProperty) >= get(b, bProperty) },
+        "==": (a, aProperty, b, bProperty) => { return get(a, aProperty) == get(b, bProperty) },
         "*": (a, aProperty, aPropertyDefaultVal, b, bProperty, bPropertyDefaultVal) => { return get(a, aProperty, aPropertyDefaultVal) * get(b, bProperty, bPropertyDefaultVal) },
         "-": (a, aProperty, aPropertyDefaultVal, b, bProperty, bPropertyDefaultVal) => { return get(a, aProperty, aPropertyDefaultVal) - get(b, bProperty, bPropertyDefaultVal) }
     }
