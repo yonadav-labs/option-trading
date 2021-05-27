@@ -263,7 +263,7 @@ export default function MainView(props) {
                                 <TableContainer component={Box} border={1} borderColor="rgba(228, 228, 228, 1)" borderRadius={1}>
                                     <Table size="small">
                                         <TableHead >
-                                            <TableRow>
+                                            <TableRow style={{ borderBottom: "2px solid rgba(228, 228, 228, 1)", }}>
                                                 {headCells.map((headCell) => (
                                                     <TableCell align="center" style={orderBy === headCell.id ? { backgroundColor: "orange" } : null}>
                                                         <TableSortLabel

@@ -7,6 +7,7 @@ import ScreenExpandedRow from './ScreenExpandedRow';
 
 const useRowStyles = makeStyles({
     root: {
+        borderBottom: "2px solid rgba(228, 228, 228, 1)",
         "&:hover": {
             backgroundColor: "rgba(255, 212, 58,0.3) !important",
             cursor: "pointer",
