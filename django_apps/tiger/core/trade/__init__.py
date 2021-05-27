@@ -8,5 +8,6 @@ from .covered_call import CoveredCall
 from .long_call import LongCall
 from .long_put import LongPut
 from .long_straddle import LongStraddle
+from .iron_condor import IronCondor
 from .long_strangle import LongStrangle
 from .trade_factory import TradeFactory

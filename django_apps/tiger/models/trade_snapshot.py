@@ -56,7 +56,8 @@ class TradeSnapshot(BaseModel):
         ('bear_put_spread', 'Bear put spread'),
         ('bull_put_spread', 'Bull put spread'),
         ('long_straddle', 'Long Straddle'),
-        ('long_strangle', 'Long Strangle')
+        ('iron_condor', 'Iron Condor'),
+        ('long_strangle', 'Long Strangle'),
     )
     type = models.CharField(max_length=100, choices=TRADE_TYPE_CHOICES, default="unspecified")
     # Snapshot of underlying asset.

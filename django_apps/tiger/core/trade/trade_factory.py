@@ -11,6 +11,7 @@ from .long_call import LongCall
 from .long_put import LongPut
 from .long_straddle import LongStraddle
 from .long_strangle import LongStrangle
+from .iron_condor import IronCondor
 
 
 class TradeFactory:
@@ -37,6 +38,8 @@ class TradeFactory:
             trade_class = BullPutSpread
         elif trade_type == 'long_straddle':
             trade_class = LongStraddle
+        elif trade_type == 'iron_condor':
+            trade_class = IronCondor
         elif trade_type == 'long_strangle':
             trade_class = LongStrangle
 

@@ -364,5 +364,55 @@ export const strategies = [
                 )
             ]
         }
+    ),
+    new Strategy(
+        {
+            name: "Iron Condor",
+            type: "iron_condor",
+            description: "A strategy that profits when the stock price only moves a little. \
+                            Receive a premium after buying a call and selling a call at lower strike, buying a put and selling a put at a lower strike. \
+                            You profit when the stock price stays within the range: strike of put you sold - premium received < stock price < strike of call sold + premium received \
+                            Depending on which direction the stock goes, losses are capped at: \
+                            difference between the strikes of the calls - premium received OR difference between the strikes of the puts - premium received.",
+            sentiment: ["neutral"],
+            linkedProperties: ["expiration"],
+            rules: [new Rule(0, "contract.strike", ">", 1, "contract.strike"),
+            new Rule(2, "contract.strike", "<", 3, "contract.strike"),
+            new Rule(0, "contract.strike", ">", 0, "contract.stock_price"),
+            new Rule(1, "contract.strike", ">", 1, "contract.stock_price"),
+            new Rule(2, "contract.strike", "<", 2, "contract.stock_price"),
+            new Rule(3, "contract.strike", "<", 3, "contract.stock_price")],
+            relationships: [],
+            legs: [
+                new OptionLeg(
+                    {
+                        action: "long",
+                        expiration: 0,
+                        optionType: "call"
+                    }
+                ),
+                new OptionLeg(
+                    {
+                        action: "short",
+                        expiration: 0,
+                        optionType: "call"
+                    }
+                ),
+                new OptionLeg(
+                    {
+                        action: "long",
+                        expiration: 0,
+                        optionType: "put"
+                    }
+                ),
+                new OptionLeg(
+                    {
+                        action: "short",
+                        expiration: 0,
+                        optionType: "put"
+                    }
+                )
+            ]
+        }
     )
 ];
