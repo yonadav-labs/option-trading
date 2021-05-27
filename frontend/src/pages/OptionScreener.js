@@ -166,7 +166,7 @@ export default function SellCoveredCall() {
             headerSortingStyle,
         }, {
             dataField: "vol_oi",
-            text: "Vol/OI",
+            text: "VOL/OI",
             formatter: (cell, row, rowIndex, extraData) => (
                 NumberRoundFormatter(cell)
             ),

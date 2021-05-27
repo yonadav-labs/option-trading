@@ -44,7 +44,8 @@ export default function Surface() {
     const targetOptions = [
         { value: 'Implied Volatility', label: 'Implied Volatility' },
         { value: 'Open Interest', label: 'Open Interest' },
-        { value: 'Volume', label: 'Volume' }
+        { value: 'Volume', label: 'Volume' },
+        { value: 'vol_per_oi', label: 'VOL/OI' }
     ]
 
     const loadHeatmapData = (symbol, params) => {

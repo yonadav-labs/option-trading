@@ -66,6 +66,11 @@ class TickerViewSet(viewsets.ModelViewSet):
                                                                   contract.days_till_expiration)
                 if apr > 10:
                     apr = None  # This will show as blank in heatmap UI.
+
+                vol_per_oi = None
+                if contract.volume is not None and contract.open_interest:
+                    vol_per_oi = contract.volume / contract.open_interest
+
                 data.append((
                     expirations.index(contract.expiration),
                     strikes.index(contract.strike),
@@ -75,7 +80,8 @@ class TickerViewSet(viewsets.ModelViewSet):
                         'Open Interest': contract.open_interest,
                         'Volume': contract.volume,
                         'p_otm': float(f'{1 - contract.itm_probability:.4f}'),
-                        'apr': float(f'{apr:.4f}') if apr is not None else None
+                        'apr': float(f'{apr:.4f}') if apr is not None else None,
+                        'vol_per_oi': float(f'{vol_per_oi:.4f}') if vol_per_oi is not None else None
                     }
                 ))
 

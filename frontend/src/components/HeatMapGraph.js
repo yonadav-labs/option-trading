@@ -63,6 +63,7 @@ export default function HeatMapGraph(props) {
                 let vol = zValue[2]['Volume'];
                 let apr = (zValue[2]['apr'] ? (zValue[2]['apr'] * 100.0).toFixed(2) + '%' : 'Empty');
                 let p_otm = (zValue[2]['p_otm'] * 100.0).toFixed(2) + '%';
+                let vol_per_pi = zValue[2]['vol_per_oi'] != null ? (zValue[2]['vol_per_oi'] * 100.0).toFixed(2) + '%' : 'Empty';
 
                 let text = '<b>' + getPointCategoryName(this.point, 'x') + ' ' +
                     getPointCategoryName(this.point, 'y') + ' ' +
@@ -70,6 +71,7 @@ export default function HeatMapGraph(props) {
                     'Implied Volatility: <b>' + iv + '</b><br>' +
                     'Open Interest: <b>' + oi + '</b><br>' +
                     'Volume: <b>' + vol + '</b><br>' +
+                    'VOL/OI: <b>' + vol_per_pi + '</b><br>' +
                     'Annualized Premium Profit if OTM: <b>' + apr + '</b><br>' +
                     'Probability of OTM: <b>' + p_otm + '</b>';
                 return text;
@@ -84,12 +86,7 @@ export default function HeatMapGraph(props) {
                 enabled: true,
                 color: '#000000',
                 formatter: function () {
-                    if (zLabel == 'apr') {
-                        if (this.point.value) {
-                            return (this.point.value * 100.0).toFixed(2) + '%';
-                        }
-                    }
-                    if (zLabel == 'Implied Volatility') {
+                    if (zLabel == 'apr' || zLabel == 'Implied Volatility' || zLabel == 'vol_per_oi') {
                         if (this.point.value) {
                             return (this.point.value * 100.0).toFixed(2) + '%';
                         }
