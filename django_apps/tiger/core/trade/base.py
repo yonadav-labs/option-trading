@@ -240,7 +240,9 @@ class Trade(ABC):
 
     def is_disabled_for_prob(self):
         # TODO: temporily disable for some strategies till we fix the probability calculation.
-        return self.sigma is None or self.type in ('long_straddle')
+        return self.sigma is None or self.type not in ['long_call', 'covered_call', 'long_put', 'cash_secured_put',
+                                                       'bull_call_spread', 'bear_call_spread',
+                                                       'bear_put_spread', 'bull_put_spread']
 
     def get_ten_percent_prices_and_returns(self, is_profit):
         '''

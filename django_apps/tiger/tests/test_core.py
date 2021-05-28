@@ -6,7 +6,8 @@ from django.test import TestCase
 from django.utils.timezone import make_aware, get_default_timezone
 from tiger.core import Cash, Stock, OptionContract, OptionLeg
 from tiger.core.trade import LongCall, LongPut, CoveredCall, CashSecuredPut, BullPutSpread, BullCallSpread, \
-    BearCallSpread, BearPutSpread, Trade, LongStraddle, LongStrangle, IronCondor, IronButterfly, ShortStrangle
+    BearCallSpread, BearPutSpread, Trade, LongStraddle, LongStrangle, IronCondor, IronButterfly, ShortStrangle, \
+    ShortStraddle
 
 MOCK_NOW_TIMESTAMP = 1609664400  # 01/03/2021
 
@@ -547,6 +548,21 @@ class PutTradesTestCase(TestCase):
         self.assertAlmostEqual(long_straddle.break_evens[0], 64.574)
         self.assertAlmostEqual(long_straddle.break_evens[1], 71.426)
         self.assertEqual(long_straddle.reward_to_risk_ratio, None)
+
+    def test_short_straddle(self):
+        call_contract = OptionContract(self.ticker, True, self.yahoo_input3, self.stock_price, 'mid')
+        put_contract = OptionContract(self.ticker, False, self.yahoo_input, self.stock_price, 'mid')
+        short_straddle = ShortStraddle.build(self.stock, call_contract, put_contract,
+                                             'mid', self.broker_settings, 68, 68)
+        self.assertAlmostEqual(short_straddle.cost, -337.4)
+        self.assertAlmostEqual(short_straddle.best_return, -short_straddle.cost)
+        self.assertAlmostEqual(short_straddle.target_price_profit, 337.4)
+        self.assertEqual(short_straddle.worst_return, 'infinite')
+        self.assertEqual(len(short_straddle.break_evens), 2)
+        # includes commission cost
+        self.assertAlmostEqual(short_straddle.break_evens[0], 64.626)
+        self.assertAlmostEqual(short_straddle.break_evens[1], 71.374)
+        self.assertEqual(short_straddle.reward_to_risk_ratio, None)
 
     def test_short_strangle(self):
         call_contract = OptionContract(self.ticker, True, self.yahoo_input2, self.stock_price, 'mid')
