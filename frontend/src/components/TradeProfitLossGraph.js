@@ -54,22 +54,23 @@ export default function TradeProfitLossGraph(props) {
         zIndex: 100,
     });
 
-    // Share profit/loss data
-    let lastPrice = trade.stock.stock_price;
-    let cost = trade.cost;
-    let totalShares = cost / lastPrice;
+    // Stock share profit/loss data
     let shareData = [];
-    let shareX = 0;
-    while (shareX < lastPrice * 2) {
-        shareX = shareX + lastPrice * 0.02;
-        let point = {};
-        point.x = shareX;
-        point.y = totalShares * shareX - cost;
-        shareData.push(point);
+    if (trade.cost > 0) {
+        let lastPrice = trade.stock.stock_price;
+        let totalShares = trade.cost / lastPrice;
+        let shareX = 0;
+        while (shareX < lastPrice * 2) {
+            shareX = shareX + lastPrice * 0.02;
+            let point = {};
+            point.x = shareX;
+            point.y = totalShares * shareX - trade.cost;
+            shareData.push(point);
+        }
     }
-    // share profit/loss end
+    // Stock share profit/loss end
 
-    // set annotations for price target if they exist    
+    // Set annotations for price target if they exist    
     if (trade.target_price_lower !== null && trade.target_price_lower === trade.target_price_upper) {
         plotline_annotations.push({
             color: "blue",
