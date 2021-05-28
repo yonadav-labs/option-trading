@@ -4,6 +4,7 @@ from rest_framework.decorators import action
 
 from tiger.serializers import UserSerializer
 from tiger.models import User
+from .utils import handle_referral
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -19,5 +20,7 @@ class UserViewSet(viewsets.ModelViewSet):
     @action(methods=['get'], detail=False)
     def me(self, request, *args, **kwargs):
         serializer = UserSerializer(request.user)
+
+        handle_referral(request)
 
         return Response(serializer.data)

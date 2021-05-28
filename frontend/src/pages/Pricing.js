@@ -6,6 +6,9 @@ import { useOktaAuth } from '@okta/okta-react';
 import UserContext from '../UserContext';
 import Subscribe from '../components/Subscribe';
 import { getPaypalMonthlyPlanId, getPaypalYearlyPlanId, GetGaEventTrackingFunc } from '../utils';
+import LinkIcon from '@material-ui/icons/Link';
+import { IconButton, Tooltip } from '@material-ui/core';
+
 import './Home.css';
 import './Pricing.css';
 
@@ -15,6 +18,7 @@ export default function Pricing() {
     const { authState } = useOktaAuth();
     const [showSubscribeModal, setShowSubscribeModal] = useState(false);
     const [paypalPlanID, setPaypalPlanID] = useState(null);
+    const [tooltipOpen, setTooltipOpen] = useState(false);
     const { user } = useContext(UserContext);
 
     const subscribeMonthly = () => {
@@ -25,6 +29,12 @@ export default function Pricing() {
     const subscribeYearly = () => {
         setShowSubscribeModal(true);
         setPaypalPlanID(getPaypalYearlyPlanId());
+    }
+
+    const copyReferralLink = (e) => {
+        e.stopPropagation();
+        navigator.clipboard.writeText(user.referral_link);
+        setTooltipOpen(true);
     }
 
     const isUserMonthlySubscribed = () => user && user.subscription && user.subscription.paypal_plan_id === getPaypalMonthlyPlanId();
@@ -45,12 +55,38 @@ export default function Pricing() {
                             Upgrade to Tiger Pro membership to unlock powerful options analytics features.
                             <br />Free trial for a week, cancel anytime.
                         </h5>
+                        {user ?
+                            <>
+                                <h5 className="mx-auto pricing-description mt-4">
+                                    Get a free month of Pro membership for you and your friends. <br></br>
+                                    Just copy and paste link below to your friends to sign up.
+                                </h5>
+                                <div className="referral-wrapper">
+                                    <span className="referral_link">{user.referral_link}</span>
+                                    <Tooltip
+                                        PopperProps={{
+                                            disablePortal: true,
+                                        }}
+                                        onClose={() => setTooltipOpen(false)}
+                                        open={tooltipOpen}
+                                        disableFocusListener
+                                        disableHoverListener
+                                        disableTouchListener
+                                        title="Link copied to clipboard"
+                                    >
+                                        <IconButton onClick={copyReferralLink}><LinkIcon /></IconButton>
+                                    </Tooltip>
+                                </div>
+                            </>
+                            :
+                            <h5 className="mx-auto pricing-description mt-3">You can get a free month of Pro membership when you signup to refer the platform to your friend.</h5>
+                        }
                     </div>
                 </div>
 
                 <div>
                     <CardDeck className="m-3 text-center text-white pricing-card-deck">
-                        <Card className={"mb-4 pricing-card pricing-card-background " + (authState.isAuthenticated ? 'highlighted' : '')}>
+                        <Card className={"mb-4 pricing-card pricing-card-background " + (authState.isAuthenticated && !isUserMonthlySubscribed() && !isUserYearlySubscribed() ? 'highlighted' : '')}>
                             <Card.Header className="pricing-card-header">
                                 <h6 class="mt-3 font-weight-bold">BASIC</h6>
                             </Card.Header>

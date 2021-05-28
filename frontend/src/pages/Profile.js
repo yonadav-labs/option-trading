@@ -7,6 +7,8 @@ import { Button, Form, Modal } from 'react-bootstrap';
 import getApiUrl, { getAllTradeTypes, GetGaEventTrackingFunc } from '../utils';
 import { useHistory, Link } from 'react-router-dom';
 import { startCase } from 'lodash';
+import LinkIcon from '@material-ui/icons/Link';
+import { IconButton, Tooltip } from '@material-ui/core';
 
 const GaEvent = GetGaEventTrackingFunc('preference');
 
@@ -21,10 +23,17 @@ const Profile = () => {
     const [nickName, setNickName] = useState(null);
     const [resultMsg, setResultMsg] = useState("");
     const [errMsg, setErrMsg] = useState("");
+    const [tooltipOpen, setTooltipOpen] = useState(false);
 
     const API_URL = getApiUrl();
     const reason = useRef("");
     const history = useHistory();
+
+    const copyReferralLink = (e) => {
+        e.stopPropagation();
+        navigator.clipboard.writeText(user.referral_link);
+        setTooltipOpen(true);
+    }
 
     const cancelSubscription = () => {
         const { accessToken } = authState;
@@ -219,6 +228,31 @@ const Profile = () => {
                                         </a>
                                     </div>
                                 }
+                                <hr></hr>
+                                <div className="row">
+                                    <div className="col-md-12">
+                                        <div className="mt-4">
+                                            Get a free month of Pro membership for you and your friends.
+                                            Just copy and paste link below to your friends to sign up.
+                                        </div>
+                                        <div className="referral-wrapper">
+                                            <span className="referral_link">{user.referral_link}</span>
+                                            <Tooltip
+                                                PopperProps={{
+                                                    disablePortal: true,
+                                                }}
+                                                onClose={() => setTooltipOpen(false)}
+                                                open={tooltipOpen}
+                                                disableFocusListener
+                                                disableHoverListener
+                                                disableTouchListener
+                                                title="Link copied to clipboard"
+                                            >
+                                                <IconButton onClick={copyReferralLink}><LinkIcon /></IconButton>
+                                            </Tooltip>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                         <div className="col-md-8">

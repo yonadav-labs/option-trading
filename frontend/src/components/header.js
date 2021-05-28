@@ -9,6 +9,23 @@ import getApiUrl from '../utils';
 import '../index.css';
 import LiveChat from 'react-livechat'
 
+function getCookie(name) {
+    var cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+      var cookies = document.cookie.split(';');
+      for (var i = 0; i < cookies.length; i++) {
+        var cookie = cookies[i].trim();
+        if (cookie.substring(0, name.length + 1) === (name + '=')) {
+          cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+          break;
+        }
+      }
+    }
+    return cookieValue;
+  }
+  
+const sessionid = getCookie('pinax-referral');
+
 function Header() {
     const { oktaAuth, authState } = useOktaAuth();
     const { user, setUser } = useContext(UserContext);
@@ -30,10 +47,10 @@ function Header() {
             setUser(null);
         } else {
             const { accessToken } = authState;
-            fetch(`${API_URL}/users/me/`, {
+            fetch(`${API_URL}/users/me/?referral-sessionid=${sessionid}`, {
                 headers: {
                     Authorization: `Bearer ${accessToken.accessToken}`,
-                },
+                }
             })
                 .then((response) => {
                     if (!response.ok) {

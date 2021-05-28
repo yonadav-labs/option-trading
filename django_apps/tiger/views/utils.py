@@ -1,4 +1,5 @@
 from django.conf import settings
+from pinax.referrals.models import ReferralResponse
 
 from tiger.serializers import TradeSnapshotSerializer
 from tiger.core.trade.trade_factory import TradeFactory
@@ -150,3 +151,28 @@ def user_disabled_strategy(user, strategy):
         disabled_strategies = ['cash_secured_put', 'bear_call_spread', 'bear_put_spread', 'bull_put_spread']
 
     return strategy in disabled_strategies
+
+
+def handle_referral(request):
+    """
+    The referral flow:
+    0. Site app should be enabled and it should have a correct backend url. e.g) localhost:8080, www.tigerstance.com
+    1. Create a referral link to each user
+    2. Create referral responses when users hit the link
+    3. Associate a user using the session key saved in cookie when he signs up and logs in.
+    4. Give bonus to the referrer and the referral
+    """
+    referral_sessionid = request.GET.get('referral-sessionid')
+    if ':' in referral_sessionid:
+        code, session_key = referral_sessionid.split(":")
+        referral_responses = ReferralResponse.objects.filter(session_key=session_key)
+        if referral_responses:  # sombody referred me
+            if not referral_responses.filter(user=request.user).exists():  # first login after signup
+                referral_resp = referral_responses.filter(action='RESPONDED').first()
+                referral_resp.user = request.user
+                referral_resp.action = 'SIGNUP'
+                referral_resp.save()
+                # add bonus to both the referrer and the referral
+                referral_resp.referral.user.give_free_subscription(months=1)
+                request.user.give_free_subscription(months=1)
+                # TODO: notify user

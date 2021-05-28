@@ -1,3 +1,5 @@
+import random
+
 from datetime import datetime
 
 from django.utils import timezone
@@ -32,6 +34,16 @@ def timedelta_from_timestamp(timestamp):
     input_datetime = make_aware(datetime.fromtimestamp(timestamp), get_default_timezone())
     now = get_now()
     return input_datetime - now
+
+
+def generate_code(referral_class):
+    def _generate_code():
+        t = "abcdefghijkmnopqrstuvwwxyzABCDEFGHIJKLOMNOPQRSTUVWXYZ1234567890"
+        return "".join([random.choice(t) for i in range(8)])
+    code = _generate_code()
+    while referral_class.objects.filter(code=code).exists():
+        code = _generate_code()
+    return code
 
 
 if __name__ == "__main__":

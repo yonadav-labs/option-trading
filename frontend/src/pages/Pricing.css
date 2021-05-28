@@ -77,3 +77,17 @@
         
     }
 }
+
+.referral_link {
+    max-width: 420px;
+    display: inline-block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    word-wrap: NORMAL;
+}
+
+.referral-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
