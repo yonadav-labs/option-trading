@@ -56,6 +56,7 @@ class TradeSnapshot(BaseModel):
         ('bear_put_spread', 'Bear put spread'),
         ('bull_put_spread', 'Bull put spread'),
         ('long_straddle', 'Long Straddle'),
+        ('short_strangle', 'Short Strangle'),
         ('iron_butterfly', 'Iron Butterfly'),
         ('iron_condor', 'Iron Condor'),
         ('long_strangle', 'Long Strangle'),

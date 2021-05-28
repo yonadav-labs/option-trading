@@ -463,5 +463,35 @@ export const strategies = [
                 )
             ]
         }
+    ),
+    new Strategy(
+        {
+            name: "Short Strangle",
+            type: "short_strangle",
+            description: "A strategy that profits when the stock price does not move much. \
+                            Receive a premium to sell a call and a put; With the call strike being higher than the put strike. \
+                            You profit when the stock price stays within this range: strike - premium > stock price > strike + premium \
+                            There is no limit to how much you can lose with this strategy.",
+            sentiment: ["volitile"],
+            linkedProperties: ["expiration"],
+            rules: [new Rule(0, "strike", ">", 1, "strike")],
+            relationships: [],
+            legs: [
+                new OptionLeg(
+                    {
+                        action: "short",
+                        expiration: 0,
+                        optionType: "call"
+                    }
+                ),
+                new OptionLeg(
+                    {
+                        action: "short",
+                        expiration: 0,
+                        optionType: "put"
+                    }
+                )
+            ]
+        }
     )
 ];

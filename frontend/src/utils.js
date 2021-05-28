@@ -150,7 +150,7 @@ export function onLastTradedFilterChange(event, lastTradedFilter) {
 
 export function getAllTradeTypes(type) {
     return ['long_call', 'covered_call', 'long_put', 'cash_secured_put', 'bull_call_spread', 'bear_call_spread',
-        'bear_put_spread', 'bull_put_spread', 'long_straddle', 'long_strangle', 'iron_condor', 'iron_butterfly'];
+        'bear_put_spread', 'bull_put_spread', 'long_straddle', 'long_strangle', 'iron_condor', 'iron_butterfly', 'short_strangle'];
 };
 
 export function getDefaultDisabledTradeTypes(type) {

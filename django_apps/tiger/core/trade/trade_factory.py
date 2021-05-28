@@ -10,6 +10,7 @@ from .covered_call import CoveredCall
 from .long_call import LongCall
 from .long_put import LongPut
 from .long_straddle import LongStraddle
+from .short_strangle import ShortStrangle
 from .iron_butterfly import IronButterfly
 from .long_strangle import LongStrangle
 from .iron_condor import IronCondor
@@ -39,6 +40,8 @@ class TradeFactory:
             trade_class = BullPutSpread
         elif trade_type == 'long_straddle':
             trade_class = LongStraddle
+        elif trade_type == 'short_strangle':
+            trade_class = ShortStrangle
         elif trade_type == 'iron_butterfly':
             trade_class = IronButterfly
         elif trade_type == 'iron_condor':
