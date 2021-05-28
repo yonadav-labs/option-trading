@@ -171,6 +171,9 @@ export default function ScreenFilterContainer(props) {
                                     variant="outlined"
                                     className={classes.select}
                                     MenuProps={{
+                                        style: {
+                                            maxHeight: "300px",
+                                        },
                                         anchorOrigin: {
                                             vertical: "bottom",
                                             horizontal: "left"

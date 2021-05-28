@@ -206,6 +206,9 @@ export default function MainView(props) {
                                         style={{ paddingBottom: "5px" }}
                                         variant="standard"
                                         MenuProps={{
+                                            style: {
+                                                maxHeight: "400px",
+                                            },
                                             anchorOrigin: {
                                                 vertical: "bottom",
                                                 horizontal: "left"
