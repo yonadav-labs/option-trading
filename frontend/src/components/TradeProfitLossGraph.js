@@ -16,7 +16,8 @@ export default function TradeProfitLossGraph(props) {
     trade.graph_points['x'].forEach((x, i) => {
         let point = {};
         point.x = x;
-        point.y = trade.graph_points['y'][i];
+        point.y = trade.graph_points['y'][i]; // Return in $.
+        point.y2 = (trade.graph_points['y'][i] / trade.cost) * 100; // Return ratio in %.
         data.push(point);
     });
 
@@ -59,12 +60,13 @@ export default function TradeProfitLossGraph(props) {
     if (trade.cost > 0) {
         let lastPrice = trade.stock.stock_price;
         let totalShares = trade.cost / lastPrice;
-        let shareX = 0;
-        while (shareX < lastPrice * 2) {
-            shareX = shareX + lastPrice * 0.02;
+        let stockPrice = 0;
+        while (stockPrice < lastPrice * 2) {
+            stockPrice = stockPrice + lastPrice * 0.01;
             let point = {};
-            point.x = shareX;
-            point.y = totalShares * shareX - trade.cost;
+            point.x = stockPrice;
+            point.y = totalShares * stockPrice - trade.cost; // Return in $.
+            point.y2 = (totalShares * stockPrice - trade.cost) / trade.cost * 100; // Return ratio in %.
             shareData.push(point);
         }
     }
@@ -217,7 +219,7 @@ export default function TradeProfitLossGraph(props) {
         yAxis: [
             {
                 title: {
-                    text: "$ Value"
+                    text: "Return in $ value"
                 },
                 labels: {
                     format: "${value}",
@@ -247,7 +249,7 @@ export default function TradeProfitLossGraph(props) {
         ],
         tooltip: {
             headerFormat: "Stock Price: ${point.x:,.2f} <br/>",
-            pointFormat: "Return: ${point.y:,.2f}",
+            pointFormat: "Return: {point.y2:,.2f}% (${point.y:,.2f})",
         },
         series: [
             {
