@@ -152,7 +152,7 @@ export function getAllTradeTypes(type) {
     return ['long_call', 'covered_call', 'long_put', 'cash_secured_put', 'bull_call_spread', 'bear_call_spread',
         'bear_put_spread', 'bull_put_spread', 'long_straddle', 'long_strangle', 'iron_condor', 'iron_butterfly',
         'short_strangle', 'short_straddle', 'long_butterfly_spread', 'short_butterfly_spread', 'long_condor_spread',
-        'short_condor_spread'];
+        'short_condor_spread', 'strap_straddle', 'strap_strangle'];
 };
 
 export function getDefaultDisabledTradeTypes(type) {

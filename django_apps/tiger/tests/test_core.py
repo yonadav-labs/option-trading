@@ -7,7 +7,8 @@ from django.utils.timezone import make_aware, get_default_timezone
 from tiger.core import Cash, Stock, OptionContract, OptionLeg
 from tiger.core.trade import LongCall, LongPut, CoveredCall, CashSecuredPut, BullPutSpread, BullCallSpread, \
     BearCallSpread, BearPutSpread, Trade, LongStraddle, LongStrangle, IronCondor, IronButterfly, ShortStrangle, \
-    ShortStraddle, LongButterflySpread, ShortButterflySpread, LongCondorSpread, ShortCondorSpread
+    ShortStraddle, LongButterflySpread, ShortButterflySpread, LongCondorSpread, ShortCondorSpread, StrapStraddle, \
+    StrapStrangle
 
 MOCK_NOW_TIMESTAMP = 1609664400  # 01/03/2021
 
@@ -760,6 +761,36 @@ class PutTradesTestCase(TestCase):
         self.assertAlmostEqual(short_condor_spread.break_evens[0], 68.248)
         self.assertAlmostEqual(short_condor_spread.break_evens[1], 78.752)
         self.assertAlmostEqual(short_condor_spread.reward_to_risk_ratio, 1.853881278538813)
+
+    def test_strap_straddle(self):
+        call_contract = OptionContract(self.ticker, True, self.yahoo_input3, self.stock_price, 'mid')
+        put_contract = OptionContract(self.ticker, False, self.yahoo_input, self.stock_price, 'mid')
+        strap_straddle = StrapStraddle.build(self.stock, call_contract, put_contract,
+                                             'mid', self.broker_settings, 75, 75)
+        self.assertAlmostEqual(strap_straddle.cost, 612.6)
+        self.assertEqual(strap_straddle.best_return, 'infinite')
+        self.assertAlmostEqual(strap_straddle.target_price_profit, 787.4)
+        self.assertAlmostEqual(strap_straddle.worst_return, -strap_straddle.cost)
+        self.assertEqual(len(strap_straddle.break_evens), 2)
+        # includes commission cost
+        self.assertAlmostEqual(strap_straddle.break_evens[0], 61.874)
+        self.assertAlmostEqual(strap_straddle.break_evens[1], 71.063)
+        self.assertEqual(strap_straddle.reward_to_risk_ratio, None)
+
+    def test_strap_strangle(self):
+        call_contract = OptionContract(self.ticker, True, self.yahoo_input2, self.stock_price, 'mid')
+        put_contract = OptionContract(self.ticker, False, self.yahoo_input, self.stock_price, 'mid')
+        strap_strangle = StrapStrangle.build(self.stock, call_contract, put_contract,
+                                             'mid', self.broker_settings, 85, 85)
+        self.assertAlmostEqual(strap_strangle.cost, 612.6)
+        self.assertEqual(strap_strangle.best_return, 'infinite')
+        self.assertAlmostEqual(strap_strangle.target_price_profit, 1587.4)
+        self.assertAlmostEqual(strap_strangle.worst_return, -strap_strangle.cost)
+        self.assertEqual(len(strap_strangle.break_evens), 2)
+        # includes commission cost
+        self.assertAlmostEqual(strap_strangle.break_evens[0], 61.874)
+        self.assertAlmostEqual(strap_strangle.break_evens[1], 77.063)
+        self.assertEqual(strap_strangle.reward_to_risk_ratio, None)
 
 
 class TdTestCase(TestCase):

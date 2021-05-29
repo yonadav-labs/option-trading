@@ -61,6 +61,8 @@ class TradeSnapshot(BaseModel):
         ('iron_butterfly', 'Iron Butterfly'),
         ('iron_condor', 'Iron Condor'),
         ('long_strangle', 'Long Strangle'),
+        ('strap_straddle', 'Strap Straddle'),
+        ('strap_strangle', 'Strap Strangle'),
         ('long_butterfly_spread', 'Long Butterfly Spread'),
         ('short_butterfly_spread', 'Short Butterfly Spread'),
         ('long_condor_spread', 'Long Condor Spread'),

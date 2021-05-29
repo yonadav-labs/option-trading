@@ -376,7 +376,7 @@ class Trade(ABC):
                 prob = get_target_price_probability(
                     stock_price=self.stock.stock_price,
                     target_price=self.break_even_prices_and_ratios[0]['price'] +
-                                 (0.01 if self.is_bullish else -0.01),
+                    (0.01 if self.is_bullish else -0.01),
                     exp_years=leg.contract.days_till_expiration / 365.0,
                     sigma=leg.contract.implied_volatility, aims_above=self.is_bullish)
                 probs.append(prob)

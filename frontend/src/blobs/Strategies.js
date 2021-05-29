@@ -705,4 +705,64 @@ export const strategies = [
             ]
         }
     ),
+    new Strategy(
+        {
+            name: "Strap Straddle",
+            type: "strap_straddle",
+            description: "A basic strategy that profits when the stock price moves dratistically up or down but profits more if it goes up. \
+                            Pay a premium to buy a call and a put at the same strike. \
+                            You profit when the stock price moves: above the strike + premium paid OR below the strike - premium paid \
+                            Losses are capped at the premium paid to initiate this strategy.",
+            sentiment: ["volitile", "bullish"],
+            linkedProperties: ["expiration", "strike"],
+            rules: [],
+            relationships: [new Relation(0, "units", "*", 1, "units", null, null, null, 2)],
+            legs: [
+                new OptionLeg(
+                    {
+                        action: "long",
+                        expiration: 0,
+                        optionType: "call"
+                    }
+                ),
+                new OptionLeg(
+                    {
+                        action: "long",
+                        expiration: 0,
+                        optionType: "put"
+                    }
+                )
+            ]
+        }
+    ),
+    new Strategy(
+        {
+            name: "Strap Strangle",
+            type: "strap_strangle",
+            description: "A basic strategy that profits when the stock price moves dratistically up or down but profits more if it goes up. \
+                            Pay a premium to buy a call and a put; With the call strike being higher than the put strike. \
+                            You profit when the stock price moves: above the strike + premium paid OR below the strike - premium paid \
+                            Losses are capped at the premium paid to initiate this strategy.",
+            sentiment: ["volitile", "bullish"],
+            linkedProperties: ["expiration"],
+            rules: [new Rule(0, "strike", ">", 1, "strike")],
+            relationships: [new Relation(0, "units", "*", 1, "units", null, null, null, 2)],
+            legs: [
+                new OptionLeg(
+                    {
+                        action: "long",
+                        expiration: 0,
+                        optionType: "call"
+                    }
+                ),
+                new OptionLeg(
+                    {
+                        action: "long",
+                        expiration: 0,
+                        optionType: "put"
+                    }
+                )
+            ]
+        }
+    ),
 ];

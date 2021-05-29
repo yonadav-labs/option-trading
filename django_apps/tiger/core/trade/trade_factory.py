@@ -14,6 +14,8 @@ from .long_call import LongCall
 from .long_condor_spread import LongCondorSpread
 from .long_put import LongPut
 from .long_straddle import LongStraddle
+from .strap_straddle import StrapStraddle
+from .strap_strangle import StrapStrangle
 from .long_strangle import LongStrangle
 from .short_butterfly_spread import ShortButterflySpread
 from .short_condor_spread import ShortCondorSpread
@@ -64,6 +66,10 @@ class TradeFactory:
             trade_class = IronCondor
         elif trade_type == 'long_strangle':
             trade_class = LongStrangle
+        elif trade_type == 'strap_straddle':
+            trade_class = StrapStraddle
+        elif trade_type == 'strap_strangle':
+            trade_class = StrapStrangle
 
         trade = trade_class(stock, legs, premium_type=premium_type,
                             target_price_lower=target_price_lower,
