@@ -79,7 +79,7 @@ export default function Pricing() {
                                 </div>
                             </>
                             :
-                            <h5 className="mx-auto pricing-description mt-3">You can get a free month of Pro membership when you signup to refer the platform to your friend.</h5>
+                            <h5 className="mx-auto pricing-description mt-3">Get a free month of Pro membership when you signup and refer us to your friends.</h5>
                         }
                     </div>
                 </div>
