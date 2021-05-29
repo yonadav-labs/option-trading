@@ -41,6 +41,7 @@ export default function ScreenFilterContainer(props) {
     const classes = useStyles();
     const {
         onFilterChange,
+        onTextFilterChange,
         onPutToggle,
         onCallToggle,
         initialPrice,
@@ -235,7 +236,7 @@ export default function ScreenFilterContainer(props) {
                     <Typography variant="button"><MetricLabel label="min strike" /></Typography>
                 </Grid>
                 <Grid item paddingBottom='0.4rem'>
-                    <PriceTargetField onValueChange={(event) => onFilterChange(event, 'minStrike')}
+                    <PriceTargetField onValueChange={(event) => onTextFilterChange(event, 'minStrike')}
                         initialPrice={initialPrice} value={filters.minStrike} />
                 </Grid>
             </Box>
@@ -244,7 +245,7 @@ export default function ScreenFilterContainer(props) {
                     <Typography variant="button"><MetricLabel label="max strike" /></Typography>
                 </Grid>
                 <Grid item paddingBottom='0.4rem'>
-                    <PriceTargetField onValueChange={(event) => onFilterChange(event, 'maxStrike')}
+                    <PriceTargetField onValueChange={(event) => onTextFilterChange(event, 'maxStrike')}
                         initialPrice={initialPrice} value={filters.maxStrike} />
                 </Grid>
             </Box>

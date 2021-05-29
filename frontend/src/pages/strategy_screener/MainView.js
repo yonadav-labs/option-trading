@@ -26,6 +26,7 @@ export default function MainView(props) {
         bestTrades,
         basicInfo,
         onFilterChange,
+        onTextFilterChange,
         filters
     } = props
 
@@ -118,7 +119,7 @@ export default function MainView(props) {
                     <>
                         <Grid container item sm={2.3} direction="column" alignItems="center"
                             bgcolor='#333741' color="white" style={{ display: filterOpen ? "block" : "none" }}>
-                            <FilterContainer onFilterChange={onFilterChange} filters={filters}
+                            <FilterContainer onFilterChange={onFilterChange} onTextFilterChange={onTextFilterChange} filters={filters}
                                 handleFilterCollapse={handleFilterCollapse} initialPrice={basicInfo.regularMarketPrice} />
                         </Grid>
                         <Grid item py={2} bgcolor='#333741' color="white" style={{ display: filterOpen ? "none" : "block" }} >
@@ -148,6 +149,7 @@ export default function MainView(props) {
                                         <Grid container direction="column" justifyContent="center" alignItems="center" bgcolor='#333741' color="white" height="100%">
                                             <FilterContainer
                                                 onFilterChange={onFilterChange}
+                                                onTextFilterChange={onTextFilterChange}
                                                 filters={filters}
                                                 initialPrice={basicInfo.regularMarketPrice}
                                                 isMobile={isMobile}

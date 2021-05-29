@@ -36,6 +36,7 @@ export default function FilterContainer(props) {
     const classes = useStyles();
     const {
         onFilterChange,
+        onTextFilterChange,
         initialPrice,
         filters,
         handleFilterCollapse,
@@ -190,7 +191,7 @@ export default function FilterContainer(props) {
                 null
             }
 
-            <TargetBox onFilterChange={onFilterChange} initialPrice={initialPrice} filters={filters} />
+            <TargetBox onFilterChange={onTextFilterChange} initialPrice={initialPrice} filters={filters} />
             <Box paddingY="0.5rem">
                 <Grid item paddingBottom='0.1rem'>
                     <Typography variant="button"><MetricLabel label="hypothetical return" /></Typography>
@@ -250,7 +251,7 @@ export default function FilterContainer(props) {
                     <Typography variant="button"><MetricLabel label="cash to invest" /></Typography>
                 </Grid>
                 <Grid item paddingBottom='0.4rem'>
-                    <DollarInputField onFilterChange={onFilterChange} placeholder="0 (optional)" value={filters.cashToInvest} />
+                    <DollarInputField onFilterChange={onTextFilterChange} placeholder="0 (optional)" value={filters.cashToInvest} />
                 </Grid>
             </Box>
             <Box paddingY="0.5rem">

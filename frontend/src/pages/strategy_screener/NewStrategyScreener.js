@@ -160,7 +160,8 @@ export default function NewStrategyScreener() {
         }
     };
 
-    const debouncedGetBestTrades = useDebouncedCallback(getBestTrades, 1000);
+    const debouncedGetBestTrades = useDebouncedCallback(getBestTrades, 50);
+    const debouncedTextGetBestTrades = useDebouncedCallback(getBestTrades, 1000);
 
     // function to change filter states.
     const onFilterChange = (value, filterChoice) => {
@@ -170,6 +171,16 @@ export default function NewStrategyScreener() {
         }
         setFilters(prevState => ({ ...prevState, [filterChoice]: value }));
         debouncedGetBestTrades();
+    }
+
+    // function to change filter states.
+    const onTextFilterChange = (value, filterChoice) => {
+        // Do not send API request if filter choice didn't change.
+        if (filters[filterChoice] === value) {
+            return;
+        }
+        setFilters(prevState => ({ ...prevState, [filterChoice]: value }));
+        debouncedTextGetBestTrades();
     }
 
     const onSentimentChange = (sentiment) => {
@@ -226,6 +237,7 @@ export default function NewStrategyScreener() {
                         bestTrades={bestTrades}
                         basicInfo={basicInfo}
                         onFilterChange={onFilterChange}
+                        onTextFilterChange={onTextFilterChange}
                         filters={filters}
                     />
             }

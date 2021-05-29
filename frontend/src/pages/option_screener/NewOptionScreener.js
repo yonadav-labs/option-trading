@@ -127,6 +127,15 @@ export default function NewOptionScreener() {
         debouncedGetContracts()
     }
 
+    const onTextFilterChange = (value, filterChoice) => {
+        // Do not send API request if filter choice didn't change.
+        if (filters[filterChoice] === value) {
+            return;
+        }
+        setFilters(prevState => ({ ...prevState, [filterChoice]: value }));
+        debouncedTextGetContracts()
+    }
+
     const onPutToggle = () => {
         if (filters.callToggle) {
             setFilters(prevState => ({ ...prevState, putToggle: !prevState.putToggle }));
@@ -200,7 +209,8 @@ export default function NewOptionScreener() {
         GaEvent('fetch contracts');
     };
 
-    const debouncedGetContracts = useDebouncedCallback(getContracts, 1000);
+    const debouncedGetContracts = useDebouncedCallback(getContracts, 50);
+    const debouncedTextGetContracts = useDebouncedCallback(getContracts, 1000);
 
     return (
         <>
@@ -233,6 +243,7 @@ export default function NewOptionScreener() {
                         onExpirationSelectionChange={onExpirationSelectionChange}
                         deleteExpirationChip={deleteExpirationChip}
                         onFilterChange={onFilterChange}
+                        onTextFilterChange={onTextFilterChange}
                         onPutToggle={onPutToggle}
                         onCallToggle={onCallToggle}
                         basicInfo={basicInfo}

@@ -31,6 +31,7 @@ export default function MainView(props) {
         onExpirationSelectionChange,
         deleteExpirationChip,
         onFilterChange,
+        onTextFilterChange,
         onPutToggle,
         onCallToggle,
         basicInfo,
@@ -132,7 +133,7 @@ export default function MainView(props) {
                 <>
                     <Grid container item sm={2.3} direction="column" alignItems="center"
                         bgcolor='#333741' color="white" style={{ display: filterOpen ? "block" : "none" }}>
-                        <ScreenFilterContainer onFilterChange={onFilterChange} filters={filters} onPutToggle={onPutToggle} onCallToggle={onCallToggle}
+                        <ScreenFilterContainer onFilterChange={onFilterChange} onTextFilterChange={onTextFilterChange} filters={filters} onPutToggle={onPutToggle} onCallToggle={onCallToggle}
                             handleFilterCollapse={handleFilterCollapse} initialPrice={basicInfo.regularMarketPrice}
                             deleteExpirationChip={deleteExpirationChip} debouncedGetContracts={debouncedGetContracts} />
                     </Grid>
@@ -158,6 +159,7 @@ export default function MainView(props) {
                                     <Grid container direction="column" justifyContent="center" alignItems="center" bgcolor='#333741' color="white" height="100%">
                                         <ScreenFilterContainer
                                             onFilterChange={onFilterChange}
+                                            onTextFilterChange={onTextFilterChange}
                                             onPutToggle={onPutToggle}
                                             onCallToggle={onCallToggle}
                                             filters={filters}
