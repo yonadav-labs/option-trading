@@ -83,7 +83,7 @@
     display: inline-block;
     overflow: hidden;
     text-overflow: ellipsis;
-    word-wrap: NORMAL;
+    overflow-wrap: break-word;
 }
 
 .referral-wrapper {
