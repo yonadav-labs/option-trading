@@ -30,6 +30,7 @@ class OptionLeg extends Leg {
     optionType = ""; // is_call boolean
     contract = {}; // contract
     strike = 0;
+    units = 1;
 
     constructor(data) {
         super("option");
@@ -523,5 +524,185 @@ export const strategies = [
                 )
             ]
         }
-    )
+    ),
+    new Strategy(
+        {
+            name: "Long Butterfly Spread",
+            type: "long_butterfly_spread",
+            description: "A basic strategy that profits when the stock price moves dratistically up or down. \
+                            Pay a premium to buy a call and a put at the same strike. \
+                            You profit when the stock price moves: above the strike + premium paid OR below the strike - premium paid \
+                            Losses are capped at the premium paid to initiate this strategy.",
+            sentiment: ["neutral"],
+            linkedProperties: ["expiration", "optionType"],
+            rules: [
+                new Rule(0, "contract.strike", "<", 1, "contract.strike"),
+                new Rule(1, "contract.strike", "<", 2, "contract.strike")
+            ],
+            relationships: [new Relation(1, "units", "*", 0, "units", null, null, null, 2)],
+            legs: [
+                new OptionLeg(
+                    {
+                        action: "long",
+                        expiration: 0,
+                        optionType: ""
+                    }
+                ),
+                new OptionLeg(
+                    {
+                        action: "short",
+                        expiration: 0,
+                        optionType: ""
+                    }
+                ),
+                new OptionLeg(
+                    {
+                        action: "long",
+                        expiration: 0,
+                        optionType: ""
+                    }
+                )
+            ]
+        }
+    ),
+    new Strategy(
+        {
+            name: "Short Butterfly Spread",
+            type: "short_butterfly_spread",
+            description: "A basic strategy that profits when the stock price moves dratistically up or down. \
+                            Pay a premium to buy a put and a call at the same strike. \
+                            You profit when the stock price moves: above the strike + premium paid OR below the strike - premium paid \
+                            Losses are capped at the premium paid to initiate this strategy.",
+            sentiment: ["neutral"],
+            linkedProperties: ["expiration", "optionType"],
+            rules: [
+                new Rule(0, "contract.strike", "<", 1, "contract.strike"),
+                new Rule(1, "contract.strike", "<", 2, "contract.strike")
+            ],
+            relationships: [new Relation(1, "units", "*", 0, "units", null, null, null, 2)],
+            legs: [
+                new OptionLeg(
+                    {
+                        action: "short",
+                        expiration: 0,
+                        optionType: ""
+                    }
+                ),
+                new OptionLeg(
+                    {
+                        action: "long",
+                        expiration: 0,
+                        optionType: ""
+                    }
+                ),
+                new OptionLeg(
+                    {
+                        action: "short",
+                        expiration: 0,
+                        optionType: ""
+                    }
+                )
+            ]
+        }
+    ),
+    new Strategy(
+        {
+            name: "Long Condor Spread",
+            type: "long_condor_spread",
+            description: "A strategy that profits when the stock price only moves a little. \
+                            Pay a premium after buying a call and selling a call at a higher strike both in the money, selling a call and buying a call at a higher strike both out of the money. \
+                            You profit when the stock price stays within the range: strike of in the money option you bought + premium paid < stock price < strike of out of the money option you bought - premium paid \
+                            Depending on which direction the stock goes, losses are capped at: \
+                            premium paid",
+            sentiment: ["neutral"],
+            linkedProperties: ["expiration", "optionType"],
+            rules: [new Rule(0, "contract.strike", "<", 1, "contract.strike"),
+            new Rule(2, "contract.strike", ">", 3, "contract.strike"),
+            new Rule(0, "contract.strike", "<", 0, "contract.stock_price"),
+            new Rule(1, "contract.strike", "<", 1, "contract.stock_price"),
+            new Rule(2, "contract.strike", ">", 2, "contract.stock_price"),
+            new Rule(3, "contract.strike", ">", 3, "contract.stock_price")],
+            relationships: [],
+            legs: [
+                new OptionLeg(
+                    {
+                        action: "long",
+                        expiration: 0,
+                        optionType: ""
+                    }
+                ),
+                new OptionLeg(
+                    {
+                        action: "short",
+                        expiration: 0,
+                        optionType: ""
+                    }
+                ),
+                new OptionLeg(
+                    {
+                        action: "long",
+                        expiration: 0,
+                        optionType: ""
+                    }
+                ),
+                new OptionLeg(
+                    {
+                        action: "short",
+                        expiration: 0,
+                        optionType: ""
+                    }
+                )
+            ]
+        }
+    ),
+    new Strategy(
+        {
+            name: "Short Condor Spread",
+            type: "short_condor_spread",
+            description: "A strategy that profits when the stock price only moves a little. \
+                            Receive a premium after selling a call and buying a call at a higher strike both in the money, buying a call and selling a call at a higher strike both out of the money. \
+                            You profit when: stock price > strike of in the money option you sold + premium received OR stock price > strike of out of the money option you sold - premium received \
+                            Depending on which direction the stock goes, losses are capped at: \
+                            difference between the strikes of the calls - premium received OR difference between the strikes of the puts - premium received.",
+            sentiment: ["volitile"],
+            linkedProperties: ["expiration", "optionType"],
+            rules: [new Rule(0, "contract.strike", ">", 1, "contract.strike"),
+            new Rule(2, "contract.strike", "<", 3, "contract.strike"),
+            new Rule(0, "contract.strike", "<", 0, "contract.stock_price"),
+            new Rule(1, "contract.strike", "<", 1, "contract.stock_price"),
+            new Rule(2, "contract.strike", ">", 2, "contract.stock_price"),
+            new Rule(3, "contract.strike", ">", 3, "contract.stock_price")],
+            relationships: [],
+            legs: [
+                new OptionLeg(
+                    {
+                        action: "long",
+                        expiration: 0,
+                        optionType: ""
+                    }
+                ),
+                new OptionLeg(
+                    {
+                        action: "short",
+                        expiration: 0,
+                        optionType: ""
+                    }
+                ),
+                new OptionLeg(
+                    {
+                        action: "long",
+                        expiration: 0,
+                        optionType: ""
+                    }
+                ),
+                new OptionLeg(
+                    {
+                        action: "short",
+                        expiration: 0,
+                        optionType: ""
+                    }
+                )
+            ]
+        }
+    ),
 ];

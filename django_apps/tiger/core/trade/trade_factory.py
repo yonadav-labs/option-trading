@@ -9,10 +9,14 @@ from .cash_secured_put import CashSecuredPut
 from .covered_call import CoveredCall
 from .iron_butterfly import IronButterfly
 from .iron_condor import IronCondor
+from .long_butterfly_spread import LongButterflySpread
 from .long_call import LongCall
+from .long_condor_spread import LongCondorSpread
 from .long_put import LongPut
 from .long_straddle import LongStraddle
 from .long_strangle import LongStrangle
+from .short_butterfly_spread import ShortButterflySpread
+from .short_condor_spread import ShortCondorSpread
 from .short_straddle import ShortStraddle
 from .short_strangle import ShortStrangle
 
@@ -42,6 +46,14 @@ class TradeFactory:
             trade_class = BullPutSpread
         elif trade_type == 'long_straddle':
             trade_class = LongStraddle
+        elif trade_type == 'long_butterfly_spread':
+            trade_class = LongButterflySpread
+        elif trade_type == 'short_butterfly_spread':
+            trade_class = ShortButterflySpread
+        elif trade_type == 'long_condor_spread':
+            trade_class = LongCondorSpread
+        elif trade_type == 'short_condor_spread':
+            trade_class = ShortCondorSpread
         elif trade_type == 'short_straddle':
             trade_class = ShortStraddle
         elif trade_type == 'short_strangle':

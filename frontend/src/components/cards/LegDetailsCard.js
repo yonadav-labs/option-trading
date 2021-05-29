@@ -15,6 +15,7 @@ export default function LegDetailsCard(props) {
                     <Row>
                         <Col sm="2" xs="6">
                             <h5>{leg_num ? `LEG ${leg_num}` : null}</h5>
+                            Qty: {leg.units}
                         </Col>
                         <Col sm="2" xs="6">
                             <MetricLabel label="action" /><br />

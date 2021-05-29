@@ -13,4 +13,8 @@ from .short_strangle import ShortStrangle
 from .iron_butterfly import IronButterfly
 from .iron_condor import IronCondor
 from .long_strangle import LongStrangle
+from .long_butterfly_spread import LongButterflySpread
+from .short_butterfly_spread import ShortButterflySpread
+from .long_condor_spread import LongCondorSpread
+from .short_condor_spread import ShortCondorSpread
 from .trade_factory import TradeFactory

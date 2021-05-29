@@ -18,6 +18,7 @@ export default function LegCardDetails(props) {
     useEffect(async () => {
         const leg = legs[index];
         setStrikes([]);
+        setSelectedStrike('')
 
         if (leg.type === "option" && leg.action && leg.optionType && leg.expiration) {
             // call api to get option chain
@@ -81,6 +82,7 @@ export default function LegCardDetails(props) {
                                         <Form.Control as="select" value={legs[index].optionType} onChange={(e) => updateLeg("optionType", e.target.value, index)} disabled={selectedStrategy.legs[index].optionType}>
                                             <option value="call" key="call">Call</option>
                                             <option value="put" key="put">Put</option>
+                                            <option hidden value="">Select an option type</option>
                                         </Form.Control>
                                     </Col>
                                     <Col sm="4" xs="12">
@@ -91,7 +93,7 @@ export default function LegCardDetails(props) {
                                             {expirationTimestamps.map(val => {
                                                 return (<option value={val} key={val}>{new Date(val < 9999999999 ? val * 1000 : val).toLocaleDateString()}</option>);
                                             })}
-                                            <option disabled value={0} key="blank">Select an expiration</option>
+                                            <option hidden value={0} key="blank">Select an expiration</option>
                                         </Form.Control>
                                     </Col>
                                     <Col sm="4" xs="12">

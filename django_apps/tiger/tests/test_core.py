@@ -7,7 +7,7 @@ from django.utils.timezone import make_aware, get_default_timezone
 from tiger.core import Cash, Stock, OptionContract, OptionLeg
 from tiger.core.trade import LongCall, LongPut, CoveredCall, CashSecuredPut, BullPutSpread, BullCallSpread, \
     BearCallSpread, BearPutSpread, Trade, LongStraddle, LongStrangle, IronCondor, IronButterfly, ShortStrangle, \
-    ShortStraddle
+    ShortStraddle, LongButterflySpread, ShortButterflySpread, LongCondorSpread, ShortCondorSpread
 
 MOCK_NOW_TIMESTAMP = 1609664400  # 01/03/2021
 
@@ -426,6 +426,74 @@ class PutTradesTestCase(TestCase):
             "inTheMoney": False
         }
 
+        self.yahoo_input6 = {
+            "contractSymbol": "QQQE210115P00068000",
+            "strike": 77.0,
+            "currency": "USD",
+            "lastPrice": 0.65,
+            "change": 0.65,
+            "volume": 3,
+            "openInterest": 10,
+            "bid": 0.9,
+            "ask": 1.0,
+            "contractSize": "REGULAR",
+            "expiration": 1626393600,
+            "lastTradeDate": 1603466039,
+            "impliedVolatility": 0.32031929687499994,
+            "inTheMoney": False
+        }
+
+        self.yahoo_input7 = {
+            "contractSymbol": "QQQE210115P00068000",
+            "strike": 70.0,
+            "currency": "USD",
+            "lastPrice": 0.65,
+            "change": 0.65,
+            "volume": 3,
+            "openInterest": 10,
+            "bid": 0.3,
+            "ask": 0.8,
+            "contractSize": "REGULAR",
+            "expiration": 1626393600,
+            "lastTradeDate": 1603466039,
+            "impliedVolatility": 0.32031929687499994,
+            "inTheMoney": False
+        }
+
+        self.yahoo_input8 = {
+            "contractSymbol": "QQQE210115P00068000",
+            "strike": 80.0,
+            "currency": "USD",
+            "lastPrice": 0.65,
+            "change": 0.65,
+            "volume": 3,
+            "openInterest": 10,
+            "bid": 0.3,
+            "ask": 0.4,
+            "contractSize": "REGULAR",
+            "expiration": 1626393600,
+            "lastTradeDate": 1603466039,
+            "impliedVolatility": 0.32031929687499994,
+            "inTheMoney": False
+        }
+
+        self.yahoo_input9 = {
+            "contractSymbol": "QQQE210115P00068000",
+            "strike": 65.0,
+            "currency": "USD",
+            "lastPrice": 0.65,
+            "change": 0.65,
+            "volume": 3,
+            "openInterest": 10,
+            "bid": 2.1,
+            "ask": 2.8,
+            "contractSize": "REGULAR",
+            "expiration": 1626393600,
+            "lastTradeDate": 1603466039,
+            "impliedVolatility": 0.32031929687499994,
+            "inTheMoney": False
+        }
+
         self.stock_price = 73.55
         self.ticker = Ticker(id=2, symbol='QQQE')
         self.tickerstats = TickerStats(self.ticker, historical_volatility=0.3)
@@ -549,6 +617,38 @@ class PutTradesTestCase(TestCase):
         self.assertAlmostEqual(long_straddle.break_evens[1], 71.426)
         self.assertEqual(long_straddle.reward_to_risk_ratio, None)
 
+    def test_long_butterfly_spread(self):
+        call_contract = OptionContract(self.ticker, True, self.yahoo_input, self.stock_price, 'mid')
+        call_contract2 = OptionContract(self.ticker, True, self.yahoo_input6, self.stock_price, 'mid')
+        call_contract3 = OptionContract(self.ticker, True, self.yahoo_input7, self.stock_price, 'mid')
+        long_butterfly_spread = LongButterflySpread.build(
+            self.stock, call_contract, call_contract2, call_contract3, 'mid', self.broker_settings, 73.55, 73.55)
+        self.assertAlmostEqual(long_butterfly_spread.cost, 58.9)
+        self.assertAlmostEqual(long_butterfly_spread.best_return, 141.1)
+        self.assertAlmostEqual(long_butterfly_spread.target_price_profit, -213.9)
+        self.assertAlmostEqual(long_butterfly_spread.worst_return, -558.9)
+        self.assertEqual(len(long_butterfly_spread.break_evens), 2)
+        # includes commission cost
+        self.assertAlmostEqual(long_butterfly_spread.break_evens[0], 68.589)
+        self.assertAlmostEqual(long_butterfly_spread.break_evens[1], 71.411)
+        self.assertAlmostEqual(long_butterfly_spread.reward_to_risk_ratio, 0.2524601896582573)
+
+    def test_short_butterfly_spread(self):
+        call_contract = OptionContract(self.ticker, True, self.yahoo_input, self.stock_price, 'mid')
+        call_contract2 = OptionContract(self.ticker, True, self.yahoo_input6, self.stock_price, 'mid')
+        call_contract3 = OptionContract(self.ticker, True, self.yahoo_input7, self.stock_price, 'mid')
+        short_butterfly_spread = ShortButterflySpread.build(
+            self.stock, call_contract, call_contract2, call_contract3, 'mid', self.broker_settings, 73.55, 73.55)
+        self.assertAlmostEqual(short_butterfly_spread.cost, -51.1)
+        self.assertAlmostEqual(short_butterfly_spread.best_return, 551.1)
+        self.assertAlmostEqual(short_butterfly_spread.target_price_profit, 206.1)
+        self.assertAlmostEqual(short_butterfly_spread.worst_return, -148.9)
+        self.assertEqual(len(short_butterfly_spread.break_evens), 2)
+        # includes commission cost
+        self.assertAlmostEqual(short_butterfly_spread.break_evens[0], 68.511)
+        self.assertAlmostEqual(short_butterfly_spread.break_evens[1], 71.489)
+        self.assertAlmostEqual(short_butterfly_spread.reward_to_risk_ratio, 3.701141705842848)
+
     def test_short_straddle(self):
         call_contract = OptionContract(self.ticker, True, self.yahoo_input3, self.stock_price, 'mid')
         put_contract = OptionContract(self.ticker, False, self.yahoo_input, self.stock_price, 'mid')
@@ -626,6 +726,40 @@ class PutTradesTestCase(TestCase):
         self.assertAlmostEqual(long_strangle.break_evens[0], 64.574)
         self.assertAlmostEqual(long_strangle.break_evens[1], 77.426)
         self.assertEqual(long_strangle.reward_to_risk_ratio, None)
+
+    def test_long_condor_spread(self):
+        left_put_contract = OptionContract(self.ticker, False, self.yahoo_input7, self.stock_price, 'mid')
+        left_put_contract2 = OptionContract(self.ticker, False, self.yahoo_input9, self.stock_price, 'mid')
+        right_put_contract = OptionContract(self.ticker, False, self.yahoo_input6, self.stock_price, 'mid')
+        right_put_contract2 = OptionContract(self.ticker, False, self.yahoo_input8, self.stock_price, 'mid')
+        long_condor_spread = LongCondorSpread.build(self.stock, left_put_contract, left_put_contract2,
+                                                    right_put_contract, right_put_contract2, 'mid', self.broker_settings, 70, 70)
+        self.assertAlmostEqual(long_condor_spread.cost, 135.2)
+        self.assertAlmostEqual(long_condor_spread.best_return, 164.8)
+        self.assertAlmostEqual(long_condor_spread.target_price_profit, 164.8)
+        self.assertAlmostEqual(long_condor_spread.worst_return, -335.2)
+        self.assertEqual(len(long_condor_spread.break_evens), 2)
+        # includes commission cost
+        self.assertAlmostEqual(long_condor_spread.break_evens[0], 68.352)
+        self.assertAlmostEqual(long_condor_spread.break_evens[1], 78.648)
+        self.assertAlmostEqual(long_condor_spread.reward_to_risk_ratio, 0.4916467780429594)
+
+    def test_short_condor_spread(self):
+        left_put_contract = OptionContract(self.ticker, False, self.yahoo_input6, self.stock_price, 'mid')
+        left_put_contract2 = OptionContract(self.ticker, False, self.yahoo_input8, self.stock_price, 'mid')
+        right_put_contract = OptionContract(self.ticker, False, self.yahoo_input7, self.stock_price, 'mid')
+        right_put_contract2 = OptionContract(self.ticker, False, self.yahoo_input9, self.stock_price, 'mid')
+        short_condor_spread = ShortCondorSpread.build(self.stock, left_put_contract, left_put_contract2,
+                                                      right_put_contract, right_put_contract2, 'mid', self.broker_settings, 100, 100)
+        self.assertAlmostEqual(short_condor_spread.cost, -124.8)
+        self.assertAlmostEqual(short_condor_spread.best_return, 324.8)
+        self.assertAlmostEqual(short_condor_spread.target_price_profit, -short_condor_spread.cost)
+        self.assertAlmostEqual(short_condor_spread.worst_return, -175.2)
+        self.assertEqual(len(short_condor_spread.break_evens), 2)
+        # includes commission cost
+        self.assertAlmostEqual(short_condor_spread.break_evens[0], 68.248)
+        self.assertAlmostEqual(short_condor_spread.break_evens[1], 78.752)
+        self.assertAlmostEqual(short_condor_spread.reward_to_risk_ratio, 1.853881278538813)
 
 
 class TdTestCase(TestCase):

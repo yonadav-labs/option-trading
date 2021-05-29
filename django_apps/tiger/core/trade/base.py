@@ -52,7 +52,6 @@ class Trade(ABC):
     def common_validate(self):
         if self.target_price_lower is not None and self.target_price_upper is not None:
             assert self.target_price_lower <= self.target_price_upper
-        self.validate()
 
     @abstractmethod
     def validate(self):
@@ -345,6 +344,7 @@ class Trade(ABC):
         net_debit = 0.0
         for leg in self.legs:
             if leg.contract:
+                # dividing by units doesnt work well if not all legs' units are not the same multiple (ex for 3 legs: 1, 2, 1 doesnt work but 2, 2, 2 does)
                 net_debit += leg.net_cost / leg.units
             elif leg.stock:
                 net_debit += leg.total_cost * (leg.units / 100)
@@ -367,12 +367,16 @@ class Trade(ABC):
     def profit_prob(self):
         '''Probability of profit， implied from options pricing.'''
         # not sure what is best way to calculate probability for multiple break evens and multiple legs
+        # edge case: if user builds a strategy with no break evens
         probs = []
+        if self.is_disabled_for_prob():
+            return None
         for leg in self.legs:
             if leg.contract:
                 prob = get_target_price_probability(
                     stock_price=self.stock.stock_price,
-                    target_price=self.break_even_prices_and_ratios[0]['price'] + (0.01 if self.is_bullish else -0.01),
+                    target_price=self.break_even_prices_and_ratios[0]['price'] +
+                                 (0.01 if self.is_bullish else -0.01),
                     exp_years=leg.contract.days_till_expiration / 365.0,
                     sigma=leg.contract.implied_volatility, aims_above=self.is_bullish)
                 probs.append(prob)

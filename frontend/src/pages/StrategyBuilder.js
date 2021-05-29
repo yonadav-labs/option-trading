@@ -172,7 +172,7 @@ export default function StrategyBuilder() {
         };
 
         legs.map((leg) => {
-            let legSnapshot = { is_long: leg.action === "long", units: 1 }
+            let legSnapshot = { is_long: leg.action === "long", units: leg.units }
             if (leg.type === "option") {
                 let contract = {
                     ticker_id: leg.contract.ticker.id,

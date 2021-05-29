@@ -61,6 +61,10 @@ class TradeSnapshot(BaseModel):
         ('iron_butterfly', 'Iron Butterfly'),
         ('iron_condor', 'Iron Condor'),
         ('long_strangle', 'Long Strangle'),
+        ('long_butterfly_spread', 'Long Butterfly Spread'),
+        ('short_butterfly_spread', 'Short Butterfly Spread'),
+        ('long_condor_spread', 'Long Condor Spread'),
+        ('short_condor_spread', 'Short Condor Spread'),
     )
     type = models.CharField(max_length=100, choices=TRADE_TYPE_CHOICES, default="unspecified")
     # Snapshot of underlying asset.
