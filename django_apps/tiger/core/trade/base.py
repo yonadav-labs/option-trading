@@ -369,7 +369,7 @@ class Trade(ABC):
         # not sure what is best way to calculate probability for multiple break evens and multiple legs
         # edge case: if user builds a strategy with no break evens
         probs = []
-        if self.is_disabled_for_prob():
+        if self.is_disabled_for_prob() or len(self.break_even_prices_and_ratios) == 0:
             return None
         for leg in self.legs:
             if leg.contract:
@@ -385,9 +385,11 @@ class Trade(ABC):
     def calc_properties(self):
         '''calculates max loss, max profit, and break even points of strategy'''
         points = {}
-        # calculate total profit and loss at 0
+        # calculate total return at 0
         points[0] = self.get_total_return(0, 0)
-        # calculate total profit and loss at each strike
+        # calculate total return at last price
+        points[self.stock.stock_price] = self.get_total_return(self.stock.stock_price, self.stock.stock_price)
+        # calculate total return at each strike
         leg: Leg
         for leg in self.option_legs:
             strike = leg.contract.strike

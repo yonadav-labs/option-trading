@@ -333,49 +333,24 @@ export default function StrategyBuilder() {
                                                 case "option":
                                                     return (
                                                         <Card key={"leg_" + idx + "_card"} className="mb-3">
-                                                            <Card.Header>
-                                                                <Row>
-                                                                    <Col className="d-flex justify-content-center"><h4>Leg {idx + 1}</h4></Col>
-                                                                </Row>
-                                                            </Card.Header>
                                                             <Card.Body>
-                                                                <LegCardDetails legs={legs} index={idx} selectedTicker={selectedTicker} atmPrice={basicInfo.regularMarketPrice} updateLeg={updateLeg} selectedStrategy={selectedStrategy} expirationTimestamps={expirationTimestamps} />
+                                                                <LegCardDetails leg={leg} index={idx} selectedTicker={selectedTicker} atmPrice={basicInfo.regularMarketPrice} updateLeg={updateLeg} selectedStrategy={selectedStrategy} expirationTimestamps={expirationTimestamps} />
                                                             </Card.Body>
                                                         </Card>
                                                     );
                                                 case "stock":
                                                     return (
                                                         <Card key={"leg_" + idx + "_card"} className="mb-3">
-                                                            <Card.Header>
-                                                                <Row>
-                                                                    <Col className="d-flex justify-content-center"><h4>Leg {idx + 1}</h4></Col>
-                                                                </Row>
-                                                            </Card.Header>
                                                             <Card.Body>
-                                                                <Row>
-                                                                    <Col>
-                                                                        <MetricLabel label="Shares" />
-                                                                    </Col>
-                                                                </Row>
-                                                                <LegCardDetails legs={legs} index={idx} selectedTicker={selectedTicker} updateLeg={updateLeg} />
+                                                                <LegCardDetails leg={leg} index={idx} selectedTicker={selectedTicker} updateLeg={updateLeg} />
                                                             </Card.Body>
                                                         </Card>
                                                     );
                                                 case "cash":
                                                     return (
                                                         <Card key={"leg_" + idx + "_card"} className="mb-3">
-                                                            <Card.Header>
-                                                                <Row>
-                                                                    <Col className="d-flex justify-content-center"><h4>Leg {idx + 1}</h4></Col>
-                                                                </Row>
-                                                            </Card.Header>
                                                             <Card.Body>
-                                                                <Row>
-                                                                    <Col>
-                                                                        <MetricLabel label="Cash" />
-                                                                    </Col>
-                                                                </Row>
-                                                                <LegCardDetails legs={legs} index={idx} selectedTicker={selectedTicker} updateLeg={updateLeg} />
+                                                                <LegCardDetails leg={leg} index={idx} selectedTicker={selectedTicker} updateLeg={updateLeg} />
                                                             </Card.Body>
                                                         </Card>
                                                     );
@@ -405,7 +380,7 @@ export default function StrategyBuilder() {
                                     </Col>
                                 </Row>
                             }
-                            <Row style={{ marginTop: '4rem' }}>
+                            <Row style={{ marginTop: '2rem' }}>
                                 <Col>
                                     <Spinner hidden={!loadingStrategyDetails} animation="grow" role="status">
                                         <span className="sr-only"></span>

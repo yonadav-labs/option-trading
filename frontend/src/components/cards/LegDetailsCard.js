@@ -14,8 +14,7 @@ export default function LegDetailsCard(props) {
                 <Card.Header>
                     <Row>
                         <Col sm="2" xs="6">
-                            <h5>{leg_num ? `LEG ${leg_num}` : null}</h5>
-                            Qty: {leg.units}
+                            <h5>{leg_num ? `Leg #${leg_num}` : null}</h5>
                         </Col>
                         <Col sm="2" xs="6">
                             <MetricLabel label="action" /><br />
@@ -52,7 +51,7 @@ export default function LegDetailsCard(props) {
                 <Card.Header>
                     <Row>
                         <Col sm="2" xs="6">
-                            <h5>{leg_num ? `LEG ${leg_num}` : null}</h5>
+                            <h5>{leg_num ? `Leg #${leg_num}` : null}</h5>
                         </Col>
                         <Col sm="2" xs="6">
                             <MetricLabel label="action" />
@@ -72,7 +71,7 @@ export default function LegDetailsCard(props) {
                 <Card.Header>
                     <Row>
                         <Col sm="2" xs="6">
-                            <h5>{leg_num ? `LEG ${leg_num}` : null}</h5>
+                            <h5>{leg_num ? `Leg #${leg_num}` : null}</h5>
                         </Col>
                         <Col sm="2" xs="6">
                             <MetricLabel label="action" />

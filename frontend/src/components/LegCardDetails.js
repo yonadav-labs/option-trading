@@ -10,13 +10,12 @@ import MetricLabel from './MetricLabel.js';
 const GaEvent = GetGaEventTrackingFunc('options builder');
 
 export default function LegCardDetails(props) {
-    const { legs, index, selectedTicker, updateLeg, selectedStrategy, expirationTimestamps } = props;
+    const { leg, index, selectedTicker, updateLeg, selectedStrategy, expirationTimestamps } = props;
     const [strikes, setStrikes] = useState([]);
     const [selectedStrike, setSelectedStrike] = useState(0);
     const API_URL = getApiUrl();
 
     useEffect(async () => {
-        const leg = legs[index];
         setStrikes([]);
         setSelectedStrike('')
 
@@ -35,9 +34,9 @@ export default function LegCardDetails(props) {
                     const percentageChange = ((props.atmPrice - val.strike) / props.atmPrice) * -1;
                     const option = { value: val.strike, label: <>{PriceFormatter(val.strike)} ({percentageChange > 0 ? "+" : ""}{PercentageFormatter(percentageChange)})</> };
 
-                    if (legs[index].strike === '') {
+                    if (leg.strike === '') {
                         setSelectedStrike('')
-                    } else if (val.strike === legs[index].strike) {
+                    } else if (val.strike === leg.strike) {
                         selectedStrikeIsValid = true;
                         setSelectedStrike(option);
                     }
@@ -46,12 +45,12 @@ export default function LegCardDetails(props) {
 
                 strikes.push({ value: props.atmPrice, label: <>{PriceFormatter(props.atmPrice)} (Current Price)</>, isDisabled: true });
                 setStrikes(strikes.sort((a, b) => a.value - b.value));
-                updateLeg("contract", selectedStrikeIsValid ? filteredContracts.filter((val) => val.strike === legs[index].strike)[0] : {}, index);
+                updateLeg("contract", selectedStrikeIsValid ? filteredContracts.filter((val) => val.strike === leg.strike)[0] : {}, index);
             } catch (error) {
                 console.error(error);
             }
         }
-    }, [props.legs[props.index].expiration, props.legs[props.index].action, props.legs[props.index].optionType, props.legs[props.index].strike, selectedStrategy]);
+    }, [leg.expiration, leg.action, leg.optionType, leg.strike, selectedStrategy]);
 
     const onStrikeSelectChange = (option) => {
         setSelectedStrike(option);
@@ -62,7 +61,7 @@ export default function LegCardDetails(props) {
         updateLeg("expiration", event.target.value, index);
     }
 
-    switch (legs[index].type) {
+    switch (leg.type) {
         case "option":
             return (
                 <>
@@ -71,23 +70,29 @@ export default function LegCardDetails(props) {
                             <Form>
                                 <Form.Row>
                                     <Col sm="2" xs="12">
+                                        <MetricLabel label="leg" />
+                                        <Form.Control as="select" disabled={true}>
+                                            <option>#{index + 1}</option>
+                                        </Form.Control>
+                                    </Col>
+                                    <Col sm="2" xs="12">
                                         <MetricLabel label="action" />
-                                        <Form.Control as="select" value={legs[index].action} onChange={(e) => updateLeg("action", e.target.value, index)} disabled={selectedStrategy.legs[index].action}>
+                                        <Form.Control as="select" value={leg.action} onChange={(e) => updateLeg("action", e.target.value, index)} disabled={selectedStrategy.legs[index].action}>
                                             <option value="long" key="long">Long</option>
                                             <option value="short" key="short">Short</option>
                                         </Form.Control>
                                     </Col>
                                     <Col sm="2" xs="12">
                                         <MetricLabel label="call/put" />
-                                        <Form.Control as="select" value={legs[index].optionType} onChange={(e) => updateLeg("optionType", e.target.value, index)} disabled={selectedStrategy.legs[index].optionType}>
+                                        <Form.Control as="select" value={leg.optionType} onChange={(e) => updateLeg("optionType", e.target.value, index)} disabled={selectedStrategy.legs[index].optionType}>
                                             <option value="call" key="call">Call</option>
                                             <option value="put" key="put">Put</option>
                                             <option hidden value="">Select an option type</option>
                                         </Form.Control>
                                     </Col>
-                                    <Col sm="4" xs="12">
+                                    <Col sm="3" xs="12">
                                         <MetricLabel label="expiration date" />
-                                        <Form.Control as="select" value={legs[index].expiration || 0}
+                                        <Form.Control as="select" value={leg.expiration || 0}
                                             onChange={(e) => { GaEvent('adjust leg exp date'); onExpirationChange(e); }}
                                             disabled={selectedStrategy.legs[index].expiration}>
                                             {expirationTimestamps.map(val => {
@@ -96,7 +101,7 @@ export default function LegCardDetails(props) {
                                             <option hidden value={0} key="blank">Select an expiration</option>
                                         </Form.Control>
                                     </Col>
-                                    <Col sm="4" xs="12">
+                                    <Col sm="3" xs="12">
                                         <MetricLabel label="strike" hideIcon />
                                         <Select
                                             className="basic-single"
@@ -114,30 +119,70 @@ export default function LegCardDetails(props) {
                     </Row >
                     <Row>
                         <Col>
-                            <ContractDetailsCard contract={!isEmpty(legs[index].contract) ? legs[index].contract : null} />
+                            <ContractDetailsCard contract={!isEmpty(leg.contract) ? leg.contract : null} hideTitle={true} />
                         </Col>
                     </Row>
                 </>
             );
         case "stock":
             return (
-                <>
-                    <Row>
-                        <Col>
-                            <p>Hold {selectedTicker.length > 0 ? `${legs[index].shares} ${selectedTicker[0].symbol}` : ""} shares</p>
-                        </Col>
-                    </Row>
-                </>
+                <Row className="mb-3">
+                    <Col>
+                        <Form>
+                            <Form.Row>
+                                <Col sm="2" xs="12">
+                                    <MetricLabel label="leg" />
+                                    <Form.Control as="select" disabled={true}>
+                                        <option>#{index + 1}</option>
+                                    </Form.Control>
+                                </Col>
+                                <Col sm="2" xs="12">
+                                    <MetricLabel label="action" />
+                                    <Form.Control as="select" value={leg.action} disabled={true}>
+                                        <option value="long" key="long">Long</option>
+                                        <option value="short" key="short">Short</option>
+                                    </Form.Control>
+                                </Col>
+                                <Col sm="2" xs="12">
+                                    <MetricLabel label="shares" />
+                                    <Form.Control as="select" value={leg.optionType} disabled={true}>
+                                        <option value="100" key="100">100</option>
+                                    </Form.Control>
+                                </Col>
+                            </Form.Row>
+                        </Form>
+                    </Col>
+                </Row>
             );
         case "cash":
+            console.log(leg);
             return (
-                <>
-                    <Row>
-                        <Col>
-                            <p>Hold {PriceFormatter(legs[index].value)} in cash</p>
-                        </Col>
-                    </Row>
-                </>
+                <Row className="mb-3">
+                    <Col>
+                        <Form>
+                            <Form.Row>
+                                <Col sm="2" xs="12">
+                                    <MetricLabel label="leg" />
+                                    <Form.Control as="select" disabled={true}>
+                                        <option>#{index + 1}</option>
+                                    </Form.Control>
+                                </Col>
+                                <Col sm="2" xs="12">
+                                    <MetricLabel label="action" />
+                                    <Form.Control as="select" value={leg.action} disabled={true}>
+                                        <option value="long" key="long">Keep as collateral</option>
+                                    </Form.Control>
+                                </Col>
+                                <Col sm="2" xs="12">
+                                    <MetricLabel label="Cash" />
+                                    <Form.Control as="select" value={leg.optionType} disabled={true}>
+                                        <option>{leg.value > 0 ? '$' + leg.value : 'TBD'}</option>
+                                    </Form.Control>
+                                </Col>
+                            </Form.Row>
+                        </Form>
+                    </Col>
+                </Row>
             );
         default:
             return null;
