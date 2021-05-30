@@ -35,22 +35,20 @@ export default function TradeDetailsCard(props) {
                 </Row>
                 <Card.Text>
                     <Row className="mb-3">
-                        <Col sm="2" xs="6">
-                            <MetricLabel label="ticker" /><br />
+                        <Col sm="3" xs="6">
+                            <b><MetricLabel label="ticker" /></b><br />
                             {trade.stock.ticker.symbol}
                         </Col>
-                        <Col sm="2" xs="6">
-                            <MetricLabel label="strategy" /><br />
+                        <Col sm="3" xs="6">
+                            <b><MetricLabel label="strategy" /></b><br />
                             {startCase(trade.type)}
                         </Col>
-                        <Col sm="2" xs="6">
-                            <MetricLabel label={trade.net_debit_per_unit > 0 ? "order net debit" : "order net credit"} /><br />
+                        <Col sm="3" xs="6">
+                            <b><MetricLabel label={trade.net_debit_per_unit > 0 ? "order net debit" : "order net credit"} /></b><br />
                             {PriceFormatter(Math.abs(trade.net_debit_per_unit))}
                         </Col>
-                        <Col sm="2" xs="6"></Col>
-                        <Col sm="2" xs="6"></Col>
-                        <Col sm="2" xs="6">
-                            <MetricLabel label="quoted at" /><br />
+                        <Col sm="3" xs="6">
+                            <b><MetricLabel label="quoted at" /></b><br />
                             {TimestampTimeFormatter(trade.quote_time)}
                         </Col>
                     </Row>
@@ -68,12 +66,16 @@ export default function TradeDetailsCard(props) {
                         <Col><h5>Key Data</h5></Col>
                     </Row>
                     <Row>
-                        <Col sm="2" xs="6">
-                            <MetricLabel label="break-even at" /><br />
+                        <Col sm="3" xs="6">
+                            <b><MetricLabel label="probability of profit" /></b><br />
+                            {PercentageFormatter(trade.profit_prob)}
+                        </Col>
+                        <Col sm="3" xs="6">
+                            <b><MetricLabel label="break-even at" /></b><br />
                             {trade.break_even_prices_and_ratios.map(break_even => <span>{ProfitFormatter(break_even.ratio)} (at {PriceFormatter(break_even.price)})<br /></span>)}
                         </Col>
-                        <Col sm="2" xs="6">
-                            <MetricLabel label="max return" /><br />
+                        <Col sm="3" xs="6">
+                            <b> <MetricLabel label="max return" /></b><br />
                             {trade.best_return != null && trade.best_return != 'infinite' ?
                                 (
                                     <span>
@@ -82,8 +84,30 @@ export default function TradeDetailsCard(props) {
                                 )
                                 : (<span>Unlimited</span>)}
                         </Col>
-                        <Col sm="2" xs="6">
-                            <MetricLabel label="10% probability loss" /><br />
+                        <Col sm="3" xs="6">
+                            <b><MetricLabel label="total cost" /></b><br />
+                            {PriceFormatter(trade.cost)}
+                        </Col>
+                    </Row>
+                    <Row>
+                        <Col sm="3" xs="6">
+                            <b><MetricLabel label="notional value" /></b><br />
+                            {PriceFormatter(trade.notional_value)}
+                        </Col>
+                        <Col sm="3" xs="6">
+                            <b><MetricLabel label="leverage" /></b><br />
+                            {PercentageFormatter(trade.leverage)}
+                        </Col>
+
+                        {displayCommissionCost &&
+                            <Col sm="3" xs="6">
+                                <b> <MetricLabel label="total commission" /></b><br />
+                                {PriceFormatter(trade.commission_cost)}
+                            </Col>
+                        }
+
+                        <Col sm="3" xs="6">
+                            <b><MetricLabel label="10% probability loss" /></b><br />
                             {
                                 trade.ten_percent_worst_return_ratio != null ?
                                     <>
@@ -96,8 +120,8 @@ export default function TradeDetailsCard(props) {
                                     : "N/A"
                             }
                         </Col>
-                        <Col sm="2" xs="6">
-                            <MetricLabel label="10% probability profit" /><br />
+                        <Col sm="3" xs="6">
+                            <b><MetricLabel label="10% probability profit" /></b><br />
                             {
                                 trade.ten_percent_best_return_ratio != null ?
                                     <>
@@ -111,27 +135,6 @@ export default function TradeDetailsCard(props) {
                             }
                         </Col>
                     </Row>
-                    <Row>
-                        <Col sm="2" xs="6">
-                            <MetricLabel label="total cost" /><br />
-                            {PriceFormatter(trade.cost)}
-                        </Col>
-                        <Col sm="2" xs="6">
-                            <MetricLabel label="notional value" /><br />
-                            {PriceFormatter(trade.notional_value)}
-                        </Col>
-                        <Col sm="2" xs="6">
-                            <MetricLabel label="leverage" /><br />
-                            {PercentageFormatter(trade.leverage)}
-                        </Col>
-
-                        {displayCommissionCost &&
-                            <Col sm="2" xs="6">
-                                <MetricLabel label="total commission" /><br />
-                                {PriceFormatter(trade.commission_cost)}
-                            </Col>
-                        }
-                    </Row>
                     <TradeProfitLossGraph trade={trade} />
                     {trade.target_price_lower &&
                         <>
@@ -139,13 +142,13 @@ export default function TradeDetailsCard(props) {
                                 <Col><h5>Market Assumption</h5></Col>
                             </Row>
                             <Row>
-                                <Col sm="4" xs="6">
-                                    <MetricLabel label="price target range" /><br />
+                                <Col sm="3" xs="6">
+                                    <b><MetricLabel label="price target range" /></b><br />
                                     {PriceFormatter(trade.target_price_lower)} ({ProfitFormatter(trade.to_target_price_lower_ratio)})
                                     - {PriceFormatter(trade.target_price_upper)} ({ProfitFormatter(trade.to_target_price_upper_ratio)})
                                     </Col>
-                                <Col sm="4" xs="6">
-                                    <MetricLabel label="hypothetical return" /><br />
+                                <Col sm="3" xs="6">
+                                    <b><MetricLabel label="hypothetical return" /></b><br />
                                     {ProfitFormatter(trade.target_price_profit_ratio)} ({PriceFormatter(trade.target_price_profit)})
                                     </Col>
                             </Row>
@@ -158,20 +161,20 @@ export default function TradeDetailsCard(props) {
                                 <Col><h5>Latest Return</h5></Col>
                             </Row>
                             <Row>
-                                <Col sm="2" xs="6">
-                                    <MetricLabel label="latest return" /><br />
+                                <Col sm="3" xs="6">
+                                    <b><MetricLabel label="latest return" /></b><br />
                                     <div> {PriceFormatter(profitLoss.profit)} ({ProfitFormatter(profitLoss.profit_rate)})</div>
                                 </Col>
-                                <Col sm="2" xs="6">
-                                    <MetricLabel label="initial value" /><br />
+                                <Col sm="3" xs="6">
+                                    <b><MetricLabel label="initial value" /></b><br />
                                     <div> {PriceFormatter(trade.cost)} </div>
                                 </Col>
-                                <Col sm="2" xs="6">
-                                    <MetricLabel label="latest value" /><br />
+                                <Col sm="3" xs="6">
+                                    <b><MetricLabel label="latest value" /></b><br />
                                     <div> {PriceFormatter(latestTrade.cost)} </div>
                                 </Col>
-                                <Col sm="2" xs="6">
-                                    <MetricLabel label="latest stock return" /><br />
+                                <Col sm="3" xs="6">
+                                    <b><MetricLabel label="latest stock return" /></b><br />
                                     <div> {ProfitFormatter(profitLoss.stock_profit_rate)}</div>
                                 </Col>
                             </Row>

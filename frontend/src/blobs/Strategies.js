@@ -115,28 +115,55 @@ export const strategies = [
             ]
         }
     ),
-    new Strategy({
-        name: "Covered Call",
-        type: "covered_call",
-        description: "Receive a premium to allow your shares of the stock to be sold at the strike price until the expiration. \
-                        You profit when the stock price does not move below the: strike price - the premium.",
-        sentiment: ["flat, bear"],
-        legs: [
-            new OptionLeg(
-                {
-                    action: "short",
-                    expiration: 0,
-                    optionType: "call"
-                }
-            ),
-            new StockLeg(
-                {
-                    ticker: "",
-                    shares: 100
-                }
-            )
-        ]
-    }
+    new Strategy(
+        {
+            name: "Covered Call",
+            type: "covered_call",
+            description: "Receive a premium to allow your shares of the stock to be sold at the strike price until the expiration. \
+                            You profit when the stock price does not move below the: strike price - the premium.",
+            sentiment: ["flat, bear"],
+            legs: [
+                new OptionLeg(
+                    {
+                        action: "short",
+                        expiration: 0,
+                        optionType: "call"
+                    }
+                ),
+                new StockLeg(
+                    {
+                        action: "long",
+                        ticker: "",
+                        shares: 100
+                    }
+                )
+            ]
+        }
+    ),
+    new Strategy(
+        {
+            name: "Protective Put",
+            type: "protective_put",
+            description: "Pay a premium to allow your shares of the stock to be sold at the strike price until the expiration. \
+                            You profit when the stock price does not move below the: stock price - strike price + the premium.",
+            sentiment: ["bullish"],
+            legs: [
+                new OptionLeg(
+                    {
+                        action: "long",
+                        expiration: 0,
+                        optionType: "put"
+                    }
+                ),
+                new StockLeg(
+                    {
+                        action: "long",
+                        ticker: "",
+                        shares: 100
+                    }
+                )
+            ]
+        }
     ),
     new Strategy(
         {

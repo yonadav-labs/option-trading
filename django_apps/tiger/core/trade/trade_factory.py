@@ -7,6 +7,7 @@ from .bull_call_spread import BullCallSpread
 from .bull_put_spread import BullPutSpread
 from .cash_secured_put import CashSecuredPut
 from .covered_call import CoveredCall
+from .protective_put import ProtectivePut
 from .iron_butterfly import IronButterfly
 from .iron_condor import IronCondor
 from .long_butterfly_spread import LongButterflySpread
@@ -36,6 +37,8 @@ class TradeFactory:
             trade_class = LongPut
         elif trade_type == 'covered_call':
             trade_class = CoveredCall
+        elif trade_type == 'protective_put':
+            trade_class = ProtectivePut
         elif trade_type == 'cash_secured_put':
             trade_class = CashSecuredPut
         elif trade_type == 'bull_call_spread':

@@ -5,6 +5,7 @@ from .bull_call_spread import BullCallSpread
 from .bull_put_spread import BullPutSpread
 from .cash_secured_put import CashSecuredPut
 from .covered_call import CoveredCall
+from .protective_put import ProtectivePut
 from .long_call import LongCall
 from .long_put import LongPut
 from .long_straddle import LongStraddle

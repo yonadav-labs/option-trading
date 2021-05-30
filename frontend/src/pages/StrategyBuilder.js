@@ -186,7 +186,8 @@ export default function StrategyBuilder() {
                 // console.log(leg)
                 legSnapshot.stock_snapshot = {
                     ticker_id: selectedTicker[0].id,
-                    external_cache_id: selectedTicker[0].external_cache_id
+                    external_cache_id: selectedTicker[0].external_cache_id,
+                    ticker_stats_id: selectedTicker[0].ticker_stats_id,
                 };
                 legSnapshot.units = leg.shares;
             } else {
@@ -399,12 +400,12 @@ export default function StrategyBuilder() {
                                         </Col>
                                         <Col lg="auto">
                                             <Button disabled={(selectedTicker.length < 1 || !legs.reduce((prevVal, currVal) => (currVal.type !== "option" || prevVal && !isEmpty(currVal.contract)), true)) || ruleMessage}
-                                                onClick={getStrategyDetails}>Calculate Strategy Details</Button>
+                                                onClick={getStrategyDetails}>Build Strategy</Button>
                                         </Col>
                                     </Col>
                                 </Row>
                             }
-                            <Row style={{ marginTop: '1rem' }}>
+                            <Row style={{ marginTop: '4rem' }}>
                                 <Col>
                                     <Spinner hidden={!loadingStrategyDetails} animation="grow" role="status">
                                         <span className="sr-only"></span>

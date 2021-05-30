@@ -240,7 +240,7 @@ class Trade(ABC):
     def is_disabled_for_prob(self):
         # TODO: temporily disable for some strategies till we fix the probability calculation.
         return self.sigma is None or self.type not in ['long_call', 'covered_call', 'long_put', 'cash_secured_put',
-                                                       'bull_call_spread', 'bear_call_spread',
+                                                       'protective_put', 'bull_call_spread', 'bear_call_spread',
                                                        'bear_put_spread', 'bull_put_spread']
 
     def get_ten_percent_prices_and_returns(self, is_profit):
@@ -252,7 +252,7 @@ class Trade(ABC):
         :return: a 10% chance price and it's return.
         '''
         if self.is_disabled_for_prob():
-            return None
+            return [None, None]
         stock_price = self.stock.stock_price
         # TODO: use 3 sigma when profit calculation is using normal distribution.
         lowest_price = max(0, stock_price * (1 - 2 * self.sigma))
@@ -376,7 +376,7 @@ class Trade(ABC):
                 prob = get_target_price_probability(
                     stock_price=self.stock.stock_price,
                     target_price=self.break_even_prices_and_ratios[0]['price'] +
-                    (0.01 if self.is_bullish else -0.01),
+                                 (0.01 if self.is_bullish else -0.01),
                     exp_years=leg.contract.days_till_expiration / 365.0,
                     sigma=leg.contract.implied_volatility, aims_above=self.is_bullish)
                 probs.append(prob)

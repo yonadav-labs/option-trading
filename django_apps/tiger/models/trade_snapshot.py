@@ -49,6 +49,7 @@ class TradeSnapshot(BaseModel):
         ('unspecified', 'Unspecified'),
         ('long_call', 'Long call'),
         ('covered_call', 'Covered call'),
+        ('protective_put', 'Protective put'),
         ('long_put', 'Long put'),
         ('cash_secured_put', 'Cash secured put'),
         ('bull_call_spread', 'Bull call spread'),

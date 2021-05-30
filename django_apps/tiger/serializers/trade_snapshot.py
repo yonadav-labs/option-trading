@@ -50,24 +50,23 @@ class TradeSnapshotSerializer(serializers.ModelSerializer):
     def validate(self, input_trade_data):
         from tiger.views.utils import get_broker
 
-        stock_snapshot = StockSnapshot(**input_trade_data.get('stock_snapshot'))
-
         leg_snapshots = []
         for leg_snapshot_data in input_trade_data.get('leg_snapshots'):
             leg_snapshot_model_data = get_subdict_by_fields(leg_snapshot_data, ['is_long', 'units'])
 
             if leg_snapshot_data.get('contract_snapshot'):
-                contract_snapshot = OptionContractSnapshot(**leg_snapshot_data.get('contract_snapshot'))
-                leg_snapshot_model_data['contract_snapshot'] = contract_snapshot
+                leg_snapshot_model_data['contract_snapshot'] = OptionContractSnapshot(
+                    **leg_snapshot_data.get('contract_snapshot'))
             elif leg_snapshot_data.get('stock_snapshot'):
-                stock_snapshot = StockSnapshot(**leg_snapshot_data.get('stock_snapshot'))
-                leg_snapshot_model_data['stock_snapshot'] = stock_snapshot
+                leg_snapshot_model_data['stock_snapshot'] = StockSnapshot(**leg_snapshot_data.get('stock_snapshot'))
             elif 'cash_snapshot' in leg_snapshot_data:
                 leg_snapshot_model_data['cash_snapshot'] = leg_snapshot_data.get('cash_snapshot')
+            else:
+                assert False, 'Snapshot saving invalid leg'
 
             leg_snapshots.append(LegSnapshot(**leg_snapshot_model_data))
 
-        input_trade_data['stock_snapshot'] = stock_snapshot
+        input_trade_data['stock_snapshot'] = StockSnapshot(**input_trade_data.get('stock_snapshot'))
         input_trade_data['leg_snapshots'] = leg_snapshots
 
         try:

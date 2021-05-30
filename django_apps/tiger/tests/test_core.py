@@ -8,7 +8,7 @@ from tiger.core import Cash, Stock, OptionContract, OptionLeg
 from tiger.core.trade import LongCall, LongPut, CoveredCall, CashSecuredPut, BullPutSpread, BullCallSpread, \
     BearCallSpread, BearPutSpread, Trade, LongStraddle, LongStrangle, IronCondor, IronButterfly, ShortStrangle, \
     ShortStraddle, LongButterflySpread, ShortButterflySpread, LongCondorSpread, ShortCondorSpread, StrapStraddle, \
-    StrapStrangle
+    StrapStrangle, ProtectivePut
 
 MOCK_NOW_TIMESTAMP = 1609664400  # 01/03/2021
 
@@ -791,6 +791,19 @@ class PutTradesTestCase(TestCase):
         self.assertAlmostEqual(strap_strangle.break_evens[0], 61.874)
         self.assertAlmostEqual(strap_strangle.break_evens[1], 77.063)
         self.assertEqual(strap_strangle.reward_to_risk_ratio, None)
+
+    def test_protective_put(self):
+        put_contract = OptionContract(self.ticker, False, self.yahoo_input, self.stock_price)
+        protective_put = ProtectivePut.build(self.stock, put_contract, 'mid', self.broker_settings, target_price_lower=258.3,
+                                             target_price_upper=258.3)
+        self.assertAlmostEqual(protective_put.cost, 7426.3)
+        self.assertEqual(protective_put.best_return, 'infinite')
+        self.assertAlmostEqual(protective_put.target_price_profit, 18403.7)
+        self.assertAlmostEqual(protective_put.worst_return, -626.3)
+        self.assertEqual(len(protective_put.break_evens), 1)
+        # includes commission cost
+        self.assertAlmostEqual(protective_put.break_evens[0], 74.263)
+        self.assertEqual(protective_put.reward_to_risk_ratio, None)
 
 
 class TdTestCase(TestCase):
