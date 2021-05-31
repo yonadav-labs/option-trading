@@ -9,6 +9,7 @@ class UserSerializer(serializers.ModelSerializer):
     subscription = serializers.SerializerMethodField()
     brokers_detail = serializers.SerializerMethodField()
     referral_link = serializers.SerializerMethodField()
+    disallowed_strategies = serializers.SerializerMethodField()
 
     def get_subscription(self, obj):
         subscription = obj.get_subscription()
@@ -22,6 +23,9 @@ class UserSerializer(serializers.ModelSerializer):
 
     def get_referral_link(self, obj):
         return obj.get_referral_link()
+
+    def get_disallowed_strategies(self, obj):
+        return obj.disallowed_strategies
 
     class Meta:
         model = User
