@@ -143,16 +143,14 @@ def get_broker(user=None):
     return broker
 
 
-def user_disabled_or_disallowed_strategy(user, strategy):
-    UNAUTH_BLOCKLIST = ['cash_secured_put', 'protective_put', 'bear_call_spread', 'bear_put_spread', 'bull_put_spread',
-                        'long_straddle', 'long_strangle', 'iron_condor', 'iron_butterfly', 'short_strangle',
-                        'short_straddle', 'long_butterfly_spread', 'short_butterfly_spread', 'long_condor_spread',
-                        'short_condor_spread', 'strap_straddle', 'strap_strangle']
+def get_disabled_or_disallowed_strategies(user):
     if user and user.is_authenticated:
-        blocked_strategies = set(user.disabled_strategies + user.disallowed_strategies)
+        return set(user.disabled_strategies + user.disallowed_strategies)
     else:
-        blocked_strategies = UNAUTH_BLOCKLIST
-    return strategy in blocked_strategies
+        return set(['cash_secured_put', 'protective_put', 'bear_call_spread', 'bear_put_spread', 'bull_put_spread',
+                    'long_straddle', 'long_strangle', 'iron_condor', 'iron_butterfly', 'short_strangle',
+                    'short_straddle', 'long_butterfly_spread', 'short_butterfly_spread', 'long_condor_spread',
+                    'short_condor_spread', 'strap_straddle', 'strap_strangle'])
 
 
 def handle_referral(request):
