@@ -1,4 +1,3 @@
-from tiger.models import Ticker, TickerStats
 from datetime import datetime
 from unittest import mock
 
@@ -9,6 +8,7 @@ from tiger.core.trade import LongCall, LongPut, CoveredCall, CashSecuredPut, Bul
     BearCallSpread, BearPutSpread, Trade, LongStraddle, LongStrangle, IronCondor, IronButterfly, ShortStrangle, \
     ShortStraddle, LongButterflySpread, ShortButterflySpread, LongCondorSpread, ShortCondorSpread, StrapStraddle, \
     StrapStrangle, ProtectivePut
+from tiger.models import Ticker, TickerStats
 
 MOCK_NOW_TIMESTAMP = 1609664400  # 01/03/2021
 
@@ -103,8 +103,6 @@ class CallTradesTestCase(TestCase):
         self.assertAlmostEqual(long_call.target_price_profit, 15028.7)
         self.assertAlmostEqual(long_call.target_price_profit_ratio, 0.92934396121)
         self.assertAlmostEqual(long_call.stock.historical_volatility, 0.8)
-        self.assertSequenceEqual(long_call.two_sigma_prices, [0.0, 918.0998518877443])
-        self.assertAlmostEqual(long_call.two_sigma_profit_lower, -16171.3)
         self.assertAlmostEqual(long_call.sigma, 0.5941513889707513)
         self.assertSequenceEqual(long_call.get_ten_percent_prices_and_returns(is_profit=True),
                                  [739.9148738774114, 37978.80203064213])
@@ -171,7 +169,7 @@ class CallTradesTestCase(TestCase):
                 return False
 
         new_trade = CustomTrade(self.stock, [call_leg_1, call_leg_2, call_leg_3,
-                                call_leg_4, call_leg_5, put_leg_1, put_leg_2, put_leg_3, put_leg_4], 'mid')
+                                             call_leg_4, call_leg_5, put_leg_1, put_leg_2, put_leg_3, put_leg_4], 'mid')
         # should be 3 short calls
         self.assertEqual(len(new_trade.organized_option_legs['short']['call']), 3)
         # should be 2 long calls
@@ -734,7 +732,8 @@ class PutTradesTestCase(TestCase):
         right_put_contract = OptionContract(self.ticker, False, self.yahoo_input6, self.stock_price, 'mid')
         right_put_contract2 = OptionContract(self.ticker, False, self.yahoo_input8, self.stock_price, 'mid')
         long_condor_spread = LongCondorSpread.build(self.stock, left_put_contract, left_put_contract2,
-                                                    right_put_contract, right_put_contract2, 'mid', self.broker_settings, 70, 70)
+                                                    right_put_contract, right_put_contract2, 'mid',
+                                                    self.broker_settings, 70, 70)
         self.assertAlmostEqual(long_condor_spread.cost, 135.2)
         self.assertAlmostEqual(long_condor_spread.best_return, 164.8)
         self.assertAlmostEqual(long_condor_spread.target_price_profit, 164.8)
@@ -751,7 +750,8 @@ class PutTradesTestCase(TestCase):
         right_put_contract = OptionContract(self.ticker, False, self.yahoo_input7, self.stock_price, 'mid')
         right_put_contract2 = OptionContract(self.ticker, False, self.yahoo_input9, self.stock_price, 'mid')
         short_condor_spread = ShortCondorSpread.build(self.stock, left_put_contract, left_put_contract2,
-                                                      right_put_contract, right_put_contract2, 'mid', self.broker_settings, 100, 100)
+                                                      right_put_contract, right_put_contract2, 'mid',
+                                                      self.broker_settings, 100, 100)
         self.assertAlmostEqual(short_condor_spread.cost, -124.8)
         self.assertAlmostEqual(short_condor_spread.best_return, 324.8)
         self.assertAlmostEqual(short_condor_spread.target_price_profit, -short_condor_spread.cost)
@@ -794,7 +794,8 @@ class PutTradesTestCase(TestCase):
 
     def test_protective_put(self):
         put_contract = OptionContract(self.ticker, False, self.yahoo_input, self.stock_price)
-        protective_put = ProtectivePut.build(self.stock, put_contract, 'mid', self.broker_settings, target_price_lower=258.3,
+        protective_put = ProtectivePut.build(self.stock, put_contract, 'mid', self.broker_settings,
+                                             target_price_lower=258.3,
                                              target_price_upper=258.3)
         self.assertAlmostEqual(protective_put.cost, 7426.3)
         self.assertEqual(protective_put.best_return, 'infinite')

@@ -191,45 +191,12 @@ class Trade(ABC):
         sigma = daily_volatility * math.sqrt(trading_days_till_exp)
         return [max(0.0, self.stock.stock_price * (1 + n * sigma)) for n in (-sigma_num, sigma_num)]
 
-    # TODO: deprecated.
-    @property
-    def two_sigma_prices(self):
-        return self.get_sigma_prices(2)
-
-    # TODO: deprecated.
-    @property
-    def two_sigma_profit_lower(self):
-        # TODO: change to a function that can handle peek/valley. Currently all strategies are monotonic.
-        if not self.two_sigma_prices:
-            return None
-        lower_price, higher_price = self.two_sigma_prices
-        return max(-self.cost, min(self.get_total_return(lower_price, lower_price),
-                                   self.get_total_return(higher_price, higher_price)))
-
-    # TODO: deprecated.
-    @property
-    def two_sigma_profit_lower_price(self):
-        # TODO: change to a function that can handle peek/valley. Currently all strategies are monotonic.
-        if not self.two_sigma_prices:
-            return None
-        lower_price, higher_price = self.two_sigma_prices
-        lower_price_profit = self.get_total_return(lower_price, lower_price)
-        higer_price_profit = self.get_total_return(higher_price, higher_price)
-        return lower_price if lower_price_profit < higer_price_profit else higer_price_profit
-
-    # TODO: deprecated.
-    @property
-    def two_sigma_profit_lower_ratio(self):
-        if self.two_sigma_profit_lower is None:
-            return None
-        return self.two_sigma_profit_lower / self.cost
-
     @property
     def sigma(self):
         # https://www.profitspi.com/stock/view.aspx?v=stock-chart&uv=100585
         # https://www.macroption.com/historical-volatility-calculation/
         historical_volatility = self.stock.historical_volatility
-        if not historical_volatility:
+        if not historical_volatility or self.min_days_till_expiration < 0:
             return None
         # TODO: change to count actual trading days.
         # Estimation to exclude weekends.

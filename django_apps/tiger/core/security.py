@@ -1,8 +1,8 @@
 from abc import ABC, abstractmethod
 
 import tiger.blob_reader as blob_reader
-from tiger.utils import days_from_timestamp, timestamp_to_datetime_with_default_tz
 from tiger.core.black_scholes import get_itm_probability
+from tiger.utils import days_from_timestamp, timestamp_to_datetime_with_default_tz
 
 
 class Security(ABC):
@@ -217,7 +217,7 @@ class OptionContract(Security):
 
     @property
     def itm_probability(self):
-        if self.implied_volatility is None:
+        if self.implied_volatility is None or self.days_till_expiration < 0:
             return None
         return get_itm_probability(stock_price=self.stock_price, strike=self.strike,
                                    exp_years=self.days_till_expiration / 365.0, sigma=self.implied_volatility,

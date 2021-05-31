@@ -164,7 +164,7 @@ def handle_referral(request):
     3. Associate a user using the session key saved in cookie when he signs up and logs in.
     4. Give bonus to the referrer and the referral
     """
-    referral_sessionid = request.GET.get('referral-sessionid')
+    referral_sessionid = request.GET.get('referral-sessionid', '')
     if ':' in referral_sessionid:
         code, session_key = referral_sessionid.split(":")
         referral_responses = ReferralResponse.objects.filter(session_key=session_key)

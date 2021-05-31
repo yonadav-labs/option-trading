@@ -41,7 +41,7 @@ class LegSnapshot(BaseModel):
     contract_snapshot = models.ForeignKey(OptionContractSnapshot, null=True, blank=True, on_delete=models.SET_NULL)
 
     def __str__(self):
-        return f"({self.id}) {'LONG' if self.is_long else 'SHORT'}-{self.cash_snapshot}{self.security_snapshot}"
+        return f"({self.id}) {'LONG' if self.is_long else 'SHORT'}-{self.cash_snapshot}{self.stock_snapshot}"
 
 
 class TradeSnapshot(BaseModel):
