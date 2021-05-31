@@ -189,8 +189,8 @@ const Profile = () => {
 
     if (!user || brokers.length == 0) {
         return (
-            <div className="container justify-content-center">
-                <p>Fetching user profile...</p>
+            <div className="container justify-content-center min-vh-100">
+                <p>Loading...</p>
             </div>
         );
     }
@@ -296,18 +296,22 @@ const Profile = () => {
                                     </div>
 
 
-                                    <Form.Label className="d-block">Enabled strategies</Form.Label>
+                                    <Form.Label className="d-block">Enabled Strategies</Form.Label>
                                     <div className="row">
                                         {getAllTradeTypes().map(type => (
-                                            <div className="col-lg-4 col-sm-6">
+                                            <div className="col-sm-6">
                                                 <Form.Check
                                                     key={type}
                                                     id={type}
                                                     type="switch"
-                                                    label={startCase(type)}
+                                                    label={startCase(type) + ((user.disallowed_strategies.indexOf(type) != -1) ? ' (Pro)' : '')}
                                                     value={type}
-                                                    defaultChecked={!user.disabled_strategies || (user.disabled_strategies.indexOf(type) === -1)}
                                                     onChange={onChangeStrategy}
+                                                    defaultChecked={
+                                                        (!user.disabled_strategies
+                                                            || (user.disabled_strategies.indexOf(type) === -1))
+                                                        && (user.disallowed_strategies.indexOf(type) === -1)}
+                                                    disabled={(user.disallowed_strategies.indexOf(type) != -1)}
                                                 />
                                             </div>
                                         ))}
@@ -320,7 +324,7 @@ const Profile = () => {
                                             <div className="text-success mb-2 mt-0">{resultMsg}</div>
                                         </div>
                                         <div className="col-md-12">
-                                            <Button type="submit" variant="primary">Save Updates</Button>
+                                            <Button type="submit" variant="primary">Save</Button>
                                         </div>
                                     </div>
                                 </Form>

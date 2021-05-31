@@ -1,14 +1,14 @@
 from rest_framework import serializers
 from tiger.models import User
 
-from .subscription import SubscriptionSerializer
 from .broker import BrokerSerializer
+from .subscription import SubscriptionSerializer
 
 
 class UserSerializer(serializers.ModelSerializer):
-    subscription = serializers.SerializerMethodField()    
-    brokers_detail = serializers.SerializerMethodField()    
-    referral_link = serializers.SerializerMethodField()    
+    subscription = serializers.SerializerMethodField()
+    brokers_detail = serializers.SerializerMethodField()
+    referral_link = serializers.SerializerMethodField()
 
     def get_subscription(self, obj):
         subscription = obj.get_subscription()
@@ -26,4 +26,4 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ('username', 'email', 'id', 'okta_id', 'subscription', 'brokers', \
-                  'nick_name', 'brokers_detail', 'disabled_strategies', 'referral_link')
+                  'nick_name', 'brokers_detail', 'disabled_strategies', 'disallowed_strategies', 'referral_link')

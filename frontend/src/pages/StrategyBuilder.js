@@ -5,14 +5,14 @@ import { Alert, Button, Card, CardColumns, Col, Container, Row, Spinner, ToggleB
 import { MdTrendingFlat, MdArrowUpward, MdArrowDownward, MdShowChart } from 'react-icons/md';
 import 'react-bootstrap-typeahead/css/Typeahead.css';
 import './StrategyBuilder.css';
-import { strategies } from '../blobs/Strategies';
+import { strategies as allStrategies } from '../blobs/Strategies';
 import { cloneDeep, get, isEmpty, set, throttle } from 'lodash';
 import TickerTypeahead from '../components/TickerTypeahead';
 import ModalSpinner from '../components/ModalSpinner';
 import TickerSummary from '../components/TickerSummary';
 import Select from "react-select";
 import getApiUrl, {
-    loadTickers, loadExpirationDates, getDefaultDisabledTradeTypes,
+    loadTickers, loadExpirationDates, getDefaultDisAllowedTradeTypes,
     GetGaEventTrackingFunc
 } from '../utils';
 import Axios from 'axios';
@@ -54,12 +54,14 @@ export default function StrategyBuilder() {
     const [sentiment, setSentiment] = useState("all");
     const [strategyDetails, setStrategyDetails] = useState(null);
     const [broker, setBroker] = useState(null);
-    const [ruleMessage, setRuleMessage] = useState("");
-    const [availableStrategies, setAvailableStrategies] = useState(strategies);
+    const [ruleMessages, setRuleMessages] = useState([]);
+    const [availableStrategies, setAvailableStrategies] = useState(allStrategies);
+    const [disAllowedStrategies, setDisAllowedStrategies] = useState([]);
     const [loadingStrategyDetails, setLoadingStrategyDetails] = useState(false);
     const [headers, setHeaders] = useState(null);
     const { oktaAuth, authState } = useOktaAuth();
     const API_URL = getApiUrl();
+    const [disableBuildButton, setDisableBuildButton] = useState(true);
 
     const { user } = useContext(UserContext);
     const history = useHistory();
@@ -77,11 +79,22 @@ export default function StrategyBuilder() {
 
     useEffect(() => {
         if (user) {
-            setAvailableStrategies(strategies.filter(x => (!user.disabled_strategies || user.disabled_strategies.indexOf(x.type) === -1)));
+            setAvailableStrategies(allStrategies.filter(x => (user.disabled_strategies.indexOf(x.type) === -1)
+                && user.disallowed_strategies.indexOf(x.type) === -1));
+            setDisAllowedStrategies(allStrategies.filter(x => (user.disallowed_strategies.indexOf(x.type) != -1)));
         } else {
-            setAvailableStrategies(strategies.filter(x => (getDefaultDisabledTradeTypes().indexOf(x.type) === -1)));
+            setAvailableStrategies(allStrategies.filter(x => (getDefaultDisAllowedTradeTypes().indexOf(x.type) === -1)));
+            setDisAllowedStrategies(allStrategies.filter(x => (getDefaultDisAllowedTradeTypes().indexOf(x.type) != -1)));
         }
     }, [user]);
+
+    useEffect(() => {
+        setDisableBuildButton(
+            (selectedTicker.length < 1
+                || !legs.reduce((prevVal, currVal) =>
+                    (currVal.type !== "option" || prevVal && !isEmpty(currVal.contract)), true))
+            || ruleMessages.length > 0);
+    }, [ruleMessages]);
 
     useEffect(() => {
         if (authState.isAuthenticated) {
@@ -101,7 +114,7 @@ export default function StrategyBuilder() {
     const applyStrategy = (strategy) => {
         setStrategyDetails(null);
         setSelectedStrategy(strategy);
-        setRuleMessage("");
+        setRuleMessages([]);
         if (strategy) {
             setLegs(cloneDeep(strategy.legs));
         }
@@ -136,7 +149,7 @@ export default function StrategyBuilder() {
     }
 
     const enforceRules = (rules, legs) => {
-        let message = "";
+        let messages = [];
         const finalResult = rules.reduce((prev, curr) => {
             const legAIndex = curr.legAIndex;
             const legBIndex = curr.legBIndex;
@@ -145,12 +158,12 @@ export default function StrategyBuilder() {
             const operator = curr.operator;
             const ruleResult = operators[operator](legs[legAIndex], legAProperty, legs[legBIndex], legBProperty);
             if (!ruleResult) {
-                message += `Leg ${legAIndex + 1}'s ${legAProperty.replace(".", " ")} needs to be ${operator} Leg ${legBIndex + 1}'s ${legBProperty.replace(".", " ")} \n`;
+                messages.push(`Leg ${legAIndex + 1}'s ${legAProperty.replace(".", " ").replace("_", " ")} 
+                needs to be ${operator} Leg ${legBIndex + 1}'s ${legBProperty.replace(".", " ").replace("_", " ")}.`);
             }
             return (prev && ruleResult);
         }, true);
-        setRuleMessage(message);
-
+        setRuleMessages(messages);
         return finalResult;
     }
 
@@ -226,7 +239,7 @@ export default function StrategyBuilder() {
                 <meta name="description" content="Build and optimize options trading strategies with Tigerstance." />
             </Helmet>
             <ModalSpinner active={modalActive}></ModalSpinner>
-            <h2 className="text-center">Build options strategies</h2>
+            <h2 className="text-center">Build Options Strategies</h2>
             <p className="text-center" style={{ "paddingBottom": '2rem' }}>
                 Create your options strategy and get real-time feedback. Understand your strategy with interactive graph and profit/loss details.
             </p>
@@ -293,7 +306,7 @@ export default function StrategyBuilder() {
                                 !authState.isAuthenticated &&
                                 (
                                     <b className="md-1">
-                                        <a href="/signin">Log In</a> or <Link to="/signin/register">Sign Up for Free</Link> to unlock 4 more strategies!
+                                        <a href="/signin">Log In</a> or <Link to="/signin/register">Sign Up for Free</Link> to unlock 5 more strategies!
                                     </b>
                                 )
                             }
@@ -317,6 +330,26 @@ export default function StrategyBuilder() {
                                                             GaEvent('select strategy by card');
                                                             applyStrategy(val);
                                                         }}></a>
+                                                    </Card>
+                                                </Col>
+                                            );
+                                        } else {
+                                            return null;
+                                        }
+                                    })}
+                                    {disAllowedStrategies.map(val => {
+                                        if (val.name.toLowerCase().includes(inputText.toLowerCase()) && (sentiment === "all" || val.sentiment.includes(sentiment))) {
+                                            return (
+                                                <Col key={val.id + "_col"}>
+                                                    <Card key={val.id + "_card"} style={{ color: 'grey' }}>
+                                                        <Card.Header>
+                                                            {val.name}
+                                                            {['Protective Put', 'Cash Secured Put', 'Bear Call Spread', 'Bear Put Spread', 'Bull Put Spread']
+                                                                .indexOf(val.name) != -1 ? ' (Sign up)' : ' (Pro)'}
+                                                        </Card.Header>
+                                                        <Card.Body>
+                                                            <Card.Text>{val.description}</Card.Text>
+                                                        </Card.Body>
                                                     </Card>
                                                 </Col>
                                             );
@@ -374,7 +407,7 @@ export default function StrategyBuilder() {
                                             />
                                         </Col>
                                         <Col lg="auto">
-                                            <Button disabled={(selectedTicker.length < 1 || !legs.reduce((prevVal, currVal) => (currVal.type !== "option" || prevVal && !isEmpty(currVal.contract)), true)) || ruleMessage}
+                                            <Button disabled={disableBuildButton}
                                                 onClick={getStrategyDetails}>Build Strategy</Button>
                                         </Col>
                                     </Col>
@@ -391,7 +424,11 @@ export default function StrategyBuilder() {
                                             broker={broker}
                                         />
                                         :
-                                        <Alert hidden={!ruleMessage} variant='danger' onClose={() => setRuleMessage("")} dismissible>{ruleMessage}</Alert>
+                                        <>
+                                            {ruleMessages.map(val => {
+                                                return (<Alert hidden={!val} variant='danger'>{val}</Alert>);
+                                            })}
+                                        </>
                                     }
                                 </Col>
                             </Row>

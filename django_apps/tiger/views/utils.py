@@ -1,10 +1,9 @@
 from django.conf import settings
 from pinax.referrals.models import ReferralResponse
-
-from tiger.serializers import TradeSnapshotSerializer
 from tiger.core.trade.trade_factory import TradeFactory
-from tiger.utils import timedelta_from_timestamp
 from tiger.models import Broker
+from tiger.serializers import TradeSnapshotSerializer
+from tiger.utils import timedelta_from_timestamp
 
 
 def is_low_liquidity(contract):
@@ -144,13 +143,16 @@ def get_broker(user=None):
     return broker
 
 
-def user_disabled_strategy(user, strategy):
+def user_disabled_or_disallowed_strategy(user, strategy):
+    UNAUTH_BLOCKLIST = ['cash_secured_put', 'protective_put', 'bear_call_spread', 'bear_put_spread', 'bull_put_spread',
+                        'long_straddle', 'long_strangle', 'iron_condor', 'iron_butterfly', 'short_strangle',
+                        'short_straddle', 'long_butterfly_spread', 'short_butterfly_spread', 'long_condor_spread',
+                        'short_condor_spread', 'strap_straddle', 'strap_strangle']
     if user and user.is_authenticated:
-        disabled_strategies = user.disabled_strategies or []
+        blocked_strategies = set(user.disabled_strategies + user.disallowed_strategies)
     else:
-        disabled_strategies = ['cash_secured_put', 'bear_call_spread', 'bear_put_spread', 'bull_put_spread']
-
-    return strategy in disabled_strategies
+        blocked_strategies = UNAUTH_BLOCKLIST
+    return strategy in blocked_strategies
 
 
 def handle_referral(request):

@@ -94,7 +94,7 @@ export default function Pricing() {
                                 <Link className="text-white" to="/signin/register"><h3>Just sign up</h3></Link>
                                 <div className="pt-3 card-list-left">
                                     <ul class="list-unstyled mt-3 mb-4">
-                                        <li>&#10003; Unlock 8 options trading strategies.</li>
+                                        <li>&#10003; Unlock 9 options trading strategies.</li>
                                         <li>&#10003; Exclusive market <Link to="/reports" className="text-white"><b>reports</b></Link>.</li>
                                         {authState.isAuthenticated ?
                                             <li>&#10003; Strategy <Link to="/profile" className="text-white"><b>personalization</b></Link>.</li>
@@ -120,9 +120,9 @@ export default function Pricing() {
                                 <h2>$5.69/mo</h2>
                                 <div className="pt-3 card-list-left">
                                     <ul class="list-unstyled mt-3 mb-4">
+                                        <li>&#10003; Unlock all 21 options strategies.</li>
                                         <li>&#10003; Everything in BASIC membership.</li>
                                         <li>&#10003; Unlimited usage for all features.</li>
-                                        {/* <li>&#10003; Unlock all 22 strategies.</li> */}
                                         <li>&#10003; More Pro member features to come!</li>
                                     </ul>
                                 </div>

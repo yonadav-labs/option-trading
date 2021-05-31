@@ -231,7 +231,7 @@ export default function MainView(props) {
                         <Box style={{ display: "inline-flex" }} p={2}>
                             {renderedTrades.length > 0 ?
                                 <Alert severity="info">
-                                    Below are the trading ideas with best potential return for each strategy based on price target.
+                                    Below are results with best potential return for each strategy based on price target.
                                 </Alert>
                                 :
                                 selectedTicker ?
@@ -255,7 +255,7 @@ export default function MainView(props) {
                             (
                                 <Alert severity="warning">
                                     <a href="/signin"><b>Log In</b></a> or <Link to="/signin/register"><b>
-                                        Sign Up for Free</b></Link> to unlock cash secured put and 3 more vertical spread strategies!
+                                        Sign Up for Free</b></Link> to unlock 5 more strategies!
                                 </Alert>
                             )
                         }

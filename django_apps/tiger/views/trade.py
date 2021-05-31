@@ -7,10 +7,10 @@ from rest_framework.exceptions import APIException
 from rest_framework.response import Response
 from tiger.core import Stock
 from tiger.core.trade import LongCall, LongPut, CoveredCall, CashSecuredPut, BullPutSpread, BullCallSpread, \
-    BearCallSpread, BearPutSpread
+    BearCallSpread, BearPutSpread, ProtectivePut
 from tiger.models import Ticker
 from tiger.serializers import TradeSerializer, BrokerSerializer
-from tiger.views.utils import get_filtered_contracts, get_broker, user_disabled_strategy, \
+from tiger.views.utils import get_filtered_contracts, get_broker, user_disabled_or_disallowed_strategy, \
     filter_object_on_attribute
 
 logger = logging.getLogger('console_info')
@@ -49,24 +49,24 @@ def build_trades(stock, call_contract_lists, put_contract_lists, strategy_settin
         call_pairs = itertools.combinations(calls_per_exp, 2)
 
         for call in calls_per_exp:
-            if not user_disabled_strategy(user, 'long_call'):
+            if not user_disabled_or_disallowed_strategy(user, 'long_call'):
                 long_call = LongCall.build(stock, call, premium_type, broker_settings, target_price_lower,
                                            target_price_upper, available_cash)
                 save_best_trade_by_type(best_trade_dict, 'long_call', long_call, trade_filters)
 
-            if not user_disabled_strategy(user, 'covered_call'):
+            if not user_disabled_or_disallowed_strategy(user, 'covered_call'):
                 covered_call = CoveredCall.build(stock, call, premium_type, broker_settings, target_price_lower,
                                                  target_price_upper, available_cash)
                 save_best_trade_by_type(best_trade_dict, 'covered_call', covered_call, trade_filters)
 
         for call1, call2 in call_pairs:
             if call1.strike < call2.strike:
-                if not user_disabled_strategy(user, 'bull_call_spread'):
+                if not user_disabled_or_disallowed_strategy(user, 'bull_call_spread'):
                     bull_call_spread = BullCallSpread.build(stock, call1, call2, premium_type, broker_settings,
                                                             target_price_lower, target_price_upper, available_cash)
                     save_best_trade_by_type(best_trade_dict, 'bull_call_spread', bull_call_spread, trade_filters)
 
-                if not user_disabled_strategy(user, 'bear_call_spread'):
+                if not user_disabled_or_disallowed_strategy(user, 'bear_call_spread'):
                     bear_call_spread = BearCallSpread.build(stock, call1, call2, premium_type, broker_settings,
                                                             target_price_lower, target_price_upper, available_cash)
                     save_best_trade_by_type(best_trade_dict, 'bear_call_spread', bear_call_spread, trade_filters)
@@ -75,24 +75,29 @@ def build_trades(stock, call_contract_lists, put_contract_lists, strategy_settin
         put_pairs = itertools.combinations(puts_per_exp, 2)
 
         for put in puts_per_exp:
-            if not user_disabled_strategy(user, 'long_put'):
+            if not user_disabled_or_disallowed_strategy(user, 'long_put'):
                 long_put = LongPut.build(stock, put, premium_type, broker_settings, target_price_lower,
                                          target_price_upper, available_cash)
                 save_best_trade_by_type(best_trade_dict, 'long_put', long_put, trade_filters)
 
-            if not user_disabled_strategy(user, 'cash_secured_put'):
+            if not user_disabled_or_disallowed_strategy(user, 'cash_secured_put'):
                 cash_secured_put = CashSecuredPut.build(stock, put, premium_type, broker_settings, target_price_lower,
                                                         target_price_upper, available_cash)
                 save_best_trade_by_type(best_trade_dict, 'cash_secured_put', cash_secured_put, trade_filters)
 
+            if not user_disabled_or_disallowed_strategy(user, 'protective_put'):
+                protective_put = ProtectivePut.build(stock, put, premium_type, broker_settings, target_price_lower,
+                                                     target_price_upper, available_cash)
+                save_best_trade_by_type(best_trade_dict, 'protective_put', protective_put, trade_filters)
+
         for put1, put2 in put_pairs:
             if put1.strike < put2.strike:
-                if not user_disabled_strategy(user, 'bear_put_spread'):
+                if not user_disabled_or_disallowed_strategy(user, 'bear_put_spread'):
                     bear_put_spread = BearPutSpread.build(stock, put1, put2, premium_type, broker_settings,
                                                           target_price_lower, target_price_upper, available_cash)
                     save_best_trade_by_type(best_trade_dict, 'bear_put_spread', bear_put_spread, trade_filters)
 
-                if not user_disabled_strategy(user, 'bull_put_spread'):
+                if not user_disabled_or_disallowed_strategy(user, 'bull_put_spread'):
                     bull_put_spread = BullPutSpread.build(stock, put1, put2, premium_type, broker_settings,
                                                           target_price_lower, target_price_upper, available_cash)
                     save_best_trade_by_type(best_trade_dict, 'bull_put_spread', bull_put_spread, trade_filters)
