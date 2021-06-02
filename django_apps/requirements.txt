@@ -30,7 +30,7 @@ scipy==1.6.2
 six==1.15.0
 sqlparse==0.4.1
 toml==0.10.1
-urllib3==1.25.11
+urllib3==1.26.5
 wrapt==1.12.1
 mailchimp-marketing==3.0.36
 more-itertools==8.7.0
