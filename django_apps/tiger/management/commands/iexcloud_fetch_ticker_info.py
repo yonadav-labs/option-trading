@@ -36,10 +36,6 @@ def fetch_expiration_dates_and_update_status(ticker):
 
     if not resp.ok:
         print(f'({ticker.symbol}) Error in fetching expiration dates:', resp.status_code, resp.content)
-        if resp.status_code == 404:
-            # disable the ticker
-            ticker.status = 'disabled'
-            ticker.save()
         return
 
     expiration_date_strs = resp.json()
