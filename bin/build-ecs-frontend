@@ -1,15 +1,36 @@
 #!/usr/bin/env bash
 
-export BUILD_SCRIPT_NAME
-export BUILD_SCRIPT_DIR
-export CONTAINER_APP_DIR
-export DOCKER_FILE_PATH
-export IMAGE_NAME
+BUILD_SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 
 BUILD_SCRIPT_NAME="$(basename "$0")"
-BUILD_SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+IMAGE_LABEL='frontend'
 CONTAINER_APP_DIR="$(cd "$BUILD_SCRIPT_DIR"/../frontend && pwd)"
-DOCKER_FILE_PATH="$CONTAINER_APP_DIR"/Dockerfile.prod.ecs
-IMAGE_NAME='options-ecs-frontend'
+DOCKER_FILE_PATH="$CONTAINER_APP_DIR"/docker/Dockerfile.deployed
 
-"$BUILD_SCRIPT_DIR"/build-ecs-common "$@"
+ECS_BUILD_COMMON="$BUILD_SCRIPT_DIR"/.ecs-build-common
+# shellcheck source=.ecs-build-common
+. "$ECS_BUILD_COMMON"
+
+parse_command_line "$@"
+
+ECR_IMAGE_REPOSITORIES=(
+  "$ECR_IMAGE_LOCATION"/options-ecs-frontend
+  "$ECR_IMAGE_LOCATION"/options-ecs-frontend-prod
+  "$ECR_IMAGE_LOCATION"/options-ecs-frontend-qa
+)
+
+TARGET_ENVS=(
+  prod
+  prod
+  qa
+)
+
+print_building_images_message
+
+for INDEX in $(seq 0 $(( ${#TARGET_ENVS[@]} - 1 )) ); do
+  ECR_IMAGE_REPOSITORY="${ECR_IMAGE_REPOSITORIES[$INDEX]}"
+  build_and_tag_image --build-arg TARGET_ENV="${TARGET_ENVS[$INDEX]}"
+done
+
+print_built_images_message
+push_images_if_requested

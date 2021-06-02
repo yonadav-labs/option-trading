@@ -1,10 +1,16 @@
 server {
-    resolver ${NAME_SERVER_IP_ADDR} valid=${NAME_SERVER_RESOLVED_IP_ADDR_VALID_DURATION};
-
     listen 80;
 
+    # Ensure nginx doesn't infinitly cache the resolved backend IP address.
     set $backend_host ${OPTIONS_BACKEND_HOST};
+    resolver ${NAME_SERVER_IP_ADDR} valid=${NAME_SERVER_RESOLVED_IP_ADDR_VALID_DURATION};
 
+    # LOCAL USE ONLY: The Docker shared volume for the backend static files
+    location /staticfiles/ {
+        alias /home/app/backend/staticfiles/;
+    }
+
+    # Reverse-proxy requests to the backend.
     location /api/ {
         proxy_pass http://$backend_host:${OPTIONS_BACKEND_PORT}$request_uri;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
@@ -12,19 +18,16 @@ server {
         proxy_redirect off;
     }
 
-    location /staticfiles/ {
-        alias /home/app/backend/staticfiles/;
-    }
-
-    # ignore cache frontend
+    # Ignore cache frontend
     location ~* (service-worker\.js)$ {
         add_header 'Cache-Control' 'no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0';
         expires off;
         proxy_no_cache 1;
     }
 
+    # Serve the backend
     location / {
-      root /app/build;
+      root /home/app/frontend/build;
       try_files $uri $uri/ /index.html;
     }
 }

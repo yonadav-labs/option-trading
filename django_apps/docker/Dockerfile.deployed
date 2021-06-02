@@ -1,0 +1,35 @@
+FROM python:3.9
+
+# Install needed applications.
+RUN apt-get -y update
+RUN apt-get -y install nano netcat
+
+# Install python modules.
+RUN pip install --upgrade pip
+COPY ./requirements.txt /tmp/
+RUN pip install --requirement /tmp/requirements.txt
+RUN rm -f /tmp/requirements.txt
+
+# Copy the entrypoint.
+COPY ./docker/entrypoint.sh /docker-entrypoint.sh
+
+# Create the app user and it's home directory.
+ENV USER_HOME=/home/app
+RUN mkdir -p $USER_HOME
+RUN useradd -ms /bin/bash app
+RUN chown -R app:app $USER_HOME
+USER app
+
+# Create the app home and set it as the working directory.
+ENV APP_HOME=$USER_HOME/backend
+RUN mkdir -p $APP_HOME
+WORKDIR $APP_HOME
+
+# Copy the project.
+RUN mkdir -p $APP_HOME/staticfiles
+COPY . $APP_HOME
+
+# Set the entrypoint.
+# Set the command and entrypoint.
+CMD [ "gunicorn", "django_apps.wsgi:application", "--bind", "0.0.0.0:8080" ]
+ENTRYPOINT [ "/docker-entrypoint.sh" ]

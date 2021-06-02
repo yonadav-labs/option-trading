@@ -1,11 +1,39 @@
-/.idea/
-/venv/
-*.pyc
+# Ignore OS-specific files
 **/.DS_Store
-*.csv
-/.env.prod
+
+# Ignore IDE-specific files
+/.idea/
+**/*.iml
+/venv/
 /.vscode/
+
+# Ignore frontend build-specific files
+/frontend/build
+/frontend/node_modules
+/frontend/.pnp
+.pnp.js
+
+# Ignore frontend test results
+/coverage
+
+# Ignore forntend local logs
+/frontend/npm-debug.log*
+/frontend/yarn-debug.log*
+/frontend/yarn-error.log*
+
+# Ignore backend build-specific files
 /.venv/
-django_apps/Pipfile
-django_apps/Pipfile.lock
-/tmp
+*.pyc
+/django_apps/Pipfile
+/django_apps/Pipfile.lock
+
+# Ignore non-local frontend enviroment files.
+**/.env*.local
+
+# Ignore non-local frontend enviroment files.
+# NOTE: The following line will be uncommented in a PR that purges unneeded/unwanted configuration files.
+# django_apps/*.env
+!django_apps/local.env
+
+# Allow for a temporary directory for scratch files, etc
+**/tmp

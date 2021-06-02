@@ -1,0 +1,19 @@
+FROM node:12-alpine
+
+# Set the application home.
+ENV APP_HOME=/home/app/frontend
+RUN mkdir -p $APP_HOME
+WORKDIR $APP_HOME
+
+# Add the node modules executables directory to the $PATH.
+ENV PATH $APP_HOME/node_modules/.bin:$PATH
+
+# Build and install the frontend.
+COPY package.json ./
+COPY package-lock.json ./
+RUN npm install --silent
+RUN npm install react-scripts@4.0.3 -g --silent
+COPY . ./
+
+# Start the frontend application.
+CMD npm start
