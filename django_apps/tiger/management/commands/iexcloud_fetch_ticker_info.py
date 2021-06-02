@@ -1,11 +1,13 @@
 import multiprocessing as mp
 from datetime import datetime
+from functools import partial
 
 import requests
 from django import db
 from django.conf import settings
 from django.core.management.base import BaseCommand
 from tiger.models import Ticker, TickerStats
+from tiger.utils import get_now
 
 DEFAULT_QUERY_PARAMS = {
     'token': settings.IEXCLOUD_TOKEN
@@ -35,7 +37,7 @@ def fetch_expiration_dates_and_update_status(ticker):
     resp = requests.get(url, params=DEFAULT_QUERY_PARAMS)
 
     if not resp.ok:
-        print(f'({ticker.symbol}) Error in fetching expiration dates:', resp.status_code, resp.content)
+        print(f'({ticker.symbol}) Error in fetching expiration dates:', resp.status_code, resp.content, resp.url)
         return
 
     expiration_date_strs = resp.json()
@@ -57,7 +59,7 @@ def fetch_stats(ticker, new_stats):
     resp = requests.get(url, params=DEFAULT_QUERY_PARAMS)
 
     if not resp.ok:
-        print('Error in fetching stats:', resp.status_code, resp.content)
+        print('Error in fetching stats:', resp.status_code, resp.content, resp.url)
         return
 
     stats = resp.json()
@@ -87,7 +89,7 @@ def fetch_dividends(ticker, new_stats):
     resp = requests.get(url, params=DEFAULT_QUERY_PARAMS)
 
     if not resp.ok:
-        print('Error in fetching dividends:', resp.status_code, resp.content)
+        print('Error in fetching dividends:', resp.status_code, resp.content, resp.url)
         return
 
     dividends = resp.json()
@@ -100,7 +102,7 @@ def fetch_splits(ticker, new_stats):
     resp = requests.get(url, params=DEFAULT_QUERY_PARAMS)
 
     if not resp.ok:
-        print('Error in fetching splits:', resp.status_code, resp.content)
+        print('Error in fetching splits:', resp.status_code, resp.content, resp.url)
         return
 
     splits = resp.json()
@@ -114,7 +116,7 @@ def fetch_price_target(ticker, new_stats):
     resp = requests.get(url, params=DEFAULT_QUERY_PARAMS)
 
     if not resp.ok:
-        print('Error in fetching price target:', resp.status_code, resp.content)
+        print('Error in fetching price target:', resp.status_code, resp.content, resp.url)
         return
 
     info = resp.json()
@@ -132,7 +134,7 @@ def fetch_historical_volatility(ticker, new_stats):
     resp = requests.get(url, params={**DEFAULT_QUERY_PARAMS, 'indicatorOnly': True, 'range': '35d', 'input1': 20})
 
     if not resp.ok:
-        print('Error in fetching historical volatility:', resp.status_code, resp.content)
+        print('Error in fetching historical volatility:', resp.status_code, resp.content, resp.url)
         return
 
     result = resp.json()
@@ -140,7 +142,29 @@ def fetch_historical_volatility(ticker, new_stats):
         new_stats.historical_volatility = result.get('indicator')[0][-1]
 
 
-def fetch_ticker_info(ticker_id):
+def fetch_ohlc_prices(ticker, data_date, new_stats):
+    date_str = data_date.strftime("%Y%m%d")  # Example: 20210601.
+    url = f'{settings.IEXCLOUD_BASE_URL}/stock/{ticker.symbol}/chart/date/{date_str}?chartByDay=true'
+    resp = requests.get(url, params=DEFAULT_QUERY_PARAMS)
+
+    if not resp.ok:
+        print(f'Error in fetching OHLC data for symbol {ticker} :', resp.status_code, resp.content, resp.url)
+        return
+
+    prices = resp.json()
+    if len(prices) == 0:
+        return
+
+    day_prices = prices[0]
+    if day_prices:
+        new_stats.price_open = float(day_prices.get('open'))
+        new_stats.price_high = float(day_prices.get('high'))
+        new_stats.price_low = float(day_prices.get('low'))
+        new_stats.price_close = float(day_prices.get('close'))
+        new_stats.daily_volume = day_prices.get('volume')
+
+
+def fetch_ticker_info(ticker_id, data_date):
     ticker = Ticker.objects.get(id=ticker_id)
 
     # Fetch expiration dates.
@@ -159,6 +183,7 @@ def fetch_ticker_info(ticker_id):
         fetch_splits(ticker, new_stats)
         # fetch_price_target(ticker, new_stats)  # preminum data, will be enabled later
         fetch_historical_volatility(ticker, new_stats)
+        fetch_ohlc_prices(ticker, data_date, new_stats)
         new_stats.save()
     else:
         print(f'Stats skipped: {ticker.symbol}')
@@ -176,9 +201,14 @@ class Command(BaseCommand):
 
         ticker_ids = [ticker.id for ticker in Ticker.objects.all()]
 
+        # Build date for the /chart/date endpoint
+        dt = get_now()
+        today_date = datetime(year=dt.year, month=dt.month, day=dt.day)
+
+        # Parallelization and mapping
         pool_size = min(mp.cpu_count() * 2, 16)
         print('pool_size:', pool_size)
         db.connections.close_all()
 
         with mp.Pool(pool_size, maxtasksperchild=2) as pool:
-            pool.map(fetch_ticker_info, ticker_ids)
+            pool.map(partial(fetch_ticker_info, data_date=today_date), ticker_ids)
