@@ -4,12 +4,20 @@ _log() {
   echo "[$(date +'%Y-%m-%d %H:%M:%S %z')]" "$@"
 }
 
+DOCKER_COMMAND=( "$@" )
+
 # The environment var 'APP_HOME' is provided by the Dockerfile.
 export DJANGO_ROOT_DIR="${APP_HOME:-'/home/app/backend'}"
 export PYTHONPATH="${PYTHONPATH:-"$DJANGO_ROOT_DIR"}"
 export DJANGO_COLLECT_STATIC="${DJANGO_COLLECT_STATIC:-1}"
 export DATABASE_CONNECTION_WAIT="${DATABASE_CONNECTION_WAIT:-0.5}"
 export DATABASE_CONNECTION_RETRIES="${DATABASE_CONNECTION_RETRIES:-60}"
+export GUNICORN_TIMEOUT="${GUNICORN_TIMEOUT:-120}"
+
+# Update the docker command if needed.
+if [[ "${DOCKER_COMMAND[0]}" == "gunicorn" ]] ; then
+  DOCKER_COMMAND=( "${DOCKER_COMMAND[@]}" "--timeout" "$GUNICORN_TIMEOUT" )
+fi
 
 cd "$DJANGO_ROOT_DIR" || { _log "Django root directory not found!" ; exit 1 ; }
 
@@ -41,5 +49,5 @@ else
 fi
 
 # Run the Django server command.
-_log "Entrypoint command:" "$@"
-eval "$@"
+_log "Entrypoint command:" "${DOCKER_COMMAND[@]}"
+eval "${DOCKER_COMMAND[@]}"

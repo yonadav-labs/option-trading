@@ -29,7 +29,6 @@ WORKDIR $APP_HOME
 RUN mkdir -p $APP_HOME/staticfiles
 COPY . $APP_HOME
 
-# Set the entrypoint.
 # Set the command and entrypoint.
 CMD [ "gunicorn", "django_apps.wsgi:application", "--bind", "0.0.0.0:8080" ]
 ENTRYPOINT [ "/docker-entrypoint.sh" ]
