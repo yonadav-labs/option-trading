@@ -23,7 +23,7 @@
 * Pycharm pythonpath: https://stackoverflow.com/questions/28326362/pycharm-and-pythonpath
 * https://medium.com/@fullsour/how-to-switch-user-on-the-aws-cli-77c2b314e12d
 * `aws ecr get-login-password --region us-east-2 | docker login --username AWS --password-stdin 813539762970.dkr.ecr.us-east-2.amazonaws.com`
-* `docker-compose run backend python manage.py test`
+* `docker-compose exec backend python manage.py test`
 
 #### Remote
 
