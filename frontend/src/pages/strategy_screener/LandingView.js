@@ -27,6 +27,7 @@ export default function LandingView(props) {
         sentiment,
         onSentimentChange,
         onExpirationSelectionChange,
+        basicInfo,
     } = props
 
     return (
@@ -69,13 +70,15 @@ export default function LandingView(props) {
                                 variant="standard"
                             >
                                 <MenuItem disabled value={0}><span style={{ color: "gray" }}>Select a Price Target</span></MenuItem>
-                                <MenuItem value={1.2}>+20%</MenuItem>
-                                <MenuItem value={1.1}>+10%</MenuItem>
-                                <MenuItem value={1.05}>+5%</MenuItem>
-                                <MenuItem value={1}>0%</MenuItem>
-                                <MenuItem value={0.95}>-5%</MenuItem>
-                                <MenuItem value={0.9}>-10%</MenuItem>
-                                <MenuItem value={0.8}>-20%</MenuItem>
+                                {[0.5, 0.2, 0.1, 0.05, 0, -0.05, -0.1, -0.2, -0.5].map((val, index) => {
+                                    return (
+                                        <MenuItem
+                                            value={1 + val}>$
+                                            {(basicInfo.regularMarketPrice * (1 + val)).toFixed(2)} (
+                                            { val > 0 ? '+' : ''}{(val * 100).toFixed(0)}%)
+                                        </MenuItem>
+                                    );
+                                })}
                             </Select>
                         </FormControl>
 

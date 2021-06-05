@@ -224,6 +224,7 @@ export default function NewStrategyScreener() {
                         onSentimentChange={onSentimentChange}
                         onExpirationSelectionChange={onExpirationSelectionChange}
                         selectedExpirationTimestamp={selectedExpirationTimestamp}
+                        basicInfo={basicInfo}
                     />
                     :
                     <MainView
