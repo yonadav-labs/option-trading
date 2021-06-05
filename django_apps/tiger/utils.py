@@ -1,6 +1,9 @@
+import pytz
 import random
 
-from datetime import datetime
+import pandas_market_calendars as mcal
+
+from datetime import datetime, time, timedelta
 
 from django.utils import timezone
 from django.utils.timezone import make_aware, get_default_timezone
@@ -44,6 +47,25 @@ def generate_code(referral_class):
     while referral_class.objects.filter(code=code).exists():
         code = _generate_code()
     return code
+
+# Check if the market's open for a given day using pandas_market_calendars
+def is_market_open(input_date):
+    # Get the market calendar for one week before and after (two weeks total)
+    nyse = mcal.get_calendar('NYSE')
+    pre_week = input_date - timedelta(days=7)
+    post_week = input_date + timedelta(days=7)
+    calendar = nyse.schedule(start_date=pre_week.isoformat(), 
+                             end_date=post_week.isoformat())
+
+    # Build a custom time to check if the market is open ('input_date' noon eastern)
+    cust_time = time(hour=12, minute=0, second=0)
+    check_time = datetime.combine(input_date, cust_time)
+    eastern = pytz.timezone('US/Eastern')
+    final_dt = eastern.localize(check_time, is_dst=None)
+
+    # Check if open, returns True if it is, False if not.
+    is_open = nyse.open_at_time(calendar, final_dt)
+    return is_open
 
 
 if __name__ == "__main__":

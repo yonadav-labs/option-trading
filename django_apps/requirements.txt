@@ -35,3 +35,4 @@ wrapt==1.12.1
 mailchimp-marketing==3.0.36
 more-itertools==8.7.0
 pinax-referrals==4.0.1
+pandas-market-calendars==1.6.1

@@ -7,7 +7,7 @@ from django import db
 from django.conf import settings
 from django.core.management.base import BaseCommand
 from tiger.models import Ticker, TickerStats
-from tiger.utils import get_now
+from tiger.utils import get_now, is_market_open
 
 DEFAULT_QUERY_PARAMS = {
     'token': settings.IEXCLOUD_TOKEN
@@ -204,6 +204,11 @@ class Command(BaseCommand):
         # Build date for the /chart/date endpoint
         dt = get_now()
         today_date = datetime(year=dt.year, month=dt.month, day=dt.day)
+
+        # If the market is closed, skip all.
+        if not is_market_open(dt):
+            print('Market is closed, skip current run.')
+            return
 
         # Parallelization and mapping
         pool_size = min(mp.cpu_count() * 2, 16)
