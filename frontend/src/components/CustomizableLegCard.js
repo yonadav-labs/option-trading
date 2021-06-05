@@ -9,7 +9,7 @@ import MetricLabel from './MetricLabel.js';
 
 const GaEvent = GetGaEventTrackingFunc('options builder');
 
-export default function LegCardDetails(props) {
+export default function CustomizableLegCard(props) {
     const { leg, index, selectedTicker, updateLeg, selectedStrategy, expirationTimestamps } = props;
     const [strikes, setStrikes] = useState([]);
     const [selectedStrike, setSelectedStrike] = useState(0);
@@ -155,7 +155,6 @@ export default function LegCardDetails(props) {
                 </Row>
             );
         case "cash":
-            console.log(leg);
             return (
                 <Row className="mb-3">
                     <Col>
@@ -167,7 +166,7 @@ export default function LegCardDetails(props) {
                                         <option>#{index + 1}</option>
                                     </Form.Control>
                                 </Col>
-                                <Col sm="2" xs="12">
+                                <Col sm="3" xs="12">
                                     <MetricLabel label="action" />
                                     <Form.Control as="select" value={leg.action} disabled={true}>
                                         <option value="long" key="long">Keep as collateral</option>

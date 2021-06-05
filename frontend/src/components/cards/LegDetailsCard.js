@@ -54,11 +54,11 @@ export default function LegDetailsCard(props) {
                             <h5>{leg_num ? `Leg #${leg_num}` : null}</h5>
                         </Col>
                         <Col sm="2" xs="6">
-                            <MetricLabel label="action" />
+                            <MetricLabel label="action" /><br />
                             {leg.is_long ? 'Long' : 'Short'}
                         </Col>
                         <Col sm="2" xs="6">
-                            <MetricLabel label="quantity" />
+                            <MetricLabel label="quantity" /><br />
                             {leg.units} shares
                         </Col>
                     </Row>
@@ -74,11 +74,11 @@ export default function LegDetailsCard(props) {
                             <h5>{leg_num ? `Leg #${leg_num}` : null}</h5>
                         </Col>
                         <Col sm="2" xs="6">
-                            <MetricLabel label="action" />
+                            <MetricLabel label="action" /><br />
                             Keep as collateral
                         </Col>
                         <Col sm="2" xs="6">
-                            <MetricLabel label="quantity" />
+                            <MetricLabel label="quantity" /><br />
                             {PriceFormatter(leg.units)} cash
                         </Col>
                     </Row>

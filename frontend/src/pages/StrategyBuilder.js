@@ -16,7 +16,7 @@ import getApiUrl, {
     GetGaEventTrackingFunc
 } from '../utils';
 import Axios from 'axios';
-import LegCardDetails from '../components/LegCardDetails';
+import CustomizableLegCard from '../components/CustomizableLegCard';
 import { useOktaAuth } from '@okta/okta-react';
 import TradeDetailsCard from '../components/cards/TradeDetailsCard';
 import TradingViewWidget from 'react-tradingview-widget';
@@ -367,7 +367,7 @@ export default function StrategyBuilder() {
                                                     return (
                                                         <Card key={"leg_" + idx + "_card"} className="mb-3">
                                                             <Card.Body>
-                                                                <LegCardDetails leg={leg} index={idx} selectedTicker={selectedTicker} atmPrice={basicInfo.regularMarketPrice} updateLeg={updateLeg} selectedStrategy={selectedStrategy} expirationTimestamps={expirationTimestamps} />
+                                                                <CustomizableLegCard leg={leg} index={idx} selectedTicker={selectedTicker} atmPrice={basicInfo.regularMarketPrice} updateLeg={updateLeg} selectedStrategy={selectedStrategy} expirationTimestamps={expirationTimestamps} />
                                                             </Card.Body>
                                                         </Card>
                                                     );
@@ -375,7 +375,7 @@ export default function StrategyBuilder() {
                                                     return (
                                                         <Card key={"leg_" + idx + "_card"} className="mb-3">
                                                             <Card.Body>
-                                                                <LegCardDetails leg={leg} index={idx} selectedTicker={selectedTicker} updateLeg={updateLeg} />
+                                                                <CustomizableLegCard leg={leg} index={idx} selectedTicker={selectedTicker} updateLeg={updateLeg} />
                                                             </Card.Body>
                                                         </Card>
                                                     );
@@ -383,7 +383,7 @@ export default function StrategyBuilder() {
                                                     return (
                                                         <Card key={"leg_" + idx + "_card"} className="mb-3">
                                                             <Card.Body>
-                                                                <LegCardDetails leg={leg} index={idx} selectedTicker={selectedTicker} updateLeg={updateLeg} />
+                                                                <CustomizableLegCard leg={leg} index={idx} selectedTicker={selectedTicker} updateLeg={updateLeg} />
                                                             </Card.Body>
                                                         </Card>
                                                     );
