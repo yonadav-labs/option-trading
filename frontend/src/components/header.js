@@ -12,18 +12,18 @@ import LiveChat from 'react-livechat'
 function getCookie(name) {
     var cookieValue = null;
     if (document.cookie && document.cookie !== '') {
-      var cookies = document.cookie.split(';');
-      for (var i = 0; i < cookies.length; i++) {
-        var cookie = cookies[i].trim();
-        if (cookie.substring(0, name.length + 1) === (name + '=')) {
-          cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-          break;
+        var cookies = document.cookie.split(';');
+        for (var i = 0; i < cookies.length; i++) {
+            var cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
         }
-      }
     }
     return cookieValue;
-  }
-  
+}
+
 const sessionid = getCookie('pinax-referral');
 
 function Header() {
@@ -86,7 +86,7 @@ function Header() {
                         <Nav.Link eventKey={"1"} className="text-dark" as={Link} to="/discover">Discover</Nav.Link>
                         <Nav.Link eventKey={"2"} className="text-dark" as={Link} to="/build">Build</Nav.Link>
                         <Nav.Link eventKey={"3"} className="text-dark" as={Link} to="/screen">Screen</Nav.Link>
-                        <Nav.Link eventKey={"4"} className="text-dark" as={Link} to="/surface">Surface</Nav.Link>
+                        <Nav.Link eventKey={"4"} className="text-dark" as={Link} to="/panorama">Panorama</Nav.Link>
                         <Nav.Link eventKey={"5"} className="text-dark" as={Link} to="/reports">Reports</Nav.Link>
                         <Nav.Link eventKey={"6"} className="text-dark" as={Link} to="/pricing">Pricing</Nav.Link>
                     </Nav>
@@ -104,7 +104,7 @@ function Header() {
                 </Navbar.Collapse>
             </Navbar>
             {user ?
-                <LiveChat license={'12791829'} visitor={{name: user.nick_name||user.email, email: user.email}} />
+                <LiveChat license={'12791829'} visitor={{ name: user.nick_name || user.email, email: user.email }} />
                 :
                 <LiveChat license={'12791829'} />
             }

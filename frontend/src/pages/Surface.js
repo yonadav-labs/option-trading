@@ -156,11 +156,12 @@ export default function Surface() {
             </Container>
             <br />
             <Container>
-                <Typography variant="h4" align="center">Options Chain Surface</Typography>
-                <br />
+                <Typography variant="h4" align="center">Options Chain Panorama View</Typography>
                 <Typography variant="body1" align="center">
-                    Spot unusual options activities from bird's-eye view of the entire options chain. Gauge the market using Implied Volatility, Open Interest and Volume.<br />
-                    *Data could take some time to load, please wait patiently.
+                    <lu>
+                        <li>Gauge the market using Implied Volatility Surface, Open Interest and Volume.</li>
+                        <li>Quickly identify calls/puts to sell by their annualized premium return and probability of expiring out of the money.</li>
+                    </lu>
                 </Typography>
             </Container>
 
