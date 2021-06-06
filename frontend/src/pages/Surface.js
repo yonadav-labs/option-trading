@@ -106,7 +106,7 @@ export default function Surface() {
             <Helmet>
                 <title>Tigerstance | Implied Volatility Surface and more</title>
                 <meta name="description"
-                    content="Spot unusual options activities from bird's-eye view of the entire options chain. Gauge the market using Implied Volatility, Open Interest and Volume." />
+                    content="Gauge the market using Implied Volatility Surface, Open Interest and Volume. Quickly identify calls/puts to sell by their annualized premium return and probability of expiring out of the money." />
             </Helmet>
             <ModalSpinner active={modalActive}></ModalSpinner>
             <Container>
