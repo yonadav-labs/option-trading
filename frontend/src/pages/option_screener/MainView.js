@@ -110,21 +110,21 @@ export default function MainView(props) {
     };
 
     const headCells = [
-        { id: 'is_call', label: "type", hideIcon: true, },
-        { id: 'days_till_expiration', label: "exp date", hideIcon: false, },
-        { id: 'strike', label: "strike", hideIcon: true, },
-        { id: 'mark', label: "mark", hideIcon: false, },
-        { id: 'last_price', label: "last", hideIcon: true, },
-        { id: 'percent_change', label: "change", hideIcon: false, },
-        { id: 'volume', label: "VOL", hideIcon: true, },
-        { id: 'open_interest', label: "OI", hideIcon: true, },
-        { id: 'vol_oi', label: "VOL/OI", hideIcon: true, },
-        { id: 'implied_volatility', label: "IV", hideIcon: true, },
-        { id: 'delta', label: "delta", hideIcon: true, },
-        { id: 'gamma', label: "gamma", hideIcon: true, },
-        { id: 'theta', label: "theta", hideIcon: true, },
-        { id: 'itm_probability', label: "itm prob", hideIcon: false, },
-        { id: 'break_even_price', label: "breakeven", hideIcon: false, },
+        { id: 'is_call', label: "type" },
+        { id: 'days_till_expiration', label: "exp date" },
+        { id: 'strike', label: "strike" },
+        { id: 'mark', label: "mark" },
+        { id: 'last_price', label: "last" },
+        { id: 'percent_change', label: "change" },
+        { id: 'volume', label: "VOL", },
+        { id: 'open_interest', label: "OI", },
+        { id: 'vol_oi', label: "VOL/OI", },
+        { id: 'implied_volatility', label: "IV" },
+        { id: 'delta', label: "delta" },
+        { id: 'gamma', label: "gamma" },
+        { id: 'theta', label: "theta" },
+        { id: 'itm_probability', label: "itm prob" },
+        { id: 'break_even_price', label: "breakeven" },
     ];
 
     return (
@@ -276,7 +276,7 @@ export default function MainView(props) {
                                                             direction={orderBy === headCell.id ? order : 'asc'}
                                                             onClick={createSortHandler(headCell.id)}
                                                         >
-                                                            <b><MetricLabel label={headCell.label} hideIcon={headCell.hideIcon} style={{ display: "block" }} /></b>
+                                                            <b><MetricLabel label={headCell.label} style={{ display: "block" }} /></b>
                                                             {orderBy === headCell.id ? (
                                                                 <Box component="span" sx={visuallyHidden}>
                                                                     {order === 'desc' ? 'sorted descending' : 'sorted ascending'}

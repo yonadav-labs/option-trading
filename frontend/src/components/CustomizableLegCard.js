@@ -102,7 +102,7 @@ export default function CustomizableLegCard(props) {
                                         </Form.Control>
                                     </Col>
                                     <Col sm="3" xs="12">
-                                        <MetricLabel label="strike" hideIcon />
+                                        <MetricLabel label="strike" />
                                         <Select
                                             className="basic-single"
                                             isSearchable
