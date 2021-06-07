@@ -156,15 +156,13 @@ export default function Surface() {
             </Container>
             <br />
             <Container>
-                <Typography variant="h4" align="center">Options Chain Panorama View</Typography>
+                <Typography variant="h4" align="center">Scan the Options Chain with Panorama View.</Typography>
+                <br />
                 <Typography variant="body1" align="center">
-                    <lu>
-                        <li>Gauge the market using Implied Volatility Surface, Open Interest and Volume.</li>
-                        <li>Quickly identify calls/puts to sell by their annualized premium return and probability of expiring out of the money.</li>
-                    </lu>
+                    Spot most active trades using Open Interest, Volume, and Implied Volatility Surface.<br />
+                    Quickly identify calls/puts to sell by their annualized premium return and probability of expiring out of the money.
                 </Typography>
             </Container>
-
             <Container>
                 {baseHeatmapData ?
                     <HeatMapGraph
