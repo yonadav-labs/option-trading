@@ -42,6 +42,7 @@ const HelpTextDict = {
     'expiration date': { text: 'The last date of an option contract on which the holder of the option may exercise it according to its terms.', hideIcon: true },
     'gamma': { text: 'Estimate of the rate of change between an option\'s Delta and the stock\'s price.', hideIcon: true },
     'high price target': { text: 'Your expected upper bound share price of the stock on expiration day. Use with LOW PRICE TARGET to form a price target range.', hideIcon: false },
+    'historical volatility': { text: 'Annualized one standard deviation of stock prices in the past that measures how much stock prices moves over a period of time.', hideIcon: true },
     'hypothetical return': {
         text: 'Average of possible return outcomes if share price lies within the price target range on expiration date. '
             + 'Total cost is used to calculate the return rate.', hideIcon: false

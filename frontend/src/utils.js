@@ -246,7 +246,9 @@ export async function newLoadExpirationDates(headers, selected, setModalActive, 
         saveRecent(selected.symbol);
         const response = await Axios.get(`${getApiUrl()}/tickers/${selected.symbol}/expire_dates/`, { headers: headers });
         setExpirationTimestamps(response.data.expiration_timestamps);
-        setBasicInfo(response.data.quote)
+        let basicInfo = response.data.quote;
+        basicInfo.tickerStats = response.data.ticker_stats;
+        setBasicInfo(basicInfo);
         selected.external_cache_id = response.data.external_cache_id;
         selected.ticker_stats_id = response.data.ticker_stats.id;
         setSelectedTicker(selected);

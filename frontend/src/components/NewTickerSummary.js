@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Button, Popper, Box, makeStyles, Typography } from "@material-ui/core";
-import { TimestampDateFormatter, formatLargeNumber } from "../utils";
+import { TimestampDateFormatter, formatLargeNumber, PercentageFormatter } from "../utils";
 import ZoomInIcon from '@material-ui/icons/ZoomIn';
 import TradingViewWidget from 'react-tradingview-widget';
 import MetricLabel from "./MetricLabel";
@@ -114,6 +114,13 @@ export default function NewTickerSummary({ basicInfo, isMobile }) {
                             basicInfo.earningsTimestamp > Date.now() / 1000
                             ? TimestampDateFormatter(basicInfo.dividendDate)
                             : "N/A"}
+                    </Typography>
+                </div>
+                <div style={{ flex: "0 0 auto", paddingRight: "0.3rem" }}>
+                    <Typography variant="button" color="primary"><MetricLabel label="historical volatility" /></Typography>
+                    <br />
+                    <Typography variant="body1">
+                        {basicInfo.tickerStats && basicInfo.tickerStats.historical_volatility ? PercentageFormatter(basicInfo.tickerStats.historical_volatility) : "N/A"}
                     </Typography>
                 </div>
                 {isMobile ?

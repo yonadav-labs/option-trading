@@ -153,6 +153,7 @@ def fetch_ohlc_prices(ticker, data_date, new_stats):
 
     prices = resp.json()
     if len(prices) == 0:
+        print(f'Empty result in fetching OHLC data for symbol {ticker}', resp.url)
         return
 
     day_prices = prices[0]
@@ -199,14 +200,16 @@ class Command(BaseCommand):
             }
             Ticker.objects.update_or_create(symbol=ticker_info['symbol'], defaults=defaults)
 
-        ticker_ids = [ticker.id for ticker in Ticker.objects.all()]
+        ticker_ids = [ticker.id for ticker in Ticker.objects.all()] if not settings.DEBUG \
+            else [ticker.id for ticker in
+                  Ticker.objects.filter(
+                      symbol__in=['AAL', 'AAPL', 'AMC', 'ANBN', 'FUTU', 'GME', 'SPY', 'TSLA', 'YELP', 'ZEPP'])]
 
-        # Build date for the /chart/date endpoint
-        dt = get_now()
-        today_date = datetime(year=dt.year, month=dt.month, day=dt.day)
+        # Build date for the /chart/date endpoint.
+        today_date = get_now().date()
 
         # If the market is closed, skip all.
-        if not is_market_open(dt):
+        if not is_market_open(today_date):
             print('Market is closed, skip current run.')
             return
 
