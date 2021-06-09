@@ -7,7 +7,7 @@ from django import db
 from django.conf import settings
 from django.core.management.base import BaseCommand
 from tiger.models import Ticker, TickerStats
-from tiger.utils import get_now, is_market_open
+from tiger.utils import get_now_date, is_market_open
 
 DEFAULT_QUERY_PARAMS = {
     'token': settings.IEXCLOUD_TOKEN
@@ -206,7 +206,7 @@ class Command(BaseCommand):
                       symbol__in=['AAL', 'AAPL', 'AMC', 'ANBN', 'FUTU', 'GME', 'SPY', 'TSLA', 'YELP', 'ZEPP'])]
 
         # Build date for the /chart/date endpoint.
-        today_date = get_now().date()
+        today_date = get_now_date()
 
         # If the market is closed, skip all.
         if not is_market_open(today_date):

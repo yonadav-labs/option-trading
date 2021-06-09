@@ -1,10 +1,8 @@
-import pytz
 import random
-
-import pandas_market_calendars as mcal
-
 from datetime import datetime, time, timedelta
 
+import pandas_market_calendars as mcal
+import pytz
 from django.utils import timezone
 from django.utils.timezone import make_aware, get_default_timezone
 
@@ -17,7 +15,11 @@ def get_raw_calls(yh_ticker, expiration_date_str):
 
 
 def get_now():
-    return timezone.now()
+    return timezone.localtime()
+
+
+def get_now_date():
+    return timezone.localdate()
 
 
 def timestamp_to_datetime_with_default_tz(timestamp):
@@ -43,10 +45,12 @@ def generate_code(referral_class):
     def _generate_code():
         t = "abcdefghijkmnopqrstuvwwxyzABCDEFGHIJKLOMNOPQRSTUVWXYZ1234567890"
         return "".join([random.choice(t) for i in range(8)])
+
     code = _generate_code()
     while referral_class.objects.filter(code=code).exists():
         code = _generate_code()
     return code
+
 
 # Check if the market's open for a given day using pandas_market_calendars
 def is_market_open(input_date):
@@ -54,7 +58,7 @@ def is_market_open(input_date):
     nyse = mcal.get_calendar('NYSE')
     pre_week = input_date - timedelta(days=7)
     post_week = input_date + timedelta(days=7)
-    calendar = nyse.schedule(start_date=pre_week.isoformat(), 
+    calendar = nyse.schedule(start_date=pre_week.isoformat(),
                              end_date=post_week.isoformat())
 
     # Build a custom time to check if the market is open ('input_date' noon eastern)
