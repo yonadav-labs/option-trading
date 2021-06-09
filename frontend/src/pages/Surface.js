@@ -8,6 +8,10 @@ import Axios from 'axios';
 import { Paper, Stack, Container, Divider, makeStyles, Typography, FormControl, Select, MenuItem, InputLabel } from "@material-ui/core";
 import TickerAutocomplete from "../components/TickerAutocomplete";
 
+// url querying
+import { useHistory, useLocation } from "react-router-dom";
+import { addQuery, useSearch } from "../components/querying";
+
 const GaEvent = GetGaEventTrackingFunc('surface');
 
 const useStyles = makeStyles((theme) => ({
@@ -24,6 +28,9 @@ const useStyles = makeStyles((theme) => ({
 
 export default function Surface() {
     const classes = useStyles();
+    const history = useHistory()
+    const location = useLocation()
+    const querySymbol = useSearch(location, 'symbol')
 
     const [allTickers, setAllTickers] = useState([]);
     const [selectedTicker, setSelectedTicker] = useState(null);
@@ -67,6 +74,7 @@ export default function Surface() {
     const onTickerSelectionChange = (e, selected) => {
         GaEvent('ajust ticker');
         setSelectedTicker(selected);
+        addQuery(location, history, 'symbol', selected.symbol)
     };
 
     const onChangeContractType = (option) => {
@@ -97,7 +105,7 @@ export default function Surface() {
 
     useEffect(() => {
         if (headers) {
-            newLoadTickers(headers, setAllTickers);
+            newLoadTickers(headers, setAllTickers, setSelectedTicker, querySymbol, onTickerSelectionChange);
         }
     }, [headers]);
 
@@ -115,6 +123,7 @@ export default function Surface() {
                         <TickerAutocomplete
                             tickers={allTickers}
                             onChange={onTickerSelectionChange}
+                            value={selectedTicker}
                             displayLabel
                         />
 
