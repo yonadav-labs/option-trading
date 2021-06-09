@@ -260,7 +260,7 @@ export async function newLoadExpirationDates(headers, selected, setModalActive, 
 };
 
 // fetch tickers for new strategy screen and material ui
-export async function newLoadTickers(headers, setAllTickers) {
+export async function newLoadTickers(headers, setAllTickers, setSelectedTicker, querySymbol, onTickerSelectionChange) {
     try {
         let recentTickers = localStorage.getItem('tigerstance-recent-tickers') || '';
         recentTickers = recentTickers.split(' ');
@@ -274,6 +274,10 @@ export async function newLoadTickers(headers, setAllTickers) {
                 ticker.display_label = ticker.symbol + ' - ' + ticker.full_name;
             } else {
                 ticker.display_label = ticker.symbol;
+            }
+
+            if (querySymbol && ticker.symbol === querySymbol) {
+                setSelectedTicker(ticker, onTickerSelectionChange("event", ticker));
             }
 
             if (recentTickers.indexOf(ticker.symbol) > -1) {

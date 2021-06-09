@@ -10,6 +10,10 @@ import getApiUrl, { newLoadTickers, newLoadExpirationDates, fixedFloat, GetGaEve
 import { useOktaAuth } from '@okta/okta-react';
 import { debounce } from "lodash";
 
+// url querying
+import { useHistory, useLocation } from "react-router-dom";
+import { addQuery, useSearch } from "../../components/querying";
+
 const useDebouncedCallback = (callback, delay) => {
     const callbackRef = useRef();
     callbackRef.current = callback;
@@ -20,6 +24,9 @@ const GaEvent = GetGaEventTrackingFunc('strategy screener');
 
 export default function NewStrategyScreener() {
     const API_URL = getApiUrl();
+    const history = useHistory()
+    const location = useLocation()
+    const querySymbol = useSearch(location, 'symbol')
 
     // stock/ticker states
     const [allTickers, setAllTickers] = useState([]);
@@ -106,6 +113,7 @@ export default function NewStrategyScreener() {
         resetStates();
         if (selected) {
             newLoadExpirationDates(headers, selected, setModalActive, setExpirationTimestamps, onBasicInfoChange, setSelectedTicker);
+            addQuery(location, history, 'symbol', selected.symbol)
         } else {
             setExpirationDisabled(true)
         }
@@ -202,7 +210,7 @@ export default function NewStrategyScreener() {
     }, [oktaAuth, authState]);
 
     useEffect(() => {
-        newLoadTickers(headers, setAllTickers)
+        newLoadTickers(headers, setAllTickers, setSelectedTicker, querySymbol, onTickerSelectionChange)
     }, []);
 
     return (
