@@ -17,6 +17,15 @@ const useStyles = makeStyles({
     root: {
         overflowX: "auto",
     },
+    backdropStyle: {
+        position: 'fixed',
+        width: '100%',
+        minHeight: '100%',
+        top: 0,
+        left: 0,
+        zIndex: '99',
+        background: 'rgba(0, 0, 0, 0.5)',
+    }
 });
 
 export default function MainView(props) {
@@ -155,7 +164,7 @@ export default function MainView(props) {
                                         <TuneIcon fontSize="large" />
                                     </IconButton>
                                 </Grid>
-                                <div style={{ position: "absolute", right: 0, top: "9vh", zIndex: 100, display: showMobileFilter ? "block" : "none" }}>
+                                <div style={{ position: "absolute", right: 0, top: "5rem", zIndex: 100, display: showMobileFilter ? "block" : "none" }}>
                                     <Grid container direction="column" justifyContent="center" alignItems="center" bgcolor='#333741' color="white" height="100%">
                                         <ScreenFilterContainer
                                             onFilterChange={onFilterChange}
@@ -177,6 +186,7 @@ export default function MainView(props) {
                                         />
                                     </Grid>
                                 </div>
+                                {showMobileFilter && <div className={classes.backdropStyle} onClick={() => { setShowMobileFilter(false) }}> </div>}
                             </Grid>
                             <Divider />
                         </>
