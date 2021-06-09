@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { makeStyles } from '@material-ui/core/styles';
-import { Alert, Grid, Typography, Paper, Divider, IconButton, useMediaQuery, FormControl, Select, MenuItem, Table, TableHead, TableRow, TableCell, TableBody, Box, TableContainer, Chip, TablePagination, TableSortLabel } from "@material-ui/core";
+import { Alert, Grid, Typography, Paper, Divider, IconButton, useMediaQuery, FormControl, Select, MenuItem, Table, TableHead, TableRow, TableCell, TableBody, Box, TableContainer, Chip, TablePagination, TableSortLabel, Stack } from "@material-ui/core";
 import TickerAutocomplete from "../../components/TickerAutocomplete";
 import ScreenFilterContainer from "../../components/filters/ScreenFilterContainer";
 import NewTickerSummary from "../../components/NewTickerSummary";
@@ -10,6 +10,7 @@ import ScreenRow from "../../components/ScreenRow";
 import CancelIcon from '@material-ui/icons/Cancel';
 import MetricLabel from '../../components/MetricLabel.js';
 import { visuallyHidden } from '@material-ui/utils';
+import ScreenMobileCard from "../../components/cards/ScreenMobileCard";
 
 const GaEvent = GetGaEventTrackingFunc('strategy screener');
 
@@ -58,6 +59,8 @@ export default function MainView(props) {
 
     // mobile responsiveness
     const isMobile = useMediaQuery(theme => theme.breakpoints.down('md'));
+    // mobile responsiveness
+    const isCard = useMediaQuery(theme => theme.breakpoints.down('sm'));
 
     // mobile filter state
     const [showMobileFilter, setShowMobileFilter] = useState(true)
@@ -272,59 +275,90 @@ export default function MainView(props) {
                     </Box>
                 </Grid>
                 {contracts.length > 0 ?
-                    <>
-                        <Grid container>
-                            <Grid item xs={12} px={3} className={classes.root}>
-                                <TableContainer component={Box} border={1} borderColor="rgba(228, 228, 228, 1)" borderRadius={1}>
-                                    <Table size="small">
-                                        <TableHead >
-                                            <TableRow style={{ borderBottom: "2px solid rgba(228, 228, 228, 1)", }}>
-                                                {headCells.map((headCell) => (
-                                                    <TableCell align="center" style={orderBy === headCell.id ? { backgroundColor: "orange" } : null}>
-                                                        <TableSortLabel
-                                                            active={orderBy === headCell.id}
-                                                            direction={orderBy === headCell.id ? order : 'asc'}
-                                                            onClick={createSortHandler(headCell.id)}
-                                                        >
-                                                            <b><MetricLabel label={headCell.label} style={{ display: "block" }} /></b>
-                                                            {orderBy === headCell.id ? (
-                                                                <Box component="span" sx={visuallyHidden}>
-                                                                    {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
-                                                                </Box>
-                                                            ) : null}
-                                                        </TableSortLabel>
-                                                    </TableCell>
-                                                ))}
-                                            </TableRow>
-                                        </TableHead>
-                                        <TableBody>
-                                            {stableSort(contracts, getComparator(order, orderBy))
-                                                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                                                .map((row, index) => {
-                                                    return (
-                                                        <ScreenRow row={row} key={index} />
-                                                    );
-                                                })}
-                                        </TableBody>
-                                    </Table>
-                                </TableContainer>
+                    isCard ?
+                        <div>
+                            <Grid container justifyContent="space-between" alignItems="space-between" pb={1} px={2}>
+                                <Grid xs={6}>
+                                    <Box p={1} border={1} borderColor="rgba(228, 228, 228, 1)" borderRadius={1} style={{ backgroundColor: "rgb(242, 246, 255)" }}>
+                                        Blue cards are in the money.
+                                    </Box>
+                                </Grid>
+                                <TablePagination
+                                    rowsPerPageOptions={[10, 20, 50, 100]}
+                                    component="div"
+                                    count={contracts.length}
+                                    rowsPerPage={rowsPerPage}
+                                    page={page}
+                                    onPageChange={handleChangePage}
+                                    onRowsPerPageChange={handleChangeRowsPerPage}
+                                    labelRowsPerPage=""
+                                    labelDisplayedRows={({ from, to, count }) => null}
+                                />
                             </Grid>
-                        </Grid>
-                        <Grid container justifyContent="space-between" alignItems="space-between" paddingY={2} px={3}>
-                            <Box p={1} border={1} borderColor="rgba(228, 228, 228, 1)" borderRadius={1} style={{ backgroundColor: "rgb(242, 246, 255)" }}>
-                                Blue cards are in the money.
-                                </Box>
-                            <TablePagination
-                                rowsPerPageOptions={[10, 20, 50, 100]}
-                                component="div"
-                                count={contracts.length}
-                                rowsPerPage={rowsPerPage}
-                                page={page}
-                                onPageChange={handleChangePage}
-                                onRowsPerPageChange={handleChangeRowsPerPage}
-                            />
-                        </Grid>
-                    </>
+                            <Stack px={2} py={1}>
+                                {stableSort(contracts, getComparator(order, orderBy))
+                                    .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                                    .map((row, index) => {
+                                        return (
+                                            <ScreenMobileCard trade={row} key={index} />
+                                        );
+                                    })}
+                            </Stack>
+                        </div>
+                        :
+                        <div>
+                            <Grid container>
+                                <Grid item xs={12} px={3} className={classes.root}>
+                                    <TableContainer component={Box} border={1} borderColor="rgba(228, 228, 228, 1)" borderRadius={1}>
+                                        <Table size="small">
+                                            <TableHead >
+                                                <TableRow style={{ borderBottom: "2px solid rgba(228, 228, 228, 1)", }}>
+                                                    {headCells.map((headCell) => (
+                                                        <TableCell align="center" style={orderBy === headCell.id ? { backgroundColor: "orange" } : null}>
+                                                            <TableSortLabel
+                                                                active={orderBy === headCell.id}
+                                                                direction={orderBy === headCell.id ? order : 'asc'}
+                                                                onClick={createSortHandler(headCell.id)}
+                                                            >
+                                                                <b><MetricLabel label={headCell.label} style={{ display: "block" }} /></b>
+                                                                {orderBy === headCell.id ? (
+                                                                    <Box component="span" sx={visuallyHidden}>
+                                                                        {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
+                                                                    </Box>
+                                                                ) : null}
+                                                            </TableSortLabel>
+                                                        </TableCell>
+                                                    ))}
+                                                </TableRow>
+                                            </TableHead>
+                                            <TableBody>
+                                                {stableSort(contracts, getComparator(order, orderBy))
+                                                    .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                                                    .map((row, index) => {
+                                                        return (
+                                                            <ScreenRow row={row} key={index} />
+                                                        );
+                                                    })}
+                                            </TableBody>
+                                        </Table>
+                                    </TableContainer>
+                                </Grid>
+                            </Grid>
+                            <Grid container justifyContent="space-between" alignItems="space-between" paddingY={2} px={3}>
+                                <Box p={1} border={1} borderColor="rgba(228, 228, 228, 1)" borderRadius={1} style={{ backgroundColor: "rgb(242, 246, 255)" }}>
+                                    Blue cards are in the money.
+                                    </Box>
+                                <TablePagination
+                                    rowsPerPageOptions={[10, 20, 50, 100]}
+                                    component="div"
+                                    count={contracts.length}
+                                    rowsPerPage={rowsPerPage}
+                                    page={page}
+                                    onPageChange={handleChangePage}
+                                    onRowsPerPageChange={handleChangeRowsPerPage}
+                                />
+                            </Grid>
+                        </div>
                     :
                     null
                 }
