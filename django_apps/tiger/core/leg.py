@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+import numpy as np
 
 from .security import Cash, Stock, OptionContract
 
@@ -74,6 +75,12 @@ class CashLeg(Leg):
     def get_value_in_price_range(self, price_lower, price_upper):
         return self.total_cost
 
+    def get_value_matrix(self, calculation_dates, underlying_prices):
+        matrix = self.cash.get_value_matrix(calculation_dates, underlying_prices)
+        matrix = np.array(matrix) * self.units
+
+        return matrix if self.is_long else -matrix
+
 
 # Represent `units` shares of stock. Currently only long.
 class StockLeg(Leg):
@@ -94,6 +101,12 @@ class StockLeg(Leg):
 
     def get_value_in_price_range(self, price_lower, price_upper):
         return self.stock.get_value_in_price_range(price_lower, price_upper) * (self.units if self.is_long else -self.units)
+
+    def get_value_matrix(self, calculation_dates, underlying_prices):
+        matrix = self.stock.get_value_matrix(calculation_dates, underlying_prices)
+        matrix = np.array(matrix) * self.units
+
+        return matrix if self.is_long else -matrix
 
 
 # Represent `units` contract of option.
@@ -133,3 +146,16 @@ class OptionLeg(Leg):
 
     def get_value_in_price_range(self, price_lower, price_upper):
         return self.contract.get_value_in_price_range(price_lower, price_upper) * (self.units if self.is_long else -self.units)
+
+    def get_value_matrix(self, calculation_dates, underlying_prices):
+        matrix = self.contract.get_value_matrix(calculation_dates, underlying_prices)
+
+        # convert to a numpy matrix from a defaultdict
+        option_list = []
+        for value in list(matrix.values()):
+            values = [ii[1] for ii in value]
+            option_list.append(values)
+
+        matrix = np.array(option_list) * self.contract.contract_size * self.units
+
+        return matrix if self.is_long else -matrix

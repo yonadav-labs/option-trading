@@ -3,6 +3,8 @@ from abc import ABC, abstractmethod
 import tiger.blob_reader as blob_reader
 from tiger.core.black_scholes import get_itm_probability
 from tiger.utils import days_from_timestamp, timestamp_to_datetime_with_default_tz
+from tiger.core.black_scholes import build_option_value_matrix
+from tiger.core.interest_rates import get_rfr
 
 
 class Security(ABC):
@@ -37,6 +39,9 @@ class Cash(Security):
     def get_value_in_price_range(self, price_lower, price_upper):
         return 1.0
 
+    def get_value_matrix(self, calculation_dates, underlying_prices):
+        return [[1] * len(underlying_prices) for i in range(len(calculation_dates))]
+
 
 class Stock(Security):
     def __init__(self, ticker, stock_price, external_cache_id=None, ticker_stats=None):
@@ -67,6 +72,9 @@ class Stock(Security):
     def get_value_in_price_range(self, price_lower, price_upper):
         # TODO: upgrade from uniformed distribution.
         return (self.get_value_at_price(price_lower) + self.get_value_at_price(price_upper)) / 2.0
+
+    def get_value_matrix(self, calculation_dates, underlying_prices):
+        return [underlying_prices for i in range(len(calculation_dates))]
 
 
 class OptionContract(Security):
@@ -248,6 +256,25 @@ class OptionContract(Security):
                 return average * (self.strike - price_lower) / (price_upper - price_lower)
         else:
             return average
+
+    def get_value_matrix(self, calculation_dates, underlying_prices):
+        expiration_date = timestamp_to_datetime_with_default_tz(self.expiration).date()
+
+        ticker_stats = self.ticker.get_latest_stats()
+        dividend_yield = ticker_stats.dividend_yield if ticker_stats else 0
+        # risk_free_rate = get_rfr('pctl50')
+        risk_free_rate = 0.01
+
+        return build_option_value_matrix(
+            self.is_call,
+            expiration_date,
+            self.strike,
+            self.implied_volatility,
+            dividend_yield,
+            risk_free_rate,
+            calculation_dates,
+            underlying_prices
+        )
 
     def __str__(self):
         return self.contract_symbol

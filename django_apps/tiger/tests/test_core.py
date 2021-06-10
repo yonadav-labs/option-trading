@@ -1,9 +1,9 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 from unittest import mock
 
 from django.test import TestCase
 from django.utils.timezone import make_aware, get_default_timezone
-from tiger.core import Cash, Stock, OptionContract, OptionLeg
+from tiger.core import Cash, Stock, OptionContract, OptionLeg, CashLeg, StockLeg
 from tiger.core.trade import LongCall, LongPut, CoveredCall, CashSecuredPut, BullPutSpread, BullCallSpread, \
     BearCallSpread, BearPutSpread, Trade, LongStraddle, LongStrangle, IronCondor, IronButterfly, ShortStrangle, \
     ShortStraddle, LongButterflySpread, ShortButterflySpread, LongCondorSpread, ShortCondorSpread, StrapStraddle, \
@@ -899,3 +899,124 @@ class TdTestCase(TestCase):
 
         # Test derived methods.
         self.assertEqual(contract.days_till_expiration, 195)
+
+
+class OptionValueTestCase(TestCase):
+    def setUp(self):
+        self.td_input = {
+            "putCall": "CALL",
+            "symbol": "MSFT_121820C215",
+            "description": "MSFT Dec 18 2020 215 Call",
+            "exchangeName": "OPR",
+            "bid": 1.98,
+            "ask": 2.06,
+            "last": 2,
+            "mark": 2.02,
+            "bidSize": 22,
+            "askSize": 20,
+            "bidAskSize": "22X20",
+            "lastSize": 0,
+            "highPrice": 2.29,
+            "lowPrice": 1.12,
+            "openPrice": 0,
+            "closePrice": 2.02,
+            "totalVolume": 16151,
+            "tradeDate": None,
+            "tradeTimeInLong": 1607720391942,
+            "quoteTimeInLong": 1607720399718,
+            "netChange": -0.02,
+            "volatility": 22.763,
+            "delta": 0.407,
+            "gamma": 0.055,
+            "theta": -0.176,
+            "vega": 0.12,
+            "rho": 0.018,
+            "openInterest": 26690,
+            "timeValue": 2,
+            "theoreticalOptionValue": 2.02,
+            "theoreticalVolatility": 29,
+            "optionDeliverablesList": None,
+            "strikePrice": 215,
+            "expirationDate": 1626393600000,  # 07/16/2021
+            "daysToExpiration": 5,
+            "expirationType": "R",
+            "lastTradingDay": 1608339600000,
+            "multiplier": 100,
+            "settlementType": " ",
+            "deliverableNote": "",
+            "isIndexOption": None,
+            "percentChange": -0.99,
+            "markChange": 0,
+            "markPercentChange": 0,
+            "nonStandard": False,
+            "inTheMoney": False,
+            "mini": False
+        }
+        self.stock_price = 420.0
+        self.ticker = Ticker(id=1, symbol='TSLA')
+        self.tickerstats = TickerStats(self.ticker, historical_volatility=0.8)
+        self.cash = Cash()
+        self.stock = Stock(self.ticker, self.stock_price, None, self.tickerstats)
+
+        self.broker_settings = {
+            'open_commission': 0.65,
+            'close_commission': 0.65
+        }
+        
+        base_date = datetime(year=2021, month=5, day=13)
+        expiry_date = datetime(year=2021, month=6, day=18)
+        self.calculation_dates = [base_date + timedelta(days=i) for i in range((expiry_date-base_date).days+1)]
+        self.underlying_prices = [(380.0+i*5.0) for i in range(13)]
+
+    def test_cash_get_value_matrix(self):
+        matrix = self.cash.get_value_matrix(self.calculation_dates, self.underlying_prices)
+        self.assertEqual(len(matrix), len(self.calculation_dates))
+        self.assertEqual(len(matrix[0]), len(self.underlying_prices))
+        self.assertEqual(matrix[0][0], 1)
+        self.assertEqual(matrix[-1][-1], 1)
+
+    def test_stock_get_value_matrix(self):
+        matrix = self.stock.get_value_matrix(self.calculation_dates, self.underlying_prices)
+        self.assertEqual(len(matrix), len(self.calculation_dates))
+        self.assertEqual(len(matrix[0]), len(self.underlying_prices))
+        self.assertEqual(matrix[0][0], self.underlying_prices[0])
+        self.assertEqual(matrix[-1][-1], self.underlying_prices[-1])
+
+    def test_longcall_trade_get_value_matrix(self):
+        contract = OptionContract(self.ticker, True, self.td_input, self.stock_price, 'mid')
+
+        matrix = contract.get_value_matrix(self.calculation_dates, self.underlying_prices)
+        self.assertEqual(len(matrix), len(self.calculation_dates))
+        self.assertEqual(len(matrix[self.calculation_dates[0]]), len(self.underlying_prices))
+        self.assertEqual(matrix[self.calculation_dates[0]][2][0], 390)
+        self.assertAlmostEqual(matrix[self.calculation_dates[0]][2][1], 175.3707, places=3)
+        self.assertEqual(matrix[self.calculation_dates[-1]][3][0], 395)
+        self.assertAlmostEqual(matrix[self.calculation_dates[-1]][3][1], 180.1589, places=3)
+
+    def test_cash_leg_get_value_matrix(self):
+        cash_leg = CashLeg(50)
+        matrix = cash_leg.get_value_matrix(self.calculation_dates, self.underlying_prices)
+        self.assertEqual(matrix.shape, (len(self.calculation_dates), len(self.underlying_prices)))
+        self.assertEqual(matrix.item((0, 0)), 50)
+        self.assertEqual(matrix.item((-1, -1)), 50)
+
+    def test_stock_leg_get_value_matrix(self):
+        leg = StockLeg(100, self.stock)
+        matrix = leg.get_value_matrix(self.calculation_dates, self.underlying_prices)
+        self.assertEqual(matrix.shape, (len(self.calculation_dates), len(self.underlying_prices)))
+        self.assertEqual(matrix.item((0, 0)), self.underlying_prices[0]*100)
+        self.assertEqual(matrix.item((-1, -1)), self.underlying_prices[-1]*100)
+
+    def test_option_leg_get_value_matrix(self):
+        contract = OptionContract(self.ticker, True, self.td_input, self.stock_price, 'mid')
+        leg = OptionLeg(True, 1, contract, 'mid', self.broker_settings)
+        matrix = leg.get_value_matrix(self.calculation_dates, self.underlying_prices)
+        self.assertEqual(matrix.shape, (len(self.calculation_dates), len(self.underlying_prices)))
+        self.assertAlmostEqual(matrix.item((0, 0)), 16537.0772, places=3)
+        self.assertAlmostEqual(matrix.item((-1, -1)), 22515.8981, places=3)
+
+        leg = OptionLeg(False, 1, contract, 'mid', self.broker_settings)
+        matrix = leg.get_value_matrix(self.calculation_dates, self.underlying_prices)
+        self.assertEqual(matrix.shape, (len(self.calculation_dates), len(self.underlying_prices)))
+        self.assertAlmostEqual(matrix.item((0, 0)), -16537.0772, places=3)
+        self.assertAlmostEqual(matrix.item((-1, -1)), -22515.8981, places=3)

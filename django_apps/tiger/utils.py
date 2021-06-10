@@ -1,6 +1,7 @@
 import random
 from datetime import datetime, time, timedelta
 
+import numpy as np
 import pandas_market_calendars as mcal
 import pytz
 from django.utils import timezone
@@ -70,6 +71,22 @@ def is_market_open(input_date):
     # Check if open, returns True if it is, False if not.
     is_open = nyse.open_at_time(calendar, final_dt)
     return is_open
+
+
+def get_dates_till_expiration(expiration, num_days):
+    days_till_expiration = days_from_timestamp(expiration)
+    today = get_now().date()
+
+    # limit number of days as num_days using np
+    if num_days >= days_till_expiration:
+        days_delta = range(days_till_expiration)
+    else:
+        days_delta = np.linspace(0, days_till_expiration-1, num_days).tolist()
+        days_delta = [int(ii) for ii in days_delta]
+
+    calculation_dates = [today + timedelta(days=i) for i in days_delta]
+
+    return calculation_dates
 
 
 if __name__ == "__main__":

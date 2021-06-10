@@ -15,6 +15,7 @@ import {
 import ShareTradeBtn from "../ShareTradeBtn";
 import NewLegCard from "./NewLegCard";
 import GraphSummary from "../GraphSummary";
+import OptionValueMatrix from "../OptionValueMatrix";
 
 const GaEvent = GetGaEventTrackingFunc('trade details');
 
@@ -196,6 +197,14 @@ export default function NewTradeCard({ trade }) {
                         <Grid container>
                             <Grid item xs>
                                 <TradeProfitLossGraph trade={trade} />
+                            </Grid>
+                        </Grid>
+                    </CardActions>
+                    <Divider />
+                    <CardActions>
+                        <Grid container>
+                            <Grid item xs>
+                                <OptionValueMatrix matrixInfo={trade.return_matrix} stockPrice={trade.stock.stock_price} cost={trade.cost} />
                             </Grid>
                         </Grid>
                     </CardActions>

@@ -69,3 +69,12 @@ code {
   flex: 0 0 16.66667%;
   max-width: 16.66667%;
 }
+
+table.option-matrix tr.stock-price {
+  border-bottom: 1px solid;
+}
+
+table.option-matrix td.return-value:hover {
+  background-color: #eee !important;
+  cursor: default;
+}

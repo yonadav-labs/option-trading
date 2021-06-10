@@ -118,3 +118,4 @@ class TradeSerializer(serializers.Serializer):
     net_debit_per_unit = ReadOnlyDollarDecimalField()
     commission_cost = ReadOnlyDollarDecimalField()
     profit_prob = ReadOnlyRatioDecimalField()
+    return_matrix = serializers.JSONField(required=False)

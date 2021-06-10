@@ -7,6 +7,7 @@ import more_itertools
 import numpy as np
 from tiger.core import Leg
 from tiger.core.black_scholes import get_target_price_probability
+from tiger.utils import get_dates_till_expiration
 
 INFINITE = 'infinite'
 
@@ -157,9 +158,9 @@ class Trade(ABC):
         else:
             return list(self.key_points.keys())[list(self.key_points.values()).index(self.best_return)]
 
-    @property
-    def graph_points(self):
+    def build_stock_price_range(self, points=100):
         x = sorted(self.key_points.keys())[1:-1]
+        x.append(self.stock.stock_price)
         if self.target_price_lower:
             x.append(self.target_price_lower)
         if self.target_price_upper:
@@ -168,12 +169,17 @@ class Trade(ABC):
         x = sorted(x)
         x = [x[0] * 0.9] + x + [x[len(x) - 1] * 1.1]
         # generate interval points
-        additional_x = np.linspace(x[0], x[len(x) - 1], 100).tolist()
+        additional_x = np.linspace(x[0], x[len(x) - 1], points).tolist()
         x = set(x)
         additional_x = set(additional_x)
         # join important points with interval points
         x.update(additional_x)
         x = sorted(list(x))
+        return x
+
+    @property
+    def graph_points(self):
+        x = self.build_stock_price_range()
         y = [self.get_total_return(val, val) for val in x]
         return {'x': x, 'y': y}
 
@@ -348,6 +354,31 @@ class Trade(ABC):
                     sigma=leg.contract.implied_volatility, aims_above=self.is_bullish)
                 probs.append(prob)
         return sum(probs) / len(probs)
+
+    @property
+    def return_matrix(self):
+        underlying_prices = self.build_stock_price_range(24)
+        underlying_prices.reverse()
+        min_expiration = self._get_aggr_contract_attribute('expiration', use_min=True)
+        calculation_dates = get_dates_till_expiration(min_expiration, 20)[:-1]
+
+        final_matrix = None
+        for leg in self.legs:
+            matrix = leg.get_value_matrix(calculation_dates, underlying_prices)
+            if final_matrix is None:
+                final_matrix = matrix
+            else:
+                final_matrix += matrix
+
+        final_matrix = final_matrix.transpose() - self.cost
+
+        return {
+            'prices': underlying_prices,
+            'values': final_matrix,
+            'dates': [date.strftime('%m/%d/%y') for date in calculation_dates],
+            'max': final_matrix.max(),
+            'min': final_matrix.min(),
+        }
 
     def calc_properties(self):
         '''calculates max loss, max profit, and break even points of strategy'''

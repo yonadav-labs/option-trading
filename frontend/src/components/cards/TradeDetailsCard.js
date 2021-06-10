@@ -6,6 +6,7 @@ import LegDetailsCard from './LegDetailsCard.js';
 import TradeProfitLossGraph from '../TradeProfitLossGraph.js';
 import MetricLabel from '../MetricLabel.js';
 import { startCase } from 'lodash';
+import OptionValueMatrix from "../OptionValueMatrix";
 
 export default function TradeDetailsCard(props) {
     const { trade, latestTrade, hideShareButton, hideDisclaimer, hideTitle, broker } = props;
@@ -136,6 +137,7 @@ export default function TradeDetailsCard(props) {
                         </Col>
                     </Row>
                     <TradeProfitLossGraph trade={trade} />
+                    <OptionValueMatrix matrixInfo={trade.return_matrix} stockPrice={trade.stock.stock_price} cost={trade.cost} />
                     {trade.target_price_lower &&
                         <>
                             <Row>
