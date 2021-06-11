@@ -360,7 +360,7 @@ class Trade(ABC):
         underlying_prices = self.build_stock_price_range(24)
         underlying_prices.reverse()
         min_expiration = self._get_aggr_contract_attribute('expiration', use_min=True)
-        calculation_dates = get_dates_till_expiration(min_expiration, 20)[:-1]
+        calculation_dates = get_dates_till_expiration(min_expiration, 20)
 
         final_matrix = None
         for leg in self.legs:

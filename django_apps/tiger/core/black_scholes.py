@@ -175,39 +175,50 @@ def build_option_value_matrix(is_call, expiry_date, strike_price, volatility, di
 
         calculation_date = ql.Date(dt.day, dt.month, dt.year)
 
-        ql.Settings.instance().evaluationDate = calculation_date
+        # For value on expiry day, it's a known solution so no need to price it analytically
+        if calculation_date == expiry_date:
+            for underlying_price in underlying_prices:
+                # If call, it's just underlying - strike, 0 if negative
+                if is_call:
+                    final_matrix[dt].append((underlying_price, max(0, underlying_price - strike_price)))
+                # Else if put, strike - underlying, 0 if negative
+                else:
+                    final_matrix[dt].append((underlying_price, max(0, strike_price - underlying_price)))
+        else:
+            ql.Settings.instance().evaluationDate = calculation_date
 
-        payoff = ql.PlainVanillaPayoff(oright, strike_price)
-        exercise = ql.AmericanExercise(calculation_date, expiry_date)
-        option = ql.VanillaOption(payoff, exercise)
+            payoff = ql.PlainVanillaPayoff(oright, strike_price)
+            exercise = ql.AmericanExercise(calculation_date, expiry_date)
+            option = ql.VanillaOption(payoff, exercise)
 
-        # Set up the Yield Term Structure Handle to properly handle the risk free rate and annualization over the calendar
-        rfr_ts = ql.YieldTermStructureHandle(ql.FlatForward(calculation_date, risk_free_rate, days_in_year))
+            # Set up the Yield Term Structure Handle to properly handle the risk free rate and annualization over the calendar
+            rfr_ts = ql.YieldTermStructureHandle(ql.FlatForward(calculation_date, risk_free_rate, days_in_year))
 
-        # Set up the Yield Term Structure Handle to properly handle dividend yield over the calendar
-        dividend_yield_ts = ql.YieldTermStructureHandle(ql.FlatForward(calculation_date, dividend_yield, days_in_year))
+            # Set up the Yield Term Structure Handle to properly handle dividend yield over the calendar
+            dividend_yield_ts = ql.YieldTermStructureHandle(
+                ql.FlatForward(calculation_date, dividend_yield, days_in_year))
 
-        # Set up the Yield Term Structure Handle to properly handle volatility over the calendar
-        vol_ts = ql.BlackVolTermStructureHandle(
-            ql.BlackConstantVol(calculation_date, calendar, volatility, days_in_year))
+            # Set up the Yield Term Structure Handle to properly handle volatility over the calendar
+            vol_ts = ql.BlackVolTermStructureHandle(
+                ql.BlackConstantVol(calculation_date, calendar, volatility, days_in_year))
 
-        for underlying_price in underlying_prices:
-            # Set up the Quote Handle for the stock given its current price
-            quote_handle = ql.QuoteHandle(ql.SimpleQuote(underlying_price))
+            for underlying_price in underlying_prices:
+                # Set up the Quote Handle for the stock given its current price
+                quote_handle = ql.QuoteHandle(ql.SimpleQuote(underlying_price))
 
-            # Instantiate the BSM process
-            bsm_process = ql.BlackScholesMertonProcess(
-                quote_handle,
-                dividend_yield_ts,
-                rfr_ts,
-                vol_ts
-            )
+                # Instantiate the BSM process
+                bsm_process = ql.BlackScholesMertonProcess(
+                    quote_handle,
+                    dividend_yield_ts,
+                    rfr_ts,
+                    vol_ts
+                )
 
-            steps = 250
-            binomial_engine = ql.BinomialVanillaEngine(bsm_process, "crr", steps)
-            option.setPricingEngine(binomial_engine)
+                steps = 250
+                binomial_engine = ql.BinomialVanillaEngine(bsm_process, "crr", steps)
+                option.setPricingEngine(binomial_engine)
 
-            final_matrix[dt].append((underlying_price, option.NPV()))
+                final_matrix[dt].append((underlying_price, option.NPV()))
 
     return final_matrix
 

@@ -399,9 +399,9 @@ class TestBlackScholes(TestCase):
         )
 
         # And a third (end date).
-        date = datetime.datetime(year=2021, month=6, day=17)
+        date = datetime.datetime(year=2021, month=6, day=18)
         underlying = 415.0
-        option_value = 5.17484
+        option_value = 5.0
 
         underlying_value_pair = option_matrix[date]
 
