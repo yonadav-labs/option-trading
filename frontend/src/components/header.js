@@ -8,6 +8,7 @@ import UserContext from '../UserContext';
 import getApiUrl from '../utils';
 import '../index.css';
 import LiveChat from 'react-livechat'
+import { Button, Grid } from '@material-ui/core';
 
 function getCookie(name) {
     var cookieValue = null;
@@ -76,33 +77,47 @@ function Header() {
     return (
         <header>
             <Navbar collapseOnSelect expand="lg">
-                <Navbar.Brand as={Link} to="/" className="font-weight-bold">
-                    <Image src="/gold-logo.png" style={{ 'height': '2.3rem', 'paddingRight': '0.3rem', 'paddingBottom': '0.7rem' }} />
-                    Tigerstance
-                </Navbar.Brand>
-                <Navbar.Toggle aria-controls="responsive-navbar-nav" />
-                <Navbar.Collapse id="responsive-navbar-nav">
-                    <Nav className="mr-auto justify-content-center" style={{ flex: 1 }}>
-                        <Nav.Link eventKey={"1"} className="text-dark" as={Link} to="/discover">Discover</Nav.Link>
-                        <Nav.Link eventKey={"2"} className="text-dark" as={Link} to="/build">Build</Nav.Link>
-                        <Nav.Link eventKey={"3"} className="text-dark" as={Link} to="/screen">Screen</Nav.Link>
-                        <Nav.Link eventKey={"4"} className="text-dark" as={Link} to="/panorama">Panorama</Nav.Link>
-                        <Nav.Link eventKey={"5"} className="text-dark" as={Link} to="/reports">Reports</Nav.Link>
-                        <Nav.Link eventKey={"6"} className="text-dark" as={Link} to="/pricing">Pricing</Nav.Link>
-                    </Nav>
-                    {authState.isAuthenticated ?
-                        <Nav>
-                            <Nav.Link className="text-dark" as={Link} to="/profile">Profile</Nav.Link>
-                            <Nav.Link className="text-dark" href="#" onClick={logout}>Logout</Nav.Link>
+                <Grid py={1} px={5} container
+                    direction="row"
+                    justifyContent="space-between"
+                    alignItems="center">
+                    <Navbar.Brand as={Link} to="/" className="font-weight-bold">
+                        <Image src="/tigerstance-logo.png" style={{ 'height': '2.3rem', 'paddingRight': '0.3rem', 'paddingBottom': '0.3rem' }} />
+
+                    </Navbar.Brand>
+                    <Navbar.Toggle aria-controls="responsive-navbar-nav" />
+                    <Navbar.Collapse id="responsive-navbar-nav">
+                        <Nav className="mr-auto justify-content-center" style={{ flex: 1 }}>
+                            <Nav.Link eventKey={"1"} className="text-dark" as={Link} to="/discover">Discover</Nav.Link>
+                            <Nav.Link eventKey={"3"} className="text-dark" as={Link} to="/screen">Screen</Nav.Link>
+                            <Nav.Link eventKey={"2"} className="text-dark" as={Link} to="/build">Build</Nav.Link>
+                            <Nav.Link eventKey={"4"} className="text-dark" as={Link} to="/panorama">Panorama</Nav.Link>
+                            <Nav.Link eventKey={"5"} className="text-dark" as={Link} to="/reports">Reports</Nav.Link>
+                            <Nav.Link eventKey={"6"} className="text-dark" as={Link} to="/pricing">Pricing</Nav.Link>
                         </Nav>
-                        :
-                        <Nav>
-                            <Nav.Link className="text-dark" href="/signin">Log In</Nav.Link>
-                            <Nav.Link className="btn-primary text-light signup-sm btn-gradient" href="/signin/register">Sign Up for Free</Nav.Link>
-                        </Nav>
-                    }
-                </Navbar.Collapse>
+                        {authState.isAuthenticated ?
+                            <Nav>
+                                <Nav.Link className="text-dark" as={Link} to="/profile">Profile</Nav.Link>
+                                <Nav.Link className="text-dark" href="#" onClick={logout}>Logout</Nav.Link>
+                            </Nav>
+                            :
+                            <Nav>
+                                <Nav.Link className="text-dark" href="/signin">Log In</Nav.Link>
+                                <Button
+                                    variant="contained"
+                                    size="large"
+                                    href="/signin/register"
+                                    to="/signin/register"
+                                    role="button"
+                                >
+                                    SIGN UP, IT'S FREE
+                                    </Button>
+                            </Nav>
+                        }
+                    </Navbar.Collapse>
+                </Grid>
             </Navbar>
+            {/* <hr style={{ opacity: 1, marginTop: 0 }} className={"header-divider"} /> */}
             {user ?
                 <LiveChat license={'12791829'} visitor={{ name: user.nick_name || user.email, email: user.email }} />
                 :

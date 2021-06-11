@@ -296,6 +296,24 @@ export async function newLoadTickers(headers, setAllTickers, setSelectedTicker, 
     }
 };
 
+export async function getTopMovers(headers) {
+    try {
+        const response = await Axios.get(`${getApiUrl()}/tickers/top_movers`, { headers });
+        return response.data;
+    } catch (error) {
+        console.error(error);
+    }
+}
+
+export async function getPopularTickers(headers) {
+    try {
+        const response = await Axios.get(`${getApiUrl()}/tickers/popular`, { headers });
+        return response.data;
+    } catch (error) {
+        console.error(error);
+    }
+}
+
 export function GetGaEventTrackingFunc(gaCategory) {
     return function GaEventTracking(gaAction) {
         ReactGA.event({ category: gaCategory, action: gaAction });

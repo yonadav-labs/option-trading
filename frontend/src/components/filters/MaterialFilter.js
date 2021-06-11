@@ -1,5 +1,6 @@
 import React from "react";
-import { Select, FormControl, MenuItem, makeStyles } from "@material-ui/core";
+import { Select, FormControl, MenuItem } from "@material-ui/core";
+import { makeStyles } from "@material-ui/styles";
 
 const useStyles = makeStyles((theme) => ({
     formControl: {
@@ -11,7 +12,7 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-export default function MaterialFilter({options, value, defaultValue, onFilterChange}) {
+export default function MaterialFilter({ options, value, defaultValue, onFilterChange }) {
     const classes = useStyles();
 
     return (
@@ -22,8 +23,8 @@ export default function MaterialFilter({options, value, defaultValue, onFilterCh
                 onChange={onFilterChange}
                 value={value}
             >
-                { 
-                    options.map((option, index) => <MenuItem value={option.value} key={index}> {option.label} </MenuItem> ) 
+                {
+                    options.map((option, index) => <MenuItem value={option.value} key={index}> {option.label} </MenuItem>)
                 }
             </Select>
         </FormControl>

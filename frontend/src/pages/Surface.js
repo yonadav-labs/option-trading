@@ -5,8 +5,9 @@ import getApiUrl, { newLoadTickers, GetGaEventTrackingFunc } from '../utils';
 import ModalSpinner from '../components/ModalSpinner';
 import HeatMapGraph from '../components/HeatMapGraph';
 import Axios from 'axios';
-import { Paper, Stack, Container, Divider, makeStyles, Typography, FormControl, Select, MenuItem, InputLabel } from "@material-ui/core";
+import { Paper, Stack, Container, Divider, Typography, FormControl, Select, MenuItem, InputLabel, useTheme } from "@material-ui/core";
 import TickerAutocomplete from "../components/TickerAutocomplete";
+import { makeStyles } from '@material-ui/styles';
 
 // url querying
 import { useHistory, useLocation } from "react-router-dom";
@@ -14,19 +15,19 @@ import { addQuery, useSearch } from "../components/querying";
 
 const GaEvent = GetGaEventTrackingFunc('surface');
 
-const useStyles = makeStyles((theme) => ({
-    customPaper: {
-        padding: theme.spacing(3),
-        [theme.breakpoints.up('sm')]: {
-            paddingLeft: theme.spacing(7),
-            paddingRight: theme.spacing(7),
-            margin: theme.spacing(1),
-            borderRadius: 50
-        }
-    }
-}));
-
 export default function Surface() {
+    const theme = useTheme();
+    const useStyles = makeStyles({
+        customPaper: {
+            padding: theme.spacing(3),
+            [theme.breakpoints.up('sm')]: {
+                paddingLeft: theme.spacing(7),
+                paddingRight: theme.spacing(7),
+                margin: theme.spacing(1),
+                borderRadius: 50
+            }
+        }
+    }, theme);
     const classes = useStyles();
     const history = useHistory()
     const location = useLocation()

@@ -12,14 +12,14 @@ code {
     monospace;
 }
 
-.bd-example-modal-lg .modal-dialog{
+.bd-example-modal-lg .modal-dialog {
   display: table;
   position: relative;
   margin: 0 auto;
   top: calc(50% - 24px);
 }
 
-.bd-example-modal-lg .modal-dialog .modal-content{
+.bd-example-modal-lg .modal-dialog .modal-content {
   background-color: transparent;
   border: none;
 }
@@ -59,6 +59,7 @@ code {
   from {
     transform: rotate(0deg);
   }
+
   to {
     transform: rotate(360deg);
   }
@@ -68,6 +69,10 @@ code {
 .react-bootstrap-table .col-6 {
   flex: 0 0 16.66667%;
   max-width: 16.66667%;
+}
+
+.header-divider {
+  border: 1px solid #F2F2F2;
 }
 
 table.option-matrix tr.stock-price {

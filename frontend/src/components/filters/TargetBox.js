@@ -1,27 +1,11 @@
 import React, { useState } from "react";
-import { Box, Grid, withStyles, ToggleButtonGroup, ToggleButton, Typography } from "@material-ui/core";
+import { Box, Grid, ToggleButtonGroup, ToggleButton, Typography, useTheme } from "@material-ui/core";
 import MetricLabel from "../MetricLabel";
 import PriceTargetField from "./PriceTargetField";
 import { GetGaEventTrackingFunc } from '../../utils';
+import { withStyles } from "@material-ui/styles";
 
 const GaEvent = GetGaEventTrackingFunc('strategy screener');
-
-const StyledToggleButtonGroup = withStyles((theme) => ({
-    root: {
-        width: "100%",
-    },
-    grouped: {
-        margin: theme.spacing(0.5)
-    },
-    groupedHorizontal: {
-        "&:not(:last-child)": {
-            borderRadius: 30
-        },
-        "&:not(:first-child)": {
-            borderRadius: 30
-        }
-    }
-}))(ToggleButtonGroup);
 
 const StyledToggleButton = withStyles({
     root: {
@@ -47,7 +31,21 @@ const StyledToggleButton = withStyles({
 
 
 export default function PriceTargetBox({ onFilterChange, initialPrice, filters }) {
-
+    const theme = useTheme();
+    const StyledToggleButtonGroup = withStyles({
+        root: {
+            width: "100%",
+            padding: theme.spacing(1)
+        },
+        groupedHorizontal: {
+            "&:not(:last-child)": {
+                borderRadius: 30
+            },
+            "&:not(:first-child)": {
+                borderRadius: 30
+            }
+        }
+    }, theme)(ToggleButtonGroup);
     const [targetType, setTargetType] = useState('price');
 
     const handleTargetTypeChange = (event, newTargetType) => {
@@ -87,7 +85,7 @@ export default function PriceTargetBox({ onFilterChange, initialPrice, filters }
             <Grid item paddingBottom='0.1rem'>
                 <Typography variant="button"><MetricLabel label="price target on exp day" /></Typography>
             </Grid>
-            <Grid item paddingBottom="1rem">
+            <Grid item>
                 <StyledToggleButtonGroup
                     value={targetType}
                     exclusive

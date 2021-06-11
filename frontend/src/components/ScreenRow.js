@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { makeStyles, Box, Collapse, IconButton, TableCell, TableRow } from "@material-ui/core";
+import { Box, Collapse, IconButton, TableCell, TableRow } from "@material-ui/core";
+import { makeStyles } from '@material-ui/styles';
 import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
 import { NumberRoundFormatter, PercentageFormatter, PriceFormatter, TimestampDateFormatter } from '../utils';

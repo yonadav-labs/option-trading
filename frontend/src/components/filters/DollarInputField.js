@@ -1,5 +1,6 @@
-import React, {useState } from "react";
-import { OutlinedInput, makeStyles, InputAdornment } from "@material-ui/core";
+import React, { useState } from "react";
+import { OutlinedInput, InputAdornment } from "@material-ui/core";
+import { makeStyles } from "@material-ui/styles";
 
 const useStyles = makeStyles((theme) => ({
     customInput: {
@@ -33,7 +34,7 @@ export default function DollarInputField({ onFilterChange, placeholder }) {
             type="number"
             value={value}
             onChange={changeHandler}
-            startAdornment={<InputAdornment position="start"> <span style={{color: "white"}}>$</span></InputAdornment>}
+            startAdornment={<InputAdornment position="start"> <span style={{ color: "white" }}>$</span></InputAdornment>}
         />
     );
 }

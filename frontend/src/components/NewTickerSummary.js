@@ -1,9 +1,10 @@
 import React, { useState } from "react";
-import { Button, Popper, Box, makeStyles, Typography } from "@material-ui/core";
+import { Button, Popper, Box, Typography } from "@material-ui/core";
 import { TimestampDateFormatter, formatLargeNumber, PercentageFormatter } from "../utils";
 import ZoomInIcon from '@material-ui/icons/ZoomIn';
 import TradingViewWidget from 'react-tradingview-widget';
 import MetricLabel from "./MetricLabel";
+import { makeStyles } from '@material-ui/styles';
 
 const useStyles = makeStyles(theme => ({
     viewChartButton: {

@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import { Grid, makeStyles, Box, Typography } from "@material-ui/core";
+import { makeStyles } from '@material-ui/styles';
+import { Grid, Box, Typography } from "@material-ui/core";
 import MetricLabel from '../MetricLabel.js';
 import {
     PriceFormatter, NumberRoundFormatter, PercentageFormatter,
@@ -8,12 +9,12 @@ import {
 
 const GaEvent = GetGaEventTrackingFunc('trade details');
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles({
     box: {
         border: 1,
         borderColor: "black"
     },
-}))
+});
 
 export default function ScreenMobileCard({ trade }) {
     const classes = useStyles();

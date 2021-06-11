@@ -28,5 +28,5 @@ restful_urlpatterns = [
 restful_urlpatterns = format_suffix_patterns(restful_urlpatterns)
 
 urlpatterns = [
-                  # other urls.
-              ] + restful_urlpatterns
+    # other urls.
+] + restful_urlpatterns

@@ -5,7 +5,7 @@ import { Security, SecureRoute, LoginCallback } from '@okta/okta-react';
 import Profile from './pages/Profile';
 import Login from './components/Login';
 import getOktaConfig from "./oktaConfig";
-import Home from './pages/Home';
+import Home from './pages/home/Home.js';
 import Header from './components/header'
 import Footer from './components/footer'
 import OptionScreener from './pages/OptionScreener'

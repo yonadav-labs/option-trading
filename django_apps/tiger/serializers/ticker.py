@@ -23,10 +23,17 @@ class TickerStatsSerializer(serializers.ModelSerializer):
     price_target_average = ReadOnlyDollarDecimalField()
     price_target_high = ReadOnlyDollarDecimalField()
     price_target_low = ReadOnlyDollarDecimalField()
+    percent_change = serializers.SerializerMethodField()
     historical_volatility = ReadOnlyRatioDecimalField()
 
     def get_symbol(self, obj):
         return obj.ticker.symbol
+
+    def get_percent_change(self, obj):
+        try:
+            return obj.percent_change
+        except:
+            return None
 
     class Meta:
         model = TickerStats

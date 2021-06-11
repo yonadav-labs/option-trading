@@ -1,70 +1,92 @@
-import { createMuiTheme, responsiveFontSizes } from '@material-ui/core/styles'
+import { grey } from '@material-ui/core/colors';
+import { createTheme, responsiveFontSizes } from '@material-ui/core/styles'
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore"
+import colors from "./colors";
 
-let theme = createMuiTheme({
+export default responsiveFontSizes(createTheme({
     palette: {
-        type: 'light',
+        mode: 'light',
         primary: {
-            main: '#ff8f2b',
+            main: colors.orange,
+            dark: 'rgba(217, 111, 17, 1)',
+            light: 'rgba(255, 179, 111, 1)',
+            background: 'rgba(255, 143, 43, 0.08)',
+            border: 'rgba(255, 143, 43, 0.5)',
+            contrastText: 'rgba(255, 255, 255, 1)'
         },
         secondary: {
-            main: '#ffd338',
+            main: colors.yellow,
+            dark: 'rgba(232, 187, 30, 1)',
+            light: 'rgba(255, 231, 148, 1)',
+            background: 'rgba(255, 211, 56, 0.08)',
+            border: 'rgba(255, 211, 56, 0.5)',
+            contrastText: 'rgba(255, 255, 255, 1)'
         },
         warning: {
-            main: '#9B51E0',
+            main: colors.purple,
         },
-        divider: '#e4e4e4',
+        divider: colors.light,
     },
     typography: {
+        fontFamily: 'Roboto',
         h1: {
+            fontFamily: "Roboto",
             fontSize: '5rem',
             fontWeight: 'normal',
             lineHeight: 1,
             letterSpacing: '-0.071em',
         },
         h2: {
+            fontFamily: "Roboto",
             fontSize: '4.286rem',
             fontWeight: 'normal',
             lineHeight: 1.1,
             letterSpacing: '-0.071em',
         },
         h3: {
+            fontFamily: "Roboto",
             fontSize: '2.857rem',
             fontWeight: 'normal',
             lineHeight: 1.2,
             letterSpacing: '-0.071em',
         },
         h4: {
+            fontFamily: "Roboto",
             fontSize: '2rem',
             fontWeight: 'normal',
             lineHeight: 1.1,
         },
         h5: {
+            fontFamily: "Roboto",
             fontSize: '1.5rem',
             fontWeight: 'bold',
             lineHeight: 1.2,
         },
         h6: {
+            fontFamily: "Roboto",
             fontSize: '1.286rem',
             fontWeight: 'bold',
             lineHeight: 1.2,
         },
         subtitle1: {
+            fontFamily: "Roboto",
             fontSize: '1.143rem',
             fontWeight: 500,
             lineHeight: 1.4,
         },
         subtitle2: {
-            fontSize: '1rem',
+            fontFamily: "Roboto",
+            fontSize: '16px',
             fontWeight: 500,
-            lineHeight: 1.5,
         },
         body1: {
+            fontFamily: "Roboto",
             fontSize: '1.143rem',
             fontWeight: 'normal',
             lineHeight: 1.6,
         },
         body2: {
+            fontFamily: "Roboto",
             fontSize: '1rem',
             fontWeight: 'normal',
             lineHeight: 1.5,
@@ -77,62 +99,85 @@ let theme = createMuiTheme({
             letterSpacing: '0.071em',
             textTransform: 'uppercase'
         },
+        fieldLabel: {
+            fontFamily: "Roboto",
+            fontSize: '12px',
+            fontWeight: 700,
+            lineHeight: 1.3,
+            letterSpacing: '1px',
+            textTransform: 'uppercase'
+        }
     },
     components: {
         MuiButton: {
             styleOverrides: {
-                root: {
-                    background: 'linear-gradient(90deg, #FF8F2B 0%, #FFD43A 100%)',
+                contained: {
                     border: 0,
                     boxShadow: 'none',
-                    color: '#fafafa',
-                    height: 40,
-                    padding: '14px 22px 13px',
                     transition: 'ease-in-out',
                     WebkitTransition: 'ease-in-out',
+                },
+                containedPrimary: {
+                    background: 'linear-gradient(90deg, #FF8F2B 0%, #FFD43A 100%)',
                     '&:disabled': {
-                        color: '#fafafa',
-                        opacity: 0.5,
+                        background: 'rgba(0, 0, 0, 0.12)'
                     },
-                    // "&:focus": {
-                    //     boxSizing: 'border-box',
-                    //     border: '1px solid #333333'
-                    // },
                     '&:hover': {
-                        background: '#ff8f2b',
+                        background: colors.orange,
+                        color: colors.white,
                         boxShadow: 'none',
                     }
                 },
-            },
-            variants: [
-                {
-                    props: { variant: 'secondary' },
-                    style: {
-                        background: '#fafafa',
+                containedSecondary: {
+                    background: grey[900],
+                    '&:hover': {
+                        background: grey[700],
                         boxShadow: 'none',
-                        color: '#333333',
-                        height: 40,
-                        padding: '14px 22px 13px',
-                        transition: 'ease-in-out',
-                        WebkitTransition: 'ease-in-out',
-                        '&:disabled': {
-                            borderColor: 'linear-gradient(90deg, #FF8F2B 0%, #FFD43A 100%)',
-                            border: '1px',
-                            color: '#333333',
-                            opacity: 0.5
-                        },
-                        // "&:focus": {
-                        //     boxSizing: 'border-box',
-                        //     border: '1px solid #333333'
-                        // },
-                        '&:hover': {
-                            background: '#fafafa',
-                            color: '#ff8f2b',
-                            boxShadow: 'none',
-                        }
                     }
-                }
-            ]
+                },
+                outlined: {
+                    color: 'black',
+                    background: colors.white,
+                    textAlign: 'center',
+                    '&:hover': {
+                        color: 'black',
+                    }
+                },
+                sizeSmall: {
+                    padding: '4px 10px 4px 10px',
+                },
+                sizeMedium: {
+                    padding: '6px 16px 6px 16px',
+                },
+                sizeLarge: {
+                    padding: '12px 20px 12px 20px',
+                },
+            },
+            // variants: [
+            //     {
+            //         props: { variant: 'secondary' },
+            //         style: {
+            //             background: colors.light2,
+            //             boxShadow: 'none',
+            //             color: colors.gray,
+            //             height: 40,
+            //             padding: '14px 22px 13px',
+            //             transition: 'ease-in-out',
+            //             WebkitTransition: 'ease-in-out',
+            //             '&:disabled': {
+            //                 borderColor: 'linear-gradient(90deg, #FF8F2B 0%, #FFD43A 100%)',
+            //                 border: '1px',
+            //                 color: colors.gray,
+            //                 opacity: 0.5
+            //             },
+            //             '&:hover': {
+            //                 background: colors.light2,
+            //                 color: colors.orange,
+            //                 boxShadow: 'none',
+            //             }
+            //         }
+            //     }
+            // ]
         },
         MuiDivider: {
             styleOverrides: {
@@ -144,7 +189,7 @@ let theme = createMuiTheme({
         MuiSelect: {
             styleOverrides: {
                 icon: {
-                    color: '#ff8f2b'
+                    color: colors.orange
                 }
             },
             defaultProps: {
@@ -156,7 +201,7 @@ let theme = createMuiTheme({
                 popupIndicator: {
                     '& span': {
                         '& svg': {
-                            color: '#ff8f2b',
+                            color: colors.orange,
                             '& path': {
                                 d: 'path("M 16.59 8.59 L 12 13.17 L 7.41 8.59 L 6 10 l 6 6 l 6 -6 Z")'
                             }
@@ -174,10 +219,6 @@ let theme = createMuiTheme({
         }
     },
     shape: {
-        borderRadius: 5,
+        borderRadius: 4,
     },
-});
-
-theme = responsiveFontSizes(theme);
-
-export default theme
+}));

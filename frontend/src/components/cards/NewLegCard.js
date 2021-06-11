@@ -1,4 +1,4 @@
-import { Card, CardContent, CardHeader, Collapse, experimentalStyled as styled, Grid, IconButton, Typography, useMediaQuery } from '@material-ui/core';
+import { Card, CardContent, CardHeader, Collapse, Grid, IconButton, styled, Typography, useMediaQuery } from '@material-ui/core';
 import React, { useState } from 'react';
 import { PriceFormatter, TimestampDateFormatter } from '../../utils';
 import MetricLabel from '../MetricLabel';

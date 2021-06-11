@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { Grid, Typography, Stack, Pagination, Paper, Divider, Alert, IconButton, useMediaQuery, FormControl, Select, MenuItem, Box, makeStyles } from "@material-ui/core";
+import { makeStyles } from '@material-ui/styles';
+import { Grid, Typography, Stack, Pagination, Paper, Divider, Alert, IconButton, useMediaQuery, FormControl, Select, MenuItem, Box } from "@material-ui/core";
 import { useOktaAuth } from '@okta/okta-react';
 import NewTradeCard from "../../components/cards/NewTradeCard";
 import TickerAutocomplete from "../../components/TickerAutocomplete";
@@ -13,7 +14,7 @@ import { PriceFormatter, GetGaEventTrackingFunc } from '../../utils';
 
 const GaEvent = GetGaEventTrackingFunc('strategy screener');
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles({
     backdropStyle: {
         position: 'fixed',
         width: '100%',
@@ -23,7 +24,7 @@ const useStyles = makeStyles((theme) => ({
         zIndex: '99',
         background: 'rgba(0, 0, 0, 0.5)',
     }
-}));
+});
 
 export default function MainView(props) {
     const classes = useStyles();
@@ -220,6 +221,7 @@ export default function MainView(props) {
                         {renderedTrades.length > 0 ?
                             <Box pt={2} px={2} style={{ float: "right" }} >
                                 <Select
+                                    variant="standard"
                                     value={sortState}
                                     onChange={(e) => {
                                         GaEvent('sort by ' + e.target.value + ' ' + orderState);

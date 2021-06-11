@@ -9,7 +9,6 @@ import { getPaypalMonthlyPlanId, getPaypalYearlyPlanId, GetGaEventTrackingFunc }
 import LinkIcon from '@material-ui/icons/Link';
 import { IconButton, Tooltip } from '@material-ui/core';
 
-import './Home.css';
 import './Pricing.css';
 
 const GaEvent = GetGaEventTrackingFunc('user');
@@ -44,7 +43,7 @@ export default function Pricing() {
         <>
             <Helmet>
                 <title>Tigerstance | Pricing</title>
-                <meta name="description" content="How does Tigerstance's pricing work? Tigerstance BASIC is available for free. 
+                <meta name="description" content="How does Tigerstance's pricing work? Tigerstance BASIC is available for free.
                 Tigerstance PRO costs $4.91 per month when billed annually and $5.69 per month when billed monthly." />
             </Helmet>
             <div className="container-fluid pricing-background">
@@ -107,7 +106,7 @@ export default function Pricing() {
                                 {authState.isAuthenticated ?
                                     <></>
                                     :
-                                    <Link class="btn-block btn-light btn-login" to="/signin/register">Sign Up for Free</Link>
+                                    <Link class="btn-block btn-light btn-login" to="/signin/register">SIGN UP, IT'S FREE</Link>
                                 }
                             </Card.Body>
                         </Card>

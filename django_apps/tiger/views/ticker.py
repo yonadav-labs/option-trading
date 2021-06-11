@@ -1,3 +1,5 @@
+from django.db import connection
+from django.db.models import Count
 from django.utils import timezone
 from rest_framework import viewsets
 from rest_framework.decorators import action
@@ -5,7 +7,7 @@ from rest_framework.response import Response
 from tiger.core import Stock
 from tiger.models import Ticker
 from tiger.serializers import TickerSerializer, TickerStatsSerializer
-from tiger.views.utils import get_broker
+from tiger.views.utils import get_broker, dict_fetch_all
 
 
 def get_annualized_value(val, days_till_expiration):
@@ -32,6 +34,39 @@ class TickerViewSet(viewsets.ModelViewSet):
             queryset = watch_tickers + rest_tickers
 
         return queryset
+
+    @action(detail=False, methods=['GET'])
+    def popular(self, request, *args, **kwargs):
+        most_saved_tickers = Ticker.objects.filter(status='unspecified').annotate(
+            num_watchlistitem=Count('watchlistitem')).order_by('-num_watchlistitem')[:4]
+        result = TickerSerializer(most_saved_tickers, many=True).data
+        return Response(result)
+
+    @action(detail=False, methods=['GET'])
+    def top_movers(self, request, *args, **kwargs):
+        sql_query = """
+                    SELECT ticker_id FROM	
+                    (
+                        SELECT ticker_id, price_close, price_open, created_time, 
+                        rank() OVER (PARTITION BY ticker_id ORDER BY created_time DESC) 
+                        FROM public.tiger_tickerstats
+                        WHERE price_close IS NOT NULL 
+                        AND price_open IS NOT NULL
+                    ) tickerstats
+                    WHERE rank = 1
+                    ORDER BY (price_close - price_open) / price_open DESC
+                    LIMIT 12;
+                """
+        top_mover_ticker_id_results = []
+        with connection.cursor() as cursor:
+            cursor.execute(sql_query)
+            top_mover_ticker_id_results = dict_fetch_all(cursor)
+
+        top_mover_ticker_ids = [top_mover_ticker_id_result['ticker_id'] for top_mover_ticker_id_result in
+                                top_mover_ticker_id_results]
+        top_mover_tickers = Ticker.objects.filter(pk__in=top_mover_ticker_ids)
+        result = TickerSerializer(top_mover_tickers, many=True).data
+        return Response(result)
 
     @action(detail=True, methods=['GET'])
     def expire_dates(self, request, *args, **kwargs):

@@ -1,8 +1,9 @@
 import React, { useState } from "react";
 import {
-    Grid, makeStyles, Typography, Divider, Chip, Card, CardHeader,
+    Grid, Typography, Divider, Chip, Card, CardHeader,
     CardContent, CardActionArea, CardActions, IconButton
 } from "@material-ui/core";
+import { makeStyles } from '@material-ui/styles';
 import ZoomOutMapIcon from '@material-ui/icons/ZoomOutMap';
 import { startCase } from 'lodash';
 

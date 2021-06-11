@@ -1,6 +1,7 @@
 import React, { useState } from "react";
-import { OutlinedInput, makeStyles, InputAdornment, Box, Grid, Button } from "@material-ui/core";
+import { OutlinedInput, InputAdornment, Box, Grid, Button } from "@material-ui/core";
 import { PercentageFormatter, GetGaEventTrackingFunc } from "../../utils";
+import { makeStyles } from "@material-ui/styles";
 
 const GaEvent = GetGaEventTrackingFunc('strategy screener');
 

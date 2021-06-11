@@ -1,21 +1,22 @@
 import React from "react";
-import { Grid, Paper, Stack, Container, Divider, makeStyles, Typography, FormControl, Select, MenuItem, InputLabel, Box } from "@material-ui/core";
+import { Grid, Paper, Stack, Container, Divider, Typography, FormControl, Select, MenuItem, InputLabel, Box, useTheme } from "@material-ui/core";
+import { makeStyles } from '@material-ui/styles';
 import TickerAutocomplete from "../../components/TickerAutocomplete";
 import MetricLabel from '../../components/MetricLabel.js';
 
-const useStyles = makeStyles((theme) => ({
-    customPaper: {
-        padding: theme.spacing(3),
-        [theme.breakpoints.up('sm')]: {
-            paddingLeft: theme.spacing(7),
-            paddingRight: theme.spacing(7),
-            margin: theme.spacing(1),
-            borderRadius: 50
-        }
-    }
-}));
-
 export default function LandingView(props) {
+    const theme = useTheme();
+    const useStyles = makeStyles({
+        customPaper: {
+            padding: theme.spacing(3),
+            [theme.breakpoints.up('sm')]: {
+                paddingLeft: theme.spacing(7),
+                paddingRight: theme.spacing(7),
+                margin: theme.spacing(1),
+                borderRadius: 50
+            }
+        }
+    }, theme);
     const classes = useStyles();
     const {
         allTickers,

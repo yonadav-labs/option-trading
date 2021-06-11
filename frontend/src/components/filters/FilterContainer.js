@@ -1,5 +1,5 @@
 import React from "react";
-import { Grid, Box, IconButton, Typography, makeStyles, FormControl, Select, MenuItem } from "@material-ui/core";
+import { Grid, Box, IconButton, Typography, FormControl, Select, MenuItem } from "@material-ui/core";
 import TuneIcon from '@material-ui/icons/Tune';
 import CloseIcon from '@material-ui/icons/Close';
 import MaterialFilter from "./MaterialFilter";
@@ -8,6 +8,7 @@ import MetricLabel from "../MetricLabel";
 import TargetBox from "./TargetBox";
 import TickerAutocomplete from "../TickerAutocomplete";
 import { GetGaEventTrackingFunc } from '../../utils';
+import { makeStyles } from '@material-ui/styles';
 
 const GaEvent = GetGaEventTrackingFunc('strategy screener');
 
