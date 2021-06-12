@@ -4,8 +4,7 @@ import { useParams, Link } from "react-router-dom";
 import { Card } from 'react-bootstrap';
 import Axios from 'axios';
 import { useOktaAuth } from '@okta/okta-react';
-import { startCase } from 'lodash';
-import getApiUrl, { GenerateTradeTitle, TimestampDateFormatter } from '../utils';
+import getApiUrl, { GenerateTradeTitle } from '../utils';
 import TradeDetailsCard from '../components/cards/TradeDetailsCard';
 import TickerSummary from '../components/TickerSummary.js';
 

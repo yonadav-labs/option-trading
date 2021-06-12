@@ -119,9 +119,9 @@ function Header() {
             </Navbar>
             {/* <hr style={{ opacity: 1, marginTop: 0 }} className={"header-divider"} /> */}
             {user ?
-                <LiveChat license={'12791829'} visitor={{ name: user.nick_name || user.email, email: user.email }} />
+                <LiveChat license={12791829} visitor={{ name: user.nick_name || user.email, email: user.email }} />
                 :
-                <LiveChat license={'12791829'} />
+                <LiveChat license={12791829} />
             }
         </header>
     );

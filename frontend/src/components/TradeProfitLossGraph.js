@@ -12,12 +12,14 @@ export default function TradeProfitLossGraph(props) {
     let xMax = Math.max(...priceMarks);
     let plotline_annotations = []
     let data = [];
+    let lastPrice = trade.stock.stock_price;
 
     trade.graph_points['x'].forEach((x, i) => {
         let point = {};
         point.x = x;
+        point.x2 = (x >= lastPrice ? '+' : '') + (((x - lastPrice) / lastPrice) * 100).toFixed(2); // Stock price change in %.
         point.y = trade.graph_points['y'][i]; // Return in $.
-        point.y2 = (trade.graph_points['y'][i] / trade.cost) * 100; // Return ratio in %.
+        point.y2 = (point.y >= 0 ? '+' : '') + ((point.y / trade.cost) * 100).toFixed(2); // Return ratio in %.
         data.push(point);
     });
 
@@ -58,15 +60,15 @@ export default function TradeProfitLossGraph(props) {
     // Stock share profit/loss data
     let shareData = [];
     if (trade.cost > 0) {
-        let lastPrice = trade.stock.stock_price;
         let totalShares = trade.cost / lastPrice;
         let stockPrice = 0;
         while (stockPrice < lastPrice * 2) {
             stockPrice = stockPrice + lastPrice * 0.01;
             let point = {};
             point.x = stockPrice;
+            point.x2 = (stockPrice >= lastPrice ? '+' : '') + (((stockPrice - lastPrice) / lastPrice) * 100).toFixed(2); // Stock price change in %.;
             point.y = totalShares * stockPrice - trade.cost; // Return in $.
-            point.y2 = (totalShares * stockPrice - trade.cost) / trade.cost * 100; // Return ratio in %.
+            point.y2 = (point.y >= 0 ? '+' : '') + (point.y / trade.cost * 100).toFixed(2); // Return ratio in %.
             shareData.push(point);
         }
     }
@@ -248,8 +250,8 @@ export default function TradeProfitLossGraph(props) {
             },
         ],
         tooltip: {
-            headerFormat: "Stock Price: ${point.x:,.2f} <br/>",
-            pointFormat: "Return: {point.y2:,.2f}% (${point.y:,.2f})",
+            headerFormat: "",
+            pointFormat: "Stock Price: {point.x2}% (${point.x:,.2f})<br/>Return: {point.y2:,.2f}% (${point.y:,.2f})",
         },
         series: [
             {
