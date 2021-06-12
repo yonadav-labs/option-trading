@@ -194,6 +194,14 @@ class Command(BaseCommand):
     help = 'Fetch ticker data from IEX Cloud'
 
     def handle(self, *args, **options):
+        # Build date for the /chart/date endpoint.
+        today_date = get_now_date()
+
+        # If the market is closed, skip all.
+        if not is_market_open(today_date):
+            print('Market is closed, skip current run.')
+            return
+
         for ticker_info in fetch_tickers():
             defaults = {
                 "full_name": ticker_info['name'],
@@ -203,15 +211,8 @@ class Command(BaseCommand):
         ticker_ids = [ticker.id for ticker in Ticker.objects.all()] if not settings.DEBUG \
             else [ticker.id for ticker in
                   Ticker.objects.filter(
-                      symbol__in=['AAL', 'AAPL', 'AMC', 'ANBN', 'FUTU', 'GME', 'SPY', 'TSLA', 'YELP', 'ZEPP'])]
-
-        # Build date for the /chart/date endpoint.
-        today_date = get_now_date()
-
-        # If the market is closed, skip all.
-        if not is_market_open(today_date):
-            print('Market is closed, skip current run.')
-            return
+                      symbol__in=['AAL', 'AAPL', 'AMC', 'ANBN', 'BRK.A', 'FUTU', 'GME', 'NXTD', 'GOOG', 'SPY', 'SVRA',
+                                  'TSLA', 'QQQ', 'YELP', 'ZEPP'])]
 
         # Parallelization and mapping
         pool_size = min(mp.cpu_count() * 2, 16)

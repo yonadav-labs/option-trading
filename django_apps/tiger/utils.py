@@ -89,6 +89,14 @@ def get_dates_till_expiration(expiration, num_days):
     return calculation_dates
 
 
+def get_decimal_25x(value):
+    int_value = int(value)
+    frac = abs(value) % 1
+    for i in [0, 0.25, 0.5, 0.75, 1]:
+        if abs(frac-i) < 0.125:
+            return int_value + i if value > 0 else int_value - i
+
+
 if __name__ == "__main__":
     import os
     import sys

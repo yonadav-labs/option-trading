@@ -7,7 +7,7 @@ import more_itertools
 import numpy as np
 from tiger.core import Leg
 from tiger.core.black_scholes import get_target_price_probability
-from tiger.utils import get_dates_till_expiration
+from tiger.utils import get_dates_till_expiration, get_decimal_25x
 
 INFINITE = 'infinite'
 
@@ -358,7 +358,8 @@ class Trade(ABC):
     @property
     def return_matrix(self):
         underlying_prices = self.build_stock_price_range(24)
-        underlying_prices.reverse()
+        underlying_prices = list(set([get_decimal_25x(price) for price in underlying_prices]))
+        underlying_prices.sort(reverse=True)
         min_expiration = self._get_aggr_contract_attribute('expiration', use_min=True)
         calculation_dates = get_dates_till_expiration(min_expiration, 20)
 

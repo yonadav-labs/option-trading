@@ -1,4 +1,7 @@
-import React from "react";
+import React, { useState } from "react";
+import { FormGroup, FormControlLabel, Switch, Typography } from "@material-ui/core";
+import { PercentageFormatter } from '../utils';
+
 
 function pickHex(color1, color2, weight) {
     let p = weight;
@@ -13,6 +16,7 @@ function pickHex(color1, color2, weight) {
 
 export default function OptionValueMatrix({ matrixInfo, stockPrice, cost }) {
     const valRange = matrixInfo.max - matrixInfo.min;
+    const [showPercent, setShowPercent] = useState(false);
 
     const pricePercent = (price) => {
         let val = (price - stockPrice) * 100 / stockPrice;
@@ -45,16 +49,31 @@ export default function OptionValueMatrix({ matrixInfo, stockPrice, cost }) {
     return (
         <>
             <h3 className="my-3 text-center">Return by time and stock price</h3>
+            <FormGroup row className="justify-content-center">
+                <FormControlLabel
+                    control={
+                        <Switch
+                            checked={showPercent}
+                            onChange={(event) => setShowPercent(event.target.checked)}
+                            color="primary"
+                            name="checkedB"
+                            inputProps={{ 'aria-label': 'primary checkbox' }}
+                        />
+                    }
+                    label="Show Return Percent"
+                    labelPlacement="start"
+                />
+            </FormGroup>
             <table className="option-matrix mx-auto mb-4" style={{ fontSize: 14.5 }}>
                 <tr>
                     <td></td>
                     {matrixInfo.dates.map((date, idx) =>
                         <td key={idx}><strong>{date.substring(0, 5)}</strong></td>
                     )}
-                    <td><strong>+/-%</strong></td>
+                    <td className="text-center"><strong>+/-%</strong></td>
                 </tr>
                 {matrixInfo.prices.map((price, idx) => (
-                    <tr key={idx} className={Math.abs(price - stockPrice) < 0.01 ? 'stock-price' : ''}>
+                    <tr key={idx} className={Math.abs(price - stockPrice) < 0.125 ? 'stock-price' : ''}>
                         <td><strong>${price.toFixed(2)}</strong>&nbsp;</td>
                         {matrixInfo.values[idx].map((val, index) => {
                             let colorRange = val < midVal ? [0, 1] : [1, 2];
@@ -75,13 +94,16 @@ export default function OptionValueMatrix({ matrixInfo, stockPrice, cost }) {
                             let tooltip = `Date: ${matrixInfo.dates[index]}\nStock price: $${price.toFixed(1)}\nReturn: $${val.toFixed(1)} (${(val * 100 / cost).toFixed(1)}%)`;
 
                             return (
-                                <td className="text-center return-value" title={tooltip} style={{ backgroundColor: bgColor }}>{val.toFixed(0)}</td>
+                                <td className="text-center return-value" title={tooltip} style={{ backgroundColor: bgColor }}>
+                                    {showPercent ? PercentageFormatter(val / cost, 0) : val.toFixed(0)}
+                                </td>
                             )
                         })}
                         <td className="text-right">&nbsp;<strong>{pricePercent(price)}</strong></td>
                     </tr>
                 ))}
             </table>
+            <Typography>*Assumes same IV throughout the time period.</Typography>
         </>
     )
 }
