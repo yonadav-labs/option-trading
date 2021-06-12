@@ -32,7 +32,7 @@ subscription_create_hook_data = {
         ],
         "id": "I-BW452GLLEP1G",
         "plan_overridden": False,
-        "plan_id": "P-5LY74814PT738460SL7IBPJY",
+        "plan_id": "P-99E00230P4111090PMDCIEDY",
         "status": "APPROVAL_PENDING"
     },
     "status": "PENDING",
@@ -86,7 +86,7 @@ subscription_activate_hook_data = {
             "last_payment": {
                 "amount": {
                     "currency_code": "USD",
-                    "value": "5.69"
+                    "value": "9.9"
                 },
                 "time": "2021-02-20T17:25:56Z"
             },
@@ -94,7 +94,7 @@ subscription_activate_hook_data = {
             "failed_payments_count": 0
         },
         "id": "I-BW452GLLEP1G",
-        "plan_id": "P-5LY74814PT738460SL7IBPJY",
+        "plan_id": "P-99E00230P4111090PMDCIEDY",
         "status": "ACTIVE",
         "status_update_time": "2021-02-20T17:25:57Z"
     },
@@ -163,14 +163,14 @@ subscription_cancel_hook_data = {
             "last_payment": {
                 "amount": {
                     "currency_code": "USD",
-                    "value": "59.0"
+                    "value": "100.0"
                 },
                 "time": "2021-02-20T17:16:46Z"
             },
             "failed_payments_count": 0
         },
         "id": "I-BW452GLLEP1G",
-        "plan_id": "P-5LY74814PT738460SL7IBPJY",
+        "plan_id": "P-99E00230P4111090PMDCIEDY",
         "status": "CANCELLED",
     },
     "status": "PENDING",

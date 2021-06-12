@@ -54,7 +54,7 @@ class SubscriptionTestCase(APITestCase):
         self.assertEqual(response.status_code, 200)
         subscription = self.user.subscriptions.get(
             paypal_subscription_id='I-BW452GLLEP1G',
-            paypal_plan_id='P-5LY74814PT738460SL7IBPJY'
+            paypal_plan_id='P-99E00230P4111090PMDCIEDY'
         )
         self.assertIsNotNone(subscription)
 

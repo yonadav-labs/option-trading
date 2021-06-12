@@ -44,7 +44,7 @@ export default function Pricing() {
             <Helmet>
                 <title>Tigerstance | Pricing</title>
                 <meta name="description" content="How does Tigerstance's pricing work? Tigerstance BASIC is available for free.
-                Tigerstance PRO costs $4.91 per month when billed annually and $5.69 per month when billed monthly." />
+                Tigerstance PRO costs $8.25 per month when billed annually and $9.9 per month when billed monthly." />
             </Helmet>
             <div className="container-fluid pricing-background">
                 <div className="row m-5">
@@ -106,7 +106,7 @@ export default function Pricing() {
                                 {authState.isAuthenticated ?
                                     <></>
                                     :
-                                    <Link class="btn-block btn-light btn-login" to="/signin/register">SIGN UP, IT'S FREE</Link>
+                                    <Link class="btn-block btn-light btn-login" to="/signin/register">Sign up, it's free</Link>
                                 }
                             </Card.Body>
                         </Card>
@@ -116,7 +116,7 @@ export default function Pricing() {
                                 <h6 class="mt-3 font-weight-bold">PRO MONTHLY</h6>
                             </Card.Header>
                             <Card.Body>
-                                <h2>$5.69/mo</h2>
+                                <h2>$9.9/mo</h2>
                                 <div className="pt-3 card-list-left">
                                     <ul class="list-unstyled mt-3 mb-4">
                                         <li>&#10003; Unlock all 21 options strategies.</li>
@@ -147,8 +147,8 @@ export default function Pricing() {
                             </Card.Header>
                             <Card.Body className="card-body-right">
                                 <div class="badge">MOST POPULAR</div>
-                                <h2>$59.00/yr</h2>
-                                <h6>Save $9.28 annually</h6>
+                                <h2>$99/yr</h2>
+                                <h6>Save 16.6% ($19.8) annually</h6>
                                 <div className="pt-3 card-list-right">
                                     <ul class="list-unstyled mt-3 mb-4">
                                         <li>&#10003; Everything in the monthly plan.</li>

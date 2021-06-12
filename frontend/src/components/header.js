@@ -110,8 +110,8 @@ function Header() {
                                     to="/signin/register"
                                     role="button"
                                 >
-                                    SIGN UP, IT'S FREE
-                                    </Button>
+                                    Sign up, it's free
+                                </Button>
                             </Nav>
                         }
                     </Navbar.Collapse>
