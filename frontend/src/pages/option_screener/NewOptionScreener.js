@@ -20,7 +20,7 @@ const useDebouncedCallback = (callback, delay) => {
     return useCallback(debounce((...args) => callbackRef.current(...args), delay), []);
 }
 
-const GaEvent = GetGaEventTrackingFunc('strategy screener');
+const GaEvent = GetGaEventTrackingFunc('option screener');
 
 export default function NewOptionScreener() {
     const API_URL = getApiUrl();

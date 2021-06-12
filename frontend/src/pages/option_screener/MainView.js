@@ -12,7 +12,7 @@ import MetricLabel from '../../components/MetricLabel.js';
 import { visuallyHidden } from '@material-ui/utils';
 import ScreenMobileCard from "../../components/cards/ScreenMobileCard";
 
-const GaEvent = GetGaEventTrackingFunc('strategy screener');
+const GaEvent = GetGaEventTrackingFunc('option screener');
 
 const useStyles = makeStyles({
     root: {
