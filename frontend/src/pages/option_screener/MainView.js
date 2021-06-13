@@ -1,15 +1,19 @@
 import React, { useState } from "react";
 import { makeStyles } from '@material-ui/styles';
-import { Alert, Grid, Typography, Paper, Divider, IconButton, useMediaQuery, FormControl, Select, MenuItem, Table, TableHead, TableRow, TableCell, TableBody, Box, TableContainer, Chip, TablePagination, TableSortLabel, Stack } from "@material-ui/core";
+import {
+    Alert, Grid, Typography, Paper, Divider, IconButton, useMediaQuery, FormControl, Select,
+    MenuItem, Table, TableHead, TableRow, TableCell, TableBody, Box, TableContainer, Chip,
+    TablePagination, TableSortLabel, Stack
+} from "@material-ui/core";
+import { visuallyHidden } from '@material-ui/utils';
+import CancelIcon from '@material-ui/icons/Cancel';
 import TickerAutocomplete from "../../components/TickerAutocomplete";
 import ScreenFilterContainer from "../../components/filters/ScreenFilterContainer";
 import NewTickerSummary from "../../components/NewTickerSummary";
 import TuneIcon from "@material-ui/icons/Tune";
 import { GetGaEventTrackingFunc } from '../../utils';
 import ScreenRow from "../../components/ScreenRow";
-import CancelIcon from '@material-ui/icons/Cancel';
 import MetricLabel from '../../components/MetricLabel.js';
-import { visuallyHidden } from '@material-ui/utils';
 import ScreenMobileCard from "../../components/cards/ScreenMobileCard";
 
 const GaEvent = GetGaEventTrackingFunc('option screener');
@@ -347,7 +351,7 @@ export default function MainView(props) {
                             <Grid container justifyContent="space-between" alignItems="space-between" paddingY={2} px={3}>
                                 <Box p={1} border={1} borderColor="rgba(228, 228, 228, 1)" borderRadius={1} style={{ backgroundColor: "rgb(242, 246, 255)" }}>
                                     Blue cards are in the money.
-                                    </Box>
+                                </Box>
                                 <TablePagination
                                     rowsPerPageOptions={[10, 20, 50, 100]}
                                     component="div"

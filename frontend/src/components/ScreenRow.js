@@ -41,20 +41,20 @@ export default function ScreenRow(props) {
                         {row.is_call ? "Call" : "Put"}
                     </span>
                 </TableCell>
-                <TableCell align="center">{TimestampDateFormatter(row.expiration)} ({row.days_till_expiration}d)</TableCell>
-                <TableCell align="center">{PriceFormatter(row.strike)}</TableCell>
-                <TableCell align="center">{PriceFormatter(row.mark)}</TableCell>
-                <TableCell align="center">{PriceFormatter(row.last_price)}</TableCell>
-                <TableCell align="center">{row.percent_change >= 0 ? '+' : '-'}{NumberRoundFormatter(Math.abs(row.percent_change))}%</TableCell>
-                <TableCell align="center">{row.volume}</TableCell>
-                <TableCell align="center">{row.open_interest}</TableCell>
-                <TableCell align="center">{NumberRoundFormatter(row.vol_oi)}</TableCell>
-                <TableCell align="center">{PercentageFormatter(row.implied_volatility)}</TableCell>
-                <TableCell align="center">{NumberRoundFormatter(row.delta)}</TableCell>
-                <TableCell align="center">{NumberRoundFormatter(row.gamma)}</TableCell>
-                <TableCell align="center">{NumberRoundFormatter(row.theta)}</TableCell>
-                <TableCell align="center">{PercentageFormatter(row.itm_probability)}</TableCell>
-                <TableCell align="center">{PriceFormatter(row.break_even_price)}</TableCell>
+                <TableCell align="center" padding="none">{TimestampDateFormatter(row.expiration)} ({row.days_till_expiration}d)</TableCell>
+                <TableCell align="center" padding="none">{PriceFormatter(row.strike)}</TableCell>
+                <TableCell align="center" padding="none">{PriceFormatter(row.mark)}</TableCell>
+                <TableCell align="center" padding="none">{PriceFormatter(row.last_price)}</TableCell>
+                <TableCell align="center" padding="none">{row.percent_change >= 0 ? '+' : '-'}{NumberRoundFormatter(Math.abs(row.percent_change))}%</TableCell>
+                <TableCell align="center" padding="none">{row.volume}</TableCell>
+                <TableCell align="center" padding="none">{row.open_interest}</TableCell>
+                <TableCell align="center" padding="none">{NumberRoundFormatter(row.vol_oi)}</TableCell>
+                <TableCell align="center" padding="none">{PercentageFormatter(row.implied_volatility)}</TableCell>
+                <TableCell align="center" padding="none">{NumberRoundFormatter(row.delta)}</TableCell>
+                <TableCell align="center" padding="none">{NumberRoundFormatter(row.gamma)}</TableCell>
+                <TableCell align="center" padding="none">{NumberRoundFormatter(row.theta)}</TableCell>
+                <TableCell align="center" padding="none">{PercentageFormatter(row.itm_probability)}</TableCell>
+                <TableCell align="center" padding="none">{PriceFormatter(row.break_even_price)}</TableCell>
             </TableRow>
             <TableRow>
                 <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={15}>

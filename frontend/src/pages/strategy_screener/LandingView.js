@@ -3,6 +3,7 @@ import { Grid, Paper, Stack, Container, Divider, Typography, FormControl, Select
 import { makeStyles } from '@material-ui/styles';
 import TickerAutocomplete from "../../components/TickerAutocomplete";
 import MetricLabel from '../../components/MetricLabel.js';
+import { TimestampDateFormatter } from '../../utils';
 
 export default function LandingView(props) {
     const theme = useTheme();
@@ -70,13 +71,18 @@ export default function LandingView(props) {
                                 style={{ paddingBottom: "5px" }}
                                 variant="standard"
                             >
-                                <MenuItem disabled value={0}><span style={{ color: "gray" }}>Select a Price Target</span></MenuItem>
+                                <MenuItem disabled value={0}>
+                                    <span style={{ color: "gray" }}>
+                                        Your price target
+                                        {selectedTicker ? ' for ' + selectedTicker.symbol + ' ' : ' '}
+                                        on exp date
+                                    </span></MenuItem>
                                 {[0.5, 0.2, 0.1, 0.05, 0, -0.05, -0.1, -0.2, -0.5].map((val, index) => {
                                     return (
                                         <MenuItem
                                             value={1 + val}>$
                                             {(basicInfo.regularMarketPrice * (1 + val)).toFixed(2)} (
-                                            { val > 0 ? '+' : ''}{(val * 100).toFixed(0)}%)
+                                            {val > 0 ? '+' : ''}{(val * 100).toFixed(0)}%)
                                         </MenuItem>
                                     );
                                 })}
@@ -94,7 +100,7 @@ export default function LandingView(props) {
                     Enter <b>what price</b> you think the stock will be and by <b>when</b>.
                     <br />
                     See the trades you can make to get the highest potential return.
-                    </Typography>
+                </Typography>
             </Container>
             <br />
             <Grid container direction="row" justifyContent="space-evenly" alignItems="center" >

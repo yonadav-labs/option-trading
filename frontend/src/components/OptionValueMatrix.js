@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { FormGroup, FormControlLabel, Switch, Typography } from "@material-ui/core";
 import { PercentageFormatter } from '../utils';
+import Moment from 'react-moment';
 
 
 function pickHex(color1, color2, weight) {
@@ -68,7 +69,7 @@ export default function OptionValueMatrix({ matrixInfo, stockPrice, cost }) {
                 <tr>
                     <td></td>
                     {matrixInfo.dates.map((date, idx) =>
-                        <td key={idx}><strong>{date.substring(0, 5)}</strong></td>
+                        <td key={idx}><strong><Moment format="MMMD">{date}</Moment></strong></td>
                     )}
                     <td className="text-center"><strong>+/-%</strong></td>
                 </tr>

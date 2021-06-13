@@ -6,7 +6,7 @@ import LandingView from "./LandingView";
 import MainView from "./MainView";
 
 // utils
-import getApiUrl, { newLoadTickers, newLoadExpirationDates, GetGaEventTrackingFunc } from "../../utils";
+import getApiUrl, { newLoadTickers, newLoadExpirationDates, GetGaEventTrackingFunc, ExpDateFormatter } from "../../utils";
 import { useOktaAuth } from '@okta/okta-react';
 import { debounce } from "lodash";
 
@@ -86,15 +86,11 @@ export default function NewOptionScreener() {
         setExpirationDisabled(true)
         if (val.length > 0) {
             let arr = []
-            val.map((timestamp, index) => {
-                // Yahoo's timestamp * 1000 = TD's timestamp.
-                const date = new Date(timestamp < 9999999999 ? timestamp * 1000 : timestamp)
-                    .toLocaleDateString('en-US');
-                arr.push({ value: timestamp, label: date });
+            val.map((ts, index) => {
+                arr.push({ value: ts, label: ExpDateFormatter(new Date(ts / 1000)) });
             })
-            setExpirationTimestampsOptions(arr)
-            setExpirationDisabled(false)
-            // onExpirationSelectionChange(null, arr[0])
+            setExpirationTimestampsOptions(arr);
+            setExpirationDisabled(false);
         }
     }
 

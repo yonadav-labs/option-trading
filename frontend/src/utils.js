@@ -5,6 +5,7 @@ import { Col, Row } from 'react-bootstrap';
 import Axios from 'axios';
 import ReactGA from 'react-ga';
 import { startCase } from 'lodash';
+import Moment from 'react-moment';
 
 // Returns the backend API base url.
 export default function getApiUrl() {
@@ -92,15 +93,19 @@ export function formatLargeNumber(num, fixed) {
 }
 
 export function TimestampDateFormatter(ts) {
-    const exp_date = new Date(ts * 1000).toLocaleDateString('en-US', { year: "2-digit", month: "2-digit", day: "2-digit" });
-    return (<span>{exp_date}</span>);
+    const exp_date = new Date(ts * 1000);
+    return (<Moment date={exp_date} format="MMM Do, YY" />);
 };
 
 export function TimestampTimeFormatter(ts) {
     if (ts === 0) return (<span>N/A</span>);
-    const exp_date = new Date(ts * 1000).toLocaleDateString('en-US', { year: "2-digit", month: "2-digit", day: "2-digit" });
-    const exp_time = new Date(ts * 1000).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
-    return (<span>{exp_date} {exp_time}</span>);
+    const exp_date = new Date(ts * 1000);
+    return (<Moment date={exp_date} format="MMM Do, YY HH:mm" />);
+};
+
+export function ExpDateFormatter(ts) {
+    const exp_date = new Date(ts * 1000);
+    return (<Moment date={exp_date} format="MMM Do, YY (ddd)" />);
 };
 
 export function ExpDayFormatter(ts, days_till_expiration) {
