@@ -11,6 +11,7 @@ import Footer from './components/footer'
 import OptionScreener from './pages/OptionScreener'
 import Surface from './pages/Surface'
 import Disclaimer from './components/disclaimer';
+import Privacy from './components/privacy';
 import NewStrategyScreener from './pages/strategy_screener/NewStrategyScreener';
 import SingleTrade from './pages/SingleTrade';
 import Pricing from './pages/Pricing';
@@ -55,6 +56,7 @@ export default withRouter(class AppWithRouterAccess extends Component {
                         <Route path='/build' exact={true} component={StrategyBuilder} />
                         <SecureRoute path='/profile' component={Profile} />
                         <Route path="/disclaimer" component={Disclaimer}></Route>
+                        <Route path="/privacy" component={Privacy}></Route>
                         <Route path='/signin' component={Login} />
                         <Route path='/signin/register' component={Login} />
                         <Route path='/verify-email' component={EmailVerified} />

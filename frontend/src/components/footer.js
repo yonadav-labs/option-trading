@@ -93,6 +93,13 @@ function Footer(props) {
                 </div>
                 <div className="row">
                     <div className="col">
+                        <p className="text-muted">
+                            Please see our <Link to="/privacy" >privacy policy</Link>.
+                        </p>
+                    </div>
+                </div>
+                <div className="row">
+                    <div className="col">
                         <small className="d-block text-muted">Copyright &copy; 2020-2021 tigerstance.com. All Rights Reserved.</small>
                     </div>
                 </div>
