@@ -14,7 +14,7 @@ const GaEvent = GetGaEventTrackingFunc('preference');
 
 const Profile = () => {
     const { oktaAuth, authState } = useOktaAuth();
-    const { user } = useContext(UserContext);
+    const { user, setUser } = useContext(UserContext);
     const [showCancelSubscriptionModal, setShowCancelSubscriptionModal] = useState(false);
     const [brokers, setBrokers] = useState([]);
     const [tradeHistory, setTradeHistory] = useState([]);
@@ -122,6 +122,7 @@ const Profile = () => {
                 return response.json();
             })
             .then((data) => {
+                setUser(data);
                 setResultMsg("Saved successfully!");
             })
             .catch((err) => {
