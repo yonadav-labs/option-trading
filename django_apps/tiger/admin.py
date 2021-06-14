@@ -97,8 +97,9 @@ class BrokerAdmin(admin.ModelAdmin):
 
 
 class CustomUserAdmin(UserAdmin):
-    list_display = ['id', 'okta_id', 'username', 'email', 'nick_name', 'is_staff', 'date_joined', 'disabled_strategies']
-    list_filter = list(UserAdmin.list_filter) + ['date_joined']
+    list_display = ['id', 'okta_id', 'username', 'email', 'nick_name', 'is_staff', 'date_joined', 'last_login',
+                    'disabled_strategies']
+    list_filter = list(UserAdmin.list_filter) + ['date_joined', 'last_login']
     fieldsets = UserAdmin.fieldsets + (
         (None, {'fields': ('nick_name', 'brokers', 'disabled_strategies')}),
     )
