@@ -31,6 +31,16 @@ export function getPaypalYearlyPlanId() {
     return REACT_APP_PAYPAL_YEARLY_PLAN_ID
 };
 
+export function getPaypalPastMonthlyPlanIds() {
+    const { REACT_APP_PAYPAL_PAST_MONTHLY_PLAN_IDS } = process.env;
+    return REACT_APP_PAYPAL_PAST_MONTHLY_PLAN_IDS.split(',');
+};
+
+export function getPaypalPastYearlyPlanIds() {
+    const { REACT_APP_PAYPAL_PAST_YEARLY_PLAN_IDS } = process.env;
+    return REACT_APP_PAYPAL_PAST_YEARLY_PLAN_IDS.split(',');
+};
+
 export function NumberRoundFormatter(num) {
     return (<NumberFormat value={num} displayType={'text'} decimalScale={2} />);
 };

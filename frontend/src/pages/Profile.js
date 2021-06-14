@@ -223,7 +223,7 @@ const Profile = () => {
                                         <p>Current plan: Basic member</p>
                                         <a href="/pricing">
                                             <button type="button" class="btn btn-md btn-block btn-light" style={{ width: '15rem' }}>
-                                                <h4>BECOME PRO</h4>
+                                                <h5>Join Pro</h5>
                                             </button>
                                         </a>
                                     </div>

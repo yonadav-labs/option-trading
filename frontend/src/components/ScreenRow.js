@@ -41,7 +41,7 @@ export default function ScreenRow(props) {
                         {row.is_call ? "Call" : "Put"}
                     </span>
                 </TableCell>
-                <TableCell align="center" padding="none">{TimestampDateFormatter(row.expiration)} ({row.days_till_expiration}d)</TableCell>
+                <TableCell align="center" padding="none">{TimestampDateFormatter(row.expiration)}<br />({row.days_till_expiration} days)</TableCell>
                 <TableCell align="center" padding="none">{PriceFormatter(row.strike)}</TableCell>
                 <TableCell align="center" padding="none">{PriceFormatter(row.mark)}</TableCell>
                 <TableCell align="center" padding="none">{PriceFormatter(row.last_price)}</TableCell>

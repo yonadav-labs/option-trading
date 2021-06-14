@@ -1,9 +1,12 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { Box, Grid, ToggleButtonGroup, ToggleButton, Typography, useTheme } from "@material-ui/core";
+import { Link } from 'react-router-dom';
+import { withStyles } from "@material-ui/styles";
+
 import MetricLabel from "../MetricLabel";
 import PriceTargetField from "./PriceTargetField";
+import UserContext from '../../UserContext';
 import { GetGaEventTrackingFunc } from '../../utils';
-import { withStyles } from "@material-ui/styles";
 
 const GaEvent = GetGaEventTrackingFunc('strategy screener');
 
@@ -47,6 +50,8 @@ export default function PriceTargetBox({ onFilterChange, initialPrice, filters }
         }
     }, theme)(ToggleButtonGroup);
     const [targetType, setTargetType] = useState('price');
+
+    const { user } = useContext(UserContext);
 
     const handleTargetTypeChange = (event, newTargetType) => {
         if (newTargetType !== null) {
@@ -95,13 +100,13 @@ export default function PriceTargetBox({ onFilterChange, initialPrice, filters }
                 >
                     <StyledToggleButton value="price">
                         Price
-                        </StyledToggleButton>
+                    </StyledToggleButton>
                     <StyledToggleButton value="range">
-                        Range
-                        </StyledToggleButton>
+                        Range (Pro)
+                    </StyledToggleButton>
                 </StyledToggleButtonGroup>
             </Grid>
-            { targetType === "price" ?
+            {targetType === "price" ?
                 <>
                     <Grid item paddingBottom='0.1rem'>
                         <Typography variant="button"><MetricLabel label="price target" /></Typography>
@@ -115,28 +120,36 @@ export default function PriceTargetBox({ onFilterChange, initialPrice, filters }
                     </Grid>
                 </>
                 :
-                <>
-                    <Grid item paddingBottom='0.1rem'>
-                        <Typography variant="button"><MetricLabel label="low price target" /></Typography>
-                    </Grid>
-                    <Grid item paddingBottom='0.4rem'>
-                        <PriceTargetField
-                            onValueChange={lowerRangeChangeHandler}
-                            initialPrice={initialPrice}
-                            value={filters.targetPriceLower}
-                        />
-                    </Grid>
-                    <Grid item paddingBottom='0.1rem'>
-                        <Typography variant="button"><MetricLabel label="high price target" /></Typography>
-                    </Grid>
-                    <Grid item paddingBottom='0.4rem'>
-                        <PriceTargetField
-                            onValueChange={upperRangeChangeHandler}
-                            initialPrice={initialPrice}
-                            value={filters.targetPriceUpper}
-                        />
-                    </Grid>
-                </>
+                (
+                    user && user.subscription ?
+                        <>
+                            <Grid item paddingBottom='0.1rem'>
+                                <Typography variant="button"><MetricLabel label="low price target" /></Typography>
+                            </Grid>
+                            <Grid item paddingBottom='0.4rem'>
+                                <PriceTargetField
+                                    onValueChange={lowerRangeChangeHandler}
+                                    initialPrice={initialPrice}
+                                    value={filters.targetPriceLower}
+                                />
+                            </Grid>
+                            <Grid item paddingBottom='0.1rem'>
+                                <Typography variant="button"><MetricLabel label="high price target" /></Typography>
+                            </Grid>
+                            <Grid item paddingBottom='0.4rem'>
+                                <PriceTargetField
+                                    onValueChange={upperRangeChangeHandler}
+                                    initialPrice={initialPrice}
+                                    value={filters.targetPriceUpper}
+                                />
+                            </Grid>
+                        </> :
+                        <>
+                            <Link to="/pricing"> Join our Pro membership</Link> to find trades
+                            with the best potential returns if stock price hit within a price target range.
+                            For example, if stock price raise by 5% to 10%.
+                        </>
+                )
             }
         </Box>
     );

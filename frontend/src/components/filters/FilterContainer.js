@@ -195,7 +195,7 @@ export default function FilterContainer(props) {
             <TargetBox onFilterChange={onTextFilterChange} initialPrice={initialPrice} filters={filters} />
             <Box paddingY="0.5rem">
                 <Grid item paddingBottom='0.1rem'>
-                    <Typography variant="button"><MetricLabel label="hypothetical return" /></Typography>
+                    <Typography variant="button"><MetricLabel label="potential return" /></Typography>
                 </Grid>
                 <Grid item paddingBottom='0.4rem'>
                     <MaterialFilter onFilterChange={(event) => filterChangeHandler(event, 'minTargetPriceProfitRatio')}

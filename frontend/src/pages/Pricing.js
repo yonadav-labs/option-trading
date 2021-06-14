@@ -5,7 +5,10 @@ import { Card, CardDeck, Modal } from 'react-bootstrap';
 import { useOktaAuth } from '@okta/okta-react';
 import UserContext from '../UserContext';
 import Subscribe from '../components/Subscribe';
-import { getPaypalMonthlyPlanId, getPaypalYearlyPlanId, GetGaEventTrackingFunc } from '../utils';
+import {
+    getPaypalMonthlyPlanId, getPaypalYearlyPlanId, GetGaEventTrackingFunc,
+    getPaypalPastMonthlyPlanIds, getPaypalPastYearlyPlanIds
+} from '../utils';
 import LinkIcon from '@material-ui/icons/Link';
 import { IconButton, Tooltip } from '@material-ui/core';
 
@@ -36,8 +39,13 @@ export default function Pricing() {
         setTooltipOpen(true);
     }
 
-    const isUserMonthlySubscribed = () => user && user.subscription && user.subscription.paypal_plan_id === getPaypalMonthlyPlanId();
-    const isUserYearlySubscribed = () => user && user.subscription && user.subscription.paypal_plan_id === getPaypalYearlyPlanId();
+    const isUserMonthlySubscribed = () => user && user.subscription
+        && (user.subscription.paypal_plan_id === getPaypalMonthlyPlanId()
+            || getPaypalPastMonthlyPlanIds().indexOf(user.subscription.paypal_plan_id) > -1);
+
+    const isUserYearlySubscribed = () => user && user.subscription
+        && (user.subscription.paypal_plan_id === getPaypalYearlyPlanId()
+            || getPaypalPastYearlyPlanIds().indexOf(user.subscription.paypal_plan_id) > -1);
 
     return (
         <>
@@ -120,7 +128,7 @@ export default function Pricing() {
                                 <div className="pt-3 card-list-left">
                                     <ul class="list-unstyled mt-3 mb-4">
                                         <li>&#10003; Unlock all 21 options strategies.</li>
-                                        <li>&#10003; Everything in BASIC membership.</li>
+                                        <li>&#10003; Price target range support in Discover.</li>
                                         <li>&#10003; Unlimited usage for all features.</li>
                                         <li>&#10003; More Pro member features to come!</li>
                                     </ul>
@@ -134,9 +142,9 @@ export default function Pricing() {
                                                 GaEvent('click subscribe monthly');
                                                 subscribeMonthly();
                                             }
-                                            }>Become Pro</button>
+                                            }>Join Pro</button>
                                     :
-                                    <a href="/signin" class="btn-block btn-light btn-login">Become Pro</a>
+                                    <a href="/signin" class="btn-block btn-light btn-login">Join Pro</a>
                                 }
                             </Card.Body>
                         </Card>
@@ -166,9 +174,9 @@ export default function Pricing() {
                                                 GaEvent('click subscribe yearly');
                                                 subscribeYearly();
                                             }}
-                                        >Become Pro</button>
+                                        >Join Pro</button>
                                     :
-                                    <a href="/signin" class="btn-block btn-light btn-login">Become Pro</a>
+                                    <a href="/signin" class="btn-block btn-light btn-login">Join Pro</a>
                                 }
                             </Card.Body>
                         </Card>

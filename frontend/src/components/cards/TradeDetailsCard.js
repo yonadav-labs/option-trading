@@ -113,8 +113,8 @@ export default function TradeDetailsCard(props) {
                                 trade.ten_percent_worst_return_ratio != null ?
                                     <>
                                         {ProfitFormatter(trade.ten_percent_worst_return_ratio)}
-                                                ({PriceFormatter(trade.ten_percent_worst_return)})
-                                                <br />
+                                        ({PriceFormatter(trade.ten_percent_worst_return)})
+                                        <br />
                                         {trade.ten_percent_worst_return_price > trade.stock.stock_price ? 'Above ' : 'Below '}
                                         {PriceFormatter(trade.ten_percent_worst_return_price)}
                                     </>
@@ -127,8 +127,8 @@ export default function TradeDetailsCard(props) {
                                 trade.ten_percent_best_return_ratio != null ?
                                     <>
                                         {ProfitFormatter(trade.ten_percent_best_return_ratio)}
-                                                ({PriceFormatter(trade.ten_percent_best_return)})
-                                                <br />
+                                        ({PriceFormatter(trade.ten_percent_best_return)})
+                                        <br />
                                         {trade.ten_percent_best_return_price > trade.stock.stock_price ? 'Above ' : 'Below '}
                                         {PriceFormatter(trade.ten_percent_best_return_price)}
                                     </>
@@ -148,11 +148,11 @@ export default function TradeDetailsCard(props) {
                                     <b><MetricLabel label="price target range" /></b><br />
                                     {PriceFormatter(trade.target_price_lower)} ({ProfitFormatter(trade.to_target_price_lower_ratio)})
                                     - {PriceFormatter(trade.target_price_upper)} ({ProfitFormatter(trade.to_target_price_upper_ratio)})
-                                    </Col>
+                                </Col>
                                 <Col sm="3" xs="6">
-                                    <b><MetricLabel label="hypothetical return" /></b><br />
+                                    <b><MetricLabel label="potential return" /></b><br />
                                     {ProfitFormatter(trade.target_price_profit_ratio)} ({PriceFormatter(trade.target_price_profit)})
-                                    </Col>
+                                </Col>
                             </Row>
                         </>
                     }

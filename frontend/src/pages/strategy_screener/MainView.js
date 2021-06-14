@@ -228,7 +228,7 @@ export default function MainView(props) {
                                         sortHandler(e.target.value);
                                     }}
                                 >
-                                    <MenuItem value={"hr"}>Hypothetical Return</MenuItem>
+                                    <MenuItem value={"hr"}>Potential Return</MenuItem>
                                     <MenuItem value={"pop"}>Probability of Profit</MenuItem>
                                     <MenuItem value={"cost"}>Total Cost</MenuItem>
                                 </Select>

@@ -101,7 +101,7 @@ export default function NewTradeCard({ trade }) {
                             : null
                         }
                         <Grid item xs={6} sm={3}>
-                            <Typography variant="button"><MetricLabel label="hypothetical return" /></Typography>
+                            <Typography variant="button"><MetricLabel label="potential return" /></Typography>
                             <Typography variant="body1" color="#4F4F4F">{ProfitFormatter(trade.target_price_profit_ratio)} ({PriceFormatter(trade.target_price_profit)})</Typography>
                         </Grid>
                         <Grid item xs={6} sm={3}>
