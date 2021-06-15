@@ -6,6 +6,7 @@ from django.contrib.postgres.fields import ArrayField
 from django.db import models
 from pinax.referrals.models import Referral
 
+from tiger.utils import get_now_date
 from .broker import Broker
 
 
@@ -22,6 +23,9 @@ class User(AbstractUser):
         return self.email
 
     def get_subscription(self):
+        # check expired manual subscriptions
+        self.subscriptions.filter(status='ACTIVE', type='MANUAL', expire_at__lt=get_now_date()).update(status='INACTIVE')
+
         # return the active subscription for the user if exists
         return self.subscriptions.filter(status='ACTIVE').first()
 
