@@ -114,7 +114,7 @@ export default function ShareTradeBtn(props) {
                                 <TwitterShareButton
                                     url={`www.tigerstance.com${shareLink}`}
                                     title={'Check out this trade I discovered on #tigerstance!'}
-                                    via={'EaseandExtra'}
+                                    via={'TheTigerStance'}
                                 >
                                     <TwitterIcon size="45" round={true} />
                                 </TwitterShareButton>

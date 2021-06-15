@@ -28,7 +28,7 @@ function Footer(props) {
                             Contact us at contact@tigerstance.com or through this <a href="https://forms.gle/qEqcKb1mtG8PJUWq6" target="_blank">google form</a>.
                         </p>
                         <h4 className="text-light">
-                            <a href="https://twitter.com/EaseandExtra" target="_blank"><FaTwitter /></a>&nbsp;
+                            <a href="https://twitter.com/TheTigerStance" target="_blank"><FaTwitter /></a>&nbsp;
                             <a href="https://www.facebook.com/TigerStanceOfficial" target="_blank"><FaFacebookSquare /></a>&nbsp;
                             <a href="https://www.instagram.com/tigerstance_official" target="_blank"><FaInstagram /></a>&nbsp;
                             <a href="https://discord.gg/MJT5r4x9zK" target="_blank"><FaDiscord /></a>
