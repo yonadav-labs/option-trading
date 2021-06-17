@@ -7,7 +7,7 @@ from django import db
 from django.conf import settings
 from django.core.management.base import BaseCommand
 from tiger.models import Ticker, TickerStats
-from tiger.utils import get_now_date, is_market_open
+from tiger.utils import get_now_date, is_market_open, get_now
 
 DEFAULT_QUERY_PARAMS = {
     'token': settings.IEXCLOUD_TOKEN
@@ -178,7 +178,7 @@ def fetch_ticker_info(ticker_id, data_date):
     # Fetch stats.
     if ticker.need_refresh_stats():
         print(f'Fetching stats: {ticker.symbol}')
-        new_stats = TickerStats(ticker=ticker)
+        new_stats = TickerStats(ticker=ticker, data_time=get_now())
         fetch_stats(ticker, new_stats)
         fetch_dividends(ticker, new_stats)
         fetch_splits(ticker, new_stats)

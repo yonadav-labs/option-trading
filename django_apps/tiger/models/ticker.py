@@ -69,6 +69,7 @@ class ExpirationDate(BaseModel):
 
 class TickerStats(BaseModel):
     ticker = models.ForeignKey(Ticker, on_delete=models.CASCADE, related_name='stats')
+    data_time = models.DateTimeField(blank=True, null=True)
     company_name = models.CharField(max_length=250, blank=True, null=True)
     dividend_payment_amount = models.FloatField(blank=True, null=True)
     market_cap = models.FloatField(blank=True, null=True)
