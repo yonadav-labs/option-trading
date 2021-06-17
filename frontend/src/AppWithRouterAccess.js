@@ -8,7 +8,6 @@ import getOktaConfig from "./oktaConfig";
 import Home from './pages/home/Home.js';
 import Header from './components/header'
 import Footer from './components/footer'
-import OptionScreener from './pages/OptionScreener'
 import Surface from './pages/Surface'
 import Disclaimer from './components/disclaimer';
 import Privacy from './components/privacy';
@@ -19,7 +18,7 @@ import StrategyBuilder from './pages/StrategyBuilder';
 import EmailVerified from './pages/EmailVerified';
 import Blog from './pages/Blog';
 import BlogDetail from './pages/BlogDetail';
-import { Container } from '@material-ui/core';
+import { Container, Toolbar } from '@material-ui/core';
 import NewOptionScreener from './pages/option_screener/NewOptionScreener';
 
 const oktaAuth = new OktaAuth(getOktaConfig().oidc);
@@ -42,6 +41,7 @@ export default withRouter(class AppWithRouterAccess extends Component {
                     onAuthRequired={this.onAuthRequired}
                 >
                     <Header></Header>
+                    <Toolbar />
                     <Switch>
                         <Route path='/' exact={true} component={Home} />
                         <Route path='/option-screener' exact={true} component={NewOptionScreener} />

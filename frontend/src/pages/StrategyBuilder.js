@@ -22,6 +22,7 @@ import TradeDetailsCard from '../components/cards/TradeDetailsCard';
 import TradingViewWidget from 'react-tradingview-widget';
 import MetricLabel from '../components/MetricLabel.js';
 import UserContext from '../UserContext';
+import '../custom.scss';
 
 // url querying
 import { useLocation, useHistory } from 'react-router-dom';

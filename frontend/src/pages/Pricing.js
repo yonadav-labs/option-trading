@@ -11,7 +11,7 @@ import {
 } from '../utils';
 import LinkIcon from '@material-ui/icons/Link';
 import { IconButton, Tooltip } from '@material-ui/core';
-
+import '../custom.scss';
 import './Pricing.css';
 
 const GaEvent = GetGaEventTrackingFunc('user');
