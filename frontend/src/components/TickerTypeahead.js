@@ -3,6 +3,7 @@ import { Typeahead } from 'react-bootstrap-typeahead';
 
 
 export default function TickerTypeahead({ selectedTicker, allTickers, onTickerSelectionChange }) {
+    const options = allTickers.filter(ticker => ticker.symbol);
 
     return (
         <Typeahead
@@ -10,7 +11,7 @@ export default function TickerTypeahead({ selectedTicker, allTickers, onTickerSe
             clearButton
             id="tickerTypeahead"
             labelKey="display_label"
-            options={allTickers}
+            options={options}
             selected={selectedTicker}
             placeholder="Enter a ticker symbol. For example: TSLA, AAPL, GOOG..."
             onChange={onTickerSelectionChange}
