@@ -41,17 +41,20 @@ def fetch_expiration_dates_and_update_status(ticker):
         return
 
     expiration_date_strs = resp.json()
-    ticker.status = 'unspecified' if expiration_date_strs else 'disabled'
-    ticker.save()
 
     # save expiration_dates
     for expiration_date_str in expiration_date_strs:
+        if not expiration_date_str:
+            continue
         try:  # to handle invalid date format from api
             date = datetime.strptime(expiration_date_str, '%Y%m%d').date()
             ticker.expiration_dates.update_or_create(date=date)
         except ValueError:
             print(f'({ticker.symbol}) Invalid date format:', expiration_date_str)
             continue
+
+    ticker.status = 'unspecified' if ticker.expiration_dates.count() > 0 else 'disabled'
+    ticker.save()
 
 
 def fetch_stats(ticker, new_stats):
@@ -212,7 +215,7 @@ class Command(BaseCommand):
             else [ticker.id for ticker in
                   Ticker.objects.filter(
                       symbol__in=['AAL', 'AAPL', 'AMC', 'ANBN', 'BRK.A', 'FUTU', 'GME', 'NXTD', 'GOOG', 'SPY', 'SVRA',
-                                  'TSLA', 'QQQ', 'YELP', 'ZEPP'])]
+                                  'TSLA', 'QQQ', 'YELP', 'ZEPP', 'PYPE'])]
 
         # Parallelization and mapping
         pool_size = min(mp.cpu_count() * 2, 16)
