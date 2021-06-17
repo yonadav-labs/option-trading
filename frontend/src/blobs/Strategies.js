@@ -1,3 +1,4 @@
+/* eslint-disable no-multi-str */
 class Leg {
     type = "";
 
@@ -88,7 +89,7 @@ class Relation {
         this.operator = operator;
         this.legBIndex = legBIndex;
         this.legBProperty = legBProperty;
-        this.legbPropertyDefaultVal = legBPropertyDefaultVal;
+        this.legBPropertyDefaultVal = legBPropertyDefaultVal;
         this.legCIndex = legCIndex;
         this.legCProperty = legCProperty;
         this.legCPropertyDefaultVal = legCPropertyDefaultVal;
@@ -103,7 +104,7 @@ export const strategies = [
             type: "long_call",
             description: "Pay a premium to have the option to buy shares of the stock at the strike price until the expiration. \
                             You profit when the stock price moves above the: strike price + the premium.",
-            sentiment: ["bull"],
+            sentiment: ["bullish"],
             legs: [
                 new OptionLeg(
                     {
@@ -112,7 +113,11 @@ export const strategies = [
                         optionType: "call"
                     }
                 )
-            ]
+            ],
+            level: "basic",
+            basicGraph: "long_call_simple.png",
+            expandedGraph: "long_call_expanded.png",
+            unlimitedLoss: false
         }
     ),
     new Strategy(
@@ -121,7 +126,7 @@ export const strategies = [
             type: "covered_call",
             description: "Receive a premium to allow your shares of the stock to be sold at the strike price until the expiration. \
                             You profit when the stock price does not move below the: strike price - the premium.",
-            sentiment: ["flat, bear"],
+            sentiment: ["bearish", "neutral"],
             legs: [
                 new OptionLeg(
                     {
@@ -137,7 +142,11 @@ export const strategies = [
                         shares: 100
                     }
                 )
-            ]
+            ],
+            level: "basic",
+            basicGraph: "long_call_simple.png",
+            expandedGraph: "long_call_expanded.png",
+            unlimitedLoss: false
         }
     ),
     new Strategy(
@@ -162,7 +171,11 @@ export const strategies = [
                         shares: 100
                     }
                 )
-            ]
+            ],
+            level: "basic",
+            basicGraph: "long_call_simple.png",
+            expandedGraph: "long_call_expanded.png",
+            unlimitedLoss: true
         }
     ),
     new Strategy(
@@ -171,7 +184,7 @@ export const strategies = [
             type: "long_put",
             description: "Pay a premium to have the option to sell shares of the stock at the strike price until the expiration. \
                             You profit when the stock price does not move below the: strike price + the premium.",
-            sentiment: ["bear"],
+            sentiment: ["bearish", "volatile"],
             legs: [
                 new OptionLeg(
                     {
@@ -180,7 +193,11 @@ export const strategies = [
                         optionType: "put"
                     }
                 )
-            ]
+            ],
+            level: "basic",
+            basicGraph: "long_call_simple.png",
+            expandedGraph: "long_call_expanded.png",
+            unlimitedLoss: false
         }
     ),
     new Strategy(
@@ -189,7 +206,7 @@ export const strategies = [
             type: "cash_secured_put",
             description: "Receive a premium to allow your cash to be exchanged for shares of the stock at the strike price until the expiration. \
                             You profit when the stock price does not move below: the strike price - the premium.",
-            sentiment: ["flat, bull"],
+            sentiment: ["bullish", "neutral"],
             relationships: [new Relation(1, "value", "*", 0, "contract.strike", null, null, null, 100)],
             legs: [
                 new OptionLeg(
@@ -204,7 +221,11 @@ export const strategies = [
                         value: 0
                     }
                 )
-            ]
+            ],
+            level: "basic",
+            basicGraph: "long_call_simple.png",
+            expandedGraph: "long_call_expanded.png",
+            unlimitedLoss: false
         }
     ),
     new Strategy(
@@ -213,7 +234,7 @@ export const strategies = [
             type: "bull_call_spread",
             description: "Pay a premium for buying a call and selling a call at a strike higher than from the call you bought. \
                             You profit when the stock price moves above the: strike of the call that you bought + (premium of the call you bought - premium of the call you sold).",
-            sentiment: ["bull"],
+            sentiment: ["bullish"],
             linkedProperties: ["expiration"],
             rules: [new Rule(0, "contract.strike", "<", 1, "contract.strike")],
             legs: [
@@ -231,7 +252,11 @@ export const strategies = [
                         optionType: "call"
                     }
                 )
-            ]
+            ],
+            level: "spreads",
+            basicGraph: "long_call_simple.png",
+            expandedGraph: "long_call_expanded.png",
+            unlimitedLoss: false
         }
     ),
     new Strategy(
@@ -240,7 +265,7 @@ export const strategies = [
             type: "bear_call_spread",
             description: "Receive a premium from buying a call and selling a call at a strike lower than from the call you bought. \
                             You profit when the stock price moves below the: strike price of the call you sold + (premium of the call you sold - premium of the call you bought).",
-            sentiment: ["bear", "flat"],
+            sentiment: ["bearish", "neutral"],
             linkedProperties: ["expiration"],
             rules: [new Rule(0, "contract.strike", ">", 1, "contract.strike")],
             relationships: [
@@ -267,7 +292,11 @@ export const strategies = [
                         value: 0
                     }
                 )
-            ]
+            ],
+            level: "spreads",
+            basicGraph: "long_call_simple.png",
+            expandedGraph: "long_call_expanded.png",
+            unlimitedLoss: false
         }
     ),
     new Strategy(
@@ -276,7 +305,7 @@ export const strategies = [
             type: "bear_put_spread",
             description: "Pay a premium for buying a put and selling a put at a strike lower than from the put you bought. \
                             You profit when the stock price moves below the: strike of the put you bought - (premium of the put you bought - premium of the put you sold).",
-            sentiment: ["bear"],
+            sentiment: ["bearish"],
             linkedProperties: ["expiration"],
             rules: [new Rule(0, "contract.strike", ">", 1, "contract.strike")],
             legs: [
@@ -294,7 +323,11 @@ export const strategies = [
                         optionType: "put"
                     }
                 )
-            ]
+            ],
+            level: "spreads",
+            basicGraph: "long_call_simple.png",
+            expandedGraph: "long_call_expanded.png",
+            unlimitedLoss: false
         }
     ),
     new Strategy(
@@ -303,7 +336,7 @@ export const strategies = [
             type: "bull_put_spread",
             description: "Receive a premium from buying a put and selling a put at a strike higher than from the put you bought. \
                             You profit when the stock price moves above the: strike of the put you sold - (premium of the put you sold - premium of the put you bought).",
-            sentiment: ["bull", "flat"],
+            sentiment: ["bullish", "neutral"],
             linkedProperties: ["expiration"],
             rules: [new Rule(0, "contract.strike", "<", 1, "contract.strike")],
             relationships: [
@@ -330,18 +363,22 @@ export const strategies = [
                         value: 0
                     }
                 )
-            ]
+            ],
+            level: "spreads",
+            basicGraph: "long_call_simple.png",
+            expandedGraph: "long_call_expanded.png",
+            unlimitedLoss: false
         }
     ),
     new Strategy(
         {
             name: "Long Straddle",
             type: "long_straddle",
-            description: "A basic strategy that profits when the stock price moves dratistically up or down. \
+            description: "A basic strategy that profits when the stock price moves drastically up or down. \
                             Pay a premium to buy a call and a put at the same strike. \
                             You profit when the stock price moves: above the strike + premium paid OR below the strike - premium paid \
                             Losses are capped at the premium paid to initiate this strategy.",
-            sentiment: ["volitile"],
+            sentiment: ["volatile"],
             linkedProperties: ["expiration", "strike"],
             rules: [],
             relationships: [],
@@ -360,18 +397,22 @@ export const strategies = [
                         optionType: "put"
                     }
                 )
-            ]
+            ],
+            level: "advanced",
+            basicGraph: "long_call_simple.png",
+            expandedGraph: "long_call_expanded.png",
+            unlimitedLoss: false
         }
     ),
     new Strategy(
         {
             name: "Long Strangle",
             type: "long_strangle",
-            description: "A basic strategy that profits when the stock price moves dratistically up or down. \
+            description: "A basic strategy that profits when the stock price moves drastically up or down. \
                             Pay a premium to buy a call and a put; With the call strike being higher than the put strike. \
                             You profit when the stock price moves: above the strike + premium paid OR below the strike - premium paid \
                             Losses are capped at the premium paid to initiate this strategy.",
-            sentiment: ["volitile"],
+            sentiment: ["volatile"],
             linkedProperties: ["expiration"],
             rules: [new Rule(0, "strike", ">", 1, "strike")],
             relationships: [],
@@ -390,7 +431,11 @@ export const strategies = [
                         optionType: "put"
                     }
                 )
-            ]
+            ],
+            level: "advanced",
+            basicGraph: "long_call_simple.png",
+            expandedGraph: "long_call_expanded.png",
+            unlimitedLoss: false
         }
     ),
     new Strategy(
@@ -440,7 +485,11 @@ export const strategies = [
                         optionType: "put"
                     }
                 )
-            ]
+            ],
+            level: "advanced",
+            basicGraph: "long_call_simple.png",
+            expandedGraph: "long_call_expanded.png",
+            unlimitedLoss: false
         }
     ),
     new Strategy(
@@ -489,7 +538,11 @@ export const strategies = [
                         optionType: "put"
                     }
                 )
-            ]
+            ],
+            level: "advanced",
+            basicGraph: "long_call_simple.png",
+            expandedGraph: "long_call_expanded.png",
+            unlimitedLoss: false
         }
     ),
     new Strategy(
@@ -500,7 +553,7 @@ export const strategies = [
                             Receive a premium to sell a call and a put; With the call strike being higher than the put strike. \
                             You profit when the stock price stays within this range: strike - premium > stock price > strike + premium \
                             There is no limit to how much you can lose with this strategy.",
-            sentiment: ["volitile"],
+            sentiment: ["volatile"],
             linkedProperties: ["expiration"],
             rules: [new Rule(0, "strike", ">", 1, "strike")],
             relationships: [],
@@ -519,7 +572,11 @@ export const strategies = [
                         optionType: "put"
                     }
                 )
-            ]
+            ],
+            level: "advanced",
+            basicGraph: "long_call_simple.png",
+            expandedGraph: "long_call_expanded.png",
+            unlimitedLoss: false
         }
     ),
     new Strategy(
@@ -530,7 +587,7 @@ export const strategies = [
                             Receive a premium to sell a call and a put at the same strike. \
                             You profit when the stock price stays within this range: strike - premium > stock price > strike + premium \
                             There is no limit to how much you can lose with this strategy.",
-            sentiment: ["volitile"],
+            sentiment: ["volatile"],
             linkedProperties: ["expiration", "strike"],
             rules: [],
             relationships: [],
@@ -549,14 +606,18 @@ export const strategies = [
                         optionType: "put"
                     }
                 )
-            ]
+            ],
+            level: "advanced",
+            basicGraph: "long_call_simple.png",
+            expandedGraph: "long_call_expanded.png",
+            unlimitedLoss: false
         }
     ),
     new Strategy(
         {
             name: "Long Butterfly Spread",
             type: "long_butterfly_spread",
-            description: "A basic strategy that profits when the stock price moves dratistically up or down. \
+            description: "A basic strategy that profits when the stock price moves drastically up or down. \
                             Pay a premium to buy a call and a put at the same strike. \
                             You profit when the stock price moves: above the strike + premium paid OR below the strike - premium paid \
                             Losses are capped at the premium paid to initiate this strategy.",
@@ -589,14 +650,18 @@ export const strategies = [
                         optionType: ""
                     }
                 )
-            ]
+            ],
+            level: "spreads",
+            basicGraph: "long_call_simple.png",
+            expandedGraph: "long_call_expanded.png",
+            unlimitedLoss: false
         }
     ),
     new Strategy(
         {
             name: "Short Butterfly Spread",
             type: "short_butterfly_spread",
-            description: "A basic strategy that profits when the stock price moves dratistically up or down. \
+            description: "A basic strategy that profits when the stock price moves drastically up or down. \
                             Pay a premium to buy a put and a call at the same strike. \
                             You profit when the stock price moves: above the strike + premium paid OR below the strike - premium paid \
                             Losses are capped at the premium paid to initiate this strategy.",
@@ -629,7 +694,11 @@ export const strategies = [
                         optionType: ""
                     }
                 )
-            ]
+            ],
+            level: "spreads",
+            basicGraph: "long_call_simple.png",
+            expandedGraph: "long_call_expanded.png",
+            unlimitedLoss: false
         }
     ),
     new Strategy(
@@ -679,7 +748,11 @@ export const strategies = [
                         optionType: ""
                     }
                 )
-            ]
+            ],
+            level: "spreads",
+            basicGraph: "long_call_simple.png",
+            expandedGraph: "long_call_expanded.png",
+            unlimitedLoss: false
         }
     ),
     new Strategy(
@@ -691,7 +764,7 @@ export const strategies = [
                             You profit when: stock price > strike of in the money option you sold + premium received OR stock price > strike of out of the money option you sold - premium received \
                             Depending on which direction the stock goes, losses are capped at: \
                             difference between the strikes of the calls - premium received OR difference between the strikes of the puts - premium received.",
-            sentiment: ["volitile"],
+            sentiment: ["volatile"],
             linkedProperties: ["expiration", "optionType"],
             rules: [new Rule(0, "contract.strike", ">", 1, "contract.strike"),
             new Rule(2, "contract.strike", "<", 3, "contract.strike"),
@@ -729,18 +802,22 @@ export const strategies = [
                         optionType: ""
                     }
                 )
-            ]
+            ],
+            level: "spreads",
+            basicGraph: "long_call_simple.png",
+            expandedGraph: "long_call_expanded.png",
+            unlimitedLoss: false
         }
     ),
     new Strategy(
         {
             name: "Strap Straddle",
             type: "strap_straddle",
-            description: "A basic strategy that profits when the stock price moves dratistically up or down but profits more if it goes up. \
+            description: "A basic strategy that profits when the stock price moves drastically up or down but profits more if it goes up. \
                             Pay a premium to buy a call and a put at the same strike. \
                             You profit when the stock price moves: above the strike + premium paid OR below the strike - premium paid \
                             Losses are capped at the premium paid to initiate this strategy.",
-            sentiment: ["volitile", "bullish"],
+            sentiment: ["bullish", "volatile"],
             linkedProperties: ["expiration", "strike"],
             rules: [],
             relationships: [new Relation(0, "units", "*", 1, "units", null, null, null, 2)],
@@ -759,18 +836,22 @@ export const strategies = [
                         optionType: "put"
                     }
                 )
-            ]
+            ],
+            level: "advanced",
+            basicGraph: "long_call_simple.png",
+            expandedGraph: "long_call_expanded.png",
+            unlimitedLoss: false
         }
     ),
     new Strategy(
         {
             name: "Strap Strangle",
             type: "strap_strangle",
-            description: "A basic strategy that profits when the stock price moves dratistically up or down but profits more if it goes up. \
+            description: "A basic strategy that profits when the stock price moves drastically up or down but profits more if it goes up. \
                             Pay a premium to buy a call and a put; With the call strike being higher than the put strike. \
                             You profit when the stock price moves: above the strike + premium paid OR below the strike - premium paid \
                             Losses are capped at the premium paid to initiate this strategy.",
-            sentiment: ["volitile", "bullish"],
+            sentiment: ["bullish", "volatile"],
             linkedProperties: ["expiration"],
             rules: [new Rule(0, "strike", ">", 1, "strike")],
             relationships: [new Relation(0, "units", "*", 1, "units", null, null, null, 2)],
@@ -789,7 +870,11 @@ export const strategies = [
                         optionType: "put"
                     }
                 )
-            ]
+            ],
+            level: "advanced",
+            basicGraph: "long_call_simple.png",
+            expandedGraph: "long_call_expanded.png",
+            unlimitedLoss: false
         }
     ),
 ];

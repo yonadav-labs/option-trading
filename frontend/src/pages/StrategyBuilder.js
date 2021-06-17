@@ -291,10 +291,10 @@ export default function StrategyBuilder() {
                             <Col className="d-flex justify-content-center">
                                 <ToggleButtonGroup type="radio" name="options" className="z0" defaultValue={sentiment} size="lg" onChange={(e) => setSentiment(e)}>
                                     <ToggleButton variant="secondary" value={"all"}>all</ToggleButton>
-                                    <ToggleButton variant="secondary" value={"bull"}><MdArrowUpward /></ToggleButton>
-                                    <ToggleButton variant="secondary" value={"bear"}><MdArrowDownward /></ToggleButton>
-                                    <ToggleButton variant="secondary" value={"flat"}><MdTrendingFlat /></ToggleButton>
-                                    <ToggleButton variant="secondary" value={"volitile"}><MdShowChart /></ToggleButton>
+                                    <ToggleButton variant="secondary" value={"bullish"}><MdArrowUpward /></ToggleButton>
+                                    <ToggleButton variant="secondary" value={"bearish"}><MdArrowDownward /></ToggleButton>
+                                    <ToggleButton variant="secondary" value={"neutral"}><MdTrendingFlat /></ToggleButton>
+                                    <ToggleButton variant="secondary" value={"volatile"}><MdShowChart /></ToggleButton>
                                 </ToggleButtonGroup>
                             </Col>
                         </Row>

@@ -20,6 +20,7 @@ import Blog from './pages/Blog';
 import BlogDetail from './pages/BlogDetail';
 import { Container, Toolbar } from '@material-ui/core';
 import NewOptionScreener from './pages/option_screener/NewOptionScreener';
+import NewBuild from './pages/build_tool/NewBuild';
 
 const oktaAuth = new OktaAuth(getOktaConfig().oidc);
 
@@ -54,6 +55,7 @@ export default withRouter(class AppWithRouterAccess extends Component {
                         <Route path='/t/:tradeId' exact={true} component={SingleTrade} />
                         <Route path='/strategy-builder' exact={true} component={StrategyBuilder} />
                         <Route path='/build' exact={true} component={StrategyBuilder} />
+                        <Route path='/new-build' exact={true} component={NewBuild} />
                         <SecureRoute path='/profile' component={Profile} />
                         <Route path="/disclaimer" component={Disclaimer}></Route>
                         <Route path="/privacy" component={Privacy}></Route>

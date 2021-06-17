@@ -99,6 +99,14 @@ export default responsiveFontSizes(createTheme({
             letterSpacing: '0.071em',
             textTransform: 'uppercase'
         },
+        chip: {
+            fontFamily: "Roboto",
+            fontSize: '0.75rem',
+            fontWeight: 'bold',
+            lineHeight: 1.3,
+            letterSpacing: '0.071em',
+            textTransform: 'uppercase'
+        },
         fieldLabel: {
             fontFamily: "Roboto",
             fontSize: '12px',
