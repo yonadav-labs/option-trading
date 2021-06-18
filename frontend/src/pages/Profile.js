@@ -202,6 +202,7 @@ const Profile = () => {
                 <title>Tigerstance | Profile</title>
             </Helmet>
             <div className="container justify-content-center">
+                <br />
                 <div className="card">
                     <div className="row">
                         <div className="col-md-4 bg-gradient user-profile">

@@ -1,7 +1,6 @@
 import React, { useContext, useState } from 'react';
 import { Helmet } from "react-helmet";
-import { Link } from "react-router-dom";
-import { Card, CardDeck, Modal } from 'react-bootstrap';
+import { Modal } from 'react-bootstrap';
 import { useOktaAuth } from '@okta/okta-react';
 import UserContext from '../UserContext';
 import Subscribe from '../components/Subscribe';
@@ -11,10 +10,70 @@ import {
 } from '../utils';
 import LinkIcon from '@material-ui/icons/Link';
 import { IconButton, Tooltip } from '@material-ui/core';
-import '../custom.scss';
-import './Pricing.css';
+import { Grid, Card, CardContent, CardActions, Button, Container, Typography, Link, List, ListItem, Box } from "@material-ui/core";
+import { makeStyles, withStyles } from "@material-ui/styles";
+
 
 const GaEvent = GetGaEventTrackingFunc('user');
+
+const CustomListItem = withStyles((theme) => ({
+    root: {
+        display: 'inline-block',
+        textAlign: 'center'
+    },
+}))(ListItem);
+
+const useStyles = makeStyles((theme) => ({
+    textGrey: {
+        color: 'rgba(0, 0, 0, 0.87)',
+        color: 'rgb(0, 0, 0)'
+    },
+    textOrange: {
+        color: '#FF8F2B',
+    },
+    pricingCardContent: {
+        height: '90%'
+    },
+    pricingCardList: {
+        borderTop: '1px solid',
+        borderColor: 'rgba(51, 51, 51, .2)',
+        borderColor: 'rgb(213, 214, 213)'
+    },
+    pricingCard: {
+        height: "100%",
+        align: "center",
+        paddingBottom: "32px",
+    },
+    badge: {
+        position: "absolute",
+        top: "15px",
+        left: "25%",
+        width: "50%",
+        padding: "2px 2%",
+        borderRadius: "3px",
+        zIndex: "1",
+        textAlign: "center",
+        backgroundColor: "#333333",
+        color: "#FAFAFA",
+        fontSize: "10px",
+        fontWeight: "700"
+    },
+    highlighted: {
+        border: "5px solid #0af99577",
+    },
+    referralLink: {
+        maxWidth: "420px",
+        display: "inline-block",
+        overflow: "hidden",
+        textOverflow: "ellipsis",
+        overflowWrap: "break-word",
+    },
+    referralWrapper: {
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+    }
+}));
 
 export default function Pricing() {
     const { authState } = useOktaAuth();
@@ -22,6 +81,7 @@ export default function Pricing() {
     const [paypalPlanID, setPaypalPlanID] = useState(null);
     const [tooltipOpen, setTooltipOpen] = useState(false);
     const { user } = useContext(UserContext);
+    const classes = useStyles();
 
     const subscribeMonthly = () => {
         setShowSubscribeModal(true);
@@ -51,138 +111,167 @@ export default function Pricing() {
         <>
             <Helmet>
                 <title>Tigerstance | Pricing</title>
-                <meta name="description" content="How does Tigerstance's pricing work? Tigerstance BASIC is available for free.
-                Tigerstance PRO costs $8.25 per month when billed annually and $9.9 per month when billed monthly." />
+                <meta name="description" content="How does Tigerstance's pricing work? Tigerstance BASIC is available for free. 
+                Tigerstance PRO costs $8.25 per month when billed annually and $9.90 per month when billed monthly." />
             </Helmet>
-            <div className="container-fluid pricing-background">
-                <div className="row m-5">
-                    <div className="col-lg-12 text-center">
-                        <h1 className="mb-3">Subscription Plans</h1>
-                        <h5 className="m-auto pricing-description">
-                            Upgrade to Tiger Pro membership to unlock powerful options analytics features.
-                            <br />Free trial for a week, cancel anytime.
-                        </h5>
-                        {user ?
-                            <>
-                                <h5 className="mx-auto pricing-description mt-4">
-                                    Get a free month of Pro membership for you and your friends. <br></br>
-                                    Just copy and paste link below to your friends to sign up.
-                                </h5>
-                                <div className="referral-wrapper">
-                                    <span className="referral_link">{user.referral_link}</span>
-                                    <Tooltip
-                                        PopperProps={{
-                                            disablePortal: true,
-                                        }}
-                                        onClose={() => setTooltipOpen(false)}
-                                        open={tooltipOpen}
-                                        disableFocusListener
-                                        disableHoverListener
-                                        disableTouchListener
-                                        title="Link copied to clipboard"
-                                    >
-                                        <IconButton onClick={copyReferralLink}><LinkIcon /></IconButton>
-                                    </Tooltip>
-                                </div>
-                            </>
-                            :
-                            <h5 className="mx-auto pricing-description mt-3">Get a free month of Pro membership when you signup and refer us to your friends.</h5>
-                        }
-                    </div>
-                </div>
+            <Container maxWidth="xl" fluid >
+                <Container align="center">
+                    <Typography variant="caption" fontWeight="fontWeightBold" className={classes.textOrange} mt={6} style={{ display: 'block' }}>PRICING</Typography>
+                    <Typography variant="h3" mt={1}>Subscription Plans</Typography>
+                    <Typography variant="body1" mt={2.5} >
+                        Upgrade to Tiger Pro membership to unlock powerful options analytics features.<br />Free trial for a week, cancel anytime.
+                    </Typography>
+                    {user ?
+                        <>
+                            <Typography variant="body1" align="center" mt={2} >
+                                Get a free month of Pro membership for you and your friends. <br></br>
+                                Just copy and paste link below to your friends to sign up.
+                            </Typography>
+                            <Box className={classes.referralWrapper}>
+                                <Typography className={classes.referralLink}>{user.referral_link}</Typography>
+                                <Tooltip
+                                    PopperProps={{
+                                        disablePortal: true,
+                                    }}
+                                    onClose={() => setTooltipOpen(false)}
+                                    open={tooltipOpen}
+                                    disableFocusListener
+                                    disableHoverListener
+                                    disableTouchListener
+                                    title="Link copied to clipboard"
+                                >
+                                    <IconButton onClick={copyReferralLink}><LinkIcon /></IconButton>
+                                </Tooltip>
+                            </Box>
+                        </>
+                        :
+                        <Typography variant="body1" align="center" mt={2} >Get a free month of Pro membership when you signup and refer us to your friends.</Typography>
+                    }
+                </Container>
 
-                <div>
-                    <CardDeck className="m-3 text-center text-white pricing-card-deck">
-                        <Card className={"mb-4 pricing-card pricing-card-background " + (authState.isAuthenticated && !isUserMonthlySubscribed() && !isUserYearlySubscribed() ? 'highlighted' : '')}>
-                            <Card.Header className="pricing-card-header">
-                                <h6 class="mt-3 font-weight-bold">BASIC</h6>
-                            </Card.Header>
-                            <Card.Body>
-                                <Link className="text-white" to="/signin/register"><h3>Just sign up</h3></Link>
-                                <div className="pt-3 card-list-left">
-                                    <ul class="list-unstyled mt-3 mb-4">
-                                        <li>&#10003; Unlock 9 options trading strategies.</li>
-                                        <li>&#10003; Exclusive market <Link to="/reports" className="text-white"><b>reports</b></Link>.</li>
+                <Grid container justifyContent="center" spacing={3} mt={6} mb={10} >
+                    <Grid item xs={12} md={3} p={3} >
+                        <Card sx={{ boxShadow: 3 }} className={`${classes.pricingCard} ${authState.isAuthenticated && !isUserMonthlySubscribed() && !isUserYearlySubscribed() && classes.highlighted}`} >
+                            <CardContent align="center" className={classes.pricingCardContent}>
+                                <Typography variant="caption" fontWeight="fontWeightBold" display="block" mt={2} >
+                                    BASIC
+                                </Typography>
+                                <Typography variant="h4" mt={2} >
+                                    <Link href="/signin/register" className={classes.textGrey}>Just sign up</Link>
+                                </Typography>
+                                <Box className={classes.pricingCardList} mt={7} pt={3} >
+                                    <List>
+                                        <CustomListItem>
+                                            <span className={classes.textOrange}>&#10003;</span>&nbsp;Unlock 9 options trading strategies.
+                                        </CustomListItem>
+                                        <CustomListItem>
+                                            <span className={classes.textOrange}>&#10003;</span>&nbsp;Exclusive market <Link href="/reports" className={classes.textGrey}><b>reports</b></Link>.
+                                        </CustomListItem>
                                         {authState.isAuthenticated ?
-                                            <li>&#10003; Strategy <Link to="/profile" className="text-white"><b>personalization</b></Link>.</li>
-                                            : <li>&#10003; Strategy personalization.</li>}
+                                            <CustomListItem><span className={classes.textOrange}>&#10003;</span>&nbsp;Strategy <Link href="/profile" className={classes.textGrey} ><b>personalization</b></Link>.</CustomListItem>
+                                            : <CustomListItem><span className={classes.textOrange}>&#10003;</span>&nbsp;Strategy personalization.</CustomListItem>
+                                        }
                                         {authState.isAuthenticated ?
-                                            <li>&#10003; Broker commission cost <Link to="/profile" className="text-white"><b>calculation</b></Link>.</li>
-                                            : <li>&#10003; Broker commission cost calculation.</li>}
-                                    </ul>
-                                </div>
+                                            <CustomListItem><span className={classes.textOrange}>&#10003;</span>&nbsp;Broker <Link href="/profile" className={classes.textGrey} ><b>commission cost calculation</b></Link>.</CustomListItem>
+                                            : <CustomListItem><span className={classes.textOrange}>&#10003;</span>&nbsp;Broker commission cost calculation.</CustomListItem>
+                                        }
+                                    </List>
+                                </Box>
+                            </CardContent>
+                            <CardActions style={{ justifyContent: 'center' }} >
                                 {authState.isAuthenticated ?
                                     <></>
                                     :
-                                    <Link class="btn-block btn-light btn-login" to="/signin/register">Sign up, it's free</Link>
+                                    <Button variant="contained" size="large" href="/signin/register">Sign up, it's free</Button>
                                 }
-                            </Card.Body>
+                            </CardActions>
                         </Card>
+                    </Grid>
 
-                        <Card className={"mb-4 pricing-card pricing-card-background " + (isUserMonthlySubscribed() ? 'highlighted' : '')}>
-                            <Card.Header className="pricing-card-header">
-                                <h6 class="mt-3 font-weight-bold">PRO MONTHLY</h6>
-                            </Card.Header>
-                            <Card.Body>
-                                <h2>$9.9/mo</h2>
-                                <div className="pt-3 card-list-left">
-                                    <ul class="list-unstyled mt-3 mb-4">
-                                        <li>&#10003; Unlock all 21 options strategies.</li>
-                                        <li>&#10003; Price target range support in Discover.</li>
-                                        <li>&#10003; Unlimited usage for all features.</li>
-                                        <li>&#10003; More Pro member features to come!</li>
-                                    </ul>
-                                </div>
+                    <Grid item xs={12} md={3} p={3}>
+                        <Card sx={{ boxShadow: 3 }} className={`${classes.pricingCard} ${isUserMonthlySubscribed() && classes.highlighted}`} >
+                            <CardContent align="center" className={classes.pricingCardContent}>
+                                <Typography variant="caption" fontWeight="fontWeightBold" display="block" mt={2} >
+                                    PRO MONTHLY
+                                </Typography>
+                                <Typography variant="h4" mt={2} >
+                                    $9.90/mo
+                                </Typography>
+                                <Box className={classes.pricingCardList} mt={7} pt={3} >
+                                    <List>
+                                        <CustomListItem>
+                                            <span className={classes.textOrange}>&#10003;</span>&nbsp;Unlock all 21 options strategies.
+                                        </CustomListItem>
+                                        <CustomListItem>
+                                            <span className={classes.textOrange}>&#10003;</span>&nbsp;Everything in BASIC membership.
+                                        </CustomListItem>
+                                        <CustomListItem>
+                                            <span className={classes.textOrange}>&#10003;</span>&nbsp;Unlimited usage for all features.
+                                        </CustomListItem>
+                                        <CustomListItem>
+                                            <span className={classes.textOrange}>&#10003;</span>&nbsp;More Pro member features to come!
+                                        </CustomListItem>
+
+                                    </List>
+                                </Box>
+                            </CardContent>
+                            <CardActions style={{ justifyContent: 'center' }} >
                                 {authState.isAuthenticated ?
                                     isUserMonthlySubscribed() ?
                                         <></>
                                         :
-                                        <button type="button" class="btn btn-md btn-block btn-light"
-                                            onClick={() => {
-                                                GaEvent('click subscribe monthly');
-                                                subscribeMonthly();
-                                            }
-                                            }>Join Pro</button>
+                                        <Button onClick={() => {
+                                            GaEvent('click subscribe monthly');
+                                            subscribeMonthly();
+                                        }} variant="contained" size="large">Become Pro</Button>
                                     :
-                                    <a href="/signin" class="btn-block btn-light btn-login">Join Pro</a>
+                                    <Button variant="contained" size="large" href="/signin">Become Pro</Button>
                                 }
-                            </Card.Body>
+                            </CardActions>
                         </Card>
+                    </Grid>
 
-                        <Card className={"mb-4 pricing-card pricing-card-background " + (isUserYearlySubscribed() ? 'highlighted' : '')}>
-                            <Card.Header className="pricing-card-header">
-                                <h6 class="mt-3 font-weight-bold">PRO ANNUALLY</h6>
-                            </Card.Header>
-                            <Card.Body className="card-body-right">
-                                <div class="badge">MOST POPULAR</div>
-                                <h2>$99/yr</h2>
-                                <h6>Save 16.6% ($19.8) annually</h6>
-                                <div className="pt-3 card-list-right">
-                                    <ul class="list-unstyled mt-3 mb-4">
-                                        <li>&#10003; Everything in the monthly plan.</li>
-                                        <li>&nbsp;</li>
-                                        <li>&nbsp;</li>
-                                        <li>&nbsp;</li>
-                                    </ul>
-                                </div>
+                    <Grid item xs={12} md={3} p={3} style={{ position: 'relative' }}>
+                        <Box className={classes.badge} >
+                            MOST POPULAR
+                        </Box>
+                        <Card sx={{ boxShadow: 3 }} className={`${classes.pricingCard} ${classes.yearCard} ${isUserYearlySubscribed() && classes.highlighted}`} >
+                            <CardContent align="center" className={classes.pricingCardContent}>
+                                <Typography variant="caption" fontWeight="fontWeightBold" display="block" mt={2} >
+                                    PRO ANNUALLY
+                                </Typography>
+                                <Typography variant="h4" mt={2} >
+                                    $99.00/yr
+                                </Typography>
+                                <Typography mt={2} >
+                                    Save 16.6% ($19.80) annually
+                                </Typography>
+                                <Box className={classes.pricingCardList} mt={1.5} pt={3} >
+                                    <List>
+                                        <CustomListItem>
+                                            <span className={classes.textOrange}>&#10003;</span>&nbsp;Everything in the monthly plan.
+                                        </CustomListItem>
+                                    </List>
+                                </Box>
+                            </CardContent>
+                            <CardActions style={{ justifyContent: 'center' }} >
                                 {authState.isAuthenticated ?
                                     isUserYearlySubscribed() ?
                                         <></>
                                         :
-                                        <button type="button" class="btn btn-md btn-block btn-light"
-                                            onClick={() => {
-                                                GaEvent('click subscribe yearly');
-                                                subscribeYearly();
-                                            }}
-                                        >Join Pro</button>
+                                        <Button onClick={() => {
+                                            GaEvent('click subscribe yearly');
+                                            subscribeYearly();
+                                        }} variant="contained" size="large">Become Pro</Button>
                                     :
-                                    <a href="/signin" class="btn-block btn-light btn-login">Join Pro</a>
+                                    <Button variant="contained" size="large" href="/signin">Become Pro</Button>
                                 }
-                            </Card.Body>
+                            </CardActions>
                         </Card>
-                    </CardDeck>
-                </div>
-            </div>
+                    </Grid>
+                </Grid>
+
+            </Container>
 
             {
                 user &&
@@ -205,5 +294,6 @@ export default function Pricing() {
                 </Modal>
             }
         </>
+
     );
 }
