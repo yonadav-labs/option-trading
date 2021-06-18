@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Paper, Stack, Container, Divider, Typography, FormControl, Select, MenuItem, InputLabel, Card, Grid, Chip, useTheme } from "@material-ui/core";
 import TickerAutocomplete from "../../components/TickerAutocomplete";
 import { makeStyles } from '@material-ui/styles';
@@ -27,6 +27,7 @@ export default function LandingView(props) {
         }
     }, theme);
     const classes = useStyles();
+
     const {
         allTickers,
         selectedTicker,
@@ -36,9 +37,10 @@ export default function LandingView(props) {
         onStrategySelectionChange,
     } = props
 
+    const [renderedStrategies, setRenderedStrategies] = useState([])
     const [chipState, setChipState] = useState({
         basic: true,
-        spread: true,
+        spreads: true,
         advanced: true,
         bullish: true,
         bearish: true,
@@ -47,8 +49,27 @@ export default function LandingView(props) {
     })
 
     const toggleChip = (chipChoice) => {
-        setChipState(prevState => ({ ...prevState, [chipChoice]: !chipState[chipChoice] }));
+        setChipState(prevState => ({ ...prevState, [chipChoice]: !chipState[chipChoice] }))
     }
+
+    const filterChips = () => {
+        let filters = []
+        let filteredStrategies = []
+        for (const [key, value] of Object.entries(chipState)) {
+            if (value) {
+                filters.push(key)
+            }
+        }
+        strategies.map(strat => {
+            if (strat.sentiment.some(s => filters.indexOf(s) >= 0) && filters.includes(strat.level)) { filteredStrategies.push(strat) }
+
+        })
+        setRenderedStrategies(filteredStrategies)
+    }
+
+    useEffect(() => {
+        filterChips()
+    }, [chipState])
 
     return (
         <Container style={{ minHeight: "inherit", padding: 0 }}>
@@ -146,11 +167,11 @@ export default function LandingView(props) {
                                 style={chipState.basic ? { width: 110, backgroundColor: "#DDFFFA", color: "#006868" } : { width: 110, color: "#006868", borderColor: "#006868" }}
                             />
                             <Chip
-                                variant={chipState.spread ? null : "outlined"}
-                                clickable onClick={() => toggleChip("spread")}
+                                variant={chipState.spreads ? null : "outlined"}
+                                clickable onClick={() => toggleChip("spreads")}
                                 label={<Typography variant="chip">spreads</Typography>}
                                 className={classes.chip}
-                                style={chipState.spread ? { width: 110, backgroundColor: "#FFF3B7", color: "#755400" } : { width: 110, color: "#755400", borderColor: "#755400" }}
+                                style={chipState.spreads ? { width: 110, backgroundColor: "#FFF3B7", color: "#755400" } : { width: 110, color: "#755400", borderColor: "#755400" }}
                             />
                             <Chip
                                 variant={chipState.advanced ? null : "outlined"}
@@ -164,8 +185,8 @@ export default function LandingView(props) {
                 </Grid>
                 <Divider orientation="horizontal" flexItem />
                 <Stack divider={<Divider orientation="horizontal" flexItem />}>
-                    {strategies.map(strat => {
-                        return <StrategyRow strategy={strat} />
+                    {renderedStrategies.length > 0 && renderedStrategies.map((strat, index) => {
+                        return <StrategyRow strategy={strat} key={index} />
                     })}
                 </Stack>
             </Card>
