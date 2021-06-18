@@ -33,6 +33,7 @@ export default function LandingView(props) {
         onTickerSelectionChange,
         strategyDisabled,
         selectedStrategy,
+        onStrategySelectionChange,
     } = props
 
     const [chipState, setChipState] = useState({
@@ -70,6 +71,7 @@ export default function LandingView(props) {
                                 id="expiration-dates"
                                 value={selectedStrategy}
                                 fullWidth
+                                onChange={(e) => onStrategySelectionChange(e.target.value)}
                                 style={{ paddingBottom: "5px" }}
                                 variant="standard"
                                 MenuProps={{
@@ -83,11 +85,7 @@ export default function LandingView(props) {
                                     getContentAnchorEl: () => null,
                                 }}
                             >
-                                <MenuItem value="Long Call">Long Call</MenuItem>
-                                <MenuItem value="Long Put">Long Put</MenuItem>
-                                <MenuItem value="Covered Call">Covered Call</MenuItem>
-                                <MenuItem value="Protective Put">Protective Put</MenuItem>
-                                <MenuItem value="Short Put">Short Put</MenuItem>
+                                {strategies.map(strat => <MenuItem value={strat}>{strat.name}</MenuItem>)}
                             </Select>
                         </FormControl>
                     </Stack>

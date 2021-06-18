@@ -19,7 +19,7 @@ const useDebouncedCallback = (callback, delay) => {
     return useCallback(debounce((...args) => callbackRef.current(...args), delay), []);
 }
 
-const GaEvent = GetGaEventTrackingFunc('strategy screener');
+const GaEvent = GetGaEventTrackingFunc('build');
 
 export default function NewBuild() {
     const API_URL = getApiUrl();
@@ -87,6 +87,11 @@ export default function NewBuild() {
         }
     };
 
+    const onStrategySelectionChange = (e) => {
+        GaEvent('select strategy');
+        setSelectedStrategy(e)
+    }
+
     useEffect(() => {
         if (authState.isAuthenticated) {
             const { accessToken } = authState;
@@ -103,8 +108,8 @@ export default function NewBuild() {
     return (
         <>
             <Helmet>
-                <title>Tigerstance | Discover option strategies with the best potential return.</title>
-                <meta name="description" content="Discover option strategies with the best potential return with Tigerstance." />
+                <title>Tigerstance | Build</title>
+                <meta name="description" content="Build strategies with Tigerstance." />
             </Helmet>
             <ModalSpinner active={modalActive}></ModalSpinner>
             {
@@ -115,6 +120,7 @@ export default function NewBuild() {
                         onTickerSelectionChange={onTickerSelectionChange}
                         strategyDisabled={strategyDisabled}
                         selectedStrategy={selectedStrategy}
+                        onStrategySelectionChange={onStrategySelectionChange}
                     />
                     :
                     null
