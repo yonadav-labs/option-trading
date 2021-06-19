@@ -153,7 +153,7 @@ function Header() {
                 <Toolbar>
                     <Grid container justifyContent="space-between" alignItems="center" height="100%">
                         <Grid item>
-                            <RouterLink to="/" style={{ height: "100%", display: "flex", alignItems: "center" }}><img src="/tigerstance-logo.png" /></RouterLink>
+                            <RouterLink to="/" style={{ height: "100%", display: "flex", alignItems: "center" }}><img src="/tigerstance-logo.png" width="175px"/></RouterLink>
                         </Grid>
                         {!isMobile &&
                             <Grid item>
