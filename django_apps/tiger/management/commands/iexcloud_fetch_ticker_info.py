@@ -57,8 +57,8 @@ def fetch_expiration_dates_and_update_status(ticker):
     ticker.save()
 
 
-def fetch_stats(ticker, new_stats):
-    url = f'{settings.IEXCLOUD_BASE_URL}/stock/{ticker.symbol}/stats'
+def fetch_stats(ticker_stats):
+    url = f'{settings.IEXCLOUD_BASE_URL}/stock/{ticker_stats.ticker.symbol}/stats'
     resp = requests.get(url, params=DEFAULT_QUERY_PARAMS)
 
     if not resp.ok:
@@ -67,28 +67,27 @@ def fetch_stats(ticker, new_stats):
 
     stats = resp.json()
     if stats:
-        new_stats.company_name = stats.get('companyName')
-        new_stats.market_cap = stats.get('marketcap')
-        new_stats.week52_high = stats.get('week52high')
-        new_stats.week52_low = stats.get('week52low')
-        new_stats.week52_high_split_adjust_only = stats.get('week52highSplitAdjustOnly')
-        new_stats.week52_low_split_adjust_only = stats.get('week52lowSplitAdjustOnly')
-        new_stats.shares_outstanding = stats.get('sharesOutstanding')
-        new_stats.day200_moving_avg = stats.get('day200MovingAvg')
-        new_stats.day50_moving_avg = stats.get('day50MovingAvg')
-        new_stats.ttm_eps = stats.get('ttmEPS')
-        new_stats.ttm_dividend_rate = stats.get('ttmDividendRate')
-        new_stats.dividend_yield = stats.get('dividendYield')
-        new_stats.next_dividend_date = stats.get('nextDividendDate') if stats.get('nextDividendDate') else None
-        new_stats.ex_dividend_date = stats.get('exDividendDate') if stats.get('exDividendDate') else None
-        new_stats.next_earnings_date = stats.get('nextEarningsDate') if stats.get('nextEarningsDate') else None
-        new_stats.pe_ratio = stats.get('peRatio')
-        new_stats.beta = stats.get('beta')
+        ticker_stats.market_cap = stats.get('marketcap')
+        ticker_stats.week52_high = stats.get('week52high')
+        ticker_stats.week52_low = stats.get('week52low')
+        ticker_stats.week52_high_split_adjust_only = stats.get('week52highSplitAdjustOnly')
+        ticker_stats.week52_low_split_adjust_only = stats.get('week52lowSplitAdjustOnly')
+        ticker_stats.shares_outstanding = stats.get('sharesOutstanding')
+        ticker_stats.day200_moving_avg = stats.get('day200MovingAvg')
+        ticker_stats.day50_moving_avg = stats.get('day50MovingAvg')
+        ticker_stats.ttm_eps = stats.get('ttmEPS')
+        ticker_stats.ttm_dividend_rate = stats.get('ttmDividendRate')
+        ticker_stats.dividend_yield = stats.get('dividendYield')
+        ticker_stats.next_dividend_date = stats.get('nextDividendDate') if stats.get('nextDividendDate') else None
+        ticker_stats.ex_dividend_date = stats.get('exDividendDate') if stats.get('exDividendDate') else None
+        ticker_stats.next_earnings_date = stats.get('nextEarningsDate') if stats.get('nextEarningsDate') else None
+        ticker_stats.pe_ratio = stats.get('peRatio')
+        ticker_stats.beta = stats.get('beta')
 
 
-def fetch_dividends(ticker, new_stats):
+def fetch_dividends(ticker_stats):
     period = '1m'  # default by api
-    url = f'{settings.IEXCLOUD_BASE_URL}/stock/{ticker.symbol}/dividends/{period}'
+    url = f'{settings.IEXCLOUD_BASE_URL}/stock/{ticker_stats.ticker.symbol}/dividends/{period}'
     resp = requests.get(url, params=DEFAULT_QUERY_PARAMS)
 
     if not resp.ok:
@@ -97,11 +96,11 @@ def fetch_dividends(ticker, new_stats):
 
     dividends = resp.json()
     if dividends:
-        new_stats.dividend_payment_amount = dividends[0].get('amount')
+        ticker_stats.dividend_payment_amount = dividends[0].get('amount')
 
 
-def fetch_splits(ticker, new_stats):
-    url = f'{settings.IEXCLOUD_BASE_URL}/stock/{ticker.symbol}/splits'
+def fetch_splits(ticker_stats):
+    url = f'{settings.IEXCLOUD_BASE_URL}/stock/{ticker_stats.ticker.symbol}/splits'
     resp = requests.get(url, params=DEFAULT_QUERY_PARAMS)
 
     if not resp.ok:
@@ -110,12 +109,12 @@ def fetch_splits(ticker, new_stats):
 
     splits = resp.json()
     if splits:
-        new_stats.split_declaration_date = splits[0].get('declaredDate')
-        new_stats.split_ex_date = splits[0].get('exDate')
+        ticker_stats.split_declaration_date = splits[0].get('declaredDate')
+        ticker_stats.split_ex_date = splits[0].get('exDate')
 
 
-def fetch_price_target(ticker, new_stats):
-    url = f'{settings.IEXCLOUD_BASE_URL}/stock/{ticker.symbol}/price-target'
+def fetch_price_target(ticker_stats):
+    url = f'{settings.IEXCLOUD_BASE_URL}/stock/{ticker_stats.ticker.symbol}/price-target'
     resp = requests.get(url, params=DEFAULT_QUERY_PARAMS)
 
     if not resp.ok:
@@ -124,16 +123,16 @@ def fetch_price_target(ticker, new_stats):
 
     info = resp.json()
     if info:
-        new_stats.price_target_average = info.get('priceTargetAverage')
-        new_stats.price_target_high = info.get('priceTargetHigh')
-        new_stats.price_target_low = info.get('priceTargetLow')
-        new_stats.number_of_analysts = info.get('numberOfAnalysts')
+        ticker_stats.price_target_average = info.get('priceTargetAverage')
+        ticker_stats.price_target_high = info.get('priceTargetHigh')
+        ticker_stats.price_target_low = info.get('priceTargetLow')
+        ticker_stats.number_of_analysts = info.get('numberOfAnalysts')
 
 
-def fetch_historical_volatility(ticker, new_stats):
+def fetch_historical_volatility(ticker_stats):
     '''Context:https://www.profitspi.com/stock/view.aspx?v=stock-chart&uv=100585
         Data verification: https://www.barchart.com/stocks/quotes/AAPL/overview'''
-    url = f'{settings.IEXCLOUD_BASE_URL}/stock/{ticker.symbol}/indicator/volatility'
+    url = f'{settings.IEXCLOUD_BASE_URL}/stock/{ticker_stats.ticker.symbol}/indicator/volatility'
     resp = requests.get(url, params={**DEFAULT_QUERY_PARAMS, 'indicatorOnly': True, 'range': '35d', 'input1': 20})
 
     if not resp.ok:
@@ -142,11 +141,12 @@ def fetch_historical_volatility(ticker, new_stats):
 
     result = resp.json()
     if len(result.get('indicator', [])) > 0 and len(result.get('indicator')[0]) > 0:
-        new_stats.historical_volatility = result.get('indicator')[0][-1]
+        ticker_stats.historical_volatility = result.get('indicator')[0][-1]
 
 
-def fetch_ohlc_prices(ticker, data_date, new_stats):
-    date_str = data_date.strftime("%Y%m%d")  # Example: 20210601.
+def fetch_ohlc_prices(ticker_stats):
+    ticker = ticker_stats.ticker
+    date_str = ticker_stats.data_time.strftime("%Y%m%d")  # Example: 20210601.
     url = f'{settings.IEXCLOUD_BASE_URL}/stock/{ticker.symbol}/chart/date/{date_str}?chartByDay=true'
     resp = requests.get(url, params=DEFAULT_QUERY_PARAMS)
 
@@ -161,14 +161,14 @@ def fetch_ohlc_prices(ticker, data_date, new_stats):
 
     day_prices = prices[0]
     if day_prices:
-        new_stats.price_open = float(day_prices.get('open'))
-        new_stats.price_high = float(day_prices.get('high'))
-        new_stats.price_low = float(day_prices.get('low'))
-        new_stats.price_close = float(day_prices.get('close'))
-        new_stats.daily_volume = day_prices.get('volume')
+        ticker_stats.price_open = float(day_prices.get('open'))
+        ticker_stats.price_high = float(day_prices.get('high'))
+        ticker_stats.price_low = float(day_prices.get('low'))
+        ticker_stats.price_close = float(day_prices.get('close'))
+        ticker_stats.daily_volume = day_prices.get('volume')
 
 
-def fetch_ticker_info(ticker_id, data_date):
+def fetch_ticker_info(ticker_id, data_time=None):
     ticker = Ticker.objects.get(id=ticker_id)
 
     # Fetch expiration dates.
@@ -181,14 +181,14 @@ def fetch_ticker_info(ticker_id, data_date):
     # Fetch stats.
     if ticker.need_refresh_stats():
         print(f'Fetching stats: {ticker.symbol}')
-        new_stats = TickerStats(ticker=ticker, data_time=get_now())
-        fetch_stats(ticker, new_stats)
-        fetch_dividends(ticker, new_stats)
-        fetch_splits(ticker, new_stats)
-        # fetch_price_target(ticker, new_stats)  # preminum data, will be enabled later
-        fetch_historical_volatility(ticker, new_stats)
-        fetch_ohlc_prices(ticker, data_date, new_stats)
-        new_stats.save()
+        ticker_stats = TickerStats(ticker=ticker, data_time=data_time if data_time else get_now())
+        fetch_stats(ticker_stats)
+        fetch_dividends(ticker_stats)
+        fetch_splits(ticker_stats)
+        # fetch_price_target(ticker_stats)  # preminum data, will be enabled later
+        fetch_historical_volatility(ticker_stats)
+        fetch_ohlc_prices(ticker_stats)
+        ticker_stats.save()
     else:
         print(f'Stats skipped: {ticker.symbol}')
 
@@ -207,9 +207,9 @@ class Command(BaseCommand):
 
         for ticker_info in fetch_tickers():
             defaults = {
-                "full_name": ticker_info['name'],
+                "full_name": ticker_info.get('name'),
             }
-            Ticker.objects.update_or_create(symbol=ticker_info['symbol'], defaults=defaults)
+            Ticker.objects.update_or_create(symbol=ticker_info.get('symbol'), defaults=defaults)
 
         ticker_ids = [ticker.id for ticker in Ticker.objects.all()] if not settings.DEBUG \
             else [ticker.id for ticker in
@@ -223,4 +223,4 @@ class Command(BaseCommand):
         db.connections.close_all()
 
         with mp.Pool(pool_size, maxtasksperchild=2) as pool:
-            pool.map(partial(fetch_ticker_info, data_date=today_date), ticker_ids)
+            pool.map(partial(fetch_ticker_info), ticker_ids)
