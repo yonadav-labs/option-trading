@@ -17,13 +17,24 @@ const ExpandMore = styled((props) => {
 }));
 
 export default function NewLegCard(props) {
-    const { leg, index, showAction } = props;
+    const { leg, index, showAction, } = props;
     const isMobile = useMediaQuery(theme => theme.breakpoints.down('md'));
     const [expanded, setExpanded] = useState(false);
+    const [hovered, setHovered] = useState(false);
 
     const handleExpandClick = (e) => {
-        e.stopPropagation();
-        setExpanded(!expanded);
+        if (showAction) {
+            e.stopPropagation();
+            setExpanded(!expanded)
+        }
+    }
+
+    const mouseEnter = () => {
+        setHovered(true)
+    }
+
+    const mouseExit = () => {
+        setHovered(false)
     }
 
     const simpleInfo = (
@@ -81,8 +92,10 @@ export default function NewLegCard(props) {
     );
 
     return (
-        <Card sx={{ boxShadow: "none" }}>
+        <Card sx={{ boxShadow: "none" }} onClick={handleExpandClick}>
             <CardHeader
+                onMouseEnter={mouseEnter} onMouseLeave={mouseExit}
+                style={hovered && showAction ? { backgroundColor: "#d3d3d3" } : null}
                 disableTypography
                 title={isMobile ? <Typography variant="h6">Leg {index + 1}</Typography> : null}
                 avatar={!isMobile ? <Typography variant="h6">Leg {index + 1}</Typography> : null}
@@ -90,7 +103,6 @@ export default function NewLegCard(props) {
                 action={showAction && leg.contract ?
                     <ExpandMore
                         expand={expanded}
-                        onClick={handleExpandClick}
                         aria-expanded={expanded}
                         aria-label="show more"
                     >
