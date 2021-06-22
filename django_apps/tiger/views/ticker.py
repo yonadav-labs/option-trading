@@ -53,7 +53,9 @@ class TickerViewSet(viewsets.ModelViewSet):
                         WHERE price_close IS NOT NULL 
                         AND price_open IS NOT NULL
                     ) tickerstats
-                    WHERE rank = 1
+                    JOIN public.tiger_ticker t ON t.id = tickerstats.ticker_id
+                    WHERE rank = 1 
+                    AND t.status = 'unspecified'
                     ORDER BY (price_close - price_open) / price_open DESC
                     LIMIT 12;
                 """

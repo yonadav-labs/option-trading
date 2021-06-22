@@ -163,7 +163,7 @@ export default function Home() {
                 </Grid>
                 <Grid container item py={4}>
                     <Grid item py={2} px={3} lg={12}>
-                        <Typography variant="h6">Start with these high movers</Typography>
+                        <Typography variant="h6">Start with recent high movers</Typography>
                     </Grid>
                     <RenderMovers />
                 </Grid>
