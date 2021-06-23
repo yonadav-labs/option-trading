@@ -12,7 +12,8 @@ export default responsiveFontSizes(createTheme({
             light: 'rgba(255, 179, 111, 1)',
             background: 'rgba(255, 143, 43, 0.08)',
             border: 'rgba(255, 143, 43, 0.5)',
-            contrastText: 'rgba(255, 255, 255, 1)'
+            contrastText: 'rgba(255, 255, 255, 1)',
+            muted: 'rgba(108, 117, 125, 1)'
         },
         secondary: {
             main: colors.yellow,
