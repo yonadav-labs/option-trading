@@ -178,7 +178,7 @@ export default function ScreenFilterContainer(props) {
                                         },
                                         anchorOrigin: {
                                             vertical: "bottom",
-                                            horizontal: "left"
+                                            horizontal: "center"
                                         },
                                         getContentAnchorEl: () => null,
                                     }}

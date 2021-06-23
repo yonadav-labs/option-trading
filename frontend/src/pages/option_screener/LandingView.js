@@ -60,7 +60,7 @@ export default function LandingView(props) {
                                     },
                                     anchorOrigin: {
                                         vertical: "bottom",
-                                        horizontal: "left"
+                                        horizontal: "center"
                                     },
                                     getContentAnchorEl: () => null,
                                 }}

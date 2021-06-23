@@ -230,7 +230,7 @@ export default function MainView(props) {
                                             },
                                             anchorOrigin: {
                                                 vertical: "bottom",
-                                                horizontal: "left"
+                                                horizontal: "center"
                                             },
                                             getContentAnchorEl: () => null,
                                         }}
