@@ -34,10 +34,9 @@ export default function Surface() {
     const [selectedTicker, setSelectedTicker] = useState(null);
     const [basicInfo, setBasicInfo] = useState({});
     const [baseHeatmapData, setBaseHeatmapData] = useState(null);
-    const [expirationTimestampsOptions, setExpirationTimestampsOptions] = useState([])
+    const [expirationTimestampsOptions, setExpirationTimestampsOptions] = useState([{}])
 
-    // filter states
-    const [filters, setFilters] = useState({
+    const initialFilters = {
         contractType: 'call',
         metric: 'Implied Volatility',
         minStrike: 0,
@@ -48,8 +47,11 @@ export default function Surface() {
         minOpenInterest: 0,
         maxBidAskSpread: 99999,
         delta: 1,
-        lastTradedDate: -9999999,
-    })
+        lastTradedDate: -9999999
+    }
+
+    // filter states
+    const [filters, setFilters] = useState(initialFilters)
 
     // component management states
     const [modalActive, setModalActive] = useState(false);
@@ -73,23 +75,11 @@ export default function Surface() {
 
     const resetStates = () => {
         setSelectedTicker(null);
-        setExpirationTimestampsOptions([])
-        setBasicInfo({});
+        setExpirationTimestampsOptions([{}])
+        setBasicInfo({regularMarketPrice: 0});
         setModalActive(false);
         setBaseHeatmapData(null);
-        setFilters({
-            contractType: 'call',
-            metric: 'Implied Volatility',
-            minStrike: 0,
-            maxStrike: 0,
-            minExpiration: 0,
-            maxExpiration: 0,
-            minVolume: 0,
-            minOpenInterest: 0,
-            maxBidAskSpread: 99999,
-            delta: 1,
-            lastTradedDate: -9999999,
-        });
+        setFilters(initialFilters);
     }
 
     const setExpirationTimestamps = (val) => {
@@ -219,7 +209,6 @@ export default function Surface() {
                         filters={filters}
                     />
                     :
-                    basicInfo && expirationTimestampsOptions.length > 0 && baseHeatmapData &&
                     <MainView
                         allTickers={allTickers}
                         selectedTicker={selectedTicker}

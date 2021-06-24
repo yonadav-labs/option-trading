@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Grid, Box, IconButton, Typography, Slider } from "@material-ui/core";
 import TuneIcon from '@material-ui/icons/Tune';
 import CloseIcon from '@material-ui/icons/Close';
@@ -51,10 +51,15 @@ export default function SurfaceFilterContainer(props) {
         expirationTimestampsOptions
     } = props
 
-    const [strikeValues, setStrikeValues] = useState([0, Math.ceil(initialPrice * 2)]);
+    const [strikeValues, setStrikeValues] = useState(null);
+    const [expirationDates, setExpirationDates] = useState(null);
 
     const lastExpirationDate = expirationTimestampsOptions[expirationTimestampsOptions.length - 1];
-    const [expirationDates, setExpirationDates] = useState([expirationTimestampsOptions[0].value, lastExpirationDate.value]);
+
+    useEffect(() => {
+        setStrikeValues([0, Math.ceil(initialPrice * 2)]);
+        setExpirationDates([expirationTimestampsOptions[0].value, lastExpirationDate.value]);
+    }, [initialPrice, expirationTimestampsOptions])
 
     const handleStrikeChange = (event, newValue) => {
         setStrikeValues(newValue);

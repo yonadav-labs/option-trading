@@ -168,14 +168,12 @@ export default function MainView(props) {
                 </Grid>
                 <Grid container>
                     <Grid item xs={12} px={3} className={classes.root}>
-                        {baseHeatmapData &&
-                            <HeatMapGraph
-                                className="my-4"
-                                zLabel={filters.metric}
-                                data={baseHeatmapData}
-                                contractType={filters.contractType}
-                            />
-                        }
+                        <HeatMapGraph
+                            className="my-4"
+                            zLabel={filters.metric}
+                            data={baseHeatmapData}
+                            contractType={filters.contractType}
+                        />
                     </Grid>
                 </Grid>
 
