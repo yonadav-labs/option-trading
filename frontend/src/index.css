@@ -83,3 +83,7 @@ table.option-matrix td.return-value:hover {
   background-color: #eee !important;
   cursor: default;
 }
+
+.MuiSlider-markLabel {
+  color: white !important;
+}

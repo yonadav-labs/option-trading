@@ -11,7 +11,7 @@ import PriceTargetField from "./PriceTargetField";
 import { makeStyles } from "@material-ui/styles";
 
 
-const GaEvent = GetGaEventTrackingFunc('strategy screener');
+const GaEvent = GetGaEventTrackingFunc('option screener');
 
 const useStyles = makeStyles(theme => ({
     autocomplete: {

@@ -8,7 +8,7 @@ import getOktaConfig from "./oktaConfig";
 import Home from './pages/home/Home.js';
 import Header from './components/header'
 import Footer from './components/footer'
-import Surface from './pages/Surface'
+import Surface from './pages/surface/Surface'
 import Disclaimer from './components/disclaimer';
 import Privacy from './components/privacy';
 import NewStrategyScreener from './pages/strategy_screener/NewStrategyScreener';

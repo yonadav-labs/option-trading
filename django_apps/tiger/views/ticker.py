@@ -4,10 +4,11 @@ from django.utils import timezone
 from rest_framework import viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
+
 from tiger.core import Stock
 from tiger.models import Ticker
 from tiger.serializers import TickerSerializer, TickerStatsSerializer
-from tiger.views.utils import get_broker, dict_fetch_all
+from tiger.views.utils import get_broker, dict_fetch_all, get_valid_contracts
 
 
 def get_annualized_value(val, days_till_expiration):
@@ -92,7 +93,7 @@ class TickerViewSet(viewsets.ModelViewSet):
 
         return Response(resp)
 
-    @action(detail=True, methods=['GET'])
+    @action(detail=True, methods=['POST'])
     def heatmap_data(self, request, *args, **kwargs):
         def build_heatmap(contracts, expirations, strikes):
             data = []
@@ -101,7 +102,7 @@ class TickerViewSet(viewsets.ModelViewSet):
                 apr = get_annualized_value(contract.bid / stock.stock_price, contract.days_till_expiration) \
                     if contract.is_call else get_annualized_value(contract.bid / contract.strike,
                                                                   contract.days_till_expiration)
-                if apr > 10:
+                if apr and apr > 10:
                     apr = None  # This will show as blank in heatmap UI.
 
                 vol_per_oi = None
@@ -135,25 +136,19 @@ class TickerViewSet(viewsets.ModelViewSet):
         stock_price = quote.get('regularMarketPrice')  # This is from Yahoo.
         stock = Stock(ticker, stock_price, external_cache_id, ticker.get_latest_stats())
 
-        contract_type = request.GET.get('contract_type', 'call')
+        filters = request.data.get('filters')
 
         expiration_timestamps = ticker.get_expiration_timestamps()
         expirations = [ts // 1000 for ts in expiration_timestamps]
         dates = ticker.expiration_dates.filter(date__gte=timezone.now())
         expiration_dates = [date.date.strftime('%m/%d/%y') for date in dates]
 
-        contract_lists = []
-
-        for ts in expiration_timestamps:
-            calls, puts = ticker.get_call_puts(ts)
-            contract = calls if contract_type == 'call' else puts
-            contract_lists += list(filter(lambda contract: contract.last_trade_date, contract))
+        call_contract_lists, put_contract_list = get_valid_contracts(ticker, request, expiration_timestamps, False, filters)
+        contract_lists = call_contract_lists if filters.get('eq.is_call') else put_contract_list
+        contract_lists = sum(contract_lists, [])
 
         strikes = list(set([contract.strike for contract in contract_lists]))
         strikes.sort()
-
-        broker = get_broker(request.user)
-        broker_settings = broker.get_broker_settings()
 
         resp = build_heatmap(contract_lists, expirations, strikes)
 
