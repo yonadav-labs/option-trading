@@ -81,7 +81,7 @@ def get_dates_till_expiration(expiration, num_days):
     if num_days >= days_till_expiration:
         days_delta = range(days_till_expiration)
     else:
-        days_delta = np.linspace(0, days_till_expiration-1, num_days).tolist()
+        days_delta = np.linspace(0, days_till_expiration - 1, num_days).tolist()
         days_delta = [int(ii) for ii in days_delta]
 
     calculation_dates = [today + timedelta(days=i) for i in days_delta]
@@ -90,11 +90,7 @@ def get_dates_till_expiration(expiration, num_days):
 
 
 def get_decimal_25x(value):
-    int_value = int(value)
-    frac = abs(value) % 1
-    for i in [0, 0.25, 0.5, 0.75, 1]:
-        if abs(frac-i) < 0.125:
-            return int_value + i if value > 0 else int_value - i
+    return round(value * 4) / 4.0
 
 
 if __name__ == "__main__":
