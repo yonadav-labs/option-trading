@@ -7,7 +7,7 @@ import more_itertools
 import numpy as np
 from tiger.core import Leg
 from tiger.core.black_scholes import get_target_price_probability
-from tiger.utils import get_dates_till_expiration, get_decimal_25x
+from tiger.utils import get_dates_till_expiration, get_decimal_25x, get_now_date
 
 INFINITE = 'infinite'
 
@@ -181,7 +181,13 @@ class Trade(ABC):
     def graph_points(self):
         x = self.build_stock_price_range()
         y = [self.get_total_return(val, val) for val in x]
-        return {'x': x, 'y': y}
+
+        calculation_dates = [get_now_date()]
+        final_matrix = self.get_value_matrix(calculation_dates, x)
+
+        y2 = [row[0] for row in final_matrix]
+
+        return {'x': x, 'y': y, 'y2': y2}
 
     # TODO: deprecated.
     def get_sigma_prices(self, sigma_num):
@@ -355,14 +361,7 @@ class Trade(ABC):
                 probs.append(prob)
         return sum(probs) / len(probs)
 
-    @property
-    def return_matrix(self):
-        underlying_prices = self.build_stock_price_range(24)
-        underlying_prices = list(set([get_decimal_25x(price) for price in underlying_prices]))
-        underlying_prices.sort(reverse=True)
-        min_expiration = self._get_aggr_contract_attribute('expiration', use_min=True)
-        calculation_dates = get_dates_till_expiration(min_expiration, 20)
-
+    def get_value_matrix(self, calculation_dates, underlying_prices):
         final_matrix = None
         for leg in self.legs:
             matrix = leg.get_value_matrix(calculation_dates, underlying_prices)
@@ -372,6 +371,17 @@ class Trade(ABC):
                 final_matrix += matrix
 
         final_matrix = final_matrix.transpose() - self.cost
+
+        return final_matrix
+
+    @property
+    def return_matrix(self):
+        underlying_prices = self.build_stock_price_range(24)
+        underlying_prices = list(set([get_decimal_25x(price) for price in underlying_prices]))
+        underlying_prices.sort(reverse=True)
+        min_expiration = self._get_aggr_contract_attribute('expiration', use_min=True)
+        calculation_dates = get_dates_till_expiration(min_expiration, 20)
+        final_matrix = self.get_value_matrix(calculation_dates, underlying_prices)
 
         return {
             'prices': underlying_prices,

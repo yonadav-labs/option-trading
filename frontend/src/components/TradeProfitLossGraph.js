@@ -10,9 +10,10 @@ export default function TradeProfitLossGraph(props) {
     let priceMarks = trade.graph_points['x'];
     let xMin = Math.min(...priceMarks);
     let xMax = Math.max(...priceMarks);
-    let plotline_annotations = []
+    let plotline_annotations = [];
     let data = [];
     let lastPrice = trade.stock.stock_price;
+    let profitLossData = [];
 
     trade.graph_points['x'].forEach((x, i) => {
         let point = {};
@@ -21,6 +22,13 @@ export default function TradeProfitLossGraph(props) {
         point.y = trade.graph_points['y'][i]; // Return in $.
         point.y2 = (point.y >= 0 ? '+' : '') + ((point.y / trade.cost) * 100).toFixed(2); // Return ratio in %.
         data.push(point);
+
+        let point1 = {};
+        point1.x = x;
+        point1.x2 = (x >= lastPrice ? '+' : '') + (((x - lastPrice) / lastPrice) * 100).toFixed(2); // Stock price change in %.
+        point1.y = trade.graph_points['y2'][i]; // Return in $.
+        point1.y2 = (point1.y >= 0 ? '+' : '') + ((point1.y / trade.cost) * 100).toFixed(2); // Return ratio in %.
+        profitLossData.push(point1);
     });
 
     trade.break_even_prices_and_ratios.forEach(breakeven => {
@@ -35,7 +43,7 @@ export default function TradeProfitLossGraph(props) {
                     fontStyle: "italic",
                     color: "green",
                 },
-                text: `Breakeven Price <br /> $${breakeven.price}`,
+                text: `Breakeven Price <br /> $${breakeven.price.toFixed(2)}`,
             },
             zIndex: 100,
         });
@@ -255,6 +263,7 @@ export default function TradeProfitLossGraph(props) {
         },
         series: [
             {
+                name: "Return at expiration",
                 data: data,
                 marker: {
                     enabled: false,
@@ -304,11 +313,20 @@ export default function TradeProfitLossGraph(props) {
                         ],
                     ],
                 },
-                showInLegend: false,
+            },
+            {
+                name: "Return today",
+                type: "line",
+                data: profitLossData,
+                marker: {
+                    enabled: false,
+                },
+                color: "cyan",
+                description: "Profit Loss",
             },
             // line for shares
             {
-                name: "Return of Equal Value of Shares",
+                name: "Return of equal value of shares",
                 type: "line",
                 data: shareData,
                 marker: {
@@ -317,6 +335,7 @@ export default function TradeProfitLossGraph(props) {
                 color: "#d3d3d3",
                 description: "Shares",
             },
+
         ],
     };
 
@@ -325,7 +344,8 @@ export default function TradeProfitLossGraph(props) {
             <Col className="mixed-chart">
                 <Button style={{ position: 'relative', top: 50, left: 100, zIndex: 100 }} onClick={zoomOut}>-</Button>
                 <Button style={{ position: 'relative', top: 50, left: 102, zIndex: 100 }} onClick={zoomIn}>+</Button>
-                <Button style={{ position: 'relative', top: 50, zIndex: 100 }} className="float-right" onClick={resetZoom}>Reset Zoom</Button>
+                <Button style={{ position: 'relative', top: 50, zIndex: 100 }}
+                    className="float-right" onClick={resetZoom}>Reset Zoom</Button>
                 <HighchartsReact
                     ref={chartComponent}
                     highcharts={Highcharts}
