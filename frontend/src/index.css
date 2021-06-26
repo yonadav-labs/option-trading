@@ -75,13 +75,31 @@ code {
   border: 1px solid #F2F2F2;
 }
 
-table.option-matrix tr.stock-price {
+table.option-matrix tr.stock-price, table.heatmap-matrix tr.stock-price {
   border-bottom: 1px solid;
 }
 
 table.option-matrix td.return-value:hover {
   background-color: #eee !important;
   cursor: default;
+}
+
+table.heatmap-matrix td.value-cell:hover {
+  background-color: #eee !important;
+  cursor: default;
+}
+
+table.heatmap-matrix tr {
+  line-height: 17px;
+}
+
+table.heatmap-matrix td {
+  font-size: 13px;
+}
+
+table.heatmap-matrix td.value-cell {
+  text-shadow: 1px 1px white;
+  font-weight: 600;
 }
 
 .MuiSlider-markLabel {

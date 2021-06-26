@@ -9,6 +9,7 @@ from tiger.core import Stock
 from tiger.models import Ticker
 from tiger.serializers import TickerSerializer, TickerStatsSerializer
 from tiger.views.utils import get_broker, dict_fetch_all, get_valid_contracts
+from tiger.utils import timestamp_to_datetime_with_default_tz
 
 
 def get_annualized_value(val, days_till_expiration):
@@ -96,7 +97,14 @@ class TickerViewSet(viewsets.ModelViewSet):
     @action(detail=True, methods=['POST'])
     def heatmap_data(self, request, *args, **kwargs):
         def build_heatmap(contracts, expirations, strikes):
-            data = []
+            data = [[None] * len(expirations) for ii in range(len(strikes))]
+
+            lst_implied_volatility = []
+            lst_open_interest = []
+            lst_volume = []
+            lst_p_otm = []
+            lst_apr = []
+            lst_vol_per_oi = []
 
             for contract in contracts:
                 apr = get_annualized_value(contract.bid / stock.stock_price, contract.days_till_expiration) \
@@ -109,26 +117,67 @@ class TickerViewSet(viewsets.ModelViewSet):
                 if contract.volume is not None and contract.open_interest:
                     vol_per_oi = contract.volume / contract.open_interest
 
-                data.append((
-                    expirations.index(contract.expiration),
-                    strikes.index(contract.strike),
-                    {
-                        'Implied Volatility': float(
-                            f'{contract.implied_volatility:.4f}') if contract.implied_volatility is not None else None,
-                        'Open Interest': contract.open_interest,
-                        'Volume': contract.volume,
-                        'p_otm': float(
-                            f'{1 - contract.itm_probability:.4f}') if contract.itm_probability is not None else None,
-                        'apr': float(f'{apr:.4f}') if apr is not None else None,
-                        'vol_per_oi': float(f'{vol_per_oi:.4f}') if vol_per_oi is not None else None
-                    }
-                ))
+                x_idx = strikes.index(contract.strike)
+                y_idx = expirations.index(contract.expiration)
+
+                data[x_idx][y_idx] = {
+                    'Implied Volatility': float(
+                        f'{contract.implied_volatility:.4f}') if contract.implied_volatility is not None else None,
+                    'Open Interest': contract.open_interest,
+                    'Volume': contract.volume,
+                    'p_otm': float(
+                        f'{1 - contract.itm_probability:.4f}') if contract.itm_probability is not None else None,
+                    'apr': float(f'{apr:.4f}') if apr is not None else None,
+                    'vol_per_oi': float(f'{vol_per_oi:.4f}') if vol_per_oi is not None else None
+                }
+
+                if contract.implied_volatility is not None:
+                    lst_implied_volatility.append(contract.implied_volatility)
+                if contract.open_interest is not None:
+                    lst_open_interest.append(contract.open_interest)
+                if contract.volume is not None:
+                    lst_volume.append(contract.volume)
+                if contract.itm_probability is not None:
+                    lst_p_otm.append(1 - contract.itm_probability)
+                if apr is not None:
+                    lst_apr.append(apr)
+                if vol_per_oi is not None:
+                    lst_vol_per_oi.append(vol_per_oi)
+
+            min_max = {
+                'Implied Volatility': {
+                    'min': min(lst_implied_volatility),
+                    'max': max(lst_implied_volatility)
+                },
+                'Open Interest': {
+                    'min': min(lst_open_interest),
+                    'max': max(lst_open_interest)
+                },
+                'Volume': {
+                    'min': min(lst_volume),
+                    'max': max(lst_volume)
+                },
+                'p_otm': {
+                    'min': min(lst_p_otm),
+                    'max': max(lst_p_otm)
+                },
+                'apr': {
+                    'min': min(lst_apr),
+                    'max': max(lst_apr)
+                },
+                'vol_per_oi': {
+                    'min': min(lst_vol_per_oi),
+                    'max': max(lst_vol_per_oi)
+                },
+            }
 
             result = {
                 'expiration_dates': expiration_dates,
                 'strike_prices': [f'${strike:,.2f}' for strike in strikes],
-                'data': data
+                'values': data,
+                'min_max': min_max
             }
+
             return result
 
         ticker = self.get_object()
@@ -139,9 +188,10 @@ class TickerViewSet(viewsets.ModelViewSet):
         filters = request.data.get('filters')
 
         expiration_timestamps = ticker.get_expiration_timestamps()
-        expirations = [ts // 1000 for ts in expiration_timestamps]
-        dates = ticker.expiration_dates.filter(date__gte=timezone.now())
-        expiration_dates = [date.date.strftime('%m/%d/%y') for date in dates]
+        expirations = [ts // 1000 for ts in request.data.get('expiration_timestamps')]
+
+        expiration_dates = [timestamp_to_datetime_with_default_tz(ts).strftime("%b %d, %y")
+                            for ts in expirations]
 
         call_contract_lists, put_contract_list = get_valid_contracts(ticker, request, expiration_timestamps, False, filters)
         contract_lists = call_contract_lists if filters.get('eq.is_call') else put_contract_list

@@ -8,7 +8,7 @@ import SurfaceFilterContainer from "../../components/filters/SurfaceFilterContai
 import NewTickerSummary from "../../components/NewTickerSummary";
 import TuneIcon from "@material-ui/icons/Tune";
 import { GetGaEventTrackingFunc } from '../../utils';
-import HeatMapGraph from '../../components/HeatMapGraph';
+import HeatMapTable from '../../components/HeatMapTable';
 
 const GaEvent = GetGaEventTrackingFunc('surface');
 
@@ -168,11 +168,12 @@ export default function MainView(props) {
                 </Grid>
                 <Grid container>
                     <Grid item xs={12} px={3} className={classes.root}>
-                        <HeatMapGraph
+                        <HeatMapTable
                             className="my-4"
                             zLabel={filters.metric}
                             data={baseHeatmapData}
                             contractType={filters.contractType}
+                            stockPrice={basicInfo.regularMarketPrice}
                         />
                     </Grid>
                 </Grid>
