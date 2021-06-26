@@ -6,7 +6,10 @@ import ReactGA from 'react-ga';
 import UserContext from '../UserContext';
 import getApiUrl from '../utils';
 import LiveChat from 'react-livechat'
-import { AppBar, Button, Drawer, Grid, IconButton, Menu, MenuItem, styled, Toolbar, useMediaQuery, Typography, Backdrop, CircularProgress } from '@material-ui/core';
+import {
+    AppBar, Button, Drawer, Grid, IconButton, Menu, MenuItem, styled, Toolbar,
+    useMediaQuery, Typography, Backdrop, CircularProgress
+} from '@material-ui/core';
 import MenuIcon from '@material-ui/icons/Menu';
 import AccountCircle from '@material-ui/icons/AccountCircle';
 
@@ -26,7 +29,7 @@ function getCookie(name) {
 }
 
 const sessionid = getCookie('pinax-referral');
-const mobileBreakpointWidth = 1325;
+const mobileBreakpointWidth = 1280;
 
 const CustomButton = styled(Button)(({ theme }) => ({
     width: "100%",
@@ -41,7 +44,10 @@ const NavButton = (props) => (
         <CustomButton variant="text" size="large" LinkComponent={RouterLink} {...props}>
             <Typography variant="subtitle1" color="black" sx={{ textTransform: "none" }}>{props.children}</Typography>
         </CustomButton>
-        <hr style={{ margin: 0, height: 3, border: "0 none", background: `${window.location.pathname == props.href ? "linear-gradient(90deg, #FF8F2B 0%, #FFD43A 100%)" : "transparent"}` }} />
+        <hr style={{
+            margin: 0, height: 3, border: "0 none",
+            background: `${window.location.pathname == props.href ? "linear-gradient(90deg, #FF8F2B 0%, #FFD43A 100%)" : "transparent"}`
+        }} />
     </>
 );
 
@@ -137,7 +143,8 @@ function Header() {
                         <NavButton href="/signin" to="/signin">Log In</NavButton>
                     </Grid>
                     <Grid item>
-                        <Button variant="contained" size="large" href="/signin/register" to="/signin/register">Sign up, it's free</Button>
+                        <Button variant="contained" size="large" href="/signin/register"
+                            to="/signin/register">Sign up for free</Button>
                     </Grid>
                 </>
             }
@@ -150,7 +157,9 @@ function Header() {
                 <Toolbar>
                     <Grid container justifyContent="space-between" alignItems="center" height="100%">
                         <Grid item>
-                            <RouterLink to="/" style={{ height: "100%", display: "flex", alignItems: "center" }}><img src="/tigerstance-logo.png" width="175px" /></RouterLink>
+                            <RouterLink to="/" style={{ height: "100%", display: "flex", alignItems: "center" }}>
+                                <img src="/tigerstance-logo.png" width="175px" />
+                            </RouterLink>
                         </Grid>
                         {!isMobile &&
                             <Grid item>
@@ -183,8 +192,12 @@ function Header() {
                                         open={Boolean(accountMenuAnchorEl)}
                                         onClose={handleAccountMenuClose}
                                     >
-                                        <MenuItem component={RouterLink} href="/profile" to="/profile" onClick={handleAccountMenuClose}>Profile</MenuItem>
-                                        <MenuItem onClick={() => { logout(); handleAccountMenuClose(); setShowBackdrop(true); }}>Logout</MenuItem>
+                                        <MenuItem component={RouterLink} href="/profile" to="/profile"
+                                            onClick={handleAccountMenuClose}>Profile
+                                        </MenuItem>
+                                        <MenuItem onClick={() => { logout(); handleAccountMenuClose(); setShowBackdrop(true); }}>
+                                            Logout
+                                        </MenuItem>
                                     </Menu>
                                 </>
                                 :
@@ -195,7 +208,8 @@ function Header() {
                                                 <NavButton href="/signin" to="/signin">Log In</NavButton>
                                             </Grid>
                                             <Grid item>
-                                                <Button variant="contained" size="large" href="/signin/register" to="/signin/register">Sign up, it's free</Button>
+                                                <Button variant="contained" size="large" href="/signin/register"
+                                                    to="/signin/register">Sign up for free</Button>
                                             </Grid>
                                         </Grid>
                                     }
