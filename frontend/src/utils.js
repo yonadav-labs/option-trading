@@ -1,6 +1,5 @@
 import React from 'react';
 import NumberFormat from 'react-number-format';
-import { Comparator } from 'react-bootstrap-table2-filter';
 import { Col, Row } from 'react-bootstrap';
 import Axios from 'axios';
 import ReactGA from 'react-ga';
@@ -156,14 +155,6 @@ export function onInTheMoneyFilterChange(event, inTheMoneyFilter) {
     } else if (value === 'otm') {
         inTheMoneyFilter([false]);
     }
-};
-
-export function onLastTradedFilterChange(event, lastTradedFilter) {
-    const { value } = event.target;
-    lastTradedFilter({
-        number: Date.now() / 1000 - value * 3600,
-        comparator: Comparator.GT
-    });
 };
 
 export function getAllTradeTypes() {
