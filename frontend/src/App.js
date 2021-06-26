@@ -4,7 +4,6 @@ import {
 } from "react-router-dom";
 import ReactGA from 'react-ga';
 import './App.css';
-import 'react-bootstrap-table-next/dist/react-bootstrap-table2.min.css';
 import AppWithRouterAccess from './AppWithRouterAccess';
 import UserContext from './UserContext';
 import { ThemeProvider } from '@material-ui/core/styles'
