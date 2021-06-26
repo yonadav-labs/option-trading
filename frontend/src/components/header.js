@@ -129,9 +129,6 @@ function Header() {
                 <NavButton href="/panorama" to="/panorama">Panorama</NavButton>
             </Grid>
             <Grid item>
-                <NavButton href="/reports" to="/reports">Reports</NavButton>
-            </Grid>
-            <Grid item>
                 <NavButton href="/pricing" to="/pricing">Pricing</NavButton>
             </Grid>
             {!authState.isAuthenticated && isMobile &&
@@ -153,7 +150,7 @@ function Header() {
                 <Toolbar>
                     <Grid container justifyContent="space-between" alignItems="center" height="100%">
                         <Grid item>
-                            <RouterLink to="/" style={{ height: "100%", display: "flex", alignItems: "center" }}><img src="/tigerstance-logo.png" width="175px"/></RouterLink>
+                            <RouterLink to="/" style={{ height: "100%", display: "flex", alignItems: "center" }}><img src="/tigerstance-logo.png" width="175px" /></RouterLink>
                         </Grid>
                         {!isMobile &&
                             <Grid item>

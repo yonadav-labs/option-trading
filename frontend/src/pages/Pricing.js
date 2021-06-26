@@ -164,9 +164,6 @@ export default function Pricing() {
                                         <CustomListItem>
                                             <span className={classes.textOrange}>&#10003;</span>&nbsp;Unlock 9 options trading strategies.
                                         </CustomListItem>
-                                        <CustomListItem>
-                                            <span className={classes.textOrange}>&#10003;</span>&nbsp;Exclusive market <Link href="/reports" className={classes.textGrey}><b>reports</b></Link>.
-                                        </CustomListItem>
                                         {authState.isAuthenticated ?
                                             <CustomListItem><span className={classes.textOrange}>&#10003;</span>&nbsp;Strategy <Link href="/profile" className={classes.textGrey} ><b>personalization</b></Link>.</CustomListItem>
                                             : <CustomListItem><span className={classes.textOrange}>&#10003;</span>&nbsp;Strategy personalization.</CustomListItem>

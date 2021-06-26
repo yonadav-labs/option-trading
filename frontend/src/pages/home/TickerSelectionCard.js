@@ -36,13 +36,18 @@ const TickerSelectionCard = ({ allTickers, onChange, selectedTicker }) => {
                 {isNext ?
                     <>
                         <Typography variant="h6" textAlign="center" mb={2}>
-                            Would would you like to do with <span style={{ color: colors.orange }}>{`${selectedTicker ? selectedTicker.symbol : ''}`}</span>?
+                            Would would you like to do with <span style={{ color: colors.orange }}>
+                                {`${selectedTicker ? selectedTicker.symbol : ''}`}</span>?
                         </Typography>
                         <Stack direction={isMobile ? "column" : "row"} spacing={2} maxWidth="100%" p={2}>
-                            <Button variant="outlined" size="large" href={`/discover?symbol=${selectedTicker.symbol}`} to={`/discover?symbol=${selectedTicker.symbol}`} role="button">Find a Trade</Button>
-                            <Button variant="outlined" size="large" href={`/build?symbol=${selectedTicker.symbol}`} to={`/build?symbol=${selectedTicker.symbol}`} role="button">Build a Strategy</Button>
-                            <Button variant="outlined" size="large" href={`/screen?symbol=${selectedTicker.symbol}`} to={`/screen?symbol=${selectedTicker.symbol}`} role="button">Screen Options Chain</Button>
-                            <Button variant="outlined" size="large" href={`/panorama?symbol=${selectedTicker.symbol}`} to={`/panorama?symbol=${selectedTicker.symbol}`} role="button">View unusual activity</Button>
+                            <Button variant="outlined" size="large" href={`/discover?symbol=${selectedTicker.symbol}`}
+                                to={`/discover?symbol=${selectedTicker.symbol}`} role="button">Find a Trade by price target</Button>
+                            <Button variant="outlined" size="large" href={`/build?symbol=${selectedTicker.symbol}`}
+                                to={`/build?symbol=${selectedTicker.symbol}`} role="button">Build a Strategy</Button>
+                            <Button variant="outlined" size="large" href={`/screen?symbol=${selectedTicker.symbol}`}
+                                to={`/screen?symbol=${selectedTicker.symbol}`} role="button">Screen Options</Button>
+                            <Button variant="outlined" size="large" href={`/panorama?symbol=${selectedTicker.symbol}`}
+                                to={`/panorama?symbol=${selectedTicker.symbol}`} role="button">View unusual activity</Button>
                         </Stack>
                     </>
                     :
