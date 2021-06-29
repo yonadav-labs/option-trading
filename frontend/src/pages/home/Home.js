@@ -222,7 +222,7 @@ export default function Home() {
                             <CardContent>
                                 <Typography variant="h5" color="white">Become a Tigerstance Member</Typography>
                                 <Typography variant='body2' color="white">
-                                    Upgrade to Tiger Pro membership to unlock powerful options analytics features. Free trial for a week, cancel anytime.
+                                    Upgrade to Tiger Pro membership to unlock powerful options analytics features. Free trial for a month, cancel anytime.
                                 </Typography>
                                 <Button
                                     variant="outlined"

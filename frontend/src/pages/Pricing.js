@@ -119,34 +119,9 @@ export default function Pricing() {
                     <Typography variant="caption" fontWeight="fontWeightBold" className={classes.textOrange} mt={6} style={{ display: 'block' }}>PRICING</Typography>
                     <Typography variant="h3" mt={1}>Subscription Plans</Typography>
                     <Typography variant="body1" mt={2.5} >
-                        Upgrade to Tiger Pro membership to unlock powerful options analytics features.<br />Free trial for a week, cancel anytime.
+                        Upgrade to Tiger Pro membership to unlock powerful options analytics features.<br />
+                        <b>Free trial for a month, cancel anytime.</b>
                     </Typography>
-                    {user ?
-                        <>
-                            <Typography variant="body1" align="center" mt={2} >
-                                Get a free month of Pro membership for you and your friends. <br></br>
-                                Just copy and paste link below to your friends to sign up.
-                            </Typography>
-                            <Box className={classes.referralWrapper}>
-                                <Typography className={classes.referralLink}>{user.referral_link}</Typography>
-                                <Tooltip
-                                    PopperProps={{
-                                        disablePortal: true,
-                                    }}
-                                    onClose={() => setTooltipOpen(false)}
-                                    open={tooltipOpen}
-                                    disableFocusListener
-                                    disableHoverListener
-                                    disableTouchListener
-                                    title="Link copied to clipboard"
-                                >
-                                    <IconButton onClick={copyReferralLink}><LinkIcon /></IconButton>
-                                </Tooltip>
-                            </Box>
-                        </>
-                        :
-                        <Typography variant="body1" align="center" mt={2} >Get a free month of Pro membership when you signup and refer us to your friends.</Typography>
-                    }
                 </Container>
 
                 <Grid container justifyContent="center" spacing={3} mt={6} mb={10} >
@@ -197,10 +172,10 @@ export default function Pricing() {
                                 <Box className={classes.pricingCardList} mt={7} pt={3} >
                                     <List>
                                         <CustomListItem>
-                                            <span className={classes.textOrange}>&#10003;</span>&nbsp;Unlock all 21 options strategies.
+                                            <span className={classes.textOrange}>&#10003;</span>&nbsp;Free trial for a month.
                                         </CustomListItem>
                                         <CustomListItem>
-                                            <span className={classes.textOrange}>&#10003;</span>&nbsp;Everything in BASIC membership.
+                                            <span className={classes.textOrange}>&#10003;</span>&nbsp;Unlock all 21 options strategies.
                                         </CustomListItem>
                                         <CustomListItem>
                                             <span className={classes.textOrange}>&#10003;</span>&nbsp;Unlimited usage for all features.
@@ -246,6 +221,9 @@ export default function Pricing() {
                                 <Box className={classes.pricingCardList} mt={1.5} pt={3} >
                                     <List>
                                         <CustomListItem>
+                                            <span className={classes.textOrange}>&#10003;</span>&nbsp;Free trial for a month.
+                                        </CustomListItem>
+                                        <CustomListItem>
                                             <span className={classes.textOrange}>&#10003;</span>&nbsp;Everything in the monthly plan.
                                         </CustomListItem>
                                     </List>
@@ -268,6 +246,35 @@ export default function Pricing() {
                     </Grid>
                 </Grid>
 
+                <Grid align="center">
+                    {user ?
+                        <>
+                            <Typography variant="body1" align="center" mt={2} >
+                                Get a free month of Pro membership for you and your friends. <br></br>
+                                Just copy and paste link below to your friends to sign up.
+                            </Typography>
+                            <Box className={classes.referralWrapper}>
+                                <Typography className={classes.referralLink}>{user.referral_link}</Typography>
+                                <Tooltip
+                                    PopperProps={{
+                                        disablePortal: true,
+                                    }}
+                                    onClose={() => setTooltipOpen(false)}
+                                    open={tooltipOpen}
+                                    disableFocusListener
+                                    disableHoverListener
+                                    disableTouchListener
+                                    title="Link copied to clipboard"
+                                >
+                                    <IconButton onClick={copyReferralLink}><LinkIcon /></IconButton>
+                                </Tooltip>
+                            </Box>
+                        </>
+                        :
+                        <Typography variant="body1" align="center" mt={2} >Get a free month of Pro membership when you signup and refer us to your friends.</Typography>
+                    }
+                </Grid>
+                <br />
             </Container>
 
             {
