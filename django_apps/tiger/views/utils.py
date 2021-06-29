@@ -36,11 +36,11 @@ def filter_object_on_attribute(object, filter_key, filter_value):
             return attr_val == filter_value
         elif operator == 'max':
             assert (type(filter_value) is float
-                    or type(filter_value) is int), 'invalid filter_value: not a float or int'
+                    or type(filter_value) is int), 'invalid filter_value: not a float or int: ' + str(filter_value)
             return attr_val is not None and attr_val <= filter_value
         elif operator == 'min':
             assert (type(filter_value) is float
-                    or type(filter_value) is int), 'invalid filter_value: not a float or int'
+                    or type(filter_value) is int), 'invalid filter_value: not a float or int: ' + str(filter_value)
             return attr_val is not None and attr_val >= filter_value
 
     return True
@@ -80,7 +80,8 @@ def get_filtered_contracts(ticker, expiration_timestamps, filters={}):
     call_lists = []
     put_lists = []
     all_expiration_timestamps = ticker.get_expiration_timestamps()
-    expiration_timestamps = set([int(ts) for ts in expiration_timestamps if int(ts) in all_expiration_timestamps])
+    expiration_timestamps = set([int(ts) for ts in expiration_timestamps
+                                 if type(ts) == int and int(ts) in all_expiration_timestamps])
 
     for ts in expiration_timestamps:
         calls, puts = ticker.get_call_puts(ts)

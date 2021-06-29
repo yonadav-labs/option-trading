@@ -56,7 +56,7 @@ def get_itm_probability(stock_price, strike, exp_years, sigma, is_call):
     :param is_call: call or put
     :return: probability of the contract being in the money.
     '''
-    if exp_years < 0:
+    if not sigma or exp_years <= 0:
         return None
 
     d1 = (np.log(stock_price / strike) + (INTEREST_RATE + 0.5 * sigma ** 2) * exp_years) / (sigma * np.sqrt(exp_years))
