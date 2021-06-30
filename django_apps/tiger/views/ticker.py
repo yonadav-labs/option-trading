@@ -1,6 +1,5 @@
 from django.db import connection
 from django.db.models import Count
-from django.utils import timezone
 from rest_framework import viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
@@ -8,8 +7,9 @@ from rest_framework.response import Response
 from tiger.core import Stock
 from tiger.models import Ticker
 from tiger.serializers import TickerSerializer, TickerStatsSerializer
-from tiger.views.utils import get_broker, dict_fetch_all, get_valid_contracts
+from tiger.views.utils import dict_fetch_all, get_valid_contracts
 from tiger.utils import timestamp_to_datetime_with_default_tz
+from rest_framework_tracking.mixins import LoggingMixin
 
 
 def get_annualized_value(val, days_till_expiration):
@@ -18,7 +18,7 @@ def get_annualized_value(val, days_till_expiration):
     return (1 + val) ** (365.0 / days_till_expiration) - 1
 
 
-class TickerViewSet(viewsets.ModelViewSet):
+class TickerViewSet(LoggingMixin, viewsets.ModelViewSet):
     serializer_class = TickerSerializer
     lookup_field = 'symbol'
     watchlist_name = 'recent'

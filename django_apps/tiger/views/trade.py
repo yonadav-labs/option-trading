@@ -12,6 +12,7 @@ from tiger.models import Ticker
 from tiger.serializers import TradeSerializer, BrokerSerializer
 from tiger.views.utils import get_filtered_contracts, get_broker, get_disabled_or_disallowed_strategies, \
     filter_object_on_attribute
+from tiger.views.decorators import tracking_api
 
 logger = logging.getLogger('console_info')
 
@@ -116,6 +117,7 @@ def build_trades(stock, call_contract_lists, put_contract_lists, strategy_settin
     return resp
 
 
+@tracking_api()
 @api_view(['POST'])
 def get_top_trades(request, ticker_symbol):
     ticker = get_object_or_404(Ticker, symbol=ticker_symbol.upper(), status="unspecified")

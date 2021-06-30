@@ -1,13 +1,14 @@
 from rest_framework import viewsets, permissions
 from rest_framework.response import Response
 from rest_framework.decorators import action
+from rest_framework_tracking.mixins import LoggingMixin
 
 from tiger.serializers import UserSerializer
 from tiger.models import User
 from .utils import handle_referral
 
 
-class UserViewSet(viewsets.ModelViewSet):
+class UserViewSet(LoggingMixin, viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
     permission_classes = (permissions.IsAuthenticated,)

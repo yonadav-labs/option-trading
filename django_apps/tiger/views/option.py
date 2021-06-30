@@ -7,8 +7,10 @@ from rest_framework.response import Response
 from tiger.models import Ticker
 from tiger.serializers import OptionContractSerializer
 from tiger.views.utils import get_valid_contracts
+from tiger.views.decorators import tracking_api
 
 
+@tracking_api()
 @api_view(['POST'])
 def contracts(request, ticker_symbol):
     # example: api/tickers/tsla/contracts/

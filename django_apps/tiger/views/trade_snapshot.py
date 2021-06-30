@@ -12,10 +12,12 @@ from tiger.core.trade.trade_factory import TradeFactory
 from tiger.models import TradeSnapshot
 from tiger.serializers import TradeSerializer, TradeSnapshotSerializer, BrokerSerializer
 from tiger.views.utils import get_current_trade, get_broker
+from tiger.views.decorators import tracking_api
 
 logger = logging.getLogger('console_info')
 
 
+@tracking_api()
 @api_view(['GET'])
 def trade_snapshot_detail(request, pk):
     trade_snapshot = get_object_or_404(TradeSnapshot, pk=pk)
@@ -51,6 +53,7 @@ def trade_snapshot_detail(request, pk):
         return Response(resp)
 
 
+@tracking_api()
 @api_view(['POST'])
 def trade_snapshots(request):
     if request.method == 'POST':
@@ -75,6 +78,7 @@ def trade_snapshots(request):
         return Response(trade_snapshot_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+@tracking_api()
 @api_view(['POST'])
 def trade_snapshots_on_the_fly(request):
     if request.method == 'POST':
@@ -88,6 +92,7 @@ def trade_snapshots_on_the_fly(request):
         return Response(trade_snapshot_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+@tracking_api()
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def trade_snapshots_history(request):

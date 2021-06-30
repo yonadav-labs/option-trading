@@ -1,11 +1,11 @@
 from rest_framework import viewsets
-from rest_framework.response import Response
+from rest_framework_tracking.mixins import LoggingMixin
 
 from tiger.models import Blog
 from tiger.serializers import BlogListSerializer, BlogDetailSerializer
 
 
-class BlogViewSet(viewsets.ModelViewSet):
+class BlogViewSet(LoggingMixin, viewsets.ModelViewSet):
     queryset = Blog.objects.all()
  
     def get_serializer_class(self):

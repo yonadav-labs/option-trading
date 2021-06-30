@@ -5,8 +5,10 @@ from rest_framework.response import Response
 from rest_framework import status
 
 from tiger.models import User, Subscription
+from tiger.views.decorators import tracking_api
 
 
+@tracking_api()
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def create_subscription(request):
@@ -24,6 +26,7 @@ def create_subscription(request):
         return Response(r)
 
 
+@tracking_api()
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def cancel_subscription(request):
@@ -37,6 +40,7 @@ def cancel_subscription(request):
         return Response()
 
 
+@tracking_api()
 @api_view(['POST'])
 def hook_create_subscription(request):
     if request.method == 'POST':
@@ -56,6 +60,7 @@ def hook_create_subscription(request):
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
+@tracking_api()
 @api_view(['POST'])
 def hook_activate_subscription(request):
     if request.method == 'POST':
@@ -75,6 +80,7 @@ def hook_activate_subscription(request):
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
+@tracking_api()
 @api_view(['POST'])
 def hook_cancel_subscription(request):
     if request.method == 'POST':
