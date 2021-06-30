@@ -1,5 +1,5 @@
 import multiprocessing as mp
-from datetime import datetime
+from datetime import datetime, timedelta
 from functools import partial
 
 import requests
@@ -47,8 +47,11 @@ def fetch_expiration_dates_and_update_status(ticker):
         if not expiration_date_str:
             continue
         try:  # to handle invalid date format from api
-            date = datetime.strptime(expiration_date_str, '%Y%m%d').date()
-            ticker.expiration_dates.update_or_create(date=date)
+            exp_date = datetime.strptime(expiration_date_str, '%Y%m%d').date()
+            if exp_date > get_now_date() + timedelta(days=365 * 3):
+                print(f'({ticker.symbol}) Skip too far exp date:', expiration_date_str)
+                continue
+            ticker.expiration_dates.update_or_create(date=exp_date)
         except ValueError:
             print(f'({ticker.symbol}) Invalid date format:', expiration_date_str)
             continue
