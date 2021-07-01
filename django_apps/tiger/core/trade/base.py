@@ -349,6 +349,49 @@ class Trade(ABC):
         return commission_cost
 
     @property
+    def delta(self):
+        delta = 0.0
+        for leg in self.legs:
+            sign = 1 if leg.is_long else -1
+            if leg.contract:
+                delta += leg.contract.delta * sign * leg.units
+            elif leg.stock:
+                delta += sign
+        return delta
+
+    @property
+    def gamma(self):
+        gamma = 0.0
+        for leg in self.option_legs:
+            sign = 1 if leg.is_long else -1
+            gamma += leg.contract.gamma * sign * leg.units
+        return gamma
+
+    @property
+    def theta(self):
+        theta = 0.0
+        for leg in self.option_legs:
+            sign = 1 if leg.is_long else -1
+            theta += leg.contract.theta * sign * leg.units
+        return theta
+
+    @property
+    def vega(self):
+        vega = 0.0
+        for leg in self.option_legs:
+            sign = 1 if leg.is_long else -1
+            vega += leg.contract.vega * sign * leg.units
+        return vega
+
+    @property
+    def rho(self):
+        rho = 0.0
+        for leg in self.option_legs:
+            sign = 1 if leg.is_long else -1
+            rho += leg.contract.rho * sign * leg.units
+        return rho
+
+    @property
     @abstractmethod
     def is_bullish(self):
         pass

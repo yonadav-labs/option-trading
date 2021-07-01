@@ -119,3 +119,9 @@ class TradeSerializer(serializers.Serializer):
     commission_cost = ReadOnlyDollarDecimalField()
     profit_prob = ReadOnlyRatioDecimalField()
     return_matrix = serializers.JSONField(required=False)
+
+    delta = ReadOnlyRatioDecimalField()
+    gamma = ReadOnlyRatioDecimalField()
+    theta = ReadOnlyRatioDecimalField()
+    vega = ReadOnlyRatioDecimalField()
+    rho = ReadOnlyRatioDecimalField()

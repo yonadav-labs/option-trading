@@ -44,26 +44,6 @@ export default function NewContractCard(props) {
                             <Typography variant="body1">{TimestampTimeFormatter(contract.last_trade_date)}</Typography>
                         </Grid>
                         <Grid item xs={6} sm={2}>
-                            <Typography variant="button"><MetricLabel label="delta" /></Typography>
-                            <Typography variant="body1">{NumberRoundFormatter(contract.delta)}</Typography>
-                        </Grid>
-                        <Grid item xs={6} sm={2}>
-                            <Typography variant="button"><MetricLabel label="theta" /></Typography>
-                            <Typography variant="body1">{NumberRoundFormatter(contract.theta)}</Typography>
-                        </Grid>
-                        <Grid item xs={6} sm={2}>
-                            <Typography variant="button"><MetricLabel label="gamma" /></Typography>
-                            <Typography variant="body1">{NumberRoundFormatter(contract.gamma)}</Typography>
-                        </Grid>
-                        <Grid item xs={6} sm={2}>
-                            <Typography variant="button"><MetricLabel label="vega" /></Typography>
-                            <Typography variant="body1">{NumberRoundFormatter(contract.vega)}</Typography>
-                        </Grid>
-                        <Grid item xs={6} sm={2}>
-                            <Typography variant="button"><MetricLabel label="rho" /></Typography>
-                            <Typography variant="body1">{NumberRoundFormatter(contract.rho)}</Typography>
-                        </Grid>
-                        <Grid item xs={6} sm={2}>
                             <Typography variant="button"><MetricLabel label="to expiration" /></Typography>
                             <Typography variant="body1">{contract.days_till_expiration} days</Typography>
                         </Grid>
@@ -74,6 +54,28 @@ export default function NewContractCard(props) {
                         <Grid item xs={6} sm={2}>
                             <Typography variant="button"><MetricLabel label="break-even at" /></Typography>
                             <Typography variant="body1">{PriceFormatter(contract.break_even_price)}</Typography>
+                        </Grid>
+                        <Grid item xs={6} sm={2}></Grid>
+                        <Grid item xs={6} sm={2}></Grid>
+                        <Grid item xs={6} sm={2}>
+                            <Typography variant="button"><MetricLabel label="delta" /></Typography>
+                            <Typography variant="body1">{NumberRoundFormatter(contract.delta)}</Typography>
+                        </Grid>
+                        <Grid item xs={6} sm={2}>
+                            <Typography variant="button"><MetricLabel label="gamma" /></Typography>
+                            <Typography variant="body1">{NumberRoundFormatter(contract.gamma)}</Typography>
+                        </Grid>
+                        <Grid item xs={6} sm={2}>
+                            <Typography variant="button"><MetricLabel label="theta" /></Typography>
+                            <Typography variant="body1">{NumberRoundFormatter(contract.theta)}</Typography>
+                        </Grid>
+                        <Grid item xs={6} sm={2}>
+                            <Typography variant="button"><MetricLabel label="vega" /></Typography>
+                            <Typography variant="body1">{NumberRoundFormatter(contract.vega)}</Typography>
+                        </Grid>
+                        <Grid item xs={6} sm={2}>
+                            <Typography variant="button"><MetricLabel label="rho" /></Typography>
+                            <Typography variant="body1">{NumberRoundFormatter(contract.rho)}</Typography>
                         </Grid>
                         <Grid item xs={6} sm={2}>
                             <Typography variant="button"><MetricLabel label="quoted at" /></Typography>

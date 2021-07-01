@@ -70,12 +70,12 @@ export default function ContractDetailsCard(props) {
                                         {NumberRoundFormatter(contract.delta)}
                                     </Col>
                                     <Col sm="2" xs="6">
-                                        <MetricLabel label="theta" /><br />
-                                        {NumberRoundFormatter(contract.theta)}
-                                    </Col>
-                                    <Col sm="2" xs="6">
                                         <MetricLabel label="gamma" /><br />
                                         {NumberRoundFormatter(contract.gamma)}
+                                    </Col>
+                                    <Col sm="2" xs="6">
+                                        <MetricLabel label="theta" /><br />
+                                        {NumberRoundFormatter(contract.theta)}
                                     </Col>
                                     <Col sm="2" xs="6">
                                         <MetricLabel label="vega" /><br />
