@@ -68,9 +68,9 @@ class TestProbability(TestCase):
         # Handles sigma > current_price where the lowest possible price is 0.
         self.assertEqual(
             probability_of_price_range(current_price=100, sigma=2.0, start_bound=0, end_bound=100),
-            0.19146246127401312
+            0.276894946576341
         )
         self.assertEqual(
             probability_of_price_range(current_price=100, sigma=2.0, start_bound=None, end_bound=100),
-            0.19146246127401312
+            0.276894946576341
         )

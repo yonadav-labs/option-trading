@@ -17,7 +17,9 @@ def probability_of_price_ranges(current_price, sigma, price_ranges):
         start, end = prange
         start_cdf = normal_dist.cdf(start if start is not None else 0)
         end_cdf = normal_dist.cdf(end) if end is not None else 1
-        prob_dict[prange] = end_cdf - start_cdf
+
+        # Scale final by discarding the amount below 0
+        prob_dict[prange] = (end_cdf - start_cdf) / (1 - normal_dist.cdf(0))
 
     return prob_dict
 
