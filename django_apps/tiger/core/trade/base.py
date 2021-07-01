@@ -5,6 +5,7 @@ from collections import defaultdict
 
 import more_itertools
 import numpy as np
+from scipy.stats import norm
 from tiger.core import Leg
 from tiger.core.black_scholes import get_target_price_probability
 from tiger.utils import get_dates_till_expiration, get_decimal_25x, get_now_date
@@ -232,18 +233,28 @@ class Trade(ABC):
         '''
         if self.is_disabled_for_prob():
             return [None, None]
+
         stock_price = self.stock.stock_price
-        # TODO: use 3 sigma when profit calculation is using normal distribution.
-        lowest_price = max(0, stock_price * (1 - 2 * self.sigma))
-        highest_price = max(0, stock_price * (1 + 2 * self.sigma))
-        # https://www.mymathtables.com/statistic/z-score-percentile-normal-distribution.html
-        # 1.282: 10% percentile.
-        ten_percent_low_price = max(0, stock_price * (1 - 1.282 * self.sigma))
-        ten_percent_high_price = max(0, stock_price * (1 + 1.282 * self.sigma))
-        low_price_return = max(-self.cost,
-                               self.get_total_return(lowest_price, ten_percent_low_price))
-        high_price_return = max(-self.cost,
-                                self.get_total_return(ten_percent_high_price, highest_price))
+
+        # Generate a normal distribution with the given price as the center, sigma*price as stdev
+        normal_dist = norm(loc=stock_price, scale=self.sigma * stock_price)
+
+        # Absolute lowest/highest are the interval endpoints where 99% of values can be found.
+        lowest_price, highest_price = normal_dist.interval(0.99)
+
+        # Ten percent lowest/highest are the interval endpoints where 80% of values can be found (10% on either side)
+        ten_percent_low_price, ten_percent_high_price = normal_dist.interval(0.8)
+
+        low_price_return = max(
+            -self.cost,
+            self.get_total_return(lowest_price, ten_percent_low_price)
+        )
+
+        high_price_return = max(
+            -self.cost,
+            self.get_total_return(ten_percent_high_price, highest_price)
+        )
+
         if is_profit:
             return [ten_percent_low_price, low_price_return] if low_price_return > high_price_return \
                 else [ten_percent_high_price, high_price_return]

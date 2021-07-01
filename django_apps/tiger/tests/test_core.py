@@ -105,13 +105,13 @@ class CallTradesTestCase(TestCase):
         self.assertAlmostEqual(long_call.stock.historical_volatility, 0.8)
         self.assertAlmostEqual(long_call.sigma, 0.5941513889707513)
         self.assertSequenceEqual(long_call.get_ten_percent_prices_and_returns(is_profit=True),
-                                 [739.9148738774114, 37978.80203064213])
+                                 [739.8029699365054, 45157.93222438325])
         self.assertSequenceEqual(long_call.get_ten_percent_prices_and_returns(is_profit=False),
-                                 [100.08512612258868, -16171.299999999997])
-        self.assertAlmostEqual(long_call.ten_percent_best_return_price, 739.9148738774114)
-        self.assertAlmostEqual(long_call.ten_percent_best_return, 37978.80203064213)
-        self.assertAlmostEqual(long_call.ten_percent_best_return_ratio, 2.348531165128477)
-        self.assertAlmostEqual(long_call.ten_percent_worst_return_price, 100.08512612258868)
+                                 [100.19703006349465, -16171.299999999997])
+        self.assertAlmostEqual(long_call.ten_percent_best_return_price, 739.8029699365054)
+        self.assertAlmostEqual(long_call.ten_percent_best_return, 45157.93222438325)
+        self.assertAlmostEqual(long_call.ten_percent_best_return_ratio, 2.7924738409641314)
+        self.assertAlmostEqual(long_call.ten_percent_worst_return_price, 100.19703006349465)
         self.assertAlmostEqual(long_call.ten_percent_worst_return, -16171.3)
         self.assertAlmostEqual(long_call.ten_percent_worst_return_ratio, -1.0)
 
