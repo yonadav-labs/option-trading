@@ -26,24 +26,24 @@ def fetch_sofr_data():
 
     # Percentile XML to SQL mappings
     percentile_map = {
-        '1%': 'pctl_1',
-        '25%': 'pctl_25',
-        '50%': 'pctl_50',
-        '75%': 'pctl_75',
-        '99%': 'pctl_99'
+        'percentPercentile1': 'pctl_1',
+        'percentPercentile25': 'pctl_25',
+        'percentRate': 'pctl_50',
+        'percentPercentile75': 'pctl_75',
+        'percentPercentile99': 'pctl_99'
     }
 
     # Averages and Index XML to SQL mappings
     avgs_map = {
-        '30-day Average SOFR': 'avg_30d',
-        '90-day Average SOFR': 'avg_90d',
-        '180-day Average SOFR': 'avg_180d',
-        'SOFR Index': 'sofr_index'
+        'average30day': 'avg_30d',
+        'average90day': 'avg_90d',
+        'average180day': 'avg_180d',
+        'index': 'sofr_index'
     }
 
     # XML URLs
-    rates_url = "https://websvcgatewayx2.frbny.org/mktrates_external_httponly/services/v1_0/mktRates/xml/retrieveLastN?typ=RATE&rateType=R3&n=30"
-    avgs_url = "https://websvcgatewayx2.frbny.org/sofr-avg-ind_external_httponly/services/v1_0/sofr-avg-ind/xml/retrieveLastN?rateType=R1&n=30"
+    rates_url = "https://markets.newyorkfed.org/read?productCode=50&eventCodes=520&limit=25&startPosition=0&sort=postDt:-1&format=xml"
+    avgs_url = "https://markets.newyorkfed.org/read?productCode=50&eventCodes=525&limit=25&startPosition=0&sort=postDt:-1&format=xml"
 
     # Dict to store our data in
     datastore = {}
@@ -64,30 +64,23 @@ def fetch_sofr_data():
         # The response has a root, then two sections:
         # A header and the dataset. We split those here.
         root = etree.fromstring(xml)
-        header, dataset = root.getchildren()
+        dataset = root.getchildren()[0]
 
-        # There are Groups and Series in the dataset - we're only interested in the Series
-        # as they contain the actual data
+        # There are groups of Rates in the dataset
         for child in dataset.getchildren():
-            if child.tag == 'Series':
-                attrib = child.attrib
-                # The type of data in the series is specified by the 'FUNDRATE_OBS_POINT' attribute
-                # We take that and use the associated map to get the type of data we're storing
-                map_val = mapping[attrib['FUNDRATE_OBS_POINT']]
+            if child.tag == 'rate':
 
-                # For each observation in the Series, extract the 'TIME_PERIOD' attribute for the
-                # date, and the 'OBS_VALUE' for the day the observation was relevant.
+                # For each observation in the Series, extract the tag describing the content of the Rate and its observations
                 for obs in child.getchildren():
-                    date = obs.attrib['TIME_PERIOD']
-                    obs_val = obs.attrib['OBS_VALUE']
+                    if obs.tag == 'effectiveDate':
+                        date = obs.text
 
-                    # If we haven't seen this date yet, create an empty dict to store data for that date
-                    if date not in datastore:
-                        datastore[date] = {}
+                        # If we haven't seen this date yet, create an empty dict to store data for that date
+                        if date not in datastore:
+                            datastore[date] = {}
                     
-                    # Finally, assign the obs_value (observed value) for the date and type of data
-                    datastore[date][map_val] = obs_val
-                    # It's important we keep everything as a string to avoid any rounding errors from float casting.
+                    elif obs.tag in mapping:
+                        datastore[date][mapping[obs.tag]] = obs.text
 
     # Finally, we unpack the dict, storing the date, and 
     # type of data + the observed value for that date
