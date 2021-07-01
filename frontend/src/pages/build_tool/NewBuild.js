@@ -3,11 +3,12 @@ import { Helmet } from "react-helmet";
 import Axios from 'axios';
 import ModalSpinner from '../../components/ModalSpinner';
 import LandingView from "./LandingView";
+import MainView from "./MainView";
 
 // utils
 import getApiUrl, { newLoadTickers, newLoadExpirationDates, GetGaEventTrackingFunc } from "../../utils";
 import { useOktaAuth } from '@okta/okta-react';
-import { debounce } from "lodash";
+import { cloneDeep, get, isEmpty, set, throttle, debounce } from 'lodash';
 
 // url querying
 import { useHistory, useLocation } from "react-router-dom";
@@ -27,21 +28,40 @@ export default function NewBuild() {
     const location = useLocation()
     const querySymbol = useSearch(location, 'symbol')
 
+    const premiumPriceOptions = [{ value: "market", label: "Market price" }, { value: "mid", label: "Mid/Mark price" }];
+    const operators = {
+        "<": (a, aProperty, b, bProperty) => { return get(a, aProperty) < get(b, bProperty) },
+        "<=": (a, aProperty, b, bProperty) => { return get(a, aProperty) <= get(b, bProperty) },
+        ">": (a, aProperty, b, bProperty) => { return get(a, aProperty) > get(b, bProperty) },
+        ">=": (a, aProperty, b, bProperty) => { return get(a, aProperty) >= get(b, bProperty) },
+        "==": (a, aProperty, b, bProperty) => { return get(a, aProperty) == get(b, bProperty) },
+        "*": (a, aProperty, aPropertyDefaultVal, b, bProperty, bPropertyDefaultVal) => { return get(a, aProperty, aPropertyDefaultVal) * get(b, bProperty, bPropertyDefaultVal) },
+        "-": (a, aProperty, aPropertyDefaultVal, b, bProperty, bPropertyDefaultVal) => { return get(a, aProperty, aPropertyDefaultVal) - get(b, bProperty, bPropertyDefaultVal) }
+    }
+
     // stock/ticker states
     const [allTickers, setAllTickers] = useState([]);
     const [selectedTicker, setSelectedTicker] = useState(null);
     const [basicInfo, setBasicInfo] = useState({});
+    const [selectedPremiumType, setSelectedPremiumType] = useState(premiumPriceOptions[0]);
+    const [broker, setBroker] = useState(null);
+
 
     // expiration date states
-    const [selectedStrategy, setSelectedStrategy] = useState(null)
     const [expirationTimestampsOptions, setExpirationTimestampsOptions] = useState([])
-    const [selectedExpirationTimestamps, setSelectedExpirationTimestamps] = useState([]);
+
+    // legs/strategy states
+    const [selectedStrategy, setSelectedStrategy] = useState(null)
+    const [strategyDetails, setStrategyDetails] = useState(null);
+    const [ruleMessages, setRuleMessages] = useState([]);
+    const [legs, setLegs] = useState([]);
 
     // component management states
     const [modalActive, setModalActive] = useState(false);
-    const [expirationDisabled, setExpirationDisabled] = useState(true);
     const [strategyDisabled, setStrategyDisabled] = useState(true)
     const [pageState, setPageState] = useState(true);
+    const [loadingStrategyDetails, setLoadingStrategyDetails] = useState(false);
+
 
     // okta states
     const [headers, setHeaders] = useState({});
@@ -50,13 +70,25 @@ export default function NewBuild() {
     const resetStates = () => {
         setSelectedTicker(null);
         setExpirationTimestampsOptions([])
-        setSelectedExpirationTimestamps([]);
         setBasicInfo({});
         setModalActive(false);
     }
 
+    useEffect(() => {
+        if (authState.isAuthenticated) {
+            const { accessToken } = authState;
+            setHeaders({ Authorization: `Bearer ${accessToken.accessToken}` });
+        } else {
+            setHeaders({});
+        }
+    }, [oktaAuth, authState]);
+
+    // load all tickers
+    useEffect(() => {
+        newLoadTickers(headers, setAllTickers, setSelectedTicker, querySymbol, onTickerSelectionChange)
+    }, []);
+
     const setExpirationTimestamps = (val) => {
-        setExpirationDisabled(true)
         if (val.length > 0) {
             let arr = []
             val.map((timestamp, index) => {
@@ -66,8 +98,6 @@ export default function NewBuild() {
                 arr.push({ value: timestamp, label: date });
             })
             setExpirationTimestampsOptions(arr)
-            setExpirationDisabled(false)
-            // onExpirationSelectionChange(null, arr[0])
         }
     }
 
@@ -82,28 +112,131 @@ export default function NewBuild() {
             newLoadExpirationDates(headers, selected, setModalActive, setExpirationTimestamps, onBasicInfoChange, setSelectedTicker);
             addQuery(location, history, 'symbol', selected.symbol)
             setStrategyDisabled(false)
-        } else {
-            setExpirationDisabled(true)
         }
     };
 
-    const onStrategySelectionChange = (e) => {
+    const onStrategySelectionChange = (strategy) => {
         GaEvent('select strategy');
-        setSelectedStrategy(e)
+        setSelectedStrategy(strategy)
+        setStrategyDetails(null);
+        setRuleMessages([]);
+        setPageState(false)
+        if (strategy) {
+            setLegs(cloneDeep(strategy.legs));
+        }
     }
 
-    useEffect(() => {
-        if (authState.isAuthenticated) {
-            const { accessToken } = authState;
-            setHeaders({ Authorization: `Bearer ${accessToken.accessToken}` });
+    const updateLeg = (key, value, index) => {
+        // check if key is a linkedProperty
+        if (selectedStrategy && selectedStrategy.linkedProperties.includes(key)) {
+            // set value for all legs
+            setLegs(prevState => {
+                const newState = prevState.map(val => { set(val, key, value); return val });
+                return checkRulesAndRelationships(prevState, newState, index, key);
+            });
         } else {
-            setHeaders({});
+            setLegs(prevState => {
+                const newState = [...prevState.slice(0, index), { ...prevState[index], [key]: value }, ...prevState.slice(index + 1)];
+                return checkRulesAndRelationships(prevState, newState, index, key);
+            });
         }
-    }, [oktaAuth, authState]);
+        setStrategyDetails(null);
+    }
 
-    useEffect(() => {
-        newLoadTickers(headers, setAllTickers, setSelectedTicker, querySymbol, onTickerSelectionChange)
-    }, []);
+    const checkRulesAndRelationships = (prevState, newState, index, key) => {
+        if (prevState[index][key]) {
+            enforceRules(selectedStrategy.rules, newState);
+        }
+        selectedStrategy.relationships.map(relation => {
+            const operation = operators[relation.operator];
+            newState[relation.legAIndex][relation.legAProperty] = operation(newState[relation.legBIndex], relation.legBProperty, relation.legBPropertyDefaultVal, newState[relation.legCIndex], relation.legCProperty, relation.legCPropertyDefaultVal);
+        });
+        return newState;
+    }
+
+    const enforceRules = (rules, legs) => {
+        let messages = [];
+        const finalResult = rules.reduce((prev, curr) => {
+            const legAIndex = curr.legAIndex;
+            const legBIndex = curr.legBIndex;
+            const legAProperty = curr.legAProperty;
+            const legBProperty = curr.legBProperty;
+            const operator = curr.operator;
+            const ruleResult = operators[operator](legs[legAIndex], legAProperty, legs[legBIndex], legBProperty);
+            if (!ruleResult) {
+                messages.push(`Leg ${legAIndex + 1}'s ${legAProperty.replace(".", " ").replace("_", " ")} 
+                needs to be ${operator} Leg ${legBIndex + 1}'s ${legBProperty.replace(".", " ").replace("_", " ")}.`);
+            }
+            return (prev && ruleResult);
+        }, true);
+        setRuleMessages(messages);
+        return finalResult;
+    }
+
+    const getStrategyDetails = async () => {
+        GaEvent('build strategy');
+        setLoadingStrategyDetails(true);
+        let strategy = {
+            type: selectedStrategy.id,
+            stock_snapshot: {
+                ticker_id: selectedTicker[0].id,
+                external_cache_id: selectedTicker[0].external_cache_id,
+                ticker_stats_id: selectedTicker[0].ticker_stats_id,
+            },
+            leg_snapshots: [],
+            is_public: false,
+            // target_price_lower: 0, // there is no price target
+            // target_price_upper: 0, // there is no price target
+            premium_type: selectedPremiumType.value,
+        };
+
+        legs.map((leg) => {
+            let legSnapshot = { is_long: leg.action === "long", units: leg.units }
+            if (leg.type === "option") {
+                let contract = {
+                    ticker_id: leg.contract.ticker.id,
+                    external_cache_id: leg.contract.external_cache_id,
+                    is_call: leg.contract.is_call,
+                    strike: leg.contract.strike,
+                    expiration_timestamp: leg.contract.expiration
+                }
+                legSnapshot.contract_snapshot = contract;
+            } else if (leg.type === "stock") {
+                // console.log(leg)
+                legSnapshot.stock_snapshot = {
+                    ticker_id: selectedTicker[0].id,
+                    external_cache_id: selectedTicker[0].external_cache_id,
+                    ticker_stats_id: selectedTicker[0].ticker_stats_id,
+                };
+                legSnapshot.units = leg.shares;
+            } else {
+                legSnapshot.cash_snapshot = true;
+                legSnapshot.units = leg.value;
+            }
+            strategy.leg_snapshots.push(legSnapshot);
+        });
+
+        try {
+            let headers = {
+                'Content-Type': 'application/json',
+            }
+            if (authState.isAuthenticated) {
+                const { accessToken } = authState;
+                headers['Authorization'] = `Bearer ${accessToken.accessToken}`
+            }
+
+            let url = `${API_URL}/trade_snapshots`;
+            const response = await Axios.post(url, strategy, {
+                headers: headers
+            });
+
+            setStrategyDetails(response.data.trade_snapshot);
+            setBroker(response.data.broker);
+        } catch (error) {
+            console.error(error);
+        }
+        setLoadingStrategyDetails(false);
+    }
 
     return (
         <>
@@ -123,25 +256,17 @@ export default function NewBuild() {
                         onStrategySelectionChange={onStrategySelectionChange}
                     />
                     :
-                    null
-                // <MainView
-                //     allTickers={allTickers}
-                //     selectedTicker={selectedTicker}
-                //     onTickerSelectionChange={onTickerSelectionChange}
-                //     expirationTimestampsOptions={expirationTimestampsOptions}
-                //     expirationDisabled={expirationDisabled}
-                //     selectedExpirationTimestamps={selectedExpirationTimestamps}
-                //     onExpirationSelectionChange={onExpirationSelectionChange}
-                //     deleteExpirationChip={deleteExpirationChip}
-                //     onFilterChange={onFilterChange}
-                //     onTextFilterChange={onTextFilterChange}
-                //     onPutToggle={onPutToggle}
-                //     onCallToggle={onCallToggle}
-                //     basicInfo={basicInfo}
-                //     filters={filters}
-                //     contracts={contracts}
-                //     debouncedGetContracts={debouncedGetContracts}
-                // />
+                    <MainView
+                        allTickers={allTickers}
+                        selectedTicker={selectedTicker}
+                        onTickerSelectionChange={onTickerSelectionChange}
+                        basicInfo={basicInfo}
+                        selectedStrategy={selectedStrategy}
+                        onStrategySelectionChange={onStrategySelectionChange}
+                        expirationTimestampsOptions={expirationTimestampsOptions}
+                        legs={legs}
+                        updateLeg={updateLeg}
+                    />
             }
         </>
     );

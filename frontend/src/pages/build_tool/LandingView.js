@@ -101,7 +101,7 @@ export default function LandingView(props) {
                                     },
                                     anchorOrigin: {
                                         vertical: "bottom",
-                                        horizontal: "left"
+                                        horizontal: "center"
                                     },
                                     getContentAnchorEl: () => null,
                                 }}
@@ -186,7 +186,7 @@ export default function LandingView(props) {
                 <Divider orientation="horizontal" flexItem />
                 <Stack divider={<Divider orientation="horizontal" flexItem />}>
                     {renderedStrategies.length > 0 && renderedStrategies.map((strat, index) => {
-                        return <StrategyRow strategy={strat} key={index} />
+                        return <StrategyRow strategy={strat} key={index} onStrategySelectionChange={onStrategySelectionChange} />
                     })}
                 </Stack>
             </Card>

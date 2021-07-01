@@ -7,7 +7,7 @@ import TrendingFlatIcon from '@material-ui/icons/TrendingFlat';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import ExpandLessIcon from '@material-ui/icons/ExpandLess';
 
-export default function StrategyRow({ strategy }) {
+export default function StrategyRow({ strategy, onStrategySelectionChange }) {
     const theme = useTheme();
     const useStyles = makeStyles({
         chip: {
@@ -98,7 +98,7 @@ export default function StrategyRow({ strategy }) {
                             }
                         </Grid>
                         <Grid item xs={2}>
-                            <Button variant="outlined"><Typography variant="button">Start Building</Typography></Button>
+                            <Button variant="outlined" onClick={() => onStrategySelectionChange(strategy)}><Typography variant="button">Start Building</Typography></Button>
                             <span>&nbsp;&nbsp;</span>
                             {!expanded ? <ExpandMoreIcon color="primary" /> : <ExpandLessIcon color="primary" />}
                         </Grid>
