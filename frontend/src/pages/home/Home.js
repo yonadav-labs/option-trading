@@ -20,10 +20,10 @@ const Feedback = () => {
                     <StarRateIcon style={{ color: colors.orange }} />
                     <br />
                     <Typography variant="body2" textAlign="center" py={2}>
-                        “Tigerstance helped me make decisions with ease and confidence when market was volatile.”
+                        “Tigerstance helped me make decisions with ease and confidence when the market was volatile.”
                     </Typography>
                     <br />
-                    <Typography variant="subtitle2" textAlign="center" py={2}>Jay S, Portfolio Manager, Eystra Capital, LLC.</Typography>
+                    <Typography variant="subtitle2" textAlign="center" py={2}>Jay S, Portfolio Manager, Eystra Capital, LLC</Typography>
                 </Grid>
             </CardContent>
         </Card>
@@ -147,11 +147,11 @@ export default function Home() {
             <Grid container p={3}>
                 <Grid container item justifyContent="center" alignItems="center" flexDirection="row">
                     <Grid item xs={12} md={12} lg={6} px={8}>
-                        <Typography variant="button" textAlign={isMobile ? "center" : "left"}>Trading for everyone</Typography>
+                        <Typography variant="button" textAlign={isMobile ? "center" : "left"}>Options trading for everyone</Typography>
                         <Typography variant="h2" textAlign={isMobile ? "center" : "left"}>We do the math,</Typography>
                         <Typography variant="h2" textAlign={isMobile ? "center" : "left"}>so you don't have to.</Typography>
                         <Typography variant="body1" textAlign={isMobile ? "center" : "left"} pr={isMobile ? 0 : 15}>
-                            Use market-beating hedge fund manager’s trading tactic to manage your portfolio.
+                            Take your options trading to the next level.
                         </Typography>
                     </Grid>
                     <Grid item xs={12} md={12} lg={6} px={isMobile ? 0 : 5} py={4}>
@@ -163,7 +163,7 @@ export default function Home() {
                 </Grid>
                 <Grid container item py={4}>
                     <Grid item py={2} px={3} lg={12}>
-                        <Typography variant="h6">Start with recent high movers</Typography>
+                        <Typography variant="h6">Start with recent biggest gainers</Typography>
                     </Grid>
                     <RenderMovers />
                 </Grid>
@@ -175,7 +175,8 @@ export default function Home() {
                         <ToolCard imageName="Homepage-Discover.png" isMobile={isMobile}>
                             <Typography variant="h6" sx={{ marginTop: 0 }} gutterBottom>Discover</Typography>
                             <Typography variant="body1">
-                                Enter what price you think the stock will be and by when. See the trades you can make to get the highest potential return.
+                                Enter what price you think the stock will be and by when.
+                                See the trades you can make and filter by return, chance or cost.
                             </Typography>
                             <br />
                             <Button variant="outlined" size="large" href="/discover" to="/discover">
@@ -187,7 +188,9 @@ export default function Home() {
                         <ToolCard imageName="Homepage-Build.png" isMobile={isMobile}>
                             <Typography variant="h6" sx={{ marginTop: 0 }} gutterBottom>Build</Typography>
                             <Typography variant="body1">
-                                Create your options strategy and get real-time feedback. Understand your strategy with interactive graph and profit/loss details.
+                                Build an options strategy and get real-time analysis on the trade.
+                                We calculate key data for you, including probability of profit and breakeven price.
+                                Visualize potential returns with our interactive graph and chart.
                             </Typography>
                             <br />
                             <Button variant="outlined" size="large" href="/build" to="/build">

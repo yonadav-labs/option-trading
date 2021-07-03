@@ -61,7 +61,7 @@ const TickerSelectionCard = ({ allTickers, onChange, selectedTicker }) => {
                         <Button variant="contained" color="secondary" size="large" sx={{ my: 2 }} onClick={handleNextButtonClick} disabled={!selectedTicker}>
                             Next
                         </Button>
-                        <Typography variant="subtitle1" textAlign="center" my={2}>Not sure? Here are today’s top stocks:</Typography>
+                        <Typography variant="subtitle1" textAlign="center" my={2}>Not sure? Here are recent most search stocks:</Typography>
                         <Stack direction="row" spacing={2} maxWidth="100%">
                             {popularTickers.map((ticker, index) => (
                                 loadingPopularTickers ?

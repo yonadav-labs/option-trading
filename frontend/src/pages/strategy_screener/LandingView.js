@@ -97,9 +97,9 @@ export default function LandingView(props) {
                 <Typography variant="h4" align="center">Discover option strategies with the best potential return.</Typography>
                 <br />
                 <Typography variant="body1" align="center">
-                    Enter <b>what price</b> you think the stock will be and by <b>when</b>.
+                    Enter <b>what price</b> you think the stock will be and <b>by when</b>.
                     <br />
-                    See the trades you can make to get the highest potential return.
+                    See the trades you can make and filter by return, chance or cost.
                 </Typography>
             </Container>
             <br />

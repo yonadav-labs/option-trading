@@ -240,9 +240,11 @@ export default function StrategyBuilder() {
                 <meta name="description" content="Build and optimize options trading strategies with Tigerstance." />
             </Helmet>
             <ModalSpinner active={modalActive}></ModalSpinner>
-            <h2 className="text-center">Build Options Strategies</h2>
+            <h2 className="text-center">Build Your Strategy</h2>
             <p className="text-center" style={{ "paddingBottom": '2rem' }}>
-                Create your options strategy and get real-time feedback. Understand your strategy with interactive graph and profit/loss details.
+                Build an options strategy and get real-time analysis on the trade.
+                We calculate key data for you, including probability of profit and breakeven price.
+                Visualize potential returns with our interactive graph and chart.
             </p>
             <Row className="justify-content-md-center">
                 <Col md="3">
