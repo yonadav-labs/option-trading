@@ -3,15 +3,16 @@ import { Link as RouterLink } from "react-router-dom";
 import { useOktaAuth } from '@okta/okta-react';
 import { useHistory } from "react-router-dom";
 import ReactGA from 'react-ga';
-import UserContext from '../UserContext';
-import getApiUrl from '../utils';
-import LiveChat from 'react-livechat'
+import LiveChat from 'react-livechat';
 import {
-    AppBar, Button, Drawer, Grid, IconButton, Menu, MenuItem, styled, Toolbar,
-    useMediaQuery, Typography, Backdrop, CircularProgress
+    AppBar, Button, Drawer, Grid, IconButton, Menu, MenuItem, styled, Toolbar, useMediaQuery,
+    Typography, Backdrop, CircularProgress
 } from '@material-ui/core';
 import MenuIcon from '@material-ui/icons/Menu';
 import AccountCircle from '@material-ui/icons/AccountCircle';
+import UserContext from '../UserContext';
+import getApiUrl from '../utils';
+import Referral from './Referral';
 
 function getCookie(name) {
     var cookieValue = null;
@@ -27,6 +28,7 @@ function getCookie(name) {
     }
     return cookieValue;
 }
+
 
 const sessionid = getCookie('pinax-referral');
 const mobileBreakpointWidth = 1280;
@@ -60,6 +62,11 @@ function Header() {
     const [drawerOpen, setDrawerOpen] = useState(false);
     const [accountMenuAnchorEl, setAccountMenuAnchorEl] = React.useState(null);
     const [showBackdrop, setShowBackdrop] = useState(false);
+    const [referralOpen, setReferralOpen] = useState(false);
+
+    const handleReferralClickOpen = () => {
+        setReferralOpen(true);
+    };
 
     function trackPageView() {
         ReactGA.pageview(window.location.pathname + window.location.search);
@@ -148,7 +155,7 @@ function Header() {
                     </Grid>
                 </>
             }
-        </Grid>
+        </Grid >
     );
 
     return (
@@ -158,8 +165,7 @@ function Header() {
                     <Grid container justifyContent="space-between" alignItems="center" height="100%">
                         <Grid item>
                             <RouterLink to="/" style={{ height: "100%", display: "flex", alignItems: "center" }}>
-                                <img src="/tigerstance-logo.png" width="175px" />
-                            </RouterLink>
+                                <img src="/tigerstance-logo.png" width="175px" /></RouterLink>
                         </Grid>
                         {!isMobile &&
                             <Grid item>
@@ -169,6 +175,9 @@ function Header() {
                         <Grid item>
                             {authState.isAuthenticated ?
                                 <>
+                                    <Button onClick={handleReferralClickOpen} style={{ textTransform: 'capitalize' }}>
+                                        Refer & Get 1 Month Free
+                                    </Button>
                                     <IconButton
                                         aria-label="account of current user"
                                         aria-controls="menu-appbar"
@@ -192,8 +201,8 @@ function Header() {
                                         open={Boolean(accountMenuAnchorEl)}
                                         onClose={handleAccountMenuClose}
                                     >
-                                        <MenuItem component={RouterLink} href="/profile" to="/profile"
-                                            onClick={handleAccountMenuClose}>Profile
+                                        <MenuItem component={RouterLink} href="/profile" to="/profile" onClick={handleAccountMenuClose}>
+                                            Profile
                                         </MenuItem>
                                         <MenuItem onClick={() => { logout(); handleAccountMenuClose(); setShowBackdrop(true); }}>
                                             Logout
@@ -229,7 +238,7 @@ function Header() {
                         </Grid>
                     </Grid>
                 </Toolbar>
-            </AppBar>
+            </AppBar >
             <Drawer
                 anchor="right"
                 open={drawerOpen && isMobile}
@@ -244,12 +253,23 @@ function Header() {
             >
                 <CircularProgress color="inherit" />
             </Backdrop>
-            {user ?
-                <LiveChat license={12791829} visitor={{ name: user.nick_name || user.email, email: user.email }} />
-                :
-                <LiveChat license={12791829} />
+            {
+                user ?
+                    <LiveChat license={12791829} visitor={{ name: user.nick_name || user.email, email: user.email }} />
+                    :
+                    <LiveChat license={12791829} />
             }
-        </header>
+
+            {
+                user ?
+                    <Referral
+                        referralLink={user.referral_link}
+                        openStatus={referralOpen}
+                        setOpenStatus={setReferralOpen}> </Referral>
+                    :
+                    <div></div>
+            }
+        </header >
     );
 }
 
