@@ -1,5 +1,6 @@
-from .base import Trade
 from tiger.core.leg import OptionLeg
+
+from .base import Trade
 
 
 class StrapStrangle(Trade):

@@ -1,8 +1,8 @@
 import datetime
-import requests
 
-from datetime import timedelta
+import requests
 from lxml import etree
+
 
 # Some background:
 # In theory, r is a short-term safe interest rate, and it is constant through time though the theory does goes through with r¯ (average r from t to T) in place or r. 

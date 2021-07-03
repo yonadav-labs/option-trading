@@ -1,10 +1,8 @@
 import datetime
 
 from django.test import TestCase
-
-from tiger.core.black_scholes import (get_black_scholes_price, get_delta, get_itm_probability, 
-price_american_option, value_across_range_for_contract, build_option_value_matrix)
-
+from tiger.core.black_scholes import (get_black_scholes_price, get_delta, get_itm_probability,
+                                      price_american_option, value_across_range_for_contract, build_option_value_matrix)
 
 STOCK_PRICE = 22.91
 

@@ -3,7 +3,6 @@ from unittest import mock
 
 from django.test import TestCase
 from django.utils.timezone import make_aware, get_default_timezone
-
 from tiger.utils import get_dates_till_expiration, get_decimal_25x
 
 MOCK_NOW_TIMESTAMP = 1609664400  # 01/03/2021

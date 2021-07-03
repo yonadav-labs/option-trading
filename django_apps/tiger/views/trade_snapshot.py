@@ -6,13 +6,12 @@ from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-
 from tiger.blob_reader import get_quote
 from tiger.core.trade.trade_factory import TradeFactory
 from tiger.models import TradeSnapshot
 from tiger.serializers import TradeSerializer, TradeSnapshotSerializer, BrokerSerializer
-from tiger.views.utils import get_current_trade, get_broker
 from tiger.views.decorators import tracking_api
+from tiger.views.utils import get_current_trade, get_broker
 
 logger = logging.getLogger('console_info')
 

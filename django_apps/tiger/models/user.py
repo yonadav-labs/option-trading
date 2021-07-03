@@ -5,8 +5,8 @@ from django.contrib.auth.models import AbstractUser
 from django.contrib.postgres.fields import ArrayField
 from django.db import models
 from pinax.referrals.models import Referral
-
 from tiger.utils import get_now_date
+
 from .broker import Broker
 
 

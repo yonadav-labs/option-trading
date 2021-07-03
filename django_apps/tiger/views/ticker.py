@@ -3,13 +3,12 @@ from django.db.models import Count
 from rest_framework import viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
-
+from rest_framework_tracking.mixins import LoggingMixin
 from tiger.core import Stock
 from tiger.models import Ticker
 from tiger.serializers import TickerSerializer, TickerStatsSerializer
-from tiger.views.utils import dict_fetch_all, get_valid_contracts
 from tiger.utils import timestamp_to_datetime_with_default_tz
-from rest_framework_tracking.mixins import LoggingMixin
+from tiger.views.utils import dict_fetch_all, get_valid_contracts
 
 
 def get_annualized_value(val, days_till_expiration):

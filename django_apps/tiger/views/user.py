@@ -1,10 +1,10 @@
 from rest_framework import viewsets, permissions
-from rest_framework.response import Response
 from rest_framework.decorators import action
+from rest_framework.response import Response
 from rest_framework_tracking.mixins import LoggingMixin
-
-from tiger.serializers import UserSerializer
 from tiger.models import User
+from tiger.serializers import UserSerializer
+
 from .utils import handle_referral
 
 

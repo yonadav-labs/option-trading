@@ -10,9 +10,9 @@ from tiger.core.trade import LongCall, LongPut, CoveredCall, CashSecuredPut, Bul
     BearCallSpread, BearPutSpread, ProtectivePut
 from tiger.models import Ticker
 from tiger.serializers import TradeSerializer, BrokerSerializer
+from tiger.views.decorators import tracking_api
 from tiger.views.utils import get_filtered_contracts, get_broker, get_disabled_or_disallowed_strategies, \
     filter_object_on_attribute
-from tiger.views.decorators import tracking_api
 
 logger = logging.getLogger('console_info')
 

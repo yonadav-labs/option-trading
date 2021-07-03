@@ -7,7 +7,6 @@ from .bull_call_spread import BullCallSpread
 from .bull_put_spread import BullPutSpread
 from .cash_secured_put import CashSecuredPut
 from .covered_call import CoveredCall
-from .protective_put import ProtectivePut
 from .iron_butterfly import IronButterfly
 from .iron_condor import IronCondor
 from .long_butterfly_spread import LongButterflySpread
@@ -15,13 +14,14 @@ from .long_call import LongCall
 from .long_condor_spread import LongCondorSpread
 from .long_put import LongPut
 from .long_straddle import LongStraddle
-from .strap_straddle import StrapStraddle
-from .strap_strangle import StrapStrangle
 from .long_strangle import LongStrangle
+from .protective_put import ProtectivePut
 from .short_butterfly_spread import ShortButterflySpread
 from .short_condor_spread import ShortCondorSpread
 from .short_straddle import ShortStraddle
 from .short_strangle import ShortStrangle
+from .strap_straddle import StrapStraddle
+from .strap_strangle import StrapStrangle
 
 
 class TradeFactory:

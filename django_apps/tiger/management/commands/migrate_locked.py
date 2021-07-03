@@ -1,10 +1,11 @@
 import time
+
 from django.conf import settings
-from django.db import connections
 from django.core.management.base import (CommandError, no_translations)
 from django.core.management.commands.migrate import Command as MigrateCommand
-from psycopg2.extras import RealDictCursor
+from django.db import connections
 from psycopg2.extensions import ISOLATION_LEVEL_REPEATABLE_READ
+from psycopg2.extras import RealDictCursor
 
 
 class Command(MigrateCommand):

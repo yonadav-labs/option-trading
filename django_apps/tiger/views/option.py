@@ -6,8 +6,8 @@ from rest_framework.exceptions import APIException
 from rest_framework.response import Response
 from tiger.models import Ticker
 from tiger.serializers import OptionContractSerializer
-from tiger.views.utils import get_valid_contracts
 from tiger.views.decorators import tracking_api
+from tiger.views.utils import get_valid_contracts
 
 
 @tracking_api()

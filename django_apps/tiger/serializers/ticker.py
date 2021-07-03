@@ -1,6 +1,6 @@
 from rest_framework import serializers
-
 from tiger.models import TickerStats
+
 from .custom_fields import ReadOnlyRatioDecimalField, ReadOnlyDollarDecimalField
 
 

@@ -4,7 +4,6 @@ from django.conf import settings
 from mailchimp_marketing import Client
 from mailchimp_marketing.api_client import ApiClientError
 
-
 mailchimp_client = Client()
 
 mailchimp_client.set_config({

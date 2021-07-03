@@ -1,7 +1,8 @@
 from unittest import mock
-from rest_framework.test import APITestCase, force_authenticate
 
+from rest_framework.test import APITestCase
 from tiger.models import User
+
 from .mocks.mock_paypal_apis import *
 
 
