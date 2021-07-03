@@ -45,8 +45,8 @@ export default function NewStrategyScreener() {
     const [filters, setFilters] = useState({
         // Set both lower/upper price to the same for single price target UI.
         // Use targetPriceLower as default for single price target UI.
-        targetPriceLower: basicInfo.regularMarketPrice || 0,
-        targetPriceUpper: basicInfo.regularMarketPrice || 0,
+        targetPriceLower: basicInfo.latestPrice || 0,
+        targetPriceUpper: basicInfo.latestPrice || 0,
         premiumType: 'market',
         cashToInvest: null,
         minVolume: 0,
@@ -73,8 +73,8 @@ export default function NewStrategyScreener() {
         setBasicInfo({});
         setModalActive(false);
         setFilters({
-            targetPriceLower: basicInfo.regularMarketPrice || 0,
-            targetPriceUpper: basicInfo.regularMarketPrice || 0,
+            targetPriceLower: basicInfo.latestPrice || 0,
+            targetPriceUpper: basicInfo.latestPrice || 0,
             premiumType: 'market',
             cashToInvest: null,
             strategyType: 'all',
@@ -103,8 +103,8 @@ export default function NewStrategyScreener() {
     const onBasicInfoChange = (val) => {
         setBasicInfo(val);
         if (sentiment) {
-            onFilterChange(val.regularMarketPrice, "targetPriceLower");
-            onFilterChange(val.regularMarketPrice, "targetPriceUpper");
+            onFilterChange(val.latestPrice, "targetPriceLower");
+            onFilterChange(val.latestPrice, "targetPriceUpper");
         }
     }
 
@@ -195,8 +195,8 @@ export default function NewStrategyScreener() {
         GaEvent('adjust sentiment');
         setSentiment(sentiment)
         if (sentiment > 0) {
-            onFilterChange(fixedFloat(basicInfo.regularMarketPrice * sentiment), "targetPriceLower")
-            onFilterChange(fixedFloat(basicInfo.regularMarketPrice * sentiment), "targetPriceUpper")
+            onFilterChange(fixedFloat(basicInfo.latestPrice * sentiment), "targetPriceLower")
+            onFilterChange(fixedFloat(basicInfo.latestPrice * sentiment), "targetPriceUpper")
         }
     };
 

@@ -134,7 +134,7 @@ export default function MainView(props) {
                         <Grid container item sm={2.3} direction="column" alignItems="center"
                             bgcolor='#333741' color="white" style={{ display: filterOpen ? "block" : "none" }}>
                             <FilterContainer onFilterChange={onFilterChange} onTextFilterChange={onTextFilterChange} filters={filters}
-                                handleFilterCollapse={handleFilterCollapse} initialPrice={basicInfo.regularMarketPrice} />
+                                handleFilterCollapse={handleFilterCollapse} initialPrice={basicInfo.latestPrice} />
                         </Grid>
                         <Grid item py={2} bgcolor='#333741' color="white" style={{ display: filterOpen ? "none" : "block" }} >
                             <IconButton color="inherit" onClick={handleFilterCollapse}><TuneIcon fontSize="large" /></IconButton>
@@ -165,7 +165,7 @@ export default function MainView(props) {
                                                 onFilterChange={onFilterChange}
                                                 onTextFilterChange={onTextFilterChange}
                                                 filters={filters}
-                                                initialPrice={basicInfo.regularMarketPrice}
+                                                initialPrice={basicInfo.latestPrice}
                                                 isMobile={isMobile}
                                                 handleMobileFilterCollapse={handleMobileFilterCollapse}
                                                 allTickers={allTickers}

@@ -1,17 +1,19 @@
 from django.test import TestCase
-from tiger.core import Stock, OptionContract, Leg
+from tiger.core import OptionContract, Leg, Stock
 from tiger.core.trade.trade_factory import TradeFactory
-from tiger.models import ExternalRequestCache, Ticker, StockSnapshot, OptionContractSnapshot, LegSnapshot, \
-    TradeSnapshot, User, TickerStats
+from tiger.models import ExternalRequestCache, Ticker, OptionContractSnapshot, LegSnapshot, \
+    TickerStats, StockSnapshot, User, TradeSnapshot
 
 
 class LoadFromSnapshotTestCase(TestCase):
     def setUp(self):
         self.ticker = Ticker.objects.create(symbol='QQQE')
         self.ticker.tickerstats = TickerStats(self.ticker, historical_volatility=0.3)
-        self.external_cache = ExternalRequestCache.objects.create(
-            request_url='https://query1.finance.yahoo.com/v7/finance/options/QQQE',
-            response_blob='{"optionChain":{"result":[{"underlyingSymbol":"QQQE","expirationDates":[1610668800,1613692800,1616112000,1623974400],"strikes":[65.0,68.0,69.0,70.0,71.0,72.0,73.0,74.0,75.0,76.0,77.0,78.0],"hasMiniOptions":false,"quote":{"language":"en-US","region":"US","quoteType":"ETF","quoteSourceName":"Delayed Quote","triggerable":true,"currency":"USD","fiftyTwoWeekLowChange":34.01,"fiftyTwoWeekLowChangePercent":0.84749556,"fiftyTwoWeekRange":"40.13 - 75.52","fiftyTwoWeekHighChange":-1.3799973,"fiftyTwoWeekHighChangePercent":-0.01827327,"fiftyTwoWeekLow":40.13,"fiftyTwoWeekHigh":75.52,"ytdReturn":15.27,"trailingThreeMonthReturns":0.74,"trailingThreeMonthNavReturns":0.69,"fiftyDayAverage":72.69875,"fiftyDayAverageChange":1.441246,"fiftyDayAverageChangePercent":0.019824907,"twoHundredDayAverage":65.8727,"twoHundredDayAverageChange":8.267296,"twoHundredDayAverageChangePercent":0.12550412,"sourceInterval":15,"exchangeDataDelayedBy":0,"tradeable":false,"marketState":"POST","firstTradeDateMilliseconds":1332336600000,"priceHint":2,"regularMarketChange":-1.0200043,"regularMarketChangePercent":-1.3571105,"regularMarketTime":1609794000,"regularMarketPrice":74.14,"regularMarketDayHigh":75.52,"regularMarketDayRange":"73.25 - 75.52","regularMarketDayLow":73.25,"regularMarketVolume":58589,"regularMarketPreviousClose":75.16,"bid":72.65,"ask":74.54,"bidSize":10,"askSize":10,"fullExchangeName":"NYSEArca","regularMarketOpen":75.52,"averageDailyVolume3Month":45200,"averageDailyVolume10Day":41900,"exchange":"PCX","shortName":"Direxion NASDAQ-100 Equal Weigh","longName":"Direxion NASDAQ-100 Equal Weighted Index Shares","messageBoardId":"finmb_182590799","exchangeTimezoneName":"America/New_York","exchangeTimezoneShortName":"EST","gmtOffSetMilliseconds":-18000000,"market":"us_market","esgPopulated":false,"symbol":"QQQE"}}]}}'
+        self.external_cache_iex_quote = ExternalRequestCache.objects.create(
+            request_url='https://cloud.iexapis.com/v1/stock/ZEPP/quote?token=pk_857fc78a42ec4c35b018d6f5fb7b2f04',
+            response_blob='{"symbol":"QQQE","companyName":"Direxion NASDAQ-100 Equal Weighted Index Shares",'
+                          '"open":75.52,"close":75.16,"high":75.52,"low":73.25,"latestPrice":74.14,'
+                          '"marketCap":378916081,"week52High":75.52,"week52Low":40.13}'
         )
         self.external_cache_td = ExternalRequestCache.objects.create(
             request_url='https://api.tdameritrade.com/v1/marketdata/chains?apikey=132&contractType=ALL&includeQuotes=TRUE&strategy=SINGLE&symbol=QQQE&fromDate=2020-12-01',
@@ -25,18 +27,13 @@ class LoadFromSnapshotTestCase(TestCase):
         }
 
     def testLoadStockFromSnapshot(self):
-        stock_snapshot = StockSnapshot.objects.create(ticker=self.ticker, external_cache=self.external_cache)
-        stock_snapshot_td = StockSnapshot.objects.create(ticker=self.ticker, external_cache=self.external_cache_td)
-
-        stock = Stock.from_snapshot(stock_snapshot)
-        self.assertEqual(stock.ticker, self.ticker)
-        self.assertEqual(stock.external_cache_id, self.external_cache.id)
-        self.assertEqual(stock.stock_price, 74.14)
+        stock_snapshot_td = StockSnapshot.objects.create(ticker=self.ticker,
+                                                         external_cache=self.external_cache_iex_quote)
 
         stock_td = Stock.from_snapshot(stock_snapshot_td)
         self.assertEqual(stock_td.ticker, self.ticker)
-        self.assertEqual(stock_td.external_cache_id, self.external_cache_td.id)
-        self.assertEqual(stock_td.stock_price, 74.13)
+        self.assertEqual(stock_td.external_cache_id, self.external_cache_iex_quote.id)
+        self.assertEqual(stock_td.stock_price, 74.14)
 
     def testLoadContractFromSnapshot(self):
         contract_snapshot_td = OptionContractSnapshot.objects.create(ticker=self.ticker, is_call=False, strike=66.0,
@@ -53,7 +50,7 @@ class LoadFromSnapshotTestCase(TestCase):
         self.assertEqual(contract_td.ask, 0.25)
 
     def testLoadStockLegFromSnapshot(self):
-        stock_snapshot = StockSnapshot.objects.create(ticker=self.ticker, external_cache=self.external_cache)
+        stock_snapshot = StockSnapshot.objects.create(ticker=self.ticker, external_cache=self.external_cache_iex_quote)
         stock_leg_snapshot = LegSnapshot.objects.create(is_long=True, units=1, stock_snapshot=stock_snapshot)
         stock_leg = Leg.from_snapshot(stock_leg_snapshot, 'mid', self.broker_settings)
         self.assertEqual(stock_leg.name, 'long_stock_leg')
@@ -83,13 +80,13 @@ class LoadFromSnapshotTestCase(TestCase):
         contract_leg_snapshot2 = LegSnapshot.objects.create(is_long=True, units=2,
                                                             contract_snapshot=contract_snapshot_td2)
         self.assertAlmostEqual(Leg.from_snapshot(contract_leg_snapshot2, 'mid',
-                               self.broker_settings).total_cost, 42.5 * 2 + 1.3)
+                                                 self.broker_settings).total_cost, 42.5 * 2 + 1.3)
         self.assertAlmostEqual(Leg.from_snapshot(contract_leg_snapshot2,
-                               'market', self.broker_settings).total_cost, 75 * 2 + 1.3)
+                                                 'market', self.broker_settings).total_cost, 75 * 2 + 1.3)
 
     def testLoadTradeFromSnapshot(self):
         creator = User.objects.create_user(username='testuser', password='12345')
-        stock_snapshot = StockSnapshot.objects.create(ticker=self.ticker, external_cache=self.external_cache)
+        stock_snapshot = StockSnapshot.objects.create(ticker=self.ticker, external_cache=self.external_cache_iex_quote)
         contract_snapshot_td = OptionContractSnapshot.objects.create(ticker=self.ticker, is_call=False, strike=66.0,
                                                                      expiration_timestamp=1610744400,
                                                                      external_cache=self.external_cache_td)

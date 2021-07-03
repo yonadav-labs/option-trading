@@ -45,7 +45,7 @@ export default function NewOptionScreener() {
         callToggle: true,
         putToggle: true,
         minStrike: 0,
-        maxStrike: basicInfo.regularMarketPrice * 2 || 0,
+        maxStrike: basicInfo.latestPrice * 2 || 0,
         minVolume: 0,
         minOpenInterest: 0,
         maxBidAskSpread: 99999,
@@ -73,7 +73,7 @@ export default function NewOptionScreener() {
             callToggle: true,
             putToggle: true,
             minStrike: 0,
-            maxStrike: basicInfo.regularMarketPrice * 2 || 0,
+            maxStrike: basicInfo.latestPrice * 2 || 0,
             minVolume: 0,
             minOpenInterest: 0,
             maxBidAskSpread: 99999,
@@ -97,7 +97,7 @@ export default function NewOptionScreener() {
     const onBasicInfoChange = (val) => {
         setBasicInfo(val);
         onFilterChange(0, "minStrike");
-        onFilterChange(val.regularMarketPrice * 2, "maxStrike");
+        onFilterChange(val.latestPrice * 2, "maxStrike");
     }
 
     const onTickerSelectionChange = (e, selected) => {

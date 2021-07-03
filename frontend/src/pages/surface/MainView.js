@@ -72,7 +72,7 @@ export default function MainView(props) {
                             onFilterChange={onFilterChange}
                             expirationTimestampsOptions={expirationTimestampsOptions}
                             handleFilterCollapse={handleFilterCollapse}
-                            initialPrice={basicInfo.regularMarketPrice}
+                            initialPrice={basicInfo.latestPrice}
                         />
                     </Grid>
                     <Grid item py={2} bgcolor='#333741' color="white" style={{ display: filterOpen ? "none" : "block" }} >
@@ -97,7 +97,7 @@ export default function MainView(props) {
                                     <Grid container direction="column" justifyContent="center" alignItems="center" bgcolor='#333741' color="white" height="100%">
                                         <SurfaceFilterContainer
                                             onFilterChange={onFilterChange}
-                                            initialPrice={basicInfo.regularMarketPrice}
+                                            initialPrice={basicInfo.latestPrice}
                                             isMobile={isMobile}
                                             handleMobileFilterCollapse={handleMobileFilterCollapse}
                                             allTickers={allTickers}
@@ -173,7 +173,7 @@ export default function MainView(props) {
                             zLabel={filters.metric}
                             data={baseHeatmapData}
                             contractType={filters.contractType}
-                            stockPrice={basicInfo.regularMarketPrice}
+                            stockPrice={basicInfo.latestPrice}
                         />
                     </Grid>
                 </Grid>

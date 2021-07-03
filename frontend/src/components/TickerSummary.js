@@ -9,18 +9,18 @@ export default function TickerSummary({ basicInfo, from }) {
             <Row md={from === 'option' ? 2 : 4}>
                 <Col sm={3} xs={6}>
                     <MetricLabel label="last price" /><br />
-                    {basicInfo.regularMarketPrice ? `$${basicInfo.regularMarketPrice}` : "N/A"}
+                    {basicInfo.latestPrice ? `$${basicInfo.latestPrice}` : "N/A"}
                 </Col>
                 <Col sm={3} xs={6}>
                     <MetricLabel label="day range" /><br />
-                    {basicInfo.regularMarketDayLow && basicInfo.regularMarketDayHigh ?
-                        `${basicInfo.regularMarketDayLow.toFixed(2)}-${basicInfo.regularMarketDayHigh.toFixed(2)}` : "N/A"}
+                    {basicInfo.low && basicInfo.high ?
+                        `${basicInfo.low.toFixed(2)}-${basicInfo.high.toFixed(2)}` : "N/A"}
 
                 </Col>
                 <Col sm={3} xs={6}>
                     <MetricLabel label="52 week range" /><br />
-                    {basicInfo.fiftyTwoWeekLow && basicInfo.fiftyTwoWeekHigh ?
-                        `${basicInfo.fiftyTwoWeekLow.toFixed(2)}-${basicInfo.fiftyTwoWeekHigh.toFixed(2)}` : "N/A"}
+                    {basicInfo.week52Low && basicInfo.week52High ?
+                        `${basicInfo.week52Low.toFixed(2)}-${basicInfo.week52High.toFixed(2)}` : "N/A"}
                 </Col>
                 <Col sm={3} xs={6}>
                     <MetricLabel label="market cap" /><br />
@@ -30,7 +30,7 @@ export default function TickerSummary({ basicInfo, from }) {
             <Row md={from === 'option' ? 2 : 4}>
                 <Col sm={3} xs={6}>
                     <MetricLabel label="p/e ratio" /><br />
-                    {basicInfo.trailingPE ? basicInfo.trailingPE.toFixed(2) : "N/A"}
+                    {basicInfo.peRatio ? basicInfo.peRatio.toFixed(2) : "N/A"}
                 </Col>
                 <Col sm={3} xs={6}>
                     <MetricLabel label="eps" /><br />

@@ -81,7 +81,7 @@ export default function LandingView(props) {
                                     return (
                                         <MenuItem
                                             value={1 + val}>$
-                                            {(basicInfo.regularMarketPrice * (1 + val)).toFixed(2)} (
+                                            {(basicInfo.latestPrice * (1 + val)).toFixed(2)} (
                                             {val > 0 ? '+' : ''}{(val * 100).toFixed(0)}%)
                                         </MenuItem>
                                     );

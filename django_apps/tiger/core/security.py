@@ -54,11 +54,11 @@ class Stock(Security):
     def from_snapshot(cls, stock_snapshot):
         cache = stock_snapshot.external_cache
         if 'yahoo' in cache.request_url:
-            stock_price = blob_reader.get_quote(
-                cache.json_response, True).get('regularMarketPrice')
+            stock_price = blob_reader.get_quote(cache.json_response, is_yahoo=True).get('regularMarketPrice')
+        elif 'tdameritrade' in cache.request_url:
+            stock_price = blob_reader.get_quote(cache.json_response, is_yahoo=False).get('last')
         else:
-            stock_price = blob_reader.get_quote(
-                cache.json_response, False).get('last')
+            stock_price = cache.json_response.get('latestPrice')
         return cls(stock_snapshot.ticker, stock_price, stock_snapshot.external_cache_id, stock_snapshot.ticker_stats)
 
     @property
@@ -79,77 +79,49 @@ class Stock(Security):
 class OptionContract(Security):
     def __init__(self, ticker, is_call, data_dict, stock_price, external_cache_id=None):
         super().__init__(external_cache_id)
-        if 'contractSymbol' in data_dict:
-            # Yahoo.
-            # There are only 2 types of options: "call" and "put".
-            self.is_call = is_call
-            self.ask = data_dict.get('ask')  # Could be None.
-            self.bid = data_dict.get('bid')  # Could be None.
-            self.contract_symbol = data_dict.get('contractSymbol')
-            # Yahool uses GMT 12AM. We advance it to 4pm EST.
-            self.expiration = data_dict.get('expiration') + 72000
-            self.strike = data_dict.get('strike')
-            self.change = data_dict.get('change')
-            self.contract_size = data_dict.get('contractSize')
-            self.currency = data_dict.get('currency')
-            self.implied_volatility = data_dict.get('impliedVolatility')
-            self.in_the_money = data_dict.get('inTheMoney')
-            self.last_price = data_dict.get('lastPrice')
-            self.last_trade_date = data_dict.get('lastTradeDate')
-            self.open_interest = data_dict.get('openInterest')
-            self.percent_change = data_dict.get('percentChange')
-            self.volume = data_dict.get('volume')  # Could be None.
-        else:
-            # TD.
-            for key in data_dict:
-                if data_dict[key] == 'NaN':
-                    data_dict[key] = None
-            self.is_call = is_call
-            self.ask = data_dict.get('ask')
-            self.bid = data_dict.get('bid')
-            self.contract_symbol = data_dict.get('symbol')
-            self.expiration = int(data_dict.get('expirationDate') / 1000)
-            self.strike = data_dict.get('strikePrice')
-            self.change = data_dict.get('netChange')
-            # 100, different from 'REGULAR' of yahoo
-            self.contract_size = data_dict.get('multiplier')
-            self.currency = None
-            if data_dict.get('volatility') is not None:
-                self.implied_volatility = data_dict.get('volatility') / 100.0
-            else:
-                self.implied_volatility = None
-            self.in_the_money = data_dict.get('inTheMoney')
-            self.last_price = data_dict.get('last')
-            self.last_trade_date = int(data_dict.get('tradeTimeInLong') / 1000)
-            self.open_interest = data_dict.get('openInterest')
-            # TODO: verify data is correct.
-            self.percent_change = data_dict.get('percentChange')
-            self.volume = data_dict.get('totalVolume')
+        # TD.
+        for key in data_dict:
+            if data_dict[key] == 'NaN':
+                data_dict[key] = None
+        self.is_call = is_call
+        self.ask = data_dict.get('ask')
+        self.bid = data_dict.get('bid')
+        self.contract_symbol = data_dict.get('symbol')
+        self.expiration = int(data_dict.get('expirationDate', 0) / 1000)
+        self.strike = data_dict.get('strikePrice')
+        self.change = data_dict.get('netChange')
+        self.contract_size = data_dict.get('multiplier')
+        self.implied_volatility = data_dict.get('volatility', 0) / 100.0 if 'volatility' in data_dict else None
+        self.in_the_money = data_dict.get('inTheMoney')
+        self.last_price = data_dict.get('last')
+        self.last_trade_date = int(data_dict.get('tradeTimeInLong', 0) / 1000)
+        self.open_interest = data_dict.get('openInterest')
+        self.percent_change = data_dict.get('percentChange')
+        self.volume = data_dict.get('totalVolume')
 
-            # TD specific data.
-            self.high_price = data_dict.get('highPrice')
-            self.low_price = data_dict.get('lowPrice')
-            self.open_price = data_dict.get('openPrice')
-            self.close_price = data_dict.get('closePrice')
-            self.time_value = data_dict.get('timeValue')
-            self.bid_size = data_dict.get('bidSize')
-            self.ask_size = data_dict.get('askSize')
-            self.delta = data_dict.get('delta')
-            self.gamma = data_dict.get('gamma')
-            self.theta = data_dict.get('theta')
-            self.vega = data_dict.get('vega')
-            self.rho = data_dict.get('rho')
-            self.theoretical_volatility = data_dict.get(
-                'theoreticalVolatility') / 100.0
-            self.theoretical_option_value = data_dict.get(
-                'theoreticalOptionValue')
-            self.quote_time = int(data_dict.get('quoteTimeInLong') / 1000)
-            '''
-            TD data not used.
-            "mark", "daysToExpiration", "tradeDate", "optionDeliverablesList",
-            "expirationType", "lastTradingDay", "settlementType", "deliverableNote",
-            "isIndexOption", "markChange", "markPercentChange", "mini", "nonStandard"
-            '''
+        # TD specific data.
+        self.high_price = data_dict.get('highPrice')
+        self.low_price = data_dict.get('lowPrice')
+        self.open_price = data_dict.get('openPrice')
+        self.close_price = data_dict.get('closePrice')
+        self.time_value = data_dict.get('timeValue')
+        self.bid_size = data_dict.get('bidSize')
+        self.ask_size = data_dict.get('askSize')
+        self.delta = data_dict.get('delta')
+        self.gamma = data_dict.get('gamma')
+        self.theta = data_dict.get('theta')
+        self.vega = data_dict.get('vega')
+        self.rho = data_dict.get('rho')
+        self.theoretical_volatility = \
+            data_dict.get('theoreticalVolatility') / 100.0 if 'theoreticalVolatility' in data_dict else None
+        self.theoretical_option_value = data_dict.get('theoreticalOptionValue')
+        self.quote_time = int(data_dict.get('quoteTimeInLong') / 1000) if 'quoteTimeInLong' in data_dict else None
+        '''
+        TD data not used.
+        "mark", "daysToExpiration", "tradeDate", "optionDeliverablesList",
+        "expirationType", "lastTradingDay", "settlementType", "deliverableNote",
+        "isIndexOption", "markChange", "markPercentChange", "mini", "nonStandard"
+        '''
 
         # Non-contract data.
         self.ticker = ticker
@@ -162,16 +134,9 @@ class OptionContract(Security):
     @classmethod
     def from_snapshot(cls, contract_snapshot):
         cache = contract_snapshot.external_cache
-        if 'yahoo' in cache.request_url:
-            stock_price = blob_reader.get_quote(cache.json_response, True).get(
-                'regularMarketPrice')
-            contract_data = blob_reader.get_contract(cache.json_response, True, contract_snapshot.is_call,
-                                                     contract_snapshot.strike, contract_snapshot.expiration_timestamp)
-        else:
-            stock_price = blob_reader.get_quote(cache.json_response, False).get(
-                'last')
-            contract_data = blob_reader.get_contract(cache.json_response, False, contract_snapshot.is_call,
-                                                     contract_snapshot.strike, contract_snapshot.expiration_timestamp)
+        stock_price = cache.json_response.get('underlying').get('last')  # TODO: fix this.
+        contract_data = blob_reader.get_contract(cache.json_response, contract_snapshot.is_call,
+                                                 contract_snapshot.strike, contract_snapshot.expiration_timestamp)
         # TODO: set customizable premium
         return cls(contract_snapshot.ticker, contract_snapshot.is_call, contract_data, stock_price,
                    external_cache_id=cache.id)

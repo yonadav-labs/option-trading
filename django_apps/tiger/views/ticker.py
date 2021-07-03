@@ -181,7 +181,7 @@ class TickerViewSet(LoggingMixin, viewsets.ModelViewSet):
 
         ticker = self.get_object()
         quote, external_cache_id = ticker.get_quote()
-        stock_price = quote.get('regularMarketPrice')  # This is from Yahoo.
+        stock_price = quote.get('latestPrice')
         stock = Stock(ticker, stock_price, external_cache_id, ticker.get_latest_stats())
 
         filters = request.data.get('filters')
@@ -192,7 +192,7 @@ class TickerViewSet(LoggingMixin, viewsets.ModelViewSet):
         expiration_dates = [timestamp_to_datetime_with_default_tz(ts).strftime("%b %d, %y")
                             for ts in expirations]
 
-        call_contract_lists, put_contract_list = get_valid_contracts(ticker, request, expiration_timestamps, False, filters)
+        call_contract_lists, put_contract_list = get_valid_contracts(ticker, request, expiration_timestamps, filters)
         contract_lists = call_contract_lists if filters.get('eq.is_call') else put_contract_list
         contract_lists = sum(contract_lists, [])
 

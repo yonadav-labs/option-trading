@@ -370,7 +370,7 @@ export default function StrategyBuilder() {
                                                     return (
                                                         <Card key={"leg_" + idx + "_card"} className="mb-3">
                                                             <Card.Body>
-                                                                <CustomizableLegCard leg={leg} index={idx} selectedTicker={selectedTicker} atmPrice={basicInfo.regularMarketPrice} updateLeg={updateLeg} selectedStrategy={selectedStrategy} expirationTimestamps={expirationTimestamps} />
+                                                                <CustomizableLegCard leg={leg} index={idx} selectedTicker={selectedTicker} atmPrice={basicInfo.latestPrice} updateLeg={updateLeg} selectedStrategy={selectedStrategy} expirationTimestamps={expirationTimestamps} />
                                                             </Card.Body>
                                                         </Card>
                                                     );

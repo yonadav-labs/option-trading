@@ -6,7 +6,6 @@ from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from tiger.blob_reader import get_quote
 from tiger.core.trade.trade_factory import TradeFactory
 from tiger.models import TradeSnapshot
 from tiger.serializers import TradeSerializer, TradeSnapshotSerializer, BrokerSerializer
@@ -22,7 +21,8 @@ def trade_snapshot_detail(request, pk):
     trade_snapshot = get_object_or_404(TradeSnapshot, pk=pk)
 
     if request.method == 'GET':
-        if not trade_snapshot.is_public and trade_snapshot.creator.id != request.user.id:
+        if not trade_snapshot.is_public and \
+                (not trade_snapshot.creator or trade_snapshot.creator.id != request.user.id):
             return Response(status=status.HTTP_404_NOT_FOUND)
 
         broker = get_broker(request.user)
@@ -32,8 +32,7 @@ def trade_snapshot_detail(request, pk):
         trade = TradeFactory.from_snapshot(trade_snapshot, broker_settings)
         trade_serializer = TradeSerializer(trade)
 
-        response = json.loads(trade_snapshot.stock_snapshot.external_cache.response_blob)
-        quote = get_quote(response, True)
+        quote_response = json.loads(trade_snapshot.stock_snapshot.external_cache.response_blob)
 
         current_trade = get_current_trade(trade_snapshot, broker_settings)
         if current_trade:
@@ -45,7 +44,7 @@ def trade_snapshot_detail(request, pk):
         resp = {
             'trade_snapshot': trade_serializer.data,
             'current_trade_snapshot': current_trade_snapshot,
-            'quote': quote,
+            'quote': quote_response,
             'broker': broker_serializer.data
         }
 

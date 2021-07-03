@@ -136,7 +136,7 @@ def get_top_trades(request, ticker_symbol):
         raise APIException('Invalid request body.')
 
     quote, external_cache_id = ticker.get_quote()
-    stock_price = quote.get('regularMarketPrice')  # This is from Yahoo.
+    stock_price = quote.get('latestPrice')
     stock = Stock(ticker, stock_price, external_cache_id, ticker.get_latest_stats())
 
     call_contract_lists, put_contract_lists = get_filtered_contracts(ticker, expiration_timestamps, contract_filters)

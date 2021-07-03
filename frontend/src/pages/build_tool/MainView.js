@@ -97,7 +97,7 @@ export default function MainView(props) {
                             case "option":
                                 return (
                                     <BuildLeg leg={leg} index={index} key={index} selectedTicker={selectedTicker}
-                                        atmPrice={basicInfo.regularMarketPrice} updateLeg={updateLeg}
+                                        atmPrice={basicInfo.latestPrice} updateLeg={updateLeg}
                                         selectedStrategy={selectedStrategy} expirationTimestampsOptions={expirationTimestampsOptions}
                                     />
                                 );

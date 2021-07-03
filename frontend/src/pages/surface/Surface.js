@@ -76,7 +76,7 @@ export default function Surface() {
     const resetStates = () => {
         setSelectedTicker(null);
         setExpirationTimestampsOptions([{}])
-        setBasicInfo({regularMarketPrice: 0});
+        setBasicInfo({ latestPrice: 0 });
         setModalActive(false);
         setBaseHeatmapData(null);
         setFilters(initialFilters);
@@ -90,7 +90,7 @@ export default function Surface() {
                     value: ts,
                     label:
                         <span style={{ fontSize: '0.8rem' }}>
-                            <Moment date={new Date(ts)} format="MM/DD/YY" />
+                            <Moment date={new Date(ts)} format="MM/DD/YYYY" />
                         </span>
                 });
             })
@@ -104,7 +104,7 @@ export default function Surface() {
     const onBasicInfoChange = (val) => {
         setBasicInfo(val);
         onFilterChange(0, "minStrike");
-        onFilterChange(val.regularMarketPrice * 2, "maxStrike");
+        onFilterChange(val.latestPrice * 2, "maxStrike");
     }
 
     const onTickerSelectionChange = (e, selected) => {

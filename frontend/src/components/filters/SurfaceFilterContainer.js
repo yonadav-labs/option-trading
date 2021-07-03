@@ -131,7 +131,7 @@ export default function SurfaceFilterContainer(props) {
     }
 
     function formatDate(value) {
-        return <Moment date={new Date(value)} format="MM/DD/YY" />;
+        return <Moment date={new Date(value)} format="MM/DD/YYYY" />;
     }
 
     const expirationDateMarks = [

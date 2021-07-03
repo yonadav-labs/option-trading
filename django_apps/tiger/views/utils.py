@@ -1,13 +1,9 @@
-from django.conf import settings
 from pinax.referrals.models import ReferralResponse
 from tiger.core.trade.trade_factory import TradeFactory
+from tiger.fetcher import get_td_option_url
 from tiger.models import Broker
 from tiger.serializers import TradeSnapshotSerializer
 from tiger.utils import timedelta_from_timestamp
-
-
-def is_low_liquidity(contract):
-    return contract.open_interest < 10 or contract.volume == 0
 
 
 def filter_object_on_attribute(object, filter_key, filter_value):
@@ -46,22 +42,14 @@ def filter_object_on_attribute(object, filter_key, filter_value):
     return True
 
 
-def get_valid_contracts(ticker, request, all_expiration_timestamps, filter_low_liquidity=False, filters={}):
-    if request.data.get('expiration_timestamps'):
-        input_expiration_timestamps = set([int(ts) for ts in request.data.get('expiration_timestamps') if
-                                           int(ts) in all_expiration_timestamps])
-    else:
-        input_expiration_timestamps = set([int(ts) for ts in request.query_params.getlist('expiration_timestamps') if
-                                           int(ts) in all_expiration_timestamps])
+def get_valid_contracts(ticker, request, all_expiration_timestamps, filters={}):
+    input_expiration_timestamps = set([int(ts) for ts in request.data.get('expiration_timestamps') if
+                                       int(ts) in all_expiration_timestamps])
     call_lists = []
     put_lists = []
 
     for ts in input_expiration_timestamps:
         calls, puts = ticker.get_call_puts(ts)
-
-        if filter_low_liquidity:
-            calls = list(filter(lambda call: not is_low_liquidity(call), calls))
-            puts = list(filter(lambda put: not is_low_liquidity(put), puts))
 
         # apply all filters
         if filters is not None:
@@ -119,7 +107,8 @@ def get_current_trade(trade_snapshot, broker_settings):
             if timedelta_from_timestamp(expiration_timestamp).days < 0:
                 expired = True
                 break
-            _, option_cache_id = ticker.get_request_cache(settings.USE_YAHOO, expiration_timestamp)
+            url = get_td_option_url(ticker.symbol.upper())
+            _, option_cache_id = ticker.get_request_cache(url)
             leg_snapshot['contract_snapshot']['external_cache_id'] = option_cache_id
 
     if expired:

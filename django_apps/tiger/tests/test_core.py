@@ -15,58 +15,55 @@ MOCK_NOW_TIMESTAMP = 1609664400  # 01/03/2021
 
 class CallTradesTestCase(TestCase):
     def setUp(self):
-        self.yahoo_input = {
-            "contractSymbol": "TSLA210716C00288000",
-            "strike": 288.0,
-            "currency": "USD",
-            "lastPrice": 156.75,
-            "change": -23.5,
+        self.td_input = {
+            "symbol": "TSLA210716C00288000",
+            "strikePrice": 288.0,
+            "last": 156.75,
+            "netChange": -23.5,
             "percentChange": -13.037448,
-            "volume": 1,
+            "totalVolume": 1,
             "openInterest": 15,
             "bid": 160.25,
             "ask": 163.15,
             # mid: 161.7
-            "contractSize": "REGULAR",
-            "expiration": 1626393600,
-            "lastTradeDate": 1603466039,
-            "impliedVolatility": 0.6649966361999513,
+            "multiplier": 100,
+            "expirationDate": 1626465600000,
+            "tradeTimeInLong": 1626393600000,
+            "volatility": 66.49966361999513,
             "inTheMoney": True
         }
-        self.yahoo_input2 = {
-            "contractSymbol": "TSLA210219P00445000",
-            "strike": 445.0,
-            "currency": "USD",
-            "lastPrice": 74.0,
-            "change": -1.0,
+        self.td_input2 = {
+            "symbol": "TSLA210219P00445000",
+            "strikePrice": 445.0,
+            "last": 74.0,
+            "netChange": -1.0,
             "percentChange": -1.3333334,
-            "volume": 1,
+            "totalVolume": 1,
             "openInterest": 203,
             "bid": 75.5,
             "ask": 77.2,
             # mid: 76.35
-            "contractSize": "REGULAR",
-            "expiration": 1626393600,
-            "lastTradeDate": 1603466039,
-            "impliedVolatility": 0.6474034283447265,
+            "multiplier": 100,
+            "expirationDate": 1626465600000,
+            "tradeTimeInLong": 1626393600000,
+            "volatility": 64.74034283447265,
             "inTheMoney": False
         }
-        self.yahoo_input3 = {
-            "contractSymbol": "TSLA210219P00445000",
-            "strike": 324.0,
-            "currency": "USD",
-            "lastPrice": 74.0,
-            "change": -1.0,
+        self.td_input3 = {
+            "symbol": "TSLA210219P00445000",
+            "strikePrice": 324.0,
+            "last": 74.0,
+            "netChange": -1.0,
             "percentChange": -1.3333334,
-            "volume": 1,
+            "totalVolume": 1,
             "openInterest": 203,
             "bid": 75.5,
             "ask": 77.2,
             # mid: 76.35
-            "contractSize": "REGULAR",
-            "expiration": 1626374800,
-            "lastTradeDate": 1603466039,
-            "impliedVolatility": 0.6474034283447265,
+            "multiplier": 100,
+            "expirationDate": 1626465600000,
+            "tradeTimeInLong": 1626393600000,
+            "volatility": 64.74034283447265,
             "inTheMoney": False
         }
         self.stock_price = 420.0
@@ -82,7 +79,7 @@ class CallTradesTestCase(TestCase):
     def test_initialization(self, mock_now):
         mock_now.return_value = make_aware(datetime.fromtimestamp(MOCK_NOW_TIMESTAMP), get_default_timezone())
         target_price = 600.0
-        call_contract = OptionContract(self.ticker, True, self.yahoo_input, self.stock_price, 'mid')
+        call_contract = OptionContract(self.ticker, True, self.td_input, self.stock_price, 'mid')
         long_call = LongCall.build(self.stock, call_contract, 'mid', self.broker_settings, target_price, target_price)
         # Test contract attributes.
         self.assertEqual(call_contract.ask, 163.15)
@@ -133,11 +130,11 @@ class CallTradesTestCase(TestCase):
         self.assertIsNone(long_call.reward_to_risk_ratio)
 
     def test_organized_option_legs(self):
-        call_contract_1 = OptionContract(self.ticker, True, self.yahoo_input, self.stock_price, 'mid')
-        call_contract_2 = OptionContract(self.ticker, True, self.yahoo_input2, self.stock_price, 'mid')
-        call_contract_3 = OptionContract(self.ticker, True, self.yahoo_input3, self.stock_price, 'mid')
-        put_contract_1 = OptionContract(self.ticker, False, self.yahoo_input, self.stock_price, 'mid')
-        put_contract_2 = OptionContract(self.ticker, False, self.yahoo_input2, self.stock_price, 'mid')
+        call_contract_1 = OptionContract(self.ticker, True, self.td_input, self.stock_price, 'mid')
+        call_contract_2 = OptionContract(self.ticker, True, self.td_input2, self.stock_price, 'mid')
+        call_contract_3 = OptionContract(self.ticker, True, self.td_input3, self.stock_price, 'mid')
+        put_contract_1 = OptionContract(self.ticker, False, self.td_input, self.stock_price, 'mid')
+        put_contract_2 = OptionContract(self.ticker, False, self.td_input2, self.stock_price, 'mid')
         # long call 1626393600 $288
         call_leg_1 = OptionLeg(True, 1, call_contract_1, 'mid', self.broker_settings)
         # long call 1626393600 $445
@@ -189,7 +186,7 @@ class CallTradesTestCase(TestCase):
                          call_leg_4.contract.contract_symbol)
 
     def test_value_in_price_range(self):
-        call_contract = OptionContract(self.ticker, True, self.yahoo_input, self.stock_price)
+        call_contract = OptionContract(self.ticker, True, self.td_input, self.stock_price)
         self.assertAlmostEqual(call_contract.get_value_in_price_range(100, 102), 0.0)
         self.assertAlmostEqual(call_contract.get_value_in_price_range(300, 310), 1700.0)
         self.assertAlmostEqual(call_contract.get_value_in_price_range(278, 298), 250.0)
@@ -221,45 +218,45 @@ class CallTradesTestCase(TestCase):
     def test_missing_bid_or_ask(self, mock_now):
         mock_now.return_value = make_aware(datetime.fromtimestamp(MOCK_NOW_TIMESTAMP), get_default_timezone())
         # Missing bid.
-        yahoo_input = dict(self.yahoo_input)
-        yahoo_input.pop('bid', None)
-        call_contract = OptionContract(self.ticker, True, yahoo_input, self.stock_price)
+        td_input = dict(self.td_input)
+        td_input.pop('bid', None)
+        call_contract = OptionContract(self.ticker, True, td_input, self.stock_price)
         self.assertEqual(call_contract.ask, 163.15)
         self.assertEqual(call_contract.bid, None)
         self.assertAlmostEqual(call_contract.mark, 163.15)
         # Missing ask.
-        yahoo_input = dict(self.yahoo_input)
-        yahoo_input.pop('ask', None)
-        call_contract = OptionContract(self.ticker, True, yahoo_input, self.stock_price)
+        td_input = dict(self.td_input)
+        td_input.pop('ask', None)
+        call_contract = OptionContract(self.ticker, True, td_input, self.stock_price)
         self.assertEqual(call_contract.ask, None)
         self.assertEqual(call_contract.bid, 160.25)
         self.assertAlmostEqual(call_contract.mark, 160.25)
         # Missing both bid and ask but have last price.
-        yahoo_input = dict(self.yahoo_input)
-        yahoo_input.pop('bid', None)
-        yahoo_input.pop('ask', None)
-        call_contract = OptionContract(self.ticker, True, yahoo_input, self.stock_price)
+        td_input = dict(self.td_input)
+        td_input.pop('bid', None)
+        td_input.pop('ask', None)
+        call_contract = OptionContract(self.ticker, True, td_input, self.stock_price)
         self.assertAlmostEqual(call_contract.mark, 156.75)
         # Missing bid, ask and last price.
-        yahoo_input = dict(self.yahoo_input)
-        yahoo_input.pop('bid', None)
-        yahoo_input.pop('ask', None)
-        yahoo_input.pop('lastPrice', None)
+        td_input = dict(self.td_input)
+        td_input.pop('bid', None)
+        td_input.pop('ask', None)
+        td_input.pop('last', None)
         with self.assertRaises(ValueError):
-            OptionContract(self.ticker, True, yahoo_input, self.stock_price)
+            OptionContract(self.ticker, True, td_input, self.stock_price)
         # All bid, ask and last price are 0.
-        yahoo_input = dict(self.yahoo_input)
-        yahoo_input['bid'] = 0.0
-        yahoo_input['ask'] = 0.0
-        yahoo_input['lastPrice'] = 0.0
+        td_input = dict(self.td_input)
+        td_input['bid'] = 0.0
+        td_input['ask'] = 0.0
+        td_input['last'] = 0.0
         with self.assertRaises(ValueError):
-            OptionContract(self.ticker, True, yahoo_input, self.stock_price)
+            OptionContract(self.ticker, True, td_input, self.stock_price)
 
     @mock.patch('django.utils.timezone.now')
     def test_sell_covered_call(self, mock_now):
         mock_now.return_value = make_aware(datetime.fromtimestamp(MOCK_NOW_TIMESTAMP), get_default_timezone())
 
-        call_contract = OptionContract(self.ticker, True, self.yahoo_input, self.stock_price)
+        call_contract = OptionContract(self.ticker, True, self.td_input, self.stock_price)
         sell_call = CoveredCall.build(self.stock, call_contract, 'mid', self.broker_settings, target_price_lower=258.3,
                                       target_price_upper=258.3)
         self.assertEqual(call_contract.to_strike, -132.0)
@@ -283,7 +280,7 @@ class CallTradesTestCase(TestCase):
             CoveredCall.build(self.stock, call_contract, 'mid', self.broker_settings, 278, 298).target_price_profit,
             2718.7)
 
-        call_contract = OptionContract(self.ticker, True, self.yahoo_input2, self.stock_price)
+        call_contract = OptionContract(self.ticker, True, self.td_input2, self.stock_price)
         sell_call = CoveredCall.build(self.stock, call_contract, 'mid', self.broker_settings)
         self.assertEqual(call_contract.to_strike, 25.0)
         self.assertAlmostEqual(call_contract.to_strike_ratio, 0.05952380952)
@@ -297,8 +294,8 @@ class CallTradesTestCase(TestCase):
     @mock.patch('django.utils.timezone.now')
     def test_bull_call_spread(self, mock_now):
         mock_now.return_value = make_aware(datetime.fromtimestamp(MOCK_NOW_TIMESTAMP), get_default_timezone())
-        call_contract_1 = OptionContract(self.ticker, True, self.yahoo_input, self.stock_price, 'mid')
-        call_contract_2 = OptionContract(self.ticker, True, self.yahoo_input2, self.stock_price, 'mid')
+        call_contract_1 = OptionContract(self.ticker, True, self.td_input, self.stock_price, 'mid')
+        call_contract_2 = OptionContract(self.ticker, True, self.td_input2, self.stock_price, 'mid')
         bull_call_spread = BullCallSpread.build(self.stock, call_contract_1, call_contract_2, 'mid',
                                                 self.broker_settings, 400, 400, available_cash=10000)
         self.assertAlmostEqual(bull_call_spread.cost, 8537.6)
@@ -313,8 +310,8 @@ class CallTradesTestCase(TestCase):
     @mock.patch('django.utils.timezone.now')
     def test_bear_call_spread(self, mock_now):
         mock_now.return_value = make_aware(datetime.fromtimestamp(MOCK_NOW_TIMESTAMP), get_default_timezone())
-        call_contract_1 = OptionContract(self.ticker, True, self.yahoo_input, self.stock_price, 'mid')
-        call_contract_2 = OptionContract(self.ticker, True, self.yahoo_input2, self.stock_price, 'mid')
+        call_contract_1 = OptionContract(self.ticker, True, self.td_input, self.stock_price, 'mid')
+        call_contract_2 = OptionContract(self.ticker, True, self.td_input2, self.stock_price, 'mid')
         bear_call_spread = BearCallSpread.build(self.stock, call_contract_1, call_contract_2, 'mid',
                                                 self.broker_settings, 400, 400, available_cash=10000)
         self.assertAlmostEqual(bear_call_spread.cost, 7167.6)
@@ -327,7 +324,7 @@ class CallTradesTestCase(TestCase):
         self.assertAlmostEqual(bear_call_spread.reward_to_risk_ratio, 1.19041241140)
 
     def test_option_leg_premium_type(self):
-        call_contract = OptionContract(self.ticker, True, self.yahoo_input, self.stock_price)
+        call_contract = OptionContract(self.ticker, True, self.td_input, self.stock_price)
         self.assertAlmostEqual(OptionLeg(True, 2, call_contract, 'mid',
                                          self.broker_settings).total_cost, 16170 * 2 + 1.3)
         self.assertAlmostEqual(OptionLeg(True, 2, call_contract, 'market',
@@ -340,156 +337,147 @@ class CallTradesTestCase(TestCase):
 
 class PutTradesTestCase(TestCase):
     def setUp(self):
-        self.yahoo_input = {
-            "contractSymbol": "QQQE210115P00068000",
-            "strike": 68.0,
-            "currency": "USD",
-            "lastPrice": 0.65,
-            "change": 0.65,
-            "volume": 3,
+        self.td_input = {
+            "symbol": "QQQE210115P00068000",
+            "strikePrice": 68.0,
+            "last": 0.65,
+            "netChange": 0.65,
+            "totalVolume": 3,
             "openInterest": 10,
             "bid": 0.4,
             "ask": 1.0,
-            "contractSize": "REGULAR",
-            "expiration": 1626393600,
-            "lastTradeDate": 1603466039,
-            "impliedVolatility": 0.32031929687499994,
+            "multiplier": 100,
+            "expirationDate": 1626465600000,
+            "tradeTimeInLong": 1626393600000,
+            "volatility": 32.031929687499994,
             "inTheMoney": False
         }
 
-        self.yahoo_input2 = {
-            "contractSymbol": "QQQE210115P00074000",
-            "strike": 74.0,
-            "currency": "USD",
-            "lastPrice": 2.65,
-            "change": 0.65,
-            "volume": 3,
+        self.td_input2 = {
+            "symbol": "QQQE210115P00074000",
+            "strikePrice": 74.0,
+            "last": 2.65,
+            "netChange": 0.65,
+            "totalVolume": 3,
             "openInterest": 10,
             "bid": 2.4,
             "ask": 3.0,
-            "contractSize": "REGULAR",
-            "expiration": 1626393600,
-            "lastTradeDate": 1603466039,
-            "impliedVolatility": 0.26031929687499994,
+            "multiplier": 100,
+            "expirationDate": 1626465600000,
+            "tradeTimeInLong": 1626393600000,
+            "volatility": 26.031929687499994,
             "inTheMoney": True
         }
 
-        self.yahoo_input3 = {
-            "contractSymbol": "QQQE210115P00074000",
-            "strike": 68.0,
-            "currency": "USD",
-            "lastPrice": 2.65,
-            "change": 0.65,
-            "volume": 3,
+        self.td_input3 = {
+            "symbol": "QQQE210115P00074000",
+            "strikePrice": 68.0,
+            "last": 2.65,
+            "netChange": 0.65,
+            "totalVolume": 3,
             "openInterest": 10,
             "bid": 2.4,
             "ask": 3.0,
-            "contractSize": "REGULAR",
-            "expiration": 1626393600,
-            "lastTradeDate": 1603466039,
-            "impliedVolatility": 0.26031929687499994,
+            "multiplier": 100,
+            "expirationDate": 1626465600000,
+            "tradeTimeInLong": 1626393600000,
+            "volatility": 26.031929687499994,
             "inTheMoney": True
         }
 
-        self.yahoo_input4 = {
-            "contractSymbol": "QQQE210115P00068000",
-            "strike": 77.0,
-            "currency": "USD",
-            "lastPrice": 0.65,
-            "change": 0.65,
-            "volume": 3,
+        self.td_input4 = {
+            "symbol": "QQQE210115P00068000",
+            "strikePrice": 77.0,
+            "last": 0.65,
+            "netChange": 0.65,
+            "totalVolume": 3,
             "openInterest": 10,
             "bid": 0.4,
             "ask": 1.0,
-            "contractSize": "REGULAR",
-            "expiration": 1626393600,
-            "lastTradeDate": 1603466039,
-            "impliedVolatility": 0.32031929687499994,
+            "multiplier": 100,
+            "expirationDate": 1626465600000,
+            "tradeTimeInLong": 1626393600000,
+            "volatility": 32.031929687499994,
             "inTheMoney": False
         }
 
-        self.yahoo_input5 = {
-            "contractSymbol": "QQQE210115P00068000",
-            "strike": 63.0,
-            "currency": "USD",
-            "lastPrice": 0.65,
-            "change": 0.65,
-            "volume": 3,
+        self.td_input5 = {
+            "symbol": "QQQE210115P00068000",
+            "strikePrice": 63.0,
+            "last": 0.65,
+            "netChange": 0.65,
+            "totalVolume": 3,
             "openInterest": 10,
             "bid": 0.1,
             "ask": 0.5,
-            "contractSize": "REGULAR",
-            "expiration": 1626393600,
-            "lastTradeDate": 1603466039,
-            "impliedVolatility": 0.32031929687499994,
+            "multiplier": 100,
+            "expirationDate": 1626465600000,
+            "tradeTimeInLong": 1626393600000,
+            "volatility": 32.031929687499994,
             "inTheMoney": False
         }
 
-        self.yahoo_input6 = {
-            "contractSymbol": "QQQE210115P00068000",
-            "strike": 77.0,
-            "currency": "USD",
-            "lastPrice": 0.65,
-            "change": 0.65,
-            "volume": 3,
+        self.td_input6 = {
+            "symbol": "QQQE210115P00068000",
+            "strikePrice": 77.0,
+            "last": 0.65,
+            "netChange": 0.65,
+            "totalVolume": 3,
             "openInterest": 10,
             "bid": 0.9,
             "ask": 1.0,
-            "contractSize": "REGULAR",
-            "expiration": 1626393600,
-            "lastTradeDate": 1603466039,
-            "impliedVolatility": 0.32031929687499994,
+            "multiplier": 100,
+            "expirationDate": 1626465600000,
+            "tradeTimeInLong": 1626393600000,
+            "volatility": 32.031929687499994,
             "inTheMoney": False
         }
 
-        self.yahoo_input7 = {
-            "contractSymbol": "QQQE210115P00068000",
-            "strike": 70.0,
-            "currency": "USD",
-            "lastPrice": 0.65,
-            "change": 0.65,
-            "volume": 3,
+        self.td_input7 = {
+            "symbol": "QQQE210115P00068000",
+            "strikePrice": 70.0,
+            "last": 0.65,
+            "netChange": 0.65,
+            "totalVolume": 3,
             "openInterest": 10,
             "bid": 0.3,
             "ask": 0.8,
-            "contractSize": "REGULAR",
-            "expiration": 1626393600,
-            "lastTradeDate": 1603466039,
-            "impliedVolatility": 0.32031929687499994,
+            "multiplier": 100,
+            "expirationDate": 1626465600000,
+            "tradeTimeInLong": 1626393600000,
+            "volatility": 32.031929687499994,
             "inTheMoney": False
         }
 
-        self.yahoo_input8 = {
-            "contractSymbol": "QQQE210115P00068000",
-            "strike": 80.0,
-            "currency": "USD",
-            "lastPrice": 0.65,
-            "change": 0.65,
-            "volume": 3,
+        self.td_input8 = {
+            "symbol": "QQQE210115P00068000",
+            "strikePrice": 80.0,
+            "last": 0.65,
+            "netChange": 0.65,
+            "totalVolume": 3,
             "openInterest": 10,
             "bid": 0.3,
             "ask": 0.4,
-            "contractSize": "REGULAR",
-            "expiration": 1626393600,
-            "lastTradeDate": 1603466039,
-            "impliedVolatility": 0.32031929687499994,
+            "multiplier": 100,
+            "expirationDate": 1626465600000,
+            "tradeTimeInLong": 1626393600000,
+            "volatility": 32.031929687499994,
             "inTheMoney": False
         }
 
-        self.yahoo_input9 = {
-            "contractSymbol": "QQQE210115P00068000",
-            "strike": 65.0,
-            "currency": "USD",
-            "lastPrice": 0.65,
-            "change": 0.65,
-            "volume": 3,
+        self.td_input9 = {
+            "symbol": "QQQE210115P00068000",
+            "strikePrice": 65.0,
+            "last": 0.65,
+            "netChange": 0.65,
+            "totalVolume": 3,
             "openInterest": 10,
             "bid": 2.1,
             "ask": 2.8,
-            "contractSize": "REGULAR",
-            "expiration": 1626393600,
-            "lastTradeDate": 1603466039,
-            "impliedVolatility": 0.32031929687499994,
+            "multiplier": 100,
+            "expirationDate": 1626465600000,
+            "tradeTimeInLong": 1626393600000,
+            "volatility": 32.031929687499994,
             "inTheMoney": False
         }
 
@@ -505,7 +493,7 @@ class PutTradesTestCase(TestCase):
     @mock.patch('django.utils.timezone.now')
     def test_sell_put(self, mock_now):
         mock_now.return_value = make_aware(datetime.fromtimestamp(MOCK_NOW_TIMESTAMP), get_default_timezone())
-        put_contract = OptionContract(self.ticker, False, self.yahoo_input, self.stock_price)
+        put_contract = OptionContract(self.ticker, False, self.td_input, self.stock_price)
         sell_put = CashSecuredPut.build(self.stock, put_contract, 'mid', self.broker_settings, target_price_lower=67.3,
                                         target_price_upper=67.3)
         # Test attributes.
@@ -532,7 +520,7 @@ class PutTradesTestCase(TestCase):
     @mock.patch('django.utils.timezone.now')
     def test_buy_put(self, mock_now):
         mock_now.return_value = make_aware(datetime.fromtimestamp(MOCK_NOW_TIMESTAMP), get_default_timezone())
-        put_contract = OptionContract(self.ticker, False, self.yahoo_input, self.stock_price)
+        put_contract = OptionContract(self.ticker, False, self.td_input, self.stock_price)
         long_put = LongPut.build(self.stock, put_contract, 'mid', self.broker_settings, target_price_lower=65.0,
                                  target_price_upper=65.0)
 
@@ -560,7 +548,7 @@ class PutTradesTestCase(TestCase):
         self.assertAlmostEqual(long_put.reward_to_risk_ratio, 94.3716690042)
 
     def test_value_in_price_range(self):
-        put_contract = OptionContract(self.ticker, False, self.yahoo_input, self.stock_price)
+        put_contract = OptionContract(self.ticker, False, self.td_input, self.stock_price)
         self.assertEqual(put_contract.get_value_in_price_range(90, 102), 0.0)
         self.assertEqual(put_contract.get_value_in_price_range(55, 65), 800.0)
         self.assertEqual(put_contract.get_value_in_price_range(63, 73), 125.0)
@@ -575,8 +563,8 @@ class PutTradesTestCase(TestCase):
         self.assertAlmostEqual(long_put_leg.get_return_at_expiration(67.3, 67.3), -1.3)
 
     def test_bear_put_spread(self):
-        put_contract_1 = OptionContract(self.ticker, False, self.yahoo_input, self.stock_price, 'mid')
-        put_contract_2 = OptionContract(self.ticker, False, self.yahoo_input2, self.stock_price, 'mid')
+        put_contract_1 = OptionContract(self.ticker, False, self.td_input, self.stock_price, 'mid')
+        put_contract_2 = OptionContract(self.ticker, False, self.td_input2, self.stock_price, 'mid')
         bear_put_spread = BearPutSpread.build(self.stock, put_contract_1, put_contract_2, 'mid',
                                               self.broker_settings, 70, 70)
         self.assertAlmostEqual(bear_put_spread.cost, 202.6)
@@ -589,8 +577,8 @@ class PutTradesTestCase(TestCase):
         self.assertAlmostEqual(bear_put_spread.reward_to_risk_ratio, 1.96150049358)
 
     def test_bull_put_spread(self):
-        put_contract_1 = OptionContract(self.ticker, False, self.yahoo_input, self.stock_price, 'mid')
-        put_contract_2 = OptionContract(self.ticker, False, self.yahoo_input2, self.stock_price, 'mid')
+        put_contract_1 = OptionContract(self.ticker, False, self.td_input, self.stock_price, 'mid')
+        put_contract_2 = OptionContract(self.ticker, False, self.td_input2, self.stock_price, 'mid')
         bull_put_spread = BullPutSpread.build(self.stock, put_contract_1, put_contract_2, 'mid',
                                               self.broker_settings, 70, 70)
         self.assertAlmostEqual(bull_put_spread.cost, 402.6)
@@ -603,8 +591,8 @@ class PutTradesTestCase(TestCase):
         self.assertAlmostEqual(bull_put_spread.reward_to_risk_ratio, 0.49031296572)
 
     def test_long_straddle(self):
-        call_contract = OptionContract(self.ticker, True, self.yahoo_input3, self.stock_price, 'mid')
-        put_contract = OptionContract(self.ticker, False, self.yahoo_input, self.stock_price, 'mid')
+        call_contract = OptionContract(self.ticker, True, self.td_input3, self.stock_price, 'mid')
+        put_contract = OptionContract(self.ticker, False, self.td_input, self.stock_price, 'mid')
         long_straddle = LongStraddle.build(self.stock, call_contract, put_contract, 'mid', self.broker_settings, 75, 75)
         self.assertAlmostEqual(long_straddle.cost, 342.6)
         self.assertEqual(long_straddle.best_return, 'infinite')
@@ -617,9 +605,9 @@ class PutTradesTestCase(TestCase):
         self.assertEqual(long_straddle.reward_to_risk_ratio, None)
 
     def test_long_butterfly_spread(self):
-        call_contract = OptionContract(self.ticker, True, self.yahoo_input, self.stock_price, 'mid')
-        call_contract2 = OptionContract(self.ticker, True, self.yahoo_input6, self.stock_price, 'mid')
-        call_contract3 = OptionContract(self.ticker, True, self.yahoo_input7, self.stock_price, 'mid')
+        call_contract = OptionContract(self.ticker, True, self.td_input, self.stock_price, 'mid')
+        call_contract2 = OptionContract(self.ticker, True, self.td_input6, self.stock_price, 'mid')
+        call_contract3 = OptionContract(self.ticker, True, self.td_input7, self.stock_price, 'mid')
         long_butterfly_spread = LongButterflySpread.build(
             self.stock, call_contract, call_contract2, call_contract3, 'mid', self.broker_settings, 73.55, 73.55)
         self.assertAlmostEqual(long_butterfly_spread.cost, 58.9)
@@ -633,9 +621,9 @@ class PutTradesTestCase(TestCase):
         self.assertAlmostEqual(long_butterfly_spread.reward_to_risk_ratio, 0.2524601896582573)
 
     def test_short_butterfly_spread(self):
-        call_contract = OptionContract(self.ticker, True, self.yahoo_input, self.stock_price, 'mid')
-        call_contract2 = OptionContract(self.ticker, True, self.yahoo_input6, self.stock_price, 'mid')
-        call_contract3 = OptionContract(self.ticker, True, self.yahoo_input7, self.stock_price, 'mid')
+        call_contract = OptionContract(self.ticker, True, self.td_input, self.stock_price, 'mid')
+        call_contract2 = OptionContract(self.ticker, True, self.td_input6, self.stock_price, 'mid')
+        call_contract3 = OptionContract(self.ticker, True, self.td_input7, self.stock_price, 'mid')
         short_butterfly_spread = ShortButterflySpread.build(
             self.stock, call_contract, call_contract2, call_contract3, 'mid', self.broker_settings, 73.55, 73.55)
         self.assertAlmostEqual(short_butterfly_spread.cost, -51.1)
@@ -649,8 +637,8 @@ class PutTradesTestCase(TestCase):
         self.assertAlmostEqual(short_butterfly_spread.reward_to_risk_ratio, 3.701141705842848)
 
     def test_short_straddle(self):
-        call_contract = OptionContract(self.ticker, True, self.yahoo_input3, self.stock_price, 'mid')
-        put_contract = OptionContract(self.ticker, False, self.yahoo_input, self.stock_price, 'mid')
+        call_contract = OptionContract(self.ticker, True, self.td_input3, self.stock_price, 'mid')
+        put_contract = OptionContract(self.ticker, False, self.td_input, self.stock_price, 'mid')
         short_straddle = ShortStraddle.build(self.stock, call_contract, put_contract,
                                              'mid', self.broker_settings, 68, 68)
         self.assertAlmostEqual(short_straddle.cost, -337.4)
@@ -664,8 +652,8 @@ class PutTradesTestCase(TestCase):
         self.assertEqual(short_straddle.reward_to_risk_ratio, None)
 
     def test_short_strangle(self):
-        call_contract = OptionContract(self.ticker, True, self.yahoo_input2, self.stock_price, 'mid')
-        put_contract = OptionContract(self.ticker, False, self.yahoo_input, self.stock_price, 'mid')
+        call_contract = OptionContract(self.ticker, True, self.td_input2, self.stock_price, 'mid')
+        put_contract = OptionContract(self.ticker, False, self.td_input, self.stock_price, 'mid')
         short_strangle = ShortStrangle.build(self.stock, call_contract, put_contract,
                                              'mid', self.broker_settings, 69, 69)
         self.assertAlmostEqual(short_strangle.cost, -337.4)
@@ -679,10 +667,10 @@ class PutTradesTestCase(TestCase):
         self.assertEqual(short_strangle.reward_to_risk_ratio, None)
 
     def test_iron_butterfly(self):
-        call_contract = OptionContract(self.ticker, True, self.yahoo_input4, self.stock_price, 'mid')
-        call_contract2 = OptionContract(self.ticker, True, self.yahoo_input, self.stock_price, 'mid')
-        put_contract = OptionContract(self.ticker, False, self.yahoo_input5, self.stock_price, 'mid')
-        put_contract2 = OptionContract(self.ticker, False, self.yahoo_input3, self.stock_price, 'mid')
+        call_contract = OptionContract(self.ticker, True, self.td_input4, self.stock_price, 'mid')
+        call_contract2 = OptionContract(self.ticker, True, self.td_input, self.stock_price, 'mid')
+        put_contract = OptionContract(self.ticker, False, self.td_input5, self.stock_price, 'mid')
+        put_contract2 = OptionContract(self.ticker, False, self.td_input3, self.stock_price, 'mid')
         iron_butterfly = IronButterfly.build(self.stock, call_contract, call_contract2,
                                              put_contract, put_contract2, 'mid', self.broker_settings, 70, 70)
         self.assertAlmostEqual(iron_butterfly.cost, -234.8)
@@ -696,10 +684,10 @@ class PutTradesTestCase(TestCase):
         self.assertEqual(iron_butterfly.reward_to_risk_ratio, 0.3529765484064943)
 
     def test_iron_condor(self):
-        call_contract = OptionContract(self.ticker, True, self.yahoo_input4, self.stock_price, 'mid')
-        call_contract2 = OptionContract(self.ticker, True, self.yahoo_input2, self.stock_price, 'mid')
-        put_contract = OptionContract(self.ticker, False, self.yahoo_input5, self.stock_price, 'mid')
-        put_contract2 = OptionContract(self.ticker, False, self.yahoo_input, self.stock_price, 'mid')
+        call_contract = OptionContract(self.ticker, True, self.td_input4, self.stock_price, 'mid')
+        call_contract2 = OptionContract(self.ticker, True, self.td_input2, self.stock_price, 'mid')
+        put_contract = OptionContract(self.ticker, False, self.td_input5, self.stock_price, 'mid')
+        put_contract2 = OptionContract(self.ticker, False, self.td_input, self.stock_price, 'mid')
         iron_condor = IronCondor.build(self.stock, call_contract, call_contract2,
                                        put_contract, put_contract2, 'mid', self.broker_settings, 70, 70)
         self.assertAlmostEqual(iron_condor.cost, -234.8)
@@ -713,8 +701,8 @@ class PutTradesTestCase(TestCase):
         self.assertEqual(iron_condor.reward_to_risk_ratio, 0.8853695324283536)
 
     def test_long_strangle(self):
-        call_contract = OptionContract(self.ticker, True, self.yahoo_input2, self.stock_price, 'mid')
-        put_contract = OptionContract(self.ticker, False, self.yahoo_input, self.stock_price, 'mid')
+        call_contract = OptionContract(self.ticker, True, self.td_input2, self.stock_price, 'mid')
+        put_contract = OptionContract(self.ticker, False, self.td_input, self.stock_price, 'mid')
         long_strangle = LongStrangle.build(self.stock, call_contract, put_contract, 'mid', self.broker_settings, 85, 85)
         self.assertAlmostEqual(long_strangle.cost, 342.6)
         self.assertEqual(long_strangle.best_return, 'infinite')
@@ -727,10 +715,10 @@ class PutTradesTestCase(TestCase):
         self.assertEqual(long_strangle.reward_to_risk_ratio, None)
 
     def test_long_condor_spread(self):
-        left_put_contract = OptionContract(self.ticker, False, self.yahoo_input7, self.stock_price, 'mid')
-        left_put_contract2 = OptionContract(self.ticker, False, self.yahoo_input9, self.stock_price, 'mid')
-        right_put_contract = OptionContract(self.ticker, False, self.yahoo_input6, self.stock_price, 'mid')
-        right_put_contract2 = OptionContract(self.ticker, False, self.yahoo_input8, self.stock_price, 'mid')
+        left_put_contract = OptionContract(self.ticker, False, self.td_input7, self.stock_price, 'mid')
+        left_put_contract2 = OptionContract(self.ticker, False, self.td_input9, self.stock_price, 'mid')
+        right_put_contract = OptionContract(self.ticker, False, self.td_input6, self.stock_price, 'mid')
+        right_put_contract2 = OptionContract(self.ticker, False, self.td_input8, self.stock_price, 'mid')
         long_condor_spread = LongCondorSpread.build(self.stock, left_put_contract, left_put_contract2,
                                                     right_put_contract, right_put_contract2, 'mid',
                                                     self.broker_settings, 70, 70)
@@ -745,10 +733,10 @@ class PutTradesTestCase(TestCase):
         self.assertAlmostEqual(long_condor_spread.reward_to_risk_ratio, 0.4916467780429594)
 
     def test_short_condor_spread(self):
-        left_put_contract = OptionContract(self.ticker, False, self.yahoo_input6, self.stock_price, 'mid')
-        left_put_contract2 = OptionContract(self.ticker, False, self.yahoo_input8, self.stock_price, 'mid')
-        right_put_contract = OptionContract(self.ticker, False, self.yahoo_input7, self.stock_price, 'mid')
-        right_put_contract2 = OptionContract(self.ticker, False, self.yahoo_input9, self.stock_price, 'mid')
+        left_put_contract = OptionContract(self.ticker, False, self.td_input6, self.stock_price, 'mid')
+        left_put_contract2 = OptionContract(self.ticker, False, self.td_input8, self.stock_price, 'mid')
+        right_put_contract = OptionContract(self.ticker, False, self.td_input7, self.stock_price, 'mid')
+        right_put_contract2 = OptionContract(self.ticker, False, self.td_input9, self.stock_price, 'mid')
         short_condor_spread = ShortCondorSpread.build(self.stock, left_put_contract, left_put_contract2,
                                                       right_put_contract, right_put_contract2, 'mid',
                                                       self.broker_settings, 100, 100)
@@ -763,8 +751,8 @@ class PutTradesTestCase(TestCase):
         self.assertAlmostEqual(short_condor_spread.reward_to_risk_ratio, 1.853881278538813)
 
     def test_strap_straddle(self):
-        call_contract = OptionContract(self.ticker, True, self.yahoo_input3, self.stock_price, 'mid')
-        put_contract = OptionContract(self.ticker, False, self.yahoo_input, self.stock_price, 'mid')
+        call_contract = OptionContract(self.ticker, True, self.td_input3, self.stock_price, 'mid')
+        put_contract = OptionContract(self.ticker, False, self.td_input, self.stock_price, 'mid')
         strap_straddle = StrapStraddle.build(self.stock, call_contract, put_contract,
                                              'mid', self.broker_settings, 75, 75)
         self.assertAlmostEqual(strap_straddle.cost, 612.6)
@@ -778,8 +766,8 @@ class PutTradesTestCase(TestCase):
         self.assertEqual(strap_straddle.reward_to_risk_ratio, None)
 
     def test_strap_strangle(self):
-        call_contract = OptionContract(self.ticker, True, self.yahoo_input2, self.stock_price, 'mid')
-        put_contract = OptionContract(self.ticker, False, self.yahoo_input, self.stock_price, 'mid')
+        call_contract = OptionContract(self.ticker, True, self.td_input2, self.stock_price, 'mid')
+        put_contract = OptionContract(self.ticker, False, self.td_input, self.stock_price, 'mid')
         strap_strangle = StrapStrangle.build(self.stock, call_contract, put_contract,
                                              'mid', self.broker_settings, 85, 85)
         self.assertAlmostEqual(strap_strangle.cost, 612.6)
@@ -793,7 +781,7 @@ class PutTradesTestCase(TestCase):
         self.assertEqual(strap_strangle.reward_to_risk_ratio, None)
 
     def test_protective_put(self):
-        put_contract = OptionContract(self.ticker, False, self.yahoo_input, self.stock_price)
+        put_contract = OptionContract(self.ticker, False, self.td_input, self.stock_price)
         protective_put = ProtectivePut.build(self.stock, put_contract, 'mid', self.broker_settings,
                                              target_price_lower=258.3,
                                              target_price_upper=258.3)
@@ -876,11 +864,9 @@ class TdTestCase(TestCase):
         self.assertEqual(contract.strike, 215.0)
         self.assertEqual(contract.change, -0.02)
         self.assertEqual(contract.contract_size, 100)
-        self.assertIsNone(contract.currency)
         self.assertAlmostEqual(contract.implied_volatility, 0.22763)
         self.assertFalse(contract.in_the_money)
         self.assertEqual(contract.last_price, 2.0)
-        self.assertEqual(contract.last_trade_date, 1607720391)
         self.assertEqual(contract.open_interest, 26690)
         self.assertAlmostEqual(contract.percent_change, -0.99)
         self.assertEqual(contract.volume, 16151)
@@ -962,11 +948,11 @@ class OptionValueTestCase(TestCase):
             'open_commission': 0.65,
             'close_commission': 0.65
         }
-        
+
         base_date = datetime(year=2021, month=5, day=13)
         expiry_date = datetime(year=2021, month=6, day=18)
-        self.calculation_dates = [base_date + timedelta(days=i) for i in range((expiry_date-base_date).days+1)]
-        self.underlying_prices = [(380.0+i*5.0) for i in range(13)]
+        self.calculation_dates = [base_date + timedelta(days=i) for i in range((expiry_date - base_date).days + 1)]
+        self.underlying_prices = [(380.0 + i * 5.0) for i in range(13)]
 
     def test_cash_get_value_matrix(self):
         matrix = self.cash.get_value_matrix(self.calculation_dates, self.underlying_prices)
@@ -1004,8 +990,8 @@ class OptionValueTestCase(TestCase):
         leg = StockLeg(100, self.stock)
         matrix = leg.get_value_matrix(self.calculation_dates, self.underlying_prices)
         self.assertEqual(matrix.shape, (len(self.calculation_dates), len(self.underlying_prices)))
-        self.assertEqual(matrix.item((0, 0)), self.underlying_prices[0]*100)
-        self.assertEqual(matrix.item((-1, -1)), self.underlying_prices[-1]*100)
+        self.assertEqual(matrix.item((0, 0)), self.underlying_prices[0] * 100)
+        self.assertEqual(matrix.item((-1, -1)), self.underlying_prices[-1] * 100)
 
     def test_option_leg_get_value_matrix(self):
         contract = OptionContract(self.ticker, True, self.td_input, self.stock_price, 'mid')

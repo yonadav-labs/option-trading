@@ -103,18 +103,18 @@ export function formatLargeNumber(num, fixed) {
 
 export function TimestampDateFormatter(ts) {
     const exp_date = new Date(ts * 1000);
-    return (<Moment date={exp_date} format="MMM Do, YY" />);
+    return (<Moment date={exp_date} format="MMM Do, YYYY" />);
 };
 
 export function TimestampTimeFormatter(ts) {
     if (ts === 0) return (<span>N/A</span>);
     const exp_date = new Date(ts * 1000);
-    return (<Moment date={exp_date} format="MMM Do, YY HH:mm" />);
+    return (<Moment date={exp_date} format="MMM Do, YYYY HH:mm" />);
 };
 
 export function ExpDateFormatter(ts) {
     const exp_date = new Date(ts * 1000);
-    return (<Moment date={exp_date} format="MMM Do, YY (ddd)" />);
+    return (<Moment date={exp_date} format="MMM Do, YYYY (ddd)" />);
 };
 
 export function ExpDayFormatter(ts, days_till_expiration) {
@@ -234,7 +234,7 @@ export async function loadExpirationDates(headers, selected, setModalActive, set
         saveRecent(selected[0].symbol);
         const response = await Axios.get(`${getApiUrl()}/tickers/${selected[0].symbol}/expire_dates/`, { headers: headers });
         setExpirationTimestamps(response.data.expiration_timestamps);
-        setbasicInfo(response.data.quote)
+        setbasicInfo(response.data.quote);
         selected[0].external_cache_id = response.data.external_cache_id;
         selected[0].ticker_stats_id = response.data.ticker_stats.id;
         setSelectedTicker(selected);

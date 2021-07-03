@@ -5,6 +5,7 @@ import ZoomInIcon from '@material-ui/icons/ZoomIn';
 import TradingViewWidget from 'react-tradingview-widget';
 import MetricLabel from "./MetricLabel";
 import { makeStyles } from '@material-ui/styles';
+import Moment from 'react-moment';
 
 const useStyles = makeStyles(theme => ({
     viewChartButton: {
@@ -42,20 +43,15 @@ export default function NewTickerSummary({ basicInfo, isMobile }) {
                     <Typography variant="button" color="primary"><MetricLabel label="last price" /></Typography>
                     <br />
                     <Typography variant="body1">
-                        {basicInfo.regularMarketPrice
-                            ? `$${basicInfo.regularMarketPrice}`
-                            : "N/A"}
+                        {basicInfo.latestPrice ? `$${basicInfo.latestPrice}` : "N/A"}
                     </Typography>
                 </div>
                 <div style={{ flex: "0 0 auto", paddingRight: "0.3rem" }}>
                     <Typography variant="button" color="primary"><MetricLabel label="day range" /></Typography>
                     <br />
                     <Typography variant="body1">
-                        {basicInfo.regularMarketDayLow &&
-                            basicInfo.regularMarketDayHigh
-                            ? `${basicInfo.regularMarketDayLow.toFixed(
-                                2
-                            )} - ${basicInfo.regularMarketDayHigh.toFixed(2)}`
+                        {basicInfo.low && basicInfo.high
+                            ? `${basicInfo.low.toFixed(2)} - ${basicInfo.high.toFixed(2)}`
                             : "N/A"}
                     </Typography>
                 </div>
@@ -63,10 +59,8 @@ export default function NewTickerSummary({ basicInfo, isMobile }) {
                     <Typography variant="button" color="primary"><MetricLabel label="52 week range" /></Typography>
                     <br />
                     <Typography variant="body1">
-                        {basicInfo.fiftyTwoWeekLow && basicInfo.fiftyTwoWeekHigh
-                            ? `${basicInfo.fiftyTwoWeekLow.toFixed(
-                                2
-                            )} - ${basicInfo.fiftyTwoWeekHigh.toFixed(2)}`
+                        {basicInfo.week52Low && basicInfo.week52High
+                            ? `${basicInfo.week52Low.toFixed(2)} - ${basicInfo.week52High.toFixed(2)}`
                             : "N/A"}
                     </Typography>
                 </div>
@@ -74,54 +68,47 @@ export default function NewTickerSummary({ basicInfo, isMobile }) {
                     <Typography variant="button" color="primary"><MetricLabel label="market cap" /></Typography>
                     <br />
                     <Typography variant="body1">
-                        {basicInfo.marketCap
-                            ? `$${formatLargeNumber(basicInfo.marketCap, 1)}`
-                            : "N/A"}
+                        {basicInfo.marketCap ? `$${formatLargeNumber(basicInfo.marketCap, 1)}` : "N/A"}
                     </Typography>
                 </div>
                 <div style={{ flex: "0 0 auto", paddingRight: "0.3rem" }}>
                     <Typography variant="button" color="primary"><MetricLabel label="p/e ratio" /></Typography>
                     <br />
                     <Typography variant="body1">
-                        {basicInfo.trailingPE
-                            ? basicInfo.trailingPE.toFixed(2)
-                            : "N/A"}
+                        {basicInfo.tickerStats && basicInfo.tickerStats.pe_ratio ?
+                            basicInfo.tickerStats.pe_ratio.toFixed(2) : "N/A"}
                     </Typography>
                 </div>
                 <div style={{ flex: "0 0 auto", paddingRight: "0.3rem" }}>
                     <Typography variant="button" color="primary"><MetricLabel label="eps" /></Typography>
                     <br />
                     <Typography variant="body1">
-                        {basicInfo.epsTrailingTwelveMonths
-                            ? `$${basicInfo.epsTrailingTwelveMonths.toFixed(2)}`
-                            : "N/A"}
+                        {basicInfo.tickerStats && basicInfo.tickerStats.ttm_eps ?
+                            `$${basicInfo.tickerStats.ttm_eps.toFixed(2)}` : "N/A"}
                     </Typography>
                 </div>
                 <div style={{ flex: "0 0 auto", paddingRight: "0.3rem" }}>
                     <Typography variant="button" color="primary"><MetricLabel label="earnings date" /></Typography>
                     <br />
                     <Typography variant="body1">
-                        {basicInfo.earningsTimestamp &&
-                            basicInfo.earningsTimestamp > Date.now() / 1000
-                            ? TimestampDateFormatter(basicInfo.earningsTimestamp)
-                            : "N/A"}
+                        {basicInfo.tickerStats && basicInfo.tickerStats.next_earnings_date ?
+                            <Moment date={Date.parse(basicInfo.tickerStats.next_earnings_date)} format="MMM Do, YYYY" /> : "N/A"}
                     </Typography>
                 </div>
                 <div style={{ flex: "0 0 auto", paddingRight: "0.3rem" }}>
                     <Typography variant="button" color="primary"><MetricLabel label="dividend date" /></Typography>
                     <br />
                     <Typography variant="body1">
-                        {basicInfo.dividendDate &&
-                            basicInfo.earningsTimestamp > Date.now() / 1000
-                            ? TimestampDateFormatter(basicInfo.dividendDate)
-                            : "N/A"}
+                        {basicInfo.tickerStats && basicInfo.tickerStats.next_dividend_date ?
+                            basicInfo.tickerStats.next_dividend_date : "N/A"}
                     </Typography>
                 </div>
                 <div style={{ flex: "0 0 auto", paddingRight: "0.3rem" }}>
                     <Typography variant="button" color="primary"><MetricLabel label="historical volatility" /></Typography>
                     <br />
                     <Typography variant="body1">
-                        {basicInfo.tickerStats && basicInfo.tickerStats.historical_volatility ? PercentageFormatter(basicInfo.tickerStats.historical_volatility) : "N/A"}
+                        {basicInfo.tickerStats && basicInfo.tickerStats.historical_volatility ?
+                            PercentageFormatter(basicInfo.tickerStats.historical_volatility) : "N/A"}
                     </Typography>
                 </div>
                 {isMobile ?
@@ -146,7 +133,7 @@ export default function NewTickerSummary({ basicInfo, isMobile }) {
                     </>
                 }
             </div>
-            { isMobile ?
+            {isMobile ?
                 <div style={{
                     display: "flex",
                     width: "100%",

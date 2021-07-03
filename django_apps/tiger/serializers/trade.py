@@ -33,7 +33,6 @@ class OptionContractSerializer(serializers.Serializer):
     strike = ReadOnlyDollarDecimalField()
     change = ReadOnlyDollarDecimalField()
     contract_size = serializers.CharField()
-    currency = serializers.CharField()
     implied_volatility = ReadOnlyRatioDecimalField()
     in_the_money = serializers.BooleanField()
     last_price = ReadOnlyDollarDecimalField()
