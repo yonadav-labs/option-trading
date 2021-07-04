@@ -76,7 +76,8 @@ class Trade(ABC):
     def reward_to_risk_ratio(self):
         '''calculate how many multiples of the amount at risk that can be gained in an ideal case'''
         # check if max profit is actualy positive and not infinite, max loss is actually negative and not infinite
-        if self.best_return != INFINITE and self.best_return > 0 and self.worst_return != INFINITE and self.worst_return < 0:
+        if self.best_return != INFINITE and self.best_return > 0 and \
+                self.worst_return != INFINITE and self.worst_return < 0:
             return abs(self.best_return / self.worst_return)
         else:
             return None

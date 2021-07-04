@@ -114,11 +114,18 @@ export default function NewTradeCard({ trade }) {
                             {trade.break_even_prices_and_ratios.map(break_even => <Typography variant="body1" color="#4F4F4F">{ProfitFormatter(break_even.ratio)} (at {PriceFormatter(break_even.price)})</Typography>)}
                         </Grid>
                         <Grid item xs={6} sm={2}>
-                            <Typography variant="button"><MetricLabel label="max return" /></Typography>
+                            <Typography variant="button"><MetricLabel label="max profit" /></Typography>
                             <Typography variant="body1" color="#4F4F4F">{trade.best_return && trade.best_return != 'infinite' ?
                                 <>{ProfitFormatter(trade.best_return / trade.cost)} ({PriceFormatter(trade.best_return)})</>
                                 :
                                 'UNLIMITED'}
+                            </Typography>
+                        </Grid>
+                        <Grid item xs={6} sm={2}>
+                            <Typography variant="button"><MetricLabel label="max loss" /></Typography>
+                            <Typography variant="body1" color="#4F4F4F">{trade.worst_return && trade.worst_return != 'infinite'
+                                ? <>{ProfitFormatter(trade.worst_return / trade.cost)} ({PriceFormatter(trade.worst_return)})</>
+                                : 'UNLIMITED'}
                             </Typography>
                         </Grid>
                         {moreInfo ?
@@ -140,34 +147,25 @@ export default function NewTradeCard({ trade }) {
                                     <Typography variant="body1" color="#4F4F4F">{PriceFormatter(trade.commission_cost)}</Typography>
                                 </Grid>
                                 <Grid item xs={6} sm={2}>
-                                    <Typography variant="button"><MetricLabel label="10% probability loss" /></Typography>
+                                    <Typography variant="button"><MetricLabel label="10% probability profit" /></Typography>
                                     {
-                                        trade.ten_percent_worst_return_ratio != null ?
-                                            <>
-                                                <Typography variant="body1" color="#4F4F4F">{ProfitFormatter(trade.ten_percent_worst_return_ratio)} ({PriceFormatter(trade.ten_percent_worst_return)})</Typography>
-                                                <Typography variant="body2" color="#828282">
-                                                    {trade.ten_percent_worst_return_price > trade.stock.stock_price ? 'Above ' : 'Below '}
-                                                    {PriceFormatter(trade.ten_percent_worst_return_price)}
-                                                </Typography>
-                                            </>
+                                        trade.ten_percent_best_return_ratio != null ?
+                                            <Typography variant="body1" color="#4F4F4F">
+                                                {ProfitFormatter(trade.ten_percent_best_return_ratio)} ({PriceFormatter(trade.ten_percent_best_return)})
+                                            </Typography>
                                             : "N/A"
                                     }
                                 </Grid>
                                 <Grid item xs={6} sm={2}>
-                                    <Typography variant="button"><MetricLabel label="10% probability profit" /></Typography>
+                                    <Typography variant="button"><MetricLabel label="10% probability loss" /></Typography>
                                     {
-                                        trade.ten_percent_best_return_ratio != null ?
-                                            <>
-                                                <Typography variant="body1" color="#4F4F4F">{ProfitFormatter(trade.ten_percent_best_return_ratio)} ({PriceFormatter(trade.ten_percent_best_return)})</Typography>
-                                                <Typography variant="body2" color="#828282">
-                                                    {trade.ten_percent_best_return_price > trade.stock.stock_price ? 'Above ' : 'Below '}
-                                                    {PriceFormatter(trade.ten_percent_best_return_price)}
-                                                </Typography>
-                                            </>
+                                        trade.ten_percent_worst_return_ratio != null ?
+                                            <Typography variant="body1" color="#4F4F4F">
+                                                {ProfitFormatter(trade.ten_percent_worst_return_ratio)} ({PriceFormatter(trade.ten_percent_worst_return)})
+                                            </Typography>
                                             : "N/A"
                                     }
                                 </Grid>
-                                <Grid item xs={6} sm={2}></Grid>
                                 <Grid item xs={6} sm={2}></Grid>
                                 <Grid item xs={6} sm={2}>
                                     <Typography variant="button"><MetricLabel label="delta" /></Typography>

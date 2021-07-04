@@ -16,8 +16,8 @@ const useStyles = makeStyles({
 });
 
 const HelpTextDict = {
-    '10% probability loss': { text: 'Average of possible losses with a 10% probability based on historical data.', hideIcon: false },
-    '10% probability profit': { text: 'Average of possible losses with a 10% probability based on historical data.', hideIcon: false },
+    '10% probability loss': { text: 'Potential loss with a 10% probability based on historical data.', hideIcon: false },
+    '10% probability profit': { text: 'Potential profit with a 10% probability based on historical data.', hideIcon: false },
     '52 week range': { text: 'The high and low prices of last 52 weeks (1 year).', hideIcon: true },
     'action': { text: 'Long means buy. Short means sell.', hideIcon: true },
     'ask': { text: 'The latest price someone is willing to sell this option.', hideIcon: true },
@@ -73,7 +73,8 @@ const HelpTextDict = {
             + 'Mid/Mark price: use the mid/mark price of options contracts.', hideIcon: false
     },
     'probability of profit': { text: 'Chance of making at least $0.01 on a trade. Implied by option price.', hideIcon: false },
-    'max return': { text: 'The highest possible return of this trade.', hideIcon: true },
+    'max profit': { text: 'The highest possible return of this trade.', hideIcon: true },
+    'max loss': { text: 'The lowest possible return of this trade.', hideIcon: true },
     'order net debit': { text: 'The cost to open position for this strategy per contract/spread. Commission cost not included.', hideIcon: true },
     'order net credit': { text: 'The initial payback received to open position for this strategy per contract/spread. This is not profit.', hideIcon: true },
     'quoted at': { text: 'When the market data was quoted. There may be a delay on our data v.s. market.', hideIcon: true },
