@@ -32,7 +32,3 @@ def get_td_base_url():
 
 def get_td_option_url(ticker):
     return "{}&symbol={}&fromDate=2021-07-01".format(get_td_base_url(), ticker)
-
-
-def get_call_puts(response):
-    return response.get('callExpDateMap').keys()

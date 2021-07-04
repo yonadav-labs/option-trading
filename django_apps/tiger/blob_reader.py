@@ -1,11 +1,6 @@
 from tiger.core import OptionContract
 
 
-def is_valid_option_response(response):
-    return 'optionChain' in response and 'result' in response.get('optionChain') and len(
-        response.get('optionChain').get('result')) > 0
-
-
 def get_quote(response, is_yahoo):
     if is_yahoo:
         result = response.get('optionChain').get('result')[0]
