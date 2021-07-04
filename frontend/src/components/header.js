@@ -151,7 +151,7 @@ function Header() {
                     </Grid>
                     <Grid item>
                         <Button variant="contained" size="large" href="/signin/register"
-                            to="/signin/register">Sign up for free</Button>
+                            to="/signin/register">Sign up</Button>
                     </Grid>
                 </>
             }
@@ -172,6 +172,9 @@ function Header() {
                                 {menuContent}
                             </Grid>
                         }
+                        <Grid item>
+                            We are experiencing technical problems right now. Sorry for the inconvenience!
+                        </Grid>
                         <Grid item>
                             {authState.isAuthenticated ?
                                 <>
@@ -218,7 +221,7 @@ function Header() {
                                             </Grid>
                                             <Grid item>
                                                 <Button variant="contained" size="large" href="/signin/register"
-                                                    to="/signin/register">Sign up for free</Button>
+                                                    to="/signin/register">Sign up</Button>
                                             </Grid>
                                         </Grid>
                                     }

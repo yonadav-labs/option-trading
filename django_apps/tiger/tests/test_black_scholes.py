@@ -157,9 +157,8 @@ class TestBlackScholes(TestCase):
                                 is_call=False),
             0.26674391319893187)
 
-
     # New BSM testing
-    
+
     # Let's do a short term call
     def test_short_term_call_bsm(self):
         calculation_date = datetime.datetime(year=2021, month=5, day=13)
@@ -175,11 +174,12 @@ class TestBlackScholes(TestCase):
         # IBKR Reported: 0.70 Bid/Ask avg - 0.69 matches the bid, between 0.69-0.70
         ibkr_price = 0.6947
 
-        option = price_american_option(expiry_date, calculation_date, underlying_price, strike_price, option_right, volatility, dividend_yield, risk_free_rate)
+        option = price_american_option(expiry_date, calculation_date, underlying_price, strike_price, option_right,
+                                       volatility, dividend_yield, risk_free_rate)
 
         self.assertAlmostEqual(
-            option.NPV(), 
-            ibkr_price, 
+            option.NPV(),
+            ibkr_price,
             places=3
         )
 
@@ -198,14 +198,15 @@ class TestBlackScholes(TestCase):
         # IBKR Reported: 10.565 Bid/Ask avg - 10.548 matches slightly above the bid, between 10.54-10.55
         ibkr_price = 10.5488
 
-        option = price_american_option(expiry_date, calculation_date, underlying_price, strike_price, option_right, volatility, dividend_yield, risk_free_rate)
+        option = price_american_option(expiry_date, calculation_date, underlying_price, strike_price, option_right,
+                                       volatility, dividend_yield, risk_free_rate)
 
         self.assertAlmostEqual(
-            option.NPV(), 
-            ibkr_price, 
+            option.NPV(),
+            ibkr_price,
             places=3
         )
-    
+
     # Let's do a long term call
     def test_long_term_call_bsm(self):
         calculation_date = datetime.datetime(year=2021, month=5, day=13)
@@ -221,14 +222,15 @@ class TestBlackScholes(TestCase):
         # IBKR Reported: 1.58 Bid/Ask avg - 1.514 matches slightly above the bid, between 1.51-1.52 - the spread is wide here so it's hard to tell.
         ibkr_price = 1.5144
 
-        option = price_american_option(expiry_date, calculation_date, underlying_price, strike_price, option_right, volatility, dividend_yield, risk_free_rate)
+        option = price_american_option(expiry_date, calculation_date, underlying_price, strike_price, option_right,
+                                       volatility, dividend_yield, risk_free_rate)
 
         self.assertAlmostEqual(
-            option.NPV(), 
-            ibkr_price, 
+            option.NPV(),
+            ibkr_price,
             places=3
         )
-    
+
     # Let's do a long term put
     def test_long_term_put_bsm(self):
         calculation_date = datetime.datetime(year=2021, month=5, day=13)
@@ -244,14 +246,14 @@ class TestBlackScholes(TestCase):
         # IBKR Reported: 95.03 Bid/Ask avg - We're missing the mark here by a little less than 1% on the ask, will look into this. However, long dated puts are harder to gauge. 
         ibkr_price = 96.2853
 
-        option = price_american_option(expiry_date, calculation_date, underlying_price, strike_price, option_right, volatility, dividend_yield, risk_free_rate)
+        option = price_american_option(expiry_date, calculation_date, underlying_price, strike_price, option_right,
+                                       volatility, dividend_yield, risk_free_rate)
 
         self.assertAlmostEqual(
-            option.NPV(), 
-            ibkr_price, 
+            option.NPV(),
+            ibkr_price,
             places=3
         )
-
 
     # Test receiving values of an option across a given range of possible underlying for a contract on a given date, right, strike, and expiry
     def test_value_across_range_for_contract(self):
@@ -267,7 +269,8 @@ class TestBlackScholes(TestCase):
         underlying_prices = [360, 390, 420, 450, 473]
 
         # Yield the range values
-        range_values = value_across_range_for_contract(is_call, expiry_date, strike_price, volatility, dividend_yield, risk_free_rate, calculation_date, underlying_prices)
+        range_values = value_across_range_for_contract(is_call, expiry_date, strike_price, volatility, dividend_yield,
+                                                       risk_free_rate, calculation_date, underlying_prices)
 
         # We return a list of lists, so we can test that the front and back are valid, and that we have a length of 5 of the list.
 
@@ -278,18 +281,18 @@ class TestBlackScholes(TestCase):
 
         # Assert strike valid
         self.assertAlmostEqual(
-            first_range[0], 
-            strike1, 
+            first_range[0],
+            strike1,
             places=4
         )
 
         # Assert value valid
         self.assertAlmostEqual(
-            first_range[1], 
-            option_value1, 
+            first_range[1],
+            option_value1,
             places=4
         )
-        
+
         # We then test the highest possible underlying value, given the range.
         last_range = range_values[-1]
         strike2 = 473.00000000000006
@@ -297,25 +300,23 @@ class TestBlackScholes(TestCase):
 
         # Assert strike valid
         self.assertAlmostEqual(
-            last_range[0], 
-            strike2, 
+            last_range[0],
+            strike2,
             places=4
         )
 
         # Assert value valid
         self.assertAlmostEqual(
-            last_range[1], 
-            option_value2, 
+            last_range[1],
+            option_value2,
             places=4
         )
-        
 
         # Now, assert the length of the return list is of length 5
         self.assertEqual(
             5,
             len(range_values)
         )
-
 
     def test_option_matrix(self):
         is_call = True
@@ -327,10 +328,11 @@ class TestBlackScholes(TestCase):
 
         # We can get dates and price levels to compare against from somewhere else, but this works.
         base_date = datetime.datetime(year=2021, month=5, day=13)
-        calculation_dates = [base_date + datetime.timedelta(days=i) for i in range((expiry_date-base_date).days+1)]
-        underlying_prices = [(380.0+i*5.0) for i in range(13)]
+        calculation_dates = [base_date + datetime.timedelta(days=i) for i in range((expiry_date - base_date).days + 1)]
+        underlying_prices = [(380.0 + i * 5.0) for i in range(13)]
 
-        option_matrix = build_option_value_matrix(is_call, expiry_date, strike_price, volatility, dividend_yield, risk_free_rate, calculation_dates, underlying_prices)
+        option_matrix = build_option_value_matrix(is_call, expiry_date, strike_price, volatility, dividend_yield,
+                                                  risk_free_rate, calculation_dates, underlying_prices)
 
         # Make sure we have the right amount of datetimes
         self.assertEqual(
@@ -363,15 +365,15 @@ class TestBlackScholes(TestCase):
 
         # Assert underlying valid
         self.assertAlmostEqual(
-            underlying_value_pair[3][0], 
-            underlying, 
+            underlying_value_pair[3][0],
+            underlying,
             places=4
         )
 
         # Assert value valid
         self.assertAlmostEqual(
-            underlying_value_pair[3][1], 
-            option_value, 
+            underlying_value_pair[3][1],
+            option_value,
             places=4
         )
 
@@ -384,15 +386,15 @@ class TestBlackScholes(TestCase):
 
         # Assert underlying valid
         self.assertAlmostEqual(
-            underlying_value_pair[9][0], 
-            underlying, 
+            underlying_value_pair[9][0],
+            underlying,
             places=4
         )
 
         # Assert value valid
         self.assertAlmostEqual(
-            underlying_value_pair[9][1], 
-            option_value, 
+            underlying_value_pair[9][1],
+            option_value,
             places=4
         )
 
@@ -405,16 +407,14 @@ class TestBlackScholes(TestCase):
 
         # Assert underlying valid
         self.assertAlmostEqual(
-            underlying_value_pair[7][0], 
-            underlying, 
+            underlying_value_pair[7][0],
+            underlying,
             places=4
         )
 
         # Assert value valid
         self.assertAlmostEqual(
-            underlying_value_pair[7][1], 
-            option_value, 
+            underlying_value_pair[7][1],
+            option_value,
             places=4
         )
-
-

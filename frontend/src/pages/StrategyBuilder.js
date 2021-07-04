@@ -309,7 +309,7 @@ export default function StrategyBuilder() {
                                 !authState.isAuthenticated &&
                                 (
                                     <b className="md-1">
-                                        <a href="/signin">Log In</a> or <Link to="/signin/register">Sign Up for Free</Link> to unlock 5 more strategies!
+                                        <a href="/signin">Log In</a> or <Link to="/signin/register">Sign Up</Link> to unlock 5 more strategies!
                                     </b>
                                 )
                             }

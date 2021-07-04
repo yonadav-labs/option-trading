@@ -270,8 +270,8 @@ export default function MainView(props) {
                         {!authState.isAuthenticated &&
                             (
                                 <Alert severity="warning">
-                                    <a href="/signin"><b>Log In</b></a> or <Link to="/signin/register"><b>
-                                        Sign Up for Free</b></Link> to unlock 5 more strategies!
+                                    <a href="/signin"><b>Log In</b></a> or <Link to="/signin/register">
+                                        <b>Sign Up</b></Link> to unlock 5 more strategies!
                                 </Alert>
                             )
                         }
