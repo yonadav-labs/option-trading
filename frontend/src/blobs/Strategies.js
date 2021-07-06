@@ -175,7 +175,7 @@ export const strategies = [
             level: "basic",
             basicGraph: "long_call_simple.png",
             expandedGraph: "long_call_expanded.png",
-            unlimitedLoss: true
+            unlimitedLoss: false
         }
     ),
     new Strategy(
@@ -398,7 +398,7 @@ export const strategies = [
                     }
                 )
             ],
-            level: "advanced",
+            level: "basic",
             basicGraph: "long_call_simple.png",
             expandedGraph: "long_call_expanded.png",
             unlimitedLoss: false
@@ -432,7 +432,7 @@ export const strategies = [
                     }
                 )
             ],
-            level: "advanced",
+            level: "basic",
             basicGraph: "long_call_simple.png",
             expandedGraph: "long_call_expanded.png",
             unlimitedLoss: false
@@ -539,7 +539,7 @@ export const strategies = [
                     }
                 )
             ],
-            level: "advanced",
+            level: "spreads",
             basicGraph: "long_call_simple.png",
             expandedGraph: "long_call_expanded.png",
             unlimitedLoss: false
@@ -553,7 +553,7 @@ export const strategies = [
                             Receive a premium to sell a call and a put; With the call strike being higher than the put strike. \
                             You profit when the stock price stays within this range: strike - premium > stock price > strike + premium \
                             There is no limit to how much you can lose with this strategy.",
-            sentiment: ["volatile"],
+            sentiment: ["neutral", "volatile"],
             linkedProperties: ["expiration"],
             rules: [new Rule(0, "strike", ">", 1, "strike")],
             relationships: [],
@@ -576,7 +576,7 @@ export const strategies = [
             level: "advanced",
             basicGraph: "long_call_simple.png",
             expandedGraph: "long_call_expanded.png",
-            unlimitedLoss: false
+            unlimitedLoss: true
         }
     ),
     new Strategy(
@@ -587,7 +587,7 @@ export const strategies = [
                             Receive a premium to sell a call and a put at the same strike. \
                             You profit when the stock price stays within this range: strike - premium > stock price > strike + premium \
                             There is no limit to how much you can lose with this strategy.",
-            sentiment: ["volatile"],
+            sentiment: ["neutral", "volatile"],
             linkedProperties: ["expiration", "strike"],
             rules: [],
             relationships: [],
@@ -610,7 +610,7 @@ export const strategies = [
             level: "advanced",
             basicGraph: "long_call_simple.png",
             expandedGraph: "long_call_expanded.png",
-            unlimitedLoss: false
+            unlimitedLoss: true
         }
     ),
     new Strategy(
