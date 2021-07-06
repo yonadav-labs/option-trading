@@ -127,7 +127,10 @@ class TickerViewSet(LoggingMixin, viewsets.ModelViewSet):
                     'p_otm': float(
                         f'{1 - contract.itm_probability:.4f}') if contract.itm_probability is not None else None,
                     'apr': float(f'{apr:.4f}') if apr is not None else None,
-                    'vol_per_oi': float(f'{vol_per_oi:.4f}') if vol_per_oi is not None else None
+                    'vol_per_oi': float(f'{vol_per_oi:.4f}') if vol_per_oi is not None else None,
+                    'mark': contract.mark,
+                    'bid': contract.bid,
+                    'ask': contract.ask
                 }
 
                 if contract.implied_volatility is not None:
@@ -189,7 +192,7 @@ class TickerViewSet(LoggingMixin, viewsets.ModelViewSet):
         expiration_timestamps = ticker.get_expiration_timestamps()
         expirations = [ts // 1000 for ts in request.data.get('expiration_timestamps')]
 
-        expiration_dates = [timestamp_to_datetime_with_default_tz(ts).strftime("%b %d, %y")
+        expiration_dates = [timestamp_to_datetime_with_default_tz(ts).strftime("%b %d, %Y")
                             for ts in expirations]
 
         call_contract_lists, put_contract_list = get_valid_contracts(ticker, request, expiration_timestamps, filters)

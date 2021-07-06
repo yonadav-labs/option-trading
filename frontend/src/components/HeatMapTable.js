@@ -32,7 +32,7 @@ export default function HeatMapTable({ className, zLabel, data, contractType, st
         ]
     ];
 
-    const strikePrices = data.strike_prices.map(x => parseFloat(x.replace(/[^0-9.]/g,'')));
+    const strikePrices = data.strike_prices.map(x => parseFloat(x.replace(/[^0-9.]/g, '')));
     var closestStrike = strikePrices.reduce((prev, curr) => {
         return (Math.abs(curr - stockPrice) < Math.abs(prev - stockPrice) ? curr : prev);
     });
@@ -44,7 +44,7 @@ export default function HeatMapTable({ className, zLabel, data, contractType, st
             <div className="w-100 pr-5 pl-4 mb-5">
                 <table className="heatmap-matrix w-100" style={{ fontSize: 14.5 }}>
                     <tr>
-                        <td className="text-right pr-3 border-bottom-0" style={{width: 80}}>Strike</td>
+                        <td className="text-right pr-3 border-bottom-0" style={{ width: 80 }}>Strike</td>
                         {data.expiration_dates.map((date, idx) =>
                             <td key={idx} className="text-center">{date}</td>
                         )}
@@ -79,9 +79,15 @@ export default function HeatMapTable({ className, zLabel, data, contractType, st
                                 let apr = (cell['apr'] ? (cell['apr'] * 100.0).toFixed(2) + '%' : 'Empty');
                                 let p_otm = (cell['p_otm'] * 100.0).toFixed(2) + '%';
                                 let vol_per_pi = cell['vol_per_oi'] != null ? (cell['vol_per_oi'] * 100.0).toFixed(2) + '%' : 'Empty';
+                                let mark = `$${cell['mark'].toFixed(2)}`;
+                                let bid = `$${cell['bid'].toFixed(2)}`;
+                                let ask = `$${cell['ask'].toFixed(2)}`;
 
                                 let tooltip = data.expiration_dates[index] + ' ' + price + ' ' +
                                     contractType.charAt(0).toUpperCase() + contractType.slice(1) + '\n' +
+                                    'Bid: ' + bid + '\n' +
+                                    'Ask: ' + ask + '\n' +
+                                    'Mark: ' + mark + '\n' +
                                     'Implied Volatility: ' + iv + '\n' +
                                     'Open Interest: ' + oi + '\n' +
                                     'Volume: ' + vol + '\n' +

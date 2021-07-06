@@ -173,9 +173,6 @@ function Header() {
                             </Grid>
                         }
                         <Grid item>
-                            We are experiencing technical problems right now. Sorry for the inconvenience!
-                        </Grid>
-                        <Grid item>
                             {authState.isAuthenticated ?
                                 <>
                                     <Button onClick={handleReferralClickOpen} style={{ textTransform: 'capitalize' }}>
