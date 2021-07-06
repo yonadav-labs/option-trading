@@ -70,6 +70,21 @@ export default function Home() {
         },
         whiteText: {
             color: colors.whiteText
+        },
+        homeYellowGradient: {
+            background: 'linear-gradient(137.15deg, #FFD43A -96%, rgba(255, 212, 58, 0.69) -95.99%, rgba(255, 212, 58, 0) 54.87%)',
+            position: 'absolute',
+            width: '100%',
+            height: '100%',
+            transform: 'matrix(-1, 0, 0, 1, 0, 0)',
+            zIndex: -1,
+        },
+        homeOrangeGradient: {
+            background: 'linear-gradient(138.13deg, #FF8F2B -97.66%, rgba(255, 143, 43, 0.74) -97.64%, rgba(255, 143, 43, 0) 53.69%)',
+            position: 'absolute',
+            width: '100%',
+            height: '100%',
+            zIndex: -1,
         }
     });
 
@@ -144,6 +159,8 @@ export default function Home() {
             <Helmet>
                 <title>Tigerstance | Trade Options Smarter</title>
             </Helmet>
+            <div className={classes.homeYellowGradient}></div>
+            <div className={classes.homeOrangeGradient}></div>
             <Grid container p={3}>
                 <Grid container item justifyContent="center" alignItems="center" flexDirection="row">
                     <Grid item xs={12} md={12} lg={6} px={8}>

@@ -31,11 +31,13 @@ function getCookie(name) {
 
 
 const sessionid = getCookie('pinax-referral');
-const mobileBreakpointWidth = 1280;
+const mobileBreakpointWidth = 1024;
 
 const CustomButton = styled(Button)(({ theme }) => ({
     width: "100%",
     justifyContent: "left",
+    paddingLeft: 10,
+    paddingRight: 10,
     [theme.breakpoints.down(mobileBreakpointWidth)]: {
         paddingLeft: 8
     },

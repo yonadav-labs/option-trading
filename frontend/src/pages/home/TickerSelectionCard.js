@@ -31,7 +31,7 @@ const TickerSelectionCard = ({ allTickers, onChange, selectedTicker }) => {
     }, [])
 
     return (
-        <Card raised sx={{ p: `${isMobile ? "0px" : "20px"}`, borderRadius: 4 }}>
+        <Card raised sx={{ p: `${isMobile ? "0px" : "20px"}`, borderRadius: 4, background: 'white' }}>
             <CardContent sx={{ minHeight: 432, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
                 {isNext ?
                     <>
