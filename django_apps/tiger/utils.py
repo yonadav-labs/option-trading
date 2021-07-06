@@ -5,6 +5,7 @@ import numpy as np
 import pandas_market_calendars as mcal
 import pytz
 from django.utils import timezone
+from django.utils.dateparse import parse_date
 from django.utils.timezone import make_aware, get_default_timezone
 
 
@@ -25,6 +26,15 @@ def get_now_date():
 
 def timestamp_to_datetime_with_default_tz(timestamp):
     return make_aware(datetime.fromtimestamp(timestamp), get_default_timezone())
+
+
+def parse_date_str_to_timestamp_with_default_tz(date_str):
+    naive_date = parse_date(date_str)
+    # hours=3 so that on the front-end all US timezones will show same date as eastern time.
+    naive_datetime = datetime.combine(naive_date, time(hour=3, minute=0, second=0))
+    eastern = pytz.timezone('US/Eastern')
+    eastern_datetime = eastern.localize(naive_datetime, is_dst=None)
+    return int(datetime.timestamp(eastern_datetime))
 
 
 # TODO: we may want to change to open market days.

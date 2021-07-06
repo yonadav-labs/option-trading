@@ -50,6 +50,8 @@ def get_valid_contracts(ticker, request, all_expiration_timestamps, filters={}):
 
     for ts in input_expiration_timestamps:
         calls, puts = ticker.get_call_puts(ts)
+        calls = sorted(calls, key=lambda x: x.strike)
+        puts = sorted(puts, key=lambda x: x.strike)
 
         # apply all filters
         if filters is not None:

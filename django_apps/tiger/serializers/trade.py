@@ -56,7 +56,7 @@ class OptionContractSerializer(serializers.Serializer):
     rho = ReadOnlyRatioDecimalField()
     theoretical_volatility = ReadOnlyRatioDecimalField()
     theoretical_option_value = ReadOnlyDollarDecimalField()
-    quote_time = serializers.IntegerField(min_value=0)
+    quote_time = serializers.IntegerField(min_value=0, allow_null=True)
 
     stock_price = ReadOnlyDollarDecimalField()
 

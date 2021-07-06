@@ -1,9 +1,12 @@
 from abc import ABC, abstractmethod
+from datetime import datetime
 
 import tiger.blob_reader as blob_reader
+from django.utils.dateparse import parse_datetime
 from tiger.core.black_scholes import build_option_value_matrix
 from tiger.core.black_scholes import get_itm_probability
-from tiger.utils import days_from_timestamp, timestamp_to_datetime_with_default_tz
+from tiger.utils import days_from_timestamp, timestamp_to_datetime_with_default_tz, \
+    parse_date_str_to_timestamp_with_default_tz
 
 
 class Security(ABC):
@@ -79,43 +82,94 @@ class Stock(Security):
 class OptionContract(Security):
     def __init__(self, ticker, is_call, data_dict, stock_price, external_cache_id=None):
         super().__init__(external_cache_id)
-        # TD.
-        for key in data_dict:
-            if data_dict[key] == 'NaN':
-                data_dict[key] = None
-        self.is_call = is_call
-        self.ask = data_dict.get('ask')
-        self.bid = data_dict.get('bid')
-        self.contract_symbol = data_dict.get('symbol')
-        self.expiration = int(data_dict.get('expirationDate', 0) / 1000)
-        self.strike = data_dict.get('strikePrice')
-        self.change = data_dict.get('netChange')
-        self.contract_size = data_dict.get('multiplier')
-        self.implied_volatility = data_dict.get('volatility', 0) / 100.0 if 'volatility' in data_dict else None
-        self.in_the_money = data_dict.get('inTheMoney')
-        self.last_price = data_dict.get('last')
-        self.last_trade_date = int(data_dict.get('tradeTimeInLong', 0) / 1000)
-        self.open_interest = data_dict.get('openInterest')
-        self.percent_change = data_dict.get('percentChange')
-        self.volume = data_dict.get('totalVolume')
 
-        # TD specific data.
-        self.high_price = data_dict.get('highPrice')
-        self.low_price = data_dict.get('lowPrice')
-        self.open_price = data_dict.get('openPrice')
-        self.close_price = data_dict.get('closePrice')
-        self.time_value = data_dict.get('timeValue')
-        self.bid_size = data_dict.get('bidSize')
-        self.ask_size = data_dict.get('askSize')
-        self.delta = data_dict.get('delta')
-        self.gamma = data_dict.get('gamma')
-        self.theta = data_dict.get('theta')
-        self.vega = data_dict.get('vega')
-        self.rho = data_dict.get('rho')
-        self.theoretical_volatility = \
-            data_dict.get('theoreticalVolatility') / 100.0 if 'theoreticalVolatility' in data_dict else None
-        self.theoretical_option_value = data_dict.get('theoreticalOptionValue')
-        self.quote_time = int(data_dict.get('quoteTimeInLong') / 1000) if 'quoteTimeInLong' in data_dict else None
+        if 'option' in data_dict:
+            # intrinio.
+            price_blob = data_dict.get('price')
+            id_blob = data_dict.get('option')
+            stats_blob = data_dict.get('stats')
+
+            self.is_call = is_call
+            self.contract_symbol = id_blob.get('code')
+            self.expiration = parse_date_str_to_timestamp_with_default_tz(id_blob.get('expiration'))
+            self.strike = id_blob.get('strike')
+            self.contract_size = 100
+
+            self.last_price = price_blob.get('last')
+            self.last_size = price_blob.get('last_size')
+            self.last_trade_date = int(datetime.timestamp(parse_datetime(price_blob.get('last_timestamp')))) \
+                if price_blob.get('last_timestamp') else None
+            self.ask = price_blob.get('ask')
+            self.ask_size = price_blob.get('ask_size')
+            self.bid = price_blob.get('bid')
+            self.bid_size = price_blob.get('bid_size')
+            self.open_interest = price_blob.get('open_interest')
+            self.volume = price_blob.get('volume')
+
+            self.in_the_money = (self.strike <= stock_price) if self.is_call else (self.strike >= stock_price)
+            self.implied_volatility = stats_blob.get('implied_volatility')
+            self.delta = stats_blob.get('delta')
+            self.gamma = stats_blob.get('gamma')
+            self.theta = stats_blob.get('theta')
+            self.vega = stats_blob.get('vega')
+
+            # Metrics that are not avaliable.
+            '''
+            self.high_price = data_dict.get('highPrice')
+            self.low_price = data_dict.get('lowPrice')
+            self.open_price = data_dict.get('openPrice')
+            self.close_price = data_dict.get('closePrice')
+            self.time_value = data_dict.get('timeValue')
+            self.percent_change = data_dict.get('percentChange')
+            self.change = data_dict.get('netChange')
+            self.contract_size = data_dict.get('multiplier')
+            self.rho = data_dict.get('rho')
+            self.theoretical_volatility = \
+                data_dict.get('theoreticalVolatility') / 100.0 if 'theoreticalVolatility' in data_dict else None
+            self.theoretical_option_value = data_dict.get('theoreticalOptionValue')
+            self.quote_time = int(data_dict.get('quoteTimeInLong') / 1000) if 'quoteTimeInLong' in data_dict else None
+            '''
+            # Metrics that are not used.
+            # exercise_style, last_timestamp, ask_timestamp, bid_timestamp
+
+        else:
+            # TD.
+            for key in data_dict:
+                if data_dict[key] == 'NaN':
+                    data_dict[key] = None
+            self.is_call = is_call
+            self.ask = data_dict.get('ask')
+            self.bid = data_dict.get('bid')
+            self.contract_symbol = data_dict.get('symbol')
+            self.expiration = int(data_dict.get('expirationDate', 0) / 1000)
+            self.strike = data_dict.get('strikePrice')
+            self.change = data_dict.get('netChange')
+            self.contract_size = data_dict.get('multiplier')
+            self.implied_volatility = data_dict.get('volatility', 0) / 100.0 if 'volatility' in data_dict else None
+            self.in_the_money = data_dict.get('inTheMoney')
+            self.last_price = data_dict.get('last')
+            self.last_trade_date = int(data_dict.get('tradeTimeInLong', 0) / 1000)
+            self.open_interest = data_dict.get('openInterest')
+            self.percent_change = data_dict.get('percentChange')
+            self.volume = data_dict.get('totalVolume')
+
+            # TD specific data.
+            self.high_price = data_dict.get('highPrice')
+            self.low_price = data_dict.get('lowPrice')
+            self.open_price = data_dict.get('openPrice')
+            self.close_price = data_dict.get('closePrice')
+            self.time_value = data_dict.get('timeValue')
+            self.bid_size = data_dict.get('bidSize')
+            self.ask_size = data_dict.get('askSize')
+            self.delta = data_dict.get('delta')
+            self.gamma = data_dict.get('gamma')
+            self.theta = data_dict.get('theta')
+            self.vega = data_dict.get('vega')
+            self.rho = data_dict.get('rho')
+            self.theoretical_volatility = \
+                data_dict.get('theoreticalVolatility') / 100.0 if 'theoreticalVolatility' in data_dict else None
+            self.theoretical_option_value = data_dict.get('theoreticalOptionValue')
+            self.quote_time = int(data_dict.get('quoteTimeInLong') / 1000) if 'quoteTimeInLong' in data_dict else None
         '''
         TD data not used.
         "mark", "daysToExpiration", "tradeDate", "optionDeliverablesList",
@@ -143,8 +197,7 @@ class OptionContract(Security):
 
     @property
     def display_name(self):
-        expiration_date_str = timestamp_to_datetime_with_default_tz(
-            self.expiration).strftime("%m/%d/%Y")
+        expiration_date_str = timestamp_to_datetime_with_default_tz(self.expiration).strftime("%m/%d/%Y")
         strike = int(self.strike) if self.strike.is_integer() else self.strike
         return '{} {} strike ${} {}'.format(self.ticker.symbol, expiration_date_str,
                                             strike, 'call' if self.is_call else 'put')

@@ -9,7 +9,7 @@ def get_quote(response, is_yahoo):
         return response.get('underlying')
 
 
-def get_call_puts(ticker, response, expiration_timestamp=None, external_cache_id=None):
+def get_call_puts_td(ticker, response, expiration_timestamp=None, external_cache_id=None):
     stock_price = response.get('underlying').get('last')  # TODO: fix this.
     call_contracts = []
     for date_str, blob in response.get('callExpDateMap').items():
@@ -35,6 +35,27 @@ def get_call_puts(ticker, response, expiration_timestamp=None, external_cache_id
                     pass
             else:
                 break
+    return call_contracts, put_contracts
+
+
+def get_call_puts_intrinio(ticker, response, external_cache_id=None):
+    stock_price, quote_external_cache_id = ticker.get_last_price()  # TODO: fix this. Does not handle past price.
+    all_raw_options = response.get('chain')
+    call_contracts = []
+    put_contracts = []
+
+    for raw_option in all_raw_options:
+        try:
+            is_call = raw_option.get('option').get('type') == 'call'
+            if is_call:
+                call_contracts.append(
+                    OptionContract(ticker, True, raw_option, stock_price, external_cache_id))
+            else:
+                put_contracts.append(
+                    OptionContract(ticker, False, raw_option, stock_price, external_cache_id))
+        except ValueError as e:
+            print(e)
+
     return call_contracts, put_contracts
 
 
