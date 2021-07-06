@@ -21,7 +21,7 @@ export default responsiveFontSizes(createTheme({
             light: 'rgba(255, 231, 148, 1)',
             background: 'rgba(255, 211, 56, 0.08)',
             border: 'rgba(255, 211, 56, 0.5)',
-            contrastText: 'rgba(255, 255, 255, 1)'
+            contrastText: 'rgba(0, 0, 0, 1)'
         },
         warning: {
             main: colors.purple,

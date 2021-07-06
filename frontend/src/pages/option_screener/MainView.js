@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { makeStyles } from '@material-ui/styles';
 import {
     Alert, Grid, Typography, Paper, Divider, IconButton, useMediaQuery, FormControl, Select,
@@ -8,7 +8,7 @@ import {
 import { visuallyHidden } from '@material-ui/utils';
 import CancelIcon from '@material-ui/icons/Cancel';
 import TickerAutocomplete from "../../components/TickerAutocomplete";
-import ScreenFilterContainer from "../../components/filters/ScreenFilterContainer";
+import FilterMenu from "./FilterMenu";
 import NewTickerSummary from "../../components/NewTickerSummary";
 import TuneIcon from "@material-ui/icons/Tune";
 import { GetGaEventTrackingFunc } from '../../utils';
@@ -17,7 +17,6 @@ import MetricLabel from '../../components/MetricLabel.js';
 import ScreenMobileCard from "../../components/cards/ScreenMobileCard";
 
 const GaEvent = GetGaEventTrackingFunc('option screener');
-
 const useStyles = makeStyles({
     root: {
         overflowX: "auto",
@@ -34,8 +33,6 @@ const useStyles = makeStyles({
 });
 
 export default function MainView(props) {
-    const classes = useStyles();
-
     const {
         allTickers,
         selectedTicker,
@@ -43,16 +40,15 @@ export default function MainView(props) {
         selectedExpirationTimestamps,
         expirationTimestampsOptions,
         onExpirationSelectionChange,
-        deleteExpirationChip,
-        onFilterChange,
-        onTextFilterChange,
-        onPutToggle,
-        onCallToggle,
         basicInfo,
         contracts,
-        filters,
-        debouncedGetContracts
+        getContracts
     } = props
+    const classes = useStyles();
+
+    const [selectedTimestamps, setSelectedTimestamps] = useState(selectedExpirationTimestamps);
+    // filter states
+    const [filters, setFilters] = useState({});
 
     // web filter slide out
     const [filterOpen, setFilterOpen] = useState(true)
@@ -63,7 +59,6 @@ export default function MainView(props) {
 
     // mobile responsiveness
     const isMobile = useMediaQuery(theme => theme.breakpoints.down('md'));
-    // mobile responsiveness
     const isCard = useMediaQuery(theme => theme.breakpoints.down('sm'));
 
     // mobile filter state
@@ -125,6 +120,12 @@ export default function MainView(props) {
         handleRequestSort(event, property);
     };
 
+    const deleteExpirationChip = (e, value) => {
+        const newTimestamps = selectedTimestamps.filter(date => date.value !== value);
+        setSelectedTimestamps(newTimestamps);
+        onExpirationSelectionChange(newTimestamps);
+    }
+
     const headCells = [
         { id: 'is_call', label: "type" },
         { id: 'days_till_expiration', label: "exp date" },
@@ -143,15 +144,33 @@ export default function MainView(props) {
         { id: 'break_even_price', label: "breakeven" },
     ];
 
+    useEffect(() => {
+        if (!selectedTicker) {
+            setFilters({});
+        }
+    }, [selectedTicker]);
+
+    useEffect(() => {
+        if (selectedTicker && selectedExpirationTimestamps) {
+            getContracts(filters);
+        }
+        setSelectedTimestamps(selectedExpirationTimestamps);
+    }, [filters, selectedExpirationTimestamps]);
+
     return (
-        <Grid container minHeight="inherit">
+        <Grid container>
             {!isMobile &&
                 <>
-                    <Grid container item sm={2.3} direction="column" alignItems="center"
+                    <Grid container item sm={2.5} direction="column" alignItems="center"
                         bgcolor='#333741' color="white" style={{ display: filterOpen ? "block" : "none" }}>
-                        <ScreenFilterContainer onFilterChange={onFilterChange} onTextFilterChange={onTextFilterChange} filters={filters} onPutToggle={onPutToggle} onCallToggle={onCallToggle}
-                            handleFilterCollapse={handleFilterCollapse} initialPrice={basicInfo.latestPrice}
-                            deleteExpirationChip={deleteExpirationChip} debouncedGetContracts={debouncedGetContracts} />
+                        <FilterMenu
+                            filters={filters}
+                            setFilters={setFilters}
+                            basicInfo={basicInfo}
+                            handleFilterCollapse={handleFilterCollapse}
+                            deleteExpirationChip={deleteExpirationChip}
+                            getContracts={getContracts}
+                        />
                     </Grid>
                     <Grid item py={2} bgcolor='#333741' color="white" style={{ display: filterOpen ? "none" : "block" }} >
                         <IconButton color="inherit" onClick={handleFilterCollapse}><TuneIcon fontSize="large" /></IconButton>
@@ -159,7 +178,7 @@ export default function MainView(props) {
                 </>
             }
             <Grid item sm className={classes.root}>
-                <Grid component={Paper} container sm={12} elevation={4} square padding={2} style={isMobile ? { width: "100vw" } : null}>
+                <Grid component={Paper} container item sm={12} elevation={4} square padding={2} style={isMobile ? { width: "100vw" } : null}>
                     {isMobile ?
                         <>
                             <Grid container>
@@ -173,13 +192,10 @@ export default function MainView(props) {
                                 </Grid>
                                 <div style={{ position: "absolute", right: 0, top: "5rem", zIndex: 100, display: showMobileFilter ? "block" : "none" }}>
                                     <Grid container direction="column" justifyContent="center" alignItems="center" bgcolor='#333741' color="white" height="100%">
-                                        <ScreenFilterContainer
-                                            onFilterChange={onFilterChange}
-                                            onTextFilterChange={onTextFilterChange}
-                                            onPutToggle={onPutToggle}
-                                            onCallToggle={onCallToggle}
+                                        <FilterMenu
                                             filters={filters}
-                                            initialPrice={basicInfo.latestPrice}
+                                            setFilters={setFilters}
+                                            basicInfo={basicInfo}
                                             isMobile={isMobile}
                                             handleMobileFilterCollapse={handleMobileFilterCollapse}
                                             allTickers={allTickers}
@@ -189,7 +205,6 @@ export default function MainView(props) {
                                             selectedExpirationTimestamps={selectedExpirationTimestamps}
                                             onExpirationSelectionChange={onExpirationSelectionChange}
                                             deleteExpirationChip={deleteExpirationChip}
-                                            debouncedGetContracts={debouncedGetContracts}
                                         />
                                     </Grid>
                                 </div>
@@ -217,12 +232,11 @@ export default function MainView(props) {
                                 <FormControl fullWidth>
                                     <Select
                                         id="expiration-dates"
-                                        value={selectedExpirationTimestamps}
+                                        value={selectedTimestamps}
                                         multiple
                                         placeholder="Select an expiration date"
-                                        onChange={(e) => onExpirationSelectionChange(e.target.value)}
-                                        onClose={debouncedGetContracts}
-                                        style={{ paddingBottom: "5px" }}
+                                        onChange={(e) => setSelectedTimestamps(e.target.value)}
+                                        onClose={(e) => onExpirationSelectionChange(selectedTimestamps)}
                                         variant="standard"
                                         MenuProps={{
                                             style: {
@@ -235,14 +249,15 @@ export default function MainView(props) {
                                             getContentAnchorEl: () => null,
                                         }}
                                         renderValue={
-                                            (selectedExpirationTimestamps) => {
-                                                let sorted = selectedExpirationTimestamps.sort((a, b) => (a.value > b.value) ? 1 : -1)
+                                            (selectedTimestamps) => {
+                                                let sorted = selectedTimestamps.sort((a, b) => (a.value > b.value) ? 1 : -1)
                                                 return (
                                                     <Box sx={{ display: 'flex', flexWrap: 'wrap' }}>
                                                         {sorted.map((date) => (
                                                             <Chip
                                                                 key={date.value}
                                                                 label={date.label}
+                                                                size="small"
                                                                 clickable
                                                                 deleteIcon={
                                                                     <CancelIcon
@@ -262,7 +277,7 @@ export default function MainView(props) {
                     }
                     <NewTickerSummary basicInfo={basicInfo} isMobile={isMobile} />
                 </Grid>
-                <Grid container justifyContent="center">
+                <Grid container item justifyContent="center">
                     <Box style={{ display: "inline-flex" }} p={2}>
                         {contracts.length > 0 ?
                             null
@@ -280,7 +295,7 @@ export default function MainView(props) {
                 </Grid>
                 {contracts.length > 0 ?
                     isCard ?
-                        <div>
+                        <>
                             <Grid container justifyContent="space-between" alignItems="space-between" pb={1} px={2}>
                                 <Grid xs={6}>
                                     <Box p={1} border={1} borderColor="rgba(228, 228, 228, 1)" borderRadius={1} style={{ backgroundColor: "rgb(242, 246, 255)" }}>
@@ -308,9 +323,9 @@ export default function MainView(props) {
                                         );
                                     })}
                             </Stack>
-                        </div>
+                        </>
                         :
-                        <div>
+                        <>
                             <Grid container>
                                 <Grid item xs={12} px={3} className={classes.root}>
                                     <TableContainer component={Box} border={1} borderColor="rgba(228, 228, 228, 1)" borderRadius={1}>
@@ -362,7 +377,7 @@ export default function MainView(props) {
                                     onRowsPerPageChange={handleChangeRowsPerPage}
                                 />
                             </Grid>
-                        </div>
+                        </>
                     :
                     null
                 }

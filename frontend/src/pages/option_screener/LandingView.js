@@ -25,7 +25,7 @@ export default function LandingView(props) {
         expirationTimestampsOptions,
         selectedExpirationTimestamps,
         onExpirationSelectionChange,
-        debouncedGetContracts,
+        getContracts,
     } = props
 
     return (
@@ -51,8 +51,7 @@ export default function LandingView(props) {
                                 fullWidth
                                 placeholder="Select an expiration date"
                                 onChange={(e) => onExpirationSelectionChange(e.target.value)}
-                                onClose={debouncedGetContracts}
-                                style={{ paddingBottom: "5px" }}
+                                onClose={(e) => getContracts()}
                                 variant="standard"
                                 MenuProps={{
                                     style: {
@@ -68,7 +67,7 @@ export default function LandingView(props) {
                                     (selectedExpirationTimestamps) => {
                                         let sorted
                                         sorted = selectedExpirationTimestamps.sort((a, b) => (a.value > b.value) ? 1 : -1)
-                                        return <Box>{sorted.map(date => <Chip key={date.value} label={date.label} />)}</Box>
+                                        return <Box>{sorted.map(date => <Chip size="small" key={date.value} label={date.label} />)}</Box>
                                     }
                                 }
                             >
