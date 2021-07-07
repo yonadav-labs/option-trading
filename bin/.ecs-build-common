@@ -196,11 +196,13 @@ process_parameters() {
     exit 1
   fi
 
-  if [[ -n "$TAGGED_IMAGE_OUTFILE" ]] && { ! ls "$TAGGED_IMAGE_OUTFILE" > /dev/null 2>&1 && ! touch "$TAGGED_IMAGE_OUTFILE" > /dev/null 2>&1 ; } ; then
-    echo -e "${START_RED_TEXT}ERROR: Unable to create the tagged image outfile '${TAGGED_IMAGE_OUTFILE}'${CLEAR_TEXT_COLOR}" 1>&2
-    exit 1
-  else
-    echo -n '' > "$TAGGED_IMAGE_OUTFILE"
+  if [[ -n "$TAGGED_IMAGE_OUTFILE" ]] ; then
+    if { ! ls "$TAGGED_IMAGE_OUTFILE" > /dev/null 2>&1 && ! touch "$TAGGED_IMAGE_OUTFILE" > /dev/null 2>&1 ; } ; then
+      echo -e "${START_RED_TEXT}ERROR: Unable to create the tagged image outfile '${TAGGED_IMAGE_OUTFILE}'${CLEAR_TEXT_COLOR}" 1>&2
+      exit 1
+    else
+      echo -n '' > "$TAGGED_IMAGE_OUTFILE"
+    fi
   fi
 }
 
