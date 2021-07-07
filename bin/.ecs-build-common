@@ -7,14 +7,20 @@ export CLEAR_TEXT_COLOR='\033[0m'
 
 if [[ -z "$BUILD_SCRIPT_NAME" ]] ; then
   echo -e "${START_RED_TEXT}ERROR: THIS SCRIPT CAN NOT BE DIRECTLY EXECUTED.${CLEAR_TEXT_COLOR}" 1>&2
-  exit 2
+  exit 1
 fi
 
 export ECR_IMAGE_LOCATION='813539762970.dkr.ecr.us-east-2.amazonaws.com'
 export MAIN_BRANCH_NAME='main'
 
 ts_aws() {
-  aws --profile tigerstance "$@"
+  local PROFILE_OPTION=( --profile tigerstance )
+
+  if [[ "$IGNORE_AWS_PROFILE" = 'Y' ]] ; then
+    PROFILE_OPTION=( )
+  fi
+
+  aws "${PROFILE_OPTION[@]}" "$@"
 }
 
 build_and_tag_image() {
@@ -27,18 +33,23 @@ build_and_tag_image() {
 build_image() {
   local TMP_IMAGE_ID_FILE
   TMP_IMAGE_ID_FILE="$( mktemp )"
-  docker build "$@" --progress plain --iidfile "$TMP_IMAGE_ID_FILE" --file "$DOCKER_FILE_PATH" "$CONTAINER_APP_DIR" || \
-    { echo -e "${START_RED_TEXT}Docker image build failed.${COMMAND_LINE_ERROR}${CLEAR_TEXT_COLOR}" 1>&2 ; exit 1 ; }
+  # Always ignore the cache (--no-cache) when building, ensuring a clean build.
+  docker build "$@" --no-cache --progress plain --iidfile "$TMP_IMAGE_ID_FILE" --file "$DOCKER_FILE_PATH" "$CONTAINER_APP_DIR" || \
+    { echo -e "${START_RED_TEXT}Docker image build failed.${CLEAR_TEXT_COLOR}" 1>&2 ; exit 1 ; }
   IMAGE_ID="$(cat "$TMP_IMAGE_ID_FILE")"
 }
 
 tag_last_built_image_id() {
   for IMAGE_TAG in "${IMAGE_TAGS[@]}" ; do
     docker tag "$IMAGE_ID" "${ECR_IMAGE_REPOSITORY}:${IMAGE_TAG}"
+
+    if [[ -n "$TAGGED_IMAGE_OUTFILE" ]] ; then
+      echo "${ECR_IMAGE_REPOSITORY}:${IMAGE_TAG}" >> "$TAGGED_IMAGE_OUTFILE"
+    fi
   done
 }
 
-parse_command_line() {
+initialize_command() {
   local PRINT_HELP
 
   PRINT_HELP=N
@@ -46,7 +57,9 @@ parse_command_line() {
   USE_GIT_COMMIT_HASH_TAG=N
   IGNORE_BRANCH_CHECK=N
   IGNORE_UNCOMMITTED_FILES=N
+  IGNORE_AWS_PROFILE=N
   PUSH_IMAGES=N
+  TAGGED_IMAGE_OUTFILE=''
   ADDITIONAL_TAGS=( )
   IMAGE_TAGS=
 
@@ -68,6 +81,13 @@ parse_command_line() {
         IGNORE_UNCOMMITTED_FILES=Y
         ;;
 
+      # By default, the profile 'tigerstance' is used. This ensures local AWS CLI usage works.
+      # However automated tools do not use a profile, they use credentials provided by the env.
+      # This flag allows automated tools to skip usage of a CLI provided profile.
+      --ignore-aws-profile )
+        IGNORE_AWS_PROFILE=Y
+        ;;
+
       --use-latest-tag )
         USE_LATEST_TAG=Y
         ;;
@@ -83,6 +103,14 @@ parse_command_line() {
 
       --push )
         PUSH_IMAGES=Y
+        ;;
+
+      # This flag creates a text file with all the built image tags on separate lines.
+      # This is used in cases where we first want to build the images, then test them,
+      # then push them by simply iterating over the tags in the created file.
+      --tagged-image-outfile )
+        shift
+        TAGGED_IMAGE_OUTFILE="$1"
         ;;
 
       * )
@@ -104,19 +132,21 @@ parse_command_line() {
     -h, --help                       Display this message
         --ignore-branch-check        Ignore the fact that the current git branch is not '$MAIN_BRANCH_NAME' (USE WITH CAUTION!)
         --ignore-uncommitted-files   Ignore the fact that the current git status is uncommitted file (USE WITH CAUTION!)
+        --ignore-aws-profile         Do not use the Tigerstance AWS profile (for use primarily by automated tools)
         --use-latest-tag             Tag this image as the 'latest' image
         --use-git-commit-hash-tag    Use the git commit hash as a tag for this image build
         --tags TAG[,TAG,...]         Provides a comma-delimited list of tags to apply to the built image
+        --tagged-image-outfile       Print the images built to the provided file path
         --push                       Push the built image(s) to the remote repository
 
 EOF
      exit 0
   fi
 
-  check_build_start_state
+  process_parameters
 }
 
-check_build_start_state() {
+process_parameters() {
   local TAGS_OPTIONS_MSG
   local UNKNOWN_OPTIONS_LIST
   local GIT_COMMIT_HASH
@@ -147,6 +177,10 @@ check_build_start_state() {
     else
       COMMAND_LINE_WARNINGS=( "${COMMAND_LINE_WARNINGS[@]}" "No tags have been requested or provided for this image build... $TAGS_OPTIONS_MSG" )
     fi
+
+    if [[ -n "$TAGGED_IMAGE_OUTFILE" ]] ; then
+      COMMAND_LINE_ERRORS=( "${COMMAND_LINE_ERRORS[@]}" "No tags have been requested or provided for this image build... unable to populate the tagged image outfile... $TAGS_OPTIONS_MSG")
+    fi
   fi
 
   if [[ ${#COMMAND_LINE_WARNINGS[@]} -gt 0 ]] ; then
@@ -160,6 +194,13 @@ check_build_start_state() {
       echo -e "${START_RED_TEXT}ERROR: ${COMMAND_LINE_ERROR}${CLEAR_TEXT_COLOR}" 1>&2
     done
     exit 1
+  fi
+
+  if [[ -n "$TAGGED_IMAGE_OUTFILE" ]] && { ! ls "$TAGGED_IMAGE_OUTFILE" > /dev/null 2>&1 && ! touch "$TAGGED_IMAGE_OUTFILE" > /dev/null 2>&1 ; } ; then
+    echo -e "${START_RED_TEXT}ERROR: Unable to create the tagged image outfile '${TAGGED_IMAGE_OUTFILE}'${CLEAR_TEXT_COLOR}" 1>&2
+    exit 1
+  else
+    echo -n '' > "$TAGGED_IMAGE_OUTFILE"
   fi
 }
 
@@ -303,9 +344,19 @@ push_images_to_ecr() {
   echo
 
   for IMAGE in "${IMAGES[@]}" ; do
-    docker push "${IMAGE}"
+    docker push "${IMAGE}" || \
+      { echo -e "${START_RED_TEXT}Docker image push failed.${CLEAR_TEXT_COLOR}" 1>&2 ; exit 1 ; }
     echo
   done
+}
+
+finalize_command() {
+  if [[ -n "$TAGGED_IMAGE_OUTFILE" ]] ; then
+    echo '========================================'
+    echo "Tagged images written to file '$(cd "$(dirname "$TAGGED_IMAGE_OUTFILE")" && pwd)/$(basename "$TAGGED_IMAGE_OUTFILE")'"
+    echo '========================================'
+    echo
+  fi
 }
 
 join_array() {

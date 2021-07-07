@@ -1,0 +1,30 @@
+version: 0.2
+
+env:
+  shell: bash
+  variables:
+    TAGGED_IMAGE_OUTFILE: "/tmp/options-backend-build/tagged-image-outfile.txt"
+
+phases:
+  pre_build:
+    on-failure: ABORT
+    commands:
+      - "echo ===== Build Started on `date` ====="
+      - git checkout "$BUILD_BRANCH"
+  build:
+    on-failure: ABORT
+    commands:
+      - mkdir -p "$(dirname "$TAGGED_IMAGE_OUTFILE")"
+      - bin/build-ecs-backend --ignore-aws-profile --use-latest-tag --use-git-commit-hash-tag --tagged-image-outfile "$TAGGED_IMAGE_OUTFILE"
+      - "echo ===== Build Completed on `date` ====="
+  post_build:
+    commands:
+      - "echo ===== Tests Started on `date` ====="
+      - docker-compose -f django_apps/docker/docker-compose-test.yml run backend python manage.py test
+      - "echo ===== Image Push Started on `date` ====="
+      - echo Logging in to AWS ECR...
+      - aws ecr get-login-password --region us-east-2 | docker login --username AWS --password-stdin 813539762970.dkr.ecr.us-east-2.amazonaws.com
+      - echo Pushing images to AWS ECR...
+      - for _IMAGE in `cat "$TAGGED_IMAGE_OUTFILE" | sort` ; do docker push "$_IMAGE" ; done
+      - echo '===== Pushed the Following Images =====' ; cat "$TAGGED_IMAGE_OUTFILE" | sort | sed -E 's/^/  /g'
+      - "echo ===== Push Completed on `date` ====="

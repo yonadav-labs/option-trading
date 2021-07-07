@@ -1,0 +1,13 @@
+version: '3.7'
+
+services:
+  frontend:
+    container_name: options_frontend_test
+    build:
+      context: ../.
+      dockerfile: ./docker/Dockerfile.local
+    volumes:
+      - ..:/home/app/frontend
+      - /home/app/frontend/node_modules
+    environment:
+      - CI=true

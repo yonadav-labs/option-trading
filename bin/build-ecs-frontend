@@ -1,9 +1,11 @@
 #!/usr/bin/env bash
 
+set -e
+
 BUILD_SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 
 BUILD_SCRIPT_NAME="$(basename "$0")"
-IMAGE_LABEL='frontend'
+IMAGE_LABEL=frontend
 CONTAINER_APP_DIR="$(cd "$BUILD_SCRIPT_DIR"/../frontend && pwd)"
 DOCKER_FILE_PATH="$CONTAINER_APP_DIR"/docker/Dockerfile.deployed
 
@@ -11,7 +13,7 @@ ECS_BUILD_COMMON="$BUILD_SCRIPT_DIR"/.ecs-build-common
 # shellcheck source=.ecs-build-common
 . "$ECS_BUILD_COMMON"
 
-parse_command_line "$@"
+initialize_command "$@"
 
 ECR_IMAGE_REPOSITORIES=(
   "$ECR_IMAGE_LOCATION"/options-ecs-frontend
@@ -34,3 +36,4 @@ done
 
 print_built_images_message
 push_images_if_requested
+finalize_command

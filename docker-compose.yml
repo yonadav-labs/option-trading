@@ -23,7 +23,7 @@ services:
     ports:
       - 8080:8080
     env_file:
-      - ./django_apps/local.env
+      - ./django_apps/docker/local.env
     environment:
       - DJANGO_COLLECT_STATIC=0
     depends_on:

@@ -1,0 +1,10 @@
+version: 0.2
+
+env:
+  shell: bash
+
+phases:
+  build:
+    on-failure: ABORT
+    commands:
+      - bin/check-applicable-commit

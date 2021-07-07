@@ -1,0 +1,15 @@
+# Backend Files
+django_apps/**
+.backend-build-ignore
+
+# Non-applicable Build Files
+bin/build-ecs-backend
+bin/aws-tunnel
+
+# Local Environment Files
+.env.*
+**/Dockerfile.local
+
+# Non-code Files
+**/*.md
+**/*.MD

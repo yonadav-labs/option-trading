@@ -1,0 +1,192 @@
+#!/usr/bin/env bash
+
+CURRENT_COMMIT_HASH="${CURRENT_COMMIT_HASH:-$CODEBUILD_RESOLVED_SOURCE_VERSION}"
+
+if [[ -z "$CURRENT_COMMIT_HASH" ]] ; then
+  echo "ERROR: Environment variable CURRENT_COMMIT_HASH not set."
+fi
+
+if [[ -z "$BUILD_BRANCH" ]] ; then
+  echo "ERROR: Environment variable BUILD_BRANCH not set."
+fi
+
+if [[ -z "$TARGET_BUILD_PROJECT" ]] ; then
+  echo "ERROR: Environment variable TARGET_BUILD_PROJECT not set."
+fi
+
+if [[ -z "$IGNORE_FILE_PATH" ]] ; then
+  echo "ERROR: Environment variable IGNORE_FILE_PATH not set."
+fi
+
+if ! which aws > /dev/null ; then
+  echo "ERROR: Command 'aws' not found."
+  exit 1
+fi
+
+# Allow the use of extended globs (e.g., **) in the ignore files. This allows
+# for patterns that are familiar to those who have edited .gitignore files.
+shopt -s extglob
+
+get_previous_build_ids() {
+  PREVIOUS_BUILD_IDS=( $( \
+    aws codebuild list-builds-for-project --project-name "$TARGET_BUILD_PROJECT" --max-items 100 \
+    | jq -Ma '.ids[]' \
+    | sed -E 's/^"(.*)"$/\1/g'
+  ) )
+}
+
+get_last_successful_build_commit_hash() {
+  # This jq command will extract the successful builds from a build history and outputs the commit hashes prefixed
+  # with the padded build number (for sorting). The result looks like '00034:ec2b8d4447f0c96aaf005c180d3b68969fc989f2'.
+  local EXTRACT_BUILD_INFO_JQ_STATEMENT
+  read -r -d '' EXTRACT_BUILD_INFO_JQ_STATEMENT <<- EOF
+    .builds[] |
+    if .currentPhase == "COMPLETED" and .buildStatus == "SUCCEEDED" then
+      (
+        .buildNumber
+        | tostring
+        | (
+            length
+            | if . >= 5 then
+                ""
+              else
+                "0" * (5 - .)
+              end
+          ) as \$padding
+        | \$padding + .
+      ) +
+      ":" +
+      .resolvedSourceVersion
+    else
+      ""
+    end
+EOF
+
+  get_previous_build_ids
+  if [[ ${#PREVIOUS_BUILD_IDS[@]} -eq 0 ]] ; then
+    LAST_SUCCESSFUL_BUILD_COMMIT_HASH=
+  else
+    LAST_SUCCESSFUL_BUILD_COMMIT_HASH=$(\
+      aws codebuild batch-get-builds --ids "${PREVIOUS_BUILD_IDS[@]}" \
+      | jq "$EXTRACT_BUILD_INFO_JQ_STATEMENT" \
+      | sed -E 's/^"(.*)"$/\1/g' \
+      | grep -Ev '^$' \
+      | sort -ru \
+      | head -n 1 \
+      | sed -E 's/^[^:]*://g' \
+    )
+
+    # Ensure the last successful commit still exists (e.g., it could have been squashed out by a rebase).
+    if [[ -n "$LAST_SUCCESSFUL_BUILD_COMMIT_HASH" ]] && ! git show "$LAST_SUCCESSFUL_BUILD_COMMIT_HASH" > /dev/null 2>&1 ; then
+      LAST_SUCCESSFUL_BUILD_COMMIT_HASH=
+    fi
+  fi
+
+}
+
+process_ignore_file() {
+  local GLOB_PATTERNS=( $(\
+    cat "$IGNORE_FILE_PATH" \
+    | sed -E 's/^[[:space:]]*(.*)[[:space:]]*$/\1/g' \
+    | grep -Ev '^$|^#'
+  ) )
+
+  EXCLUDE_GLOB_PATTERNS=( $(printf '%s\n' "${GLOB_PATTERNS[@]}" | grep -Ev '^!') )
+  INCLUDE_GLOB_PATTERNS=( $(printf '%s\n' "${GLOB_PATTERNS[@]}" | grep -E '^!' | sed -E 's/^!//g') )
+}
+
+get_applicable_files_since_last_successful_build() {
+  process_ignore_file
+
+  APPLICABLE_FILES=( )
+  FILES_COMMITTED_SINCE_LAST_SUCCESSFUL_BUILD=( $(\
+    git log --pretty='format:' --name-only "$LAST_SUCCESSFUL_BUILD_COMMIT_HASH".."$CURRENT_COMMIT_HASH" \
+    | sort -u \
+    | grep -Ev '^$'
+  ) )
+
+  for COMMITTED_FILE in "${FILES_COMMITTED_SINCE_LAST_SUCCESSFUL_BUILD[@]}" ; do
+    EXCLUDE_FILE=0
+
+    INDEX=0
+    while [[ EXCLUDE_FILE -eq 0 && $INDEX -lt ${#EXCLUDE_GLOB_PATTERNS[@]} ]] ; do
+      GLOB_PATTERN="${EXCLUDE_GLOB_PATTERNS[$INDEX]}"
+      eval '[[ '\'"$COMMITTED_FILE"\'' == @('"$GLOB_PATTERN"') ]]' && EXCLUDE_FILE=1
+      INDEX=$(( INDEX + 1 ))
+    done
+
+    INDEX=0
+    while [[ $EXCLUDE_FILE -eq 1 && $INDEX -lt ${#INCLUDE_GLOB_PATTERNS[@]} ]] ; do
+      GLOB_PATTERN="${INCLUDE_GLOB_PATTERNS[$INDEX]}"
+      eval '[[ '\'"$COMMITTED_FILE"\'' == @('"$GLOB_PATTERN"') ]]' && EXCLUDE_FILE=0
+      INDEX=$(( INDEX + 1 ))
+    done
+
+    [[ $EXCLUDE_FILE -eq 0 ]] && APPLICABLE_FILES=( "${APPLICABLE_FILES[@]}" "$COMMITTED_FILE" )
+  done
+}
+
+get_pipeline_data() {
+  if [[ -n "$CODEBUILD_BUILD_ID" && -n "$CODEBUILD_INITIATOR" && "$CODEBUILD_INITIATOR" == codepipeline/* ]] ; then
+    CODE_PIPELINE_NAME="$( echo "$CODEBUILD_INITIATOR" | sed -E 's%^codepipeline/%%g' )"
+    CODE_PIPELINE_EXECUTION_ID="$(
+      aws codepipeline get-pipeline-state \
+        --region us-east-2 \
+        --output text \
+        --name "$CODE_PIPELINE_NAME" \
+        --query 'stageStates[?actionStates[?latestExecution.externalExecutionId==`'${CODEBUILD_BUILD_ID}'`]].latestExecution.pipelineExecutionId'
+    )"
+  fi
+}
+
+cancel_current_build() {
+  get_pipeline_data
+  if [[ -n "$CODE_PIPELINE_NAME" ]] ; then
+    echo 'Canceling build...'
+    aws codepipeline stop-pipeline-execution \
+      --output text \
+      --no-abandon \
+      --reason 'No applicable changes detected.' \
+      --pipeline-name "$CODE_PIPELINE_NAME" \
+      --pipeline-execution-id "$CODE_PIPELINE_EXECUTION_ID" \
+      > /dev/null
+  else
+    echo 'Unable to cancel build.'
+  fi
+}
+
+join_array() {
+  local DELIMITER="$1"
+  shift
+
+  local FIRST_ELEMENT="$1"
+  shift
+
+  # The '${@/#/$DELIMITER}' syntax requires some explanation. It is Bash array syntax for listing the elements
+  # of an array while performing substitutions on the elements. The format '${@}' would simply list out the
+  # parameters passed to this function. The additional '/#/$DELIMITER' states replace the beginning of each
+  # entry (the '/#' section) with the provided string (the '/#$DELIMITER section).
+  printf '%s' "$FIRST_ELEMENT" "${@/#/$DELIMITER}"
+}
+
+echo '========== CHECKING OUT BUILD COMMIT =========='
+git checkout "$BUILD_BRANCH"
+echo
+
+get_last_successful_build_commit_hash
+if [[ -z "$LAST_SUCCESSFUL_BUILD_COMMIT_HASH" ]] ; then
+  echo '========== COMMIT APPLICABLE =========='
+  echo 'No previous successful builds found. Continuing with build.'
+else
+  get_applicable_files_since_last_successful_build
+  if [[ ${#APPLICABLE_FILES[@]} -gt 0 ]] ; then
+    echo '========== COMMIT APPLICABLE =========='
+    echo "Applicable files found since last successful build commit ($LAST_SUCCESSFUL_BUILD_COMMIT_HASH). Continuing with build:"
+    printf '  %s\n' "${APPLICABLE_FILES[@]}"
+  else
+    echo '========== COMMIT NOT APPLICABLE =========='
+    echo "No applicable files found since last successful build commit ($LAST_SUCCESSFUL_BUILD_COMMIT_HASH)."
+    cancel_current_build
+    exit 1
+  fi
+fi

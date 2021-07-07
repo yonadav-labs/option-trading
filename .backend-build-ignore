@@ -1,0 +1,15 @@
+# Frontend Files
+frontend/**
+.frontend-build-ignore
+
+# Non-applicable Build Files
+bin/build-ecs-frontend
+bin/aws-tunnel
+
+# Local Environment Files
+.env.*
+**/Dockerfile.local
+
+# Non-code Files
+**/*.md
+**/*.MD

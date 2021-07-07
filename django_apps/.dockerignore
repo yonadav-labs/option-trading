@@ -3,3 +3,4 @@
 **/*.MD
 **/*.md
 *.env*
+aws-codebuild-spec.yml

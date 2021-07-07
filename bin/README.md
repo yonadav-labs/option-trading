@@ -16,11 +16,13 @@ Usage: build-ecs-backend [OPTIONS]
 
 Options:
   -h, --help                       Display this message
-      --ignore-branch-check        Ignore the fact that the current git branch is not 'main' (USE WITH CAUTION!)
+      --ignore-branch-check        Ignore the fact that the current git branch is not '$MAIN_BRANCH_NAME' (USE WITH CAUTION!)
       --ignore-uncommitted-files   Ignore the fact that the current git status is uncommitted file (USE WITH CAUTION!)
+      --ignore-aws-profile         Ignore the Tigerstance AWS profile (for use primarily by automated tools)
       --use-latest-tag             Tag this image as the 'latest' image
       --use-git-commit-hash-tag    Use the git commit hash as a tag for this image build
       --tags TAG[,TAG,...]         Provides a comma-delimited list of tags to apply to the built image
+      --tagged-image-outfile       Print the images built to the provided file path
       --push                       Push the built image(s) to the remote repository
 
 ```
