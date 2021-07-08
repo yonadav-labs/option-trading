@@ -81,7 +81,8 @@ export default function FilterMenu(props) {
         deleteExpirationChip,
     } = props
     const classes = useStyles();
-    const [strikeRange, setStrikeRange] = useState([0, isEmpty(basicInfo) ? 0 : Number(basicInfo.latestPrice * 3).toFixed(2)]);
+    const maxStrikeValue = Math.round(Number(basicInfo.latestPrice) * 3 * 1e2) / 1e2;
+    const [strikeRange, setStrikeRange] = useState([0, isEmpty(basicInfo) ? 0 : maxStrikeValue]);
     const [minVol, setMinVol] = useState(0);
     const [minOI, setMinOI] = useState(0);
     const [itmRange, setITMRange] = useState([0, 100]);
@@ -142,7 +143,7 @@ export default function FilterMenu(props) {
         Number(basicInfo.latestPrice * 1.25).toFixed(2),
         Number(basicInfo.latestPrice * 1.5).toFixed(2),
         Number(basicInfo.latestPrice * 1.75).toFixed(2),
-        Number(basicInfo.latestPrice * 3).toFixed(2)
+        maxStrikeValue
     ];
 
     const strikeRenderOption = (props, option) =>
@@ -181,7 +182,7 @@ export default function FilterMenu(props) {
             }
             // strike
             addOrRemoveFilter(copy, "min.strike", strikeRange[0]);
-            addOrRemoveFilter(copy, "max.strike", strikeRange[1], basicInfo.latestPrice * 3);
+            addOrRemoveFilter(copy, "max.strike", strikeRange[1], maxStrikeValue);
             // volume
             addOrRemoveFilter(copy, "min.volume", minVol);
             // open interest
@@ -229,7 +230,7 @@ export default function FilterMenu(props) {
 
     useEffect(() => {
         if (isEmpty(filters)) {
-            setStrikeRange([0, isEmpty(basicInfo) ? 0 : basicInfo.latestPrice * 3]);
+            setStrikeRange([0, isEmpty(basicInfo) ? 0 : maxStrikeValue]);
             setMinVol(0);
             setMinOI(0);
             setITMRange([0, 100]);
@@ -369,7 +370,7 @@ export default function FilterMenu(props) {
                     label="Strike"
                     valueText={(value) => value}
                     startAdornment="$"
-                    max={isEmpty(basicInfo) ? 0 : Number(basicInfo.latestPrice * 3).toFixed(2)}
+                    max={isEmpty(basicInfo) ? 0 : maxStrikeValue}
                     step={0.01}
                     minOptions={minStrikeOptions}
                     maxOptions={maxStrikeOptions}

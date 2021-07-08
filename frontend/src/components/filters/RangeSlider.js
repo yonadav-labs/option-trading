@@ -53,9 +53,9 @@ export default function RangeSlider(props) {
             newVal = max;
         }
         if (range[0] > newVal) {
-            setRange(prevState => [Number(newVal).toFixed(2), prevState[0]]);
+            setRange(prevState => [Math.round(Number(newVal) * 1e2) / 1e2, prevState[0]]);
         } else {
-            setRange(prevState => [prevState[0], Number(newVal).toFixed(2)]);
+            setRange(prevState => [prevState[0], Math.round(Number(newVal) * 1e2) / 1e2]);
         }
     }
 
@@ -65,9 +65,9 @@ export default function RangeSlider(props) {
             newVal = min;
         }
         if (newVal > range[1]) {
-            setRange(prevState => [prevState[1], Number(newVal).toFixed(2)]);
+            setRange(prevState => [prevState[1], Math.round(Number(newVal) * 1e2) / 1e2]);
         } else {
-            setRange(prevState => [Number(newVal).toFixed(2), prevState[1]]);
+            setRange(prevState => [Math.round(Number(newVal) * 1e2) / 1e2, prevState[1]]);
         }
     }
 
