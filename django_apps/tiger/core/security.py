@@ -224,6 +224,17 @@ class OptionContract(Security):
         raise ValueError('missing bid ask last_price')
 
     @property
+    def intrinsic_value(self):
+        if self.is_call:
+            return max(0, self.stock_price - self.strike)
+        else:
+            return max(0, self.strike - self.stock_price)
+
+    @property
+    def extrinsic_value(self):
+        return self.mark - self.intrinsic_value
+
+    @property
     def bid_ask_spread(self):
         if not self.bid or not self.ask:
             return None

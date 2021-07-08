@@ -55,8 +55,16 @@ export default function NewContractCard(props) {
                             <Typography variant="button"><MetricLabel label="break-even at" /></Typography>
                             <Typography variant="body1">{PriceFormatter(contract.break_even_price)}</Typography>
                         </Grid>
-                        <Grid item xs={6} sm={2}></Grid>
-                        <Grid item xs={6} sm={2}></Grid>
+                        <Grid item sm="2" xs="6">
+                            <Typography variant="button"><MetricLabel label="intrinsic value" /></Typography>
+                            <br />
+                            <Typography variant="body2">{PriceFormatter(contract.intrinsic_value)}</Typography>
+                        </Grid>
+                        <Grid item sm="2" xs="6">
+                            <Typography variant="button"><MetricLabel label="extrinsic value" /></Typography>
+                            <br />
+                            <Typography variant="body2">{PriceFormatter(contract.extrinsic_value)}</Typography>
+                        </Grid>
                         <Grid item xs={6} sm={2}>
                             <Typography variant="button"><MetricLabel label="delta" /></Typography>
                             <Typography variant="body1">{NumberRoundFormatter(contract.delta)}</Typography>

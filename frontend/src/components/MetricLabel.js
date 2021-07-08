@@ -40,6 +40,7 @@ const HelpTextDict = {
     'eps': { text: 'Earnings per share.', hideIcon: true },
     'expiration': { text: 'The last date of an option contract on which the holder of the option may exercise it according to its terms.', hideIcon: true },
     'expiration date': { text: 'The last date of an option contract on which the holder of the option may exercise it according to its terms.', hideIcon: true },
+    'extrinsic value': { text: 'The portion of an option price that is not intrinsic value. Often referred as time and volatility premium.', hideIcon: false },
     'gamma': { text: 'Estimate of the rate of change between an option\'s Delta and the stock\'s price.', hideIcon: true },
     'high price target': { text: 'Your expected upper bound share price of the stock on expiration day. Use with LOW PRICE TARGET to form a price target range.', hideIcon: false },
     'historical volatility': { text: 'Annualized one standard deviation of stock prices in the past that measures how much stock prices moves over a period of time.', hideIcon: true },
@@ -48,6 +49,10 @@ const HelpTextDict = {
             + 'Total cost is used to calculate the return rate.', hideIcon: false
     },
     'initial value': { text: 'The value of this trade when it was was saved or shared.', hideIcon: false },
+    'intrinsic value': {
+        text: 'The value this option will have if it was exercised today. Calculated'
+            + 'by taking the difference between the market price and strike price of the underlying security.', hideIcon: false
+    },
     'implied volatility': { text: 'Expected annualized volatility of a stock over the life of the option.', hideIcon: true },
     'IV': { text: 'Expected annualized volatility of a stock over the life of the option.', hideIcon: true },
     'itm prob': { text: 'Probability of the contract to be in the money on expiration date.', hideIcon: false },

@@ -65,6 +65,8 @@ class OptionContractSerializer(serializers.Serializer):
     to_strike = ReadOnlyDollarDecimalField()
     to_strike_ratio = ReadOnlyRatioDecimalField()
     mark = ReadOnlyDollarDecimalField()
+    intrinsic_value = ReadOnlyDollarDecimalField()
+    extrinsic_value = ReadOnlyDollarDecimalField()
     break_even_price = ReadOnlyDollarDecimalField()
     to_break_even_ratio = ReadOnlyRatioDecimalField()
     notional_value = ReadOnlyDollarDecimalField()
