@@ -3,12 +3,13 @@ import { Helmet } from "react-helmet";
 import { useOktaAuth } from '@okta/okta-react';
 import UserContext from '../UserContext';
 import './Profile.css';
-import { Button, Form, Modal } from 'react-bootstrap';
 import getApiUrl, { getAllTradeTypes, GetGaEventTrackingFunc } from '../utils';
 import { useHistory, Link } from 'react-router-dom';
 import { startCase } from 'lodash';
 import LinkIcon from '@material-ui/icons/Link';
-import { IconButton, Tooltip } from '@material-ui/core';
+import { IconButton, Tooltip, CardContent, Grid, Typography, Divider, List, ListItem, Switch, OutlinedInput, Button, Select, MenuItem, Box, Modal, TextField } from '@material-ui/core';
+import { FormControl, FormLabel, FormGroup, FormControlLabel } from '@material-ui/core';
+import CloseIcon from '@material-ui/icons/Close';
 
 const GaEvent = GetGaEventTrackingFunc('preference');
 
@@ -18,7 +19,7 @@ const Profile = () => {
     const [showCancelSubscriptionModal, setShowCancelSubscriptionModal] = useState(false);
     const [brokers, setBrokers] = useState([]);
     const [tradeHistory, setTradeHistory] = useState([]);
-    const [choosenBrokers, setChoosenBrokers] = useState([]);
+    const [chosenBrokers, setChosenBrokers] = useState([]);
     const [disabledStrategies, setDisabledStrategies] = useState([]);
     const [nickName, setNickName] = useState(null);
     const [resultMsg, setResultMsg] = useState("");
@@ -62,15 +63,10 @@ const Profile = () => {
 
     const onChangeBrokers = (event) => {
         GaEvent('adjust broker');
-        let selected = [];
-        let selected_opt = (event.target.selectedOptions);
+        let selected = event;
+        setErrMsg("");
         setResultMsg("");
-
-        for (let i = 0; i < selected_opt.length; i++) {
-            selected.push(selected_opt.item(i).value)
-        }
-
-        setChoosenBrokers(selected);
+        setChosenBrokers(selected);
     };
 
     const onChangeStrategy = (event) => {
@@ -103,8 +99,8 @@ const Profile = () => {
 
         const { accessToken } = authState;
         let data = { disabled_strategies: disabledStrategies, nick_name: nickName };
-        if (choosenBrokers.length > 0) {
-            data.brokers = choosenBrokers;
+        if (chosenBrokers.length > 0) {
+            data.brokers = chosenBrokers;
         }
 
         fetch(`${API_URL}/users/${user.id}/`, {
@@ -183,62 +179,62 @@ const Profile = () => {
     useEffect(() => {
         if (user) {
             setNickName(user.nick_name);
-            setChoosenBrokers(user.brokers);
+            setChosenBrokers(user.brokers);
             setDisabledStrategies(user.disabled_strategies || []);
         }
     }, [user]);
 
     if (!user || brokers.length == 0) {
         return (
-            <div className="container justify-content-center min-vh-100">
-                <p>Loading...</p>
-            </div>
+            <Grid container justifyContent="center">
+                <Typography variant="body2">Loading...</Typography>
+            </Grid>
         );
     }
 
     return (
-        <div className="min-vh-100">
+        <Grid>
             <Helmet>
                 <title>Tigerstance | Profile</title>
             </Helmet>
-            <div className="container justify-content-center">
-                <br />
-                <div className="card">
-                    <div className="row">
-                        <div className="col-md-4 bg-gradient user-profile">
-                            <div className="card-block text-center text-white">
-                                <h6 className="f-w-600">{user.email}</h6>
+            <Grid container justifyContent="center">
+                <Divider />
+                <Box px={20} pt={4}>
+                    <Grid container direction="row">
+                        <Grid item direction="column" md={4} style={{ background: "linear-gradient(90deg, #FF8F2B 0%, #FFD338 100%)", p: "20px, 0" }} >
+                            <CardContent style={{ textAlign: "center", p: "1.25rem" }}>
+                                <Typography variant="h6" style={{ fontWeight: 600, color: "white" }}>{user.email}</Typography>
                                 {user.subscription ?
-                                    <div>
-                                        <p>Current plan: Pro member</p>
+                                    <Grid>
+                                        <Typography variant="body2" paragraph="true" color="white">Current plan: Pro member</Typography>
                                         {user.subscription.type === 'PAYPAL' ?
                                             <>
-                                                <p><span className="f-w-600">Next billing time: </span>{user.subscription.detail.next_billing_time}</p>
-                                                <Button onClick={() => setShowCancelSubscriptionModal(true)} >Cancel Subscription</Button>
+                                                <Typography variant="body2" paragraph="true" color="white"><span style={{ fontWeight: 600 }}>Next billing time: </span>{user.subscription.detail.next_billing_time}</Typography>
+                                                <Button style={{ background: "white" }} onClick={() => setShowCancelSubscriptionModal(true)} >Cancel Subscription</Button>
                                             </>
                                             :
-                                            <p><span className="f-w-600">Gift membership expiring on: </span>{user.subscription.expire_at}</p>
+                                            <Typography variant="body2" paragraph="true" color="white"><span style={{ fontWeight: 600 }}>Gift membership expiring on: </span>{user.subscription.expire_at}</Typography>
                                         }
-                                    </div>
+                                    </Grid>
                                     :
-                                    <div>
-                                        <p>Current plan: Basic member</p>
+                                    <Grid>
+                                        <Typography variant="body2" paragraph="true" color="white">Current plan: Basic member</Typography>
                                         <a href="/pricing">
-                                            <button type="button" class="btn btn-md btn-block btn-light" style={{ width: '15rem' }}>
-                                                <h5>Join Pro</h5>
-                                            </button>
+                                            <Button variant="contained" style={{ width: '15rem', size: "medium", fullWidth: true, background: "white" }}>
+                                                <Typography variant="h6" style={{ color: "black" }}>Join Pro</Typography>
+                                            </Button>
                                         </a>
-                                    </div>
+                                    </Grid>
                                 }
                                 <hr></hr>
-                                <div className="row">
-                                    <div className="col-md-12">
-                                        <div className="mt-4">
+                                <Grid direction="row">
+                                    <Grid direction="column" md={12}>
+                                        <Typography variant="body1" style={{ mt: 4, color: "white" }}>
                                             Get a free month of Pro membership for you and your friends.
                                             Just copy and paste link below to your friends to sign up.
-                                        </div>
-                                        <div className="referral-wrapper">
-                                            <span className="referral_link">{user.referral_link}</span>
+                                        </Typography>
+                                        <Grid className="referral-wrapper">
+                                            <span className="referral_link" style={{ color: "white" }}>{user.referral_link}</span>
                                             <Tooltip
                                                 PopperProps={{
                                                     disablePortal: true,
@@ -252,94 +248,97 @@ const Profile = () => {
                                             >
                                                 <IconButton onClick={copyReferralLink}><LinkIcon /></IconButton>
                                             </Tooltip>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div className="col-md-8">
-                            <div className="card-block">
-                                <h6 className="b-b-default f-w-600">Profile</h6>
-                                <div className="row">
-                                    <div className="col-md-12">
-                                        <p ><span className="f-w-600">Email: </span>{user.email}</p>
-                                    </div>
-                                </div>
-                                <h6 className="b-b-default f-w-600">Settings</h6>
-                                <Form onSubmit={saveUpdates}>
-                                    <div className="row">
-                                        <div className="col-md-12">
-                                            <Form.Group controlId="id-nick-name">
-                                                <Form.Label className="d-block">Nick Name</Form.Label>
-                                                <Form.Control defaultValue={nickName} onChange={onChangeNickName} placeholder="(emtpy)" />
-                                            </Form.Group>
-                                        </div>
-                                    </div>
-                                    <div className="row">
-                                        <div className="col-md-12">
-                                            <Form.Group controlId="id-brokers">
-                                                <Form.Label className="d-block">Stock Brokerage</Form.Label>
-                                                <small className="d-block mb-2">This setting will be used to estimate commission costs.</small>
-                                                <Form.Control
-                                                    as="select"
-                                                    htmlSize={1}
-                                                    defaultValue={user.brokers_detail.length > 0 ? user.brokers_detail[0].id : null}
-                                                    onChange={onChangeBrokers}
-                                                >
-                                                    <option>Choose a broker</option>
-                                                    {
-                                                        brokers.map(broker => (
-                                                            <option key={broker.id} value={broker.id}>{broker.name}</option>
-                                                        ))
-                                                    }
-                                                </Form.Control>
-                                            </Form.Group>
-                                        </div>
-                                    </div>
+                                        </Grid>
+                                    </Grid>
+                                </Grid>
+                            </CardContent>
+                        </Grid>
+                        <Grid item direction="column" md={8}>
+                            <CardContent style={{ p: "1.25rem" }}>
+                                <Typography variant="h6" style={{ fontWeight: 600, borderBottom: "1px solid #e0e0e0" }}>Profile</Typography>
+                                <Grid direction="row">
+                                    <Grid direction="column" md={12}>
+                                        <Typography variant="body2" paragraph="true" pt={1}><span style={{ fontWeight: 600 }}>Email: </span>{user.email}</Typography>
+                                    </Grid>
+                                </Grid>
+                                <Typography variant="h6" style={{ fontWeight: 600, borderBottom: "1px solid #e0e0e0" }}>Settings</Typography>
+                                <Grid direction="row">
+                                    <Grid direction="column" md={12} pt={1}>
+                                        <FormGroup controlId="id-nick-name">
+                                            <FormLabel style={{ display: "block", color: "black" }}>Nickname</FormLabel>
+                                            <FormControl>
+                                                <OutlinedInput label={null} id="id-nick-name" value={nickName} onChange={onChangeNickName} placeholder="(empty)" />
+                                            </FormControl>
+                                        </FormGroup>
+                                    </Grid>
+                                </Grid>
+                                <Grid direction="row">
+                                    <Grid column="column" md={12} py={1}>
+                                        <FormGroup controlId="id-brokers">
+                                            <FormLabel style={{ display: "block", color: "black" }}>Stock Brokerage</FormLabel>
+                                            <small style={{ display: "block", mb: 2 }} >This setting will be used to estimate commission costs.</small>
+                                            {brokers.length > 0 ?
+                                                <FormControl>
+                                                    <Select
+                                                        value={chosenBrokers}
+                                                        onChange={(e) => onChangeBrokers([e.target.value])}
+                                                        displayEmpty
+                                                        label={null}
+                                                    >
+                                                        <MenuItem disabled value="">Choose a broker</MenuItem>
+                                                        {
+                                                            brokers.map(broker => (
+                                                                <MenuItem key={broker.id} value={broker.id}>{broker.name}</MenuItem>
+                                                            ))
+                                                        }
+                                                    </Select>
+                                                </FormControl>
+                                                : null}
+                                        </FormGroup>
+                                    </Grid>
+                                </Grid>
 
 
-                                    <Form.Label className="d-block">Enabled Strategies</Form.Label>
-                                    <div className="row">
-                                        {getAllTradeTypes().map(type => (
-                                            <div className="col-sm-6">
-                                                <Form.Check
-                                                    key={type}
-                                                    id={type}
-                                                    type="switch"
-                                                    label={startCase(type) + ((user.disallowed_strategies.indexOf(type) != -1) ? ' (Pro)' : '')}
-                                                    value={type}
-                                                    onChange={onChangeStrategy}
-                                                    defaultChecked={
-                                                        (!user.disabled_strategies
-                                                            || (user.disabled_strategies.indexOf(type) === -1))
-                                                        && (user.disallowed_strategies.indexOf(type) === -1)}
-                                                    disabled={(user.disallowed_strategies.indexOf(type) != -1)}
-                                                />
-                                            </div>
-                                        ))}
-                                    </div>
-                                    <div className="row">
-                                        <div className="col-md-12">
-                                            <div className="text-danger mb-2 mt-0">{errMsg}</div>
-                                        </div>
-                                        <div className="col-md-12">
-                                            <div className="text-success mb-2 mt-0">{resultMsg}</div>
-                                        </div>
-                                        <div className="col-md-12">
-                                            <Button type="submit" variant="primary">Save</Button>
-                                        </div>
-                                    </div>
-                                </Form>
+                                <FormLabel style={{ display: "block", color: "black" }}>Enabled Strategies</FormLabel>
+                                <Grid container direction="row">
+                                    {getAllTradeTypes().map(type => (
+                                        <Grid item direction="column" sm={6}>
+                                            <FormControlLabel
+                                                key={type}
+                                                id={type}
+                                                label={startCase(type) + ((user.disallowed_strategies.indexOf(type) != -1) ? ' (Pro)' : '')}
+                                                value={type}
+                                                onChange={onChangeStrategy}
+                                                control={<Switch defaultChecked={
+                                                    (!user.disabled_strategies
+                                                        || (user.disabled_strategies.indexOf(type) === -1))
+                                                    && (user.disallowed_strategies.indexOf(type) === -1)}
+                                                    disabled={(user.disallowed_strategies.indexOf(type) != -1)} />}
+                                            />
+                                        </Grid>
+                                    ))}
+                                </Grid>
+                                <Grid direction="row">
+                                    <Grid direction="column" md={12}>
+                                        <Typography style={{ mb: 2, mt: 0 }} sx={{ color: "error.main" }}>{errMsg}</Typography>
+                                    </Grid>
+                                    <Grid direction="column" md={12}>
+                                        <Typography style={{ mb: 2, mt: 0 }} sx={{ color: "success.main" }}>{resultMsg}</Typography>
+                                    </Grid>
+                                    <Grid direction="column" md={12}>
+                                        <Button style={{ background: "#FF8F2B", color: "white" }} onClick={saveUpdates} variant="primary">Save</Button>
+                                    </Grid>
+                                </Grid>
 
-                                <h6 className="b-b-default f-w-600 mt-4">Saved positions</h6>
-                                <div className="row">
-                                    <div className="col-md-12">
+                                <Typography variant="h6" style={{ fontWeight: 600, mt: 4, borderBottom: "1px solid #e0e0e0", paddingTop: "1.25rem" }}>Saved positions</Typography>
+                                <Grid direction="row">
+                                    <Grid direction="column" md={12}>
                                         {
                                             tradeHistory.length > 0 ?
-                                                <ul>
+                                                <List>
                                                     {tradeHistory.map(trade => (
-                                                        <li key={trade.id}>
-                                                            <Link className="d-inline-block" to={"/t/" + trade.id} target="_blank">
+                                                        <ListItem key={trade.id}>
+                                                            <Link style={{ display: "inline-block" }} to={"/t/" + trade.id} target="_blank">
                                                                 {trade.stock.ticker.symbol} {startCase(trade.type)} -
                                                                 {trade.legs.map(leg => {
                                                                     if (leg.contract) {
@@ -348,46 +347,61 @@ const Profile = () => {
                                                                 })}
                                                                 {trade.net_debit_per_unit >= 0 ? `$${Math.abs(trade.net_debit_per_unit)} Credit` : `$${Math.abs(trade.net_debit_per_unit)} Debit`}
                                                             </Link>
-                                                        </li>
+                                                        </ListItem>
                                                     ))}
-                                                </ul> :
-                                                <div>(empty)</div>
+                                                </List> :
+                                                <Grid>(empty)</Grid>
                                         }
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+                                    </Grid>
+                                </Grid>
+                            </CardContent>
+                        </Grid>
+                    </Grid>
+                </Box>
+            </Grid>
 
             <Modal
-                show={showCancelSubscriptionModal}
-                onHide={() => setShowCancelSubscriptionModal(false)}
+                open={showCancelSubscriptionModal}
+                onClose={() => setShowCancelSubscriptionModal(false)}
                 backdrop="static"
                 keyboard={false}
                 centered
             >
-                <Modal.Header closeButton>
-                    <Modal.Title>Cancel Subscription</Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                    <p>We are sorry to see you go. If you don't mind, we would appreciate if you could enter your reason for cancelling and/or any feedback you'd like to give us.</p>
-                    <Form>
-                        <Form.Group controlId="cancelSubscription.ReasonTextarea">
-                            <Form.Label>Reason</Form.Label>
-                            <Form.Control as="textarea" ref={reason} rows={3} placeholder="Optional" />
-                        </Form.Group>
-                    </Form>
-                </Modal.Body>
-                <Modal.Footer>
-                    <Button variant="secondary" onClick={() => setShowCancelSubscriptionModal(false)}>
-                        Cancel
-                    </Button>
-                    <Button variant="primary" onClick={cancelSubscription}>Submit</Button>
-                </Modal.Footer>
+                <Box sx={{
+                    position: 'absolute',
+                    top: '50%',
+                    left: '50%',
+                    transform: 'translate(-50%, -50%)',
+                    width: 500,
+                    bgcolor: 'background.paper',
+                    boxShadow: 24
+                }}>
+                    <Grid container p={2}>
+                        <Grid item sm={8} align="left">
+                            <Typography p={2}>Cancel Subscription</Typography>
+                        </Grid>
+                        <Grid item sm={4} align="right">
+                            <Button onClick={() => setShowCancelSubscriptionModal(false)}><CloseIcon /></Button>
+                        </Grid>
+                    </Grid>
+                    <Divider />
+                    <Typography variant="body2" paragraph="true" p={2}>We are sorry to see you go. If you don't mind, we would appreciate if you could enter your reason for cancelling and/or any feedback you'd like to give us.</Typography>
+                    <FormGroup sx={{ px: 2, pb: 2 }} controlId="cancelSubscription.ReasonTextarea">
+                        <FormLabel style={{ color: "black" }}>Reason</FormLabel>
+                        <FormControl>
+                            <TextField multiline inputRef={reason} rows={3} placeholder="Optional" />
+                        </FormControl>
+                    </FormGroup>
+                    <Divider sx={{ pt: 2 }} />
+                    <Grid align="right" p={2}>
+                        <Button variant="outlined" onClick={() => setShowCancelSubscriptionModal(false)}>
+                            Cancel
+                        </Button>
+                        <Button style={{ background: "#FF8F2B", color: "white" }} variant="contained" onClick={cancelSubscription}>Submit</Button>
+                    </Grid>
+                </Box>
             </Modal>
-        </div >
+        </Grid >
     );
 }
 
