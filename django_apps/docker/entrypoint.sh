@@ -13,10 +13,11 @@ export DJANGO_COLLECT_STATIC="${DJANGO_COLLECT_STATIC:-1}"
 export DATABASE_CONNECTION_WAIT="${DATABASE_CONNECTION_WAIT:-0.5}"
 export DATABASE_CONNECTION_RETRIES="${DATABASE_CONNECTION_RETRIES:-60}"
 export GUNICORN_TIMEOUT="${GUNICORN_TIMEOUT:-120}"
+export GUNICORN_WORKERS="${GUNICORN_WORKERS:-3}"
 
 # Update the docker command if needed.
 if [[ "${DOCKER_COMMAND[0]}" == "gunicorn" ]] ; then
-  DOCKER_COMMAND=( "${DOCKER_COMMAND[@]}" "--timeout" "$GUNICORN_TIMEOUT" )
+  DOCKER_COMMAND=( "${DOCKER_COMMAND[@]}" "--timeout" "$GUNICORN_TIMEOUT" "--workers" "$GUNICORN_WORKERS" )
 fi
 
 cd "$DJANGO_ROOT_DIR" || { _log "Django root directory not found!" ; exit 1 ; }
