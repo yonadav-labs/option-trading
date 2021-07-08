@@ -16,13 +16,11 @@ ECS_BUILD_COMMON="$BUILD_SCRIPT_DIR"/.ecs-build-common
 initialize_command "$@"
 
 ECR_IMAGE_REPOSITORIES=(
-  "$ECR_IMAGE_LOCATION"/options-ecs-frontend
   "$ECR_IMAGE_LOCATION"/options-ecs-frontend-prod
   "$ECR_IMAGE_LOCATION"/options-ecs-frontend-qa
 )
 
 TARGET_ENVS=(
-  prod
   prod
   qa
 )
