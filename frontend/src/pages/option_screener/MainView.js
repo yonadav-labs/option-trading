@@ -185,7 +185,7 @@ export default function MainView(props) {
                                 <Grid item xs>
                                     <Typography variant="subtitle1">{basicInfo ? `${basicInfo.symbol} - ${basicInfo.companyName}` : <br />}</Typography>
                                     <Typography variant="body2">
-                                        {selectedExpirationTimestamps ?
+                                        {selectedExpirationTimestamps.length > 0 ?
                                             selectedExpirationTimestamps.map(ts => {
                                                 return (<Chip
                                                     key={ts.value}
@@ -207,7 +207,7 @@ export default function MainView(props) {
                                         <TuneIcon fontSize="large" />
                                     </IconButton>
                                 </Grid>
-                                <div style={{ position: "absolute", right: 0, top: "5rem", zIndex: 100, display: showMobileFilter ? "block" : "none" }}>
+                                <div style={{ position: "absolute", right: 0, top: "4rem", width: "98vw", zIndex: 100, display: showMobileFilter ? "block" : "none" }}>
                                     <Grid container direction="column" justifyContent="center" alignItems="center" bgcolor='#333741' color="white" height="100%">
                                         <FilterMenu
                                             filters={filters}
@@ -219,9 +219,10 @@ export default function MainView(props) {
                                             onTickerSelectionChange={onTickerSelectionChange}
                                             selectedTicker={selectedTicker}
                                             expirationTimestampsOptions={expirationTimestampsOptions}
-                                            selectedExpirationTimestamps={selectedExpirationTimestamps}
+                                            selectedTimestamps={selectedTimestamps}
                                             onExpirationSelectionChange={onExpirationSelectionChange}
                                             deleteExpirationChip={deleteExpirationChip}
+                                            setSelectedTimestamps={setSelectedTimestamps}
                                         />
                                     </Grid>
                                 </div>

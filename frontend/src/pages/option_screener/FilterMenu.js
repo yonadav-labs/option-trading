@@ -75,10 +75,11 @@ export default function FilterMenu(props) {
         onTickerSelectionChange,
         selectedTicker,
         expirationTimestampsOptions,
-        selectedExpirationTimestamps,
+        selectedTimestamps,
         onExpirationSelectionChange,
         debouncedGetContracts,
         deleteExpirationChip,
+        setSelectedTimestamps,
     } = props
     const classes = useStyles();
     const maxStrikeValue = Math.round(Number(basicInfo.latestPrice) * 3 * 1e2) / 1e2;
@@ -286,11 +287,12 @@ export default function FilterMenu(props) {
                             <FormControl fullWidth>
                                 <Select
                                     id="expiration-dates"
-                                    value={selectedExpirationTimestamps}
+                                    value={selectedTimestamps}
                                     fullWidth
+                                    multiple
                                     placeholder="Select an expiration date"
-                                    onChange={(e) => onExpirationSelectionChange(e.target.value)}
-                                    onClose={debouncedGetContracts}
+                                    onChange={(e) => setSelectedTimestamps(e.target.value)}
+                                    onClose={(e) => onExpirationSelectionChange(selectedTimestamps)}
                                     variant="outlined"
                                     className={classes.select}
                                     MenuProps={{
@@ -304,8 +306,8 @@ export default function FilterMenu(props) {
                                         getContentAnchorEl: () => null,
                                     }}
                                     renderValue={
-                                        (selectedExpirationTimestamps) => {
-                                            let sorted = selectedExpirationTimestamps.sort((a, b) => (a.value > b.value) ? 1 : -1)
+                                        (selectedTimestamps) => {
+                                            let sorted = selectedTimestamps.sort((a, b) => (a.value > b.value) ? 1 : -1)
                                             return (
                                                 <Box sx={{ display: 'flex', flexWrap: 'wrap' }}>
                                                     {sorted.map((date) => (
@@ -322,12 +324,10 @@ export default function FilterMenu(props) {
                                                             onDelete={(e) => deleteExpirationChip(e, date.value)}
                                                         />
                                                     ))}
-                                                </Box>
-                                            )
-                                        }
-                                    }
+                                                </Box>)
+                                        }}
                                 >
-                                    {expirationTimestampsOptions.map((date, index) => <MenuItem value={date.value} key={index}> {date.label} </MenuItem>)}
+                                    {expirationTimestampsOptions.map((date, index) => <MenuItem value={date} key={index}> {date.label} </MenuItem>)}
                                 </Select>
                             </FormControl>
                         </Grid>
