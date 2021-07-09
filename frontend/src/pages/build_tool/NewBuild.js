@@ -1,14 +1,14 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import { Helmet } from "react-helmet";
 import Axios from 'axios';
-import ModalSpinner from '../../components/ModalSpinner';
+import LoadingModal from '../../components/LoadingModal';
 import LandingView from "./LandingView";
 import MainView from "./MainView";
 
 // utils
 import getApiUrl, { newLoadTickers, newLoadExpirationDates, GetGaEventTrackingFunc } from "../../utils";
 import { useOktaAuth } from '@okta/okta-react';
-import { cloneDeep, get, isEmpty, set, throttle, debounce } from 'lodash';
+import { cloneDeep, get, set, debounce } from 'lodash';
 
 // url querying
 import { useHistory, useLocation } from "react-router-dom";
@@ -46,7 +46,6 @@ export default function NewBuild() {
     const [selectedPremiumType, setSelectedPremiumType] = useState(premiumPriceOptions[0]);
     const [broker, setBroker] = useState(null);
 
-
     // expiration date states
     const [expirationTimestampsOptions, setExpirationTimestampsOptions] = useState([])
 
@@ -60,8 +59,6 @@ export default function NewBuild() {
     const [modalActive, setModalActive] = useState(false);
     const [strategyDisabled, setStrategyDisabled] = useState(true)
     const [pageState, setPageState] = useState(true);
-    const [loadingStrategyDetails, setLoadingStrategyDetails] = useState(false);
-
 
     // okta states
     const [headers, setHeaders] = useState({});
@@ -112,6 +109,9 @@ export default function NewBuild() {
             newLoadExpirationDates(headers, selected, setModalActive, setExpirationTimestamps, onBasicInfoChange, setSelectedTicker);
             addQuery(location, history, 'symbol', selected.symbol)
             setStrategyDisabled(false)
+        }
+        if (selectedStrategy) {
+            setLegs(cloneDeep(selectedStrategy.legs));
         }
     };
 
@@ -175,13 +175,13 @@ export default function NewBuild() {
 
     const getStrategyDetails = async () => {
         GaEvent('build strategy');
-        setLoadingStrategyDetails(true);
+        setModalActive(true);
         let strategy = {
             type: selectedStrategy.id,
             stock_snapshot: {
-                ticker_id: selectedTicker[0].id,
-                external_cache_id: selectedTicker[0].external_cache_id,
-                ticker_stats_id: selectedTicker[0].ticker_stats_id,
+                ticker_id: selectedTicker.id,
+                external_cache_id: selectedTicker.external_cache_id,
+                ticker_stats_id: selectedTicker.ticker_stats_id,
             },
             leg_snapshots: [],
             is_public: false,
@@ -204,9 +204,9 @@ export default function NewBuild() {
             } else if (leg.type === "stock") {
                 // console.log(leg)
                 legSnapshot.stock_snapshot = {
-                    ticker_id: selectedTicker[0].id,
-                    external_cache_id: selectedTicker[0].external_cache_id,
-                    ticker_stats_id: selectedTicker[0].ticker_stats_id,
+                    ticker_id: selectedTicker.id,
+                    external_cache_id: selectedTicker.external_cache_id,
+                    ticker_stats_id: selectedTicker.ticker_stats_id,
                 };
                 legSnapshot.units = leg.shares;
             } else {
@@ -235,7 +235,7 @@ export default function NewBuild() {
         } catch (error) {
             console.error(error);
         }
-        setLoadingStrategyDetails(false);
+        setModalActive(false);
     }
 
     return (
@@ -244,7 +244,7 @@ export default function NewBuild() {
                 <title>Tigerstance | Build</title>
                 <meta name="description" content="Build strategies with Tigerstance." />
             </Helmet>
-            <ModalSpinner active={modalActive}></ModalSpinner>
+            <LoadingModal active={modalActive}></LoadingModal>
             {
                 pageState ?
                     <LandingView
@@ -266,6 +266,10 @@ export default function NewBuild() {
                         expirationTimestampsOptions={expirationTimestampsOptions}
                         legs={legs}
                         updateLeg={updateLeg}
+                        getStrategyDetails={getStrategyDetails}
+                        strategyDetails={strategyDetails}
+                        ruleMessages={ruleMessages}
+                        broker={broker}
                     />
             }
         </>

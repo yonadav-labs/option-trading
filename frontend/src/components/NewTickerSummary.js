@@ -125,6 +125,7 @@ export default function NewTickerSummary({ basicInfo, isMobile }) {
                             id={id}
                             open={open}
                             anchorEl={anchorEl}
+                            style={{ zIndex: 100 }}
                         >
                             <Box boxShadow={3} bgcolor="white" p={2} width='600px' height='400px'>
                                 <TradingViewWidget symbol={basicInfo.symbol || ''} autosize />

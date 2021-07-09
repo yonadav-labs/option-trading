@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
+import { Grid, Typography, FormControl, Select, MenuItem, InputLabel } from "@material-ui/core";
 import getApiUrl, { PercentageFormatter, PriceFormatter, GetGaEventTrackingFunc } from '../utils';
 import Axios from 'axios';
-import { Grid, Typography, FormControl, Select, MenuItem, InputLabel } from "@material-ui/core";
 
-export default function BuildLeg(props) {
+export default function CustomizableBuildLeg(props) {
     const { leg, index, selectedStrategy, expirationTimestampsOptions, selectedTicker, updateLeg } = props
 
     const [strikes, setStrikes] = useState([]);
@@ -12,7 +12,7 @@ export default function BuildLeg(props) {
 
     useEffect(async () => {
         setStrikes([]);
-        setSelectedStrike(null)
+        setSelectedStrike('')
 
         if (leg.type === "option" && leg.action && leg.optionType && leg.expiration) {
             // call api to get option chain
@@ -24,20 +24,31 @@ export default function BuildLeg(props) {
                 };
                 const response = await Axios.post(url, body);
                 const filteredContracts = response.data.contracts.filter(contract => (leg.optionType === "call" && contract.is_call) || (leg.optionType === "put" && !contract.is_call));
+                let selectedStrikeIsValid = false;
                 let strikes = filteredContracts.map(val => {
                     const percentageChange = ((props.atmPrice - val.strike) / props.atmPrice) * -1;
-                    const option = { value: val.strike, label: <>{PriceFormatter(val.strike)} ({percentageChange > 0 ? "+" : ""}{PercentageFormatter(percentageChange)})</> };
+                    const option = {
+                        value: val.strike,
+                        label: <>{PriceFormatter(val.strike)}&nbsp;({percentageChange > 0 ? "+" : ""}{PercentageFormatter(percentageChange)})</>
+                    };
 
+                    if (leg.strike === '') {
+                        setSelectedStrike('')
+                    } else if (val.strike === leg.strike) {
+                        selectedStrikeIsValid = true;
+                        setSelectedStrike(option);
+                    }
                     return option;
                 });
 
-                strikes.push({ value: props.atmPrice, label: <>{PriceFormatter(props.atmPrice)} (Current Price)</>, isDisabled: true });
+                strikes.push({ value: props.atmPrice, label: <>{PriceFormatter(props.atmPrice)}&nbsp;(Current Price)</>, disabled: true });
                 setStrikes(strikes.sort((a, b) => a.value - b.value));
+                updateLeg("contract", selectedStrikeIsValid ? filteredContracts.filter((val) => val.strike === leg.strike)[0] : {}, index);
             } catch (error) {
                 console.error(error);
             }
         }
-    }, [leg.expiration, leg.action, leg.optionType, selectedStrategy]);
+    }, [leg.expiration, leg.action, leg.optionType, leg.strike, selectedStrategy]);
 
     const onExpirationChange = (event) => {
         updateLeg("expiration", event.target.value, index);
@@ -55,7 +66,7 @@ export default function BuildLeg(props) {
                     <Grid item xs={1}>
                         <Typography variant="h5">Leg {index + 1}</Typography>
                     </Grid>
-                    <Grid item xs={2.6} px={1}>
+                    <Grid item xs={2.75} px={1}>
                         <FormControl fullWidth>
                             <InputLabel shrink={true}><Typography variant="h6">Action</Typography></InputLabel>
                             <Select
@@ -71,7 +82,7 @@ export default function BuildLeg(props) {
                             </Select>
                         </FormControl>
                     </Grid>
-                    <Grid item xs={2.6} px={1}>
+                    <Grid item xs={2.75} px={1}>
                         <FormControl fullWidth>
                             <InputLabel shrink={true}><Typography variant="h6">Call/Put</Typography></InputLabel>
                             <InputLabel shrink={false}>{leg.optionType ? "" :
@@ -90,7 +101,7 @@ export default function BuildLeg(props) {
                             </Select>
                         </FormControl>
                     </Grid>
-                    <Grid item xs={2.6} px={1}>
+                    <Grid item xs={2.75} px={1}>
                         <FormControl fullWidth>
                             <InputLabel shrink={true}><Typography variant="h6">Expiration Date</Typography></InputLabel>
                             <InputLabel shrink={false}>{leg.expiration !== 0 ? "" :
@@ -108,7 +119,7 @@ export default function BuildLeg(props) {
                             </Select>
                         </FormControl>
                     </Grid>
-                    <Grid item xs={2.6} px={1}>
+                    <Grid item xs={2.75} px={1}>
                         <FormControl fullWidth>
                             <InputLabel shrink={true}><Typography variant="h6">Strike Price</Typography></InputLabel>
                             <InputLabel shrink={false}>{selectedStrike ? "" :
@@ -122,7 +133,7 @@ export default function BuildLeg(props) {
                                 MenuProps={{ style: { maxHeight: "400px" }, anchorOrigin: { vertical: "bottom", horizontal: "center" }, getContentAnchorEl: () => null, }}
                             >
                                 {strikes.length > 0 ?
-                                    strikes.map((strike, index) => <MenuItem value={strike} key={index}> {strike.label} </MenuItem>) : null
+                                    strikes.map((strike, index) => <MenuItem disabled={strike.disabled} value={strike} key={index}> {strike.label} </MenuItem>) : null
                                 }
                             </Select>
                         </FormControl>
@@ -136,7 +147,7 @@ export default function BuildLeg(props) {
                     <Grid item xs={1}>
                         <Typography variant="h5">Leg {index + 1}</Typography>
                     </Grid>
-                    <Grid item xs={2.6} px={1}>
+                    <Grid item xs={2.75} px={1}>
                         <FormControl fullWidth>
                             <InputLabel shrink={true}><Typography variant="h6">Action</Typography></InputLabel>
                             <Select
@@ -151,7 +162,7 @@ export default function BuildLeg(props) {
                             </Select>
                         </FormControl>
                     </Grid>
-                    <Grid item xs={2.6} px={1}>
+                    <Grid item xs={2.75} px={1}>
                         <FormControl fullWidth>
                             <InputLabel shrink={true}><Typography variant="h6">Shares</Typography></InputLabel>
                             <Select
@@ -174,7 +185,7 @@ export default function BuildLeg(props) {
                     <Grid item xs={1}>
                         <Typography variant="h5">Leg {index + 1}</Typography>
                     </Grid>
-                    <Grid item xs={2.6} px={1}>
+                    <Grid item xs={2.75} px={1}>
                         <FormControl fullWidth>
                             <InputLabel shrink={true}><Typography variant="h6">Action</Typography></InputLabel>
                             <Select
@@ -188,7 +199,7 @@ export default function BuildLeg(props) {
                             </Select>
                         </FormControl>
                     </Grid>
-                    <Grid item xs={2.6} px={1}>
+                    <Grid item xs={2.75} px={1}>
                         <FormControl fullWidth>
                             <InputLabel shrink={true}><Typography variant="h6">Cash</Typography></InputLabel>
                             <Select

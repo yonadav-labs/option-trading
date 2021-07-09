@@ -1,11 +1,14 @@
 import React, { useState } from "react";
 import { makeStyles } from '@material-ui/styles';
-import { Grid, Typography, Paper, Divider, useMediaQuery, FormControl, Select, MenuItem, Box, Card, Alert } from "@material-ui/core";
+import { Grid, Typography, Paper, Divider, useMediaQuery, FormControl, Select, MenuItem, Box, Card, Alert, Button } from "@material-ui/core";
 import TickerAutocomplete from "../../components/TickerAutocomplete";
 import NewTickerSummary from "../../components/NewTickerSummary";
+import BuildDetailsCard from "../../components/cards/BuildDetailsCard";
 import { strategies } from "../../blobs/Strategies";
 import { GetGaEventTrackingFunc } from '../../utils';
-import BuildLeg from "../../components/BuildLeg";
+import CustomizableBuildLeg from "../../components/CustomizableBuildLeg";
+import BuildLegCard from "../../components/cards/BuildLegCard";
+import { isEmpty } from 'lodash';
 
 const GaEvent = GetGaEventTrackingFunc('build');
 
@@ -28,6 +31,10 @@ export default function MainView(props) {
         expirationTimestampsOptions,
         legs,
         updateLeg,
+        getStrategyDetails,
+        strategyDetails,
+        ruleMessages,
+        broker
     } = props
 
     // mobile responsiveness
@@ -62,7 +69,7 @@ export default function MainView(props) {
                                 />
                             </Grid>
                             <Grid item>
-                                <Typography variant="subtitle1">Expiration Date</Typography>
+                                <Typography variant="subtitle1">Strategy</Typography>
                             </Grid>
                             <Grid item sm={4.8}>
                                 <FormControl fullWidth>
@@ -73,13 +80,8 @@ export default function MainView(props) {
                                         onChange={(e) => onStrategySelectionChange(e.target.value)}
                                         variant="standard"
                                         MenuProps={{
-                                            style: {
-                                                maxHeight: "400px",
-                                            },
-                                            anchorOrigin: {
-                                                vertical: "bottom",
-                                                horizontal: "center"
-                                            },
+                                            style: { maxHeight: "400px" },
+                                            anchorOrigin: { vertical: "bottom", horizontal: "center" },
                                             getContentAnchorEl: () => null,
                                         }}
                                     >
@@ -91,25 +93,25 @@ export default function MainView(props) {
                     }
                     <NewTickerSummary basicInfo={basicInfo} isMobile={isMobile} />
                 </Grid>
-                <Grid p={4}>
+                <Grid pt={4} px={4}>
                     {legs.map((leg, index) => {
                         switch (leg.type) {
                             case "option":
                                 return (
-                                    <BuildLeg leg={leg} index={index} key={index} selectedTicker={selectedTicker}
+                                    <CustomizableBuildLeg leg={leg} index={index} key={index} selectedTicker={selectedTicker}
                                         atmPrice={basicInfo.latestPrice} updateLeg={updateLeg}
                                         selectedStrategy={selectedStrategy} expirationTimestampsOptions={expirationTimestampsOptions}
                                     />
                                 );
                             case "stock":
                                 return (
-                                    <BuildLeg leg={leg} index={index} key={index}
+                                    <CustomizableBuildLeg leg={leg} index={index} key={index}
                                         selectedTicker={selectedTicker} updateLeg={updateLeg}
                                     />
                                 );
                             case "cash":
                                 return (
-                                    <BuildLeg leg={leg} index={index} key={index}
+                                    <CustomizableBuildLeg leg={leg} index={index} key={index}
                                         selectedTicker={selectedTicker} updateLeg={updateLeg}
                                     />
                                 );
@@ -118,19 +120,55 @@ export default function MainView(props) {
                         }
                     })}
                 </Grid>
+                {ruleMessages.length > 0 ?
+                    <>
+                        {ruleMessages.map(val => {
+                            return (
+                                <Grid px={4} py={1}>
+                                    <Alert hidden={!val} severity="error">{val}</Alert>
+                                </Grid>
+                            );
+                        })}
+                    </>
+
+                    :
+                    null
+                }
+                <Grid container justifyContent="center">
+                    <Button variant="containedPrimary" onClick={getStrategyDetails} size="large">
+                        Build Strategy
+                    </Button>
+                </Grid>
                 <Grid p={4}>
-                    <Box component={Card} p={2}>
-                        <Grid container alignItems="center">
-                            <Grid item xs={2}>
-                                <Typography variant="h5">
-                                    {selectedStrategy.name}
-                                </Typography>
-                            </Grid>
-                            <Alert severity="info">
-                                Select the Expiration Date and Strike Price in order to view the strategy details
-                            </Alert>
-                        </Grid>
-                    </Box>
+                    {strategyDetails ?
+                        <BuildDetailsCard
+                            trade={strategyDetails}
+                            broker={broker}
+                        />
+                        :
+                        <>
+                            <Box component={Card} p={2}>
+                                <Grid container alignItems="center" pb={1}>
+                                    <Grid item>
+                                        <Typography variant="h5">
+                                            {selectedStrategy.name}
+                                        </Typography>
+                                    </Grid>
+                                    <Grid item xs={0.2}></Grid>
+                                    <Alert severity="info">
+                                        Select the Expiration Date and Strike Price in order to view the strategy details
+                                    </Alert>
+                                </Grid>
+                                {legs.map((leg, index) => {
+                                    if (!isEmpty(leg.contract)) {
+                                        return (
+                                            <BuildLegCard leg={leg} hideTitle={true} index={index} key={index} />
+                                        )
+                                    }
+                                })}
+                            </Box>
+                        </>
+                    }
                 </Grid>
             </Grid>
         </Grid>
