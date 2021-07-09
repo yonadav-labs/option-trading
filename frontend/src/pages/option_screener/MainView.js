@@ -183,7 +183,24 @@ export default function MainView(props) {
                         <>
                             <Grid container>
                                 <Grid item xs>
-                                    <Typography variant="subtitle1">{basicInfo ? `${basicInfo.symbol} - ${basicInfo.shortName}` : <br />}</Typography>
+                                    <Typography variant="subtitle1">{basicInfo ? `${basicInfo.symbol} - ${basicInfo.companyName}` : <br />}</Typography>
+                                    <Typography variant="body2">
+                                        {selectedExpirationTimestamps ?
+                                            selectedExpirationTimestamps.map(ts => {
+                                                return (<Chip
+                                                    key={ts.value}
+                                                    label={ts.label}
+                                                    size="small"
+                                                    clickable
+                                                    deleteIcon={
+                                                        <CancelIcon
+                                                            onMouseDown={(event) => event.stopPropagation()}
+                                                        />}
+                                                    onDelete={(e) => deleteExpirationChip(e, ts.value)}
+                                                />)
+                                            })
+                                            : <br />}
+                                    </Typography>
                                 </Grid>
                                 <Grid item>
                                     <IconButton color="inherit" onClick={handleMobileFilterCollapse}>

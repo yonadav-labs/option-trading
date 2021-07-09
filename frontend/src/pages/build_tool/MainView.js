@@ -51,7 +51,7 @@ export default function MainView(props) {
                         <>
                             <Grid container>
                                 <Grid item xs>
-                                    <Typography variant="subtitle1">{basicInfo ? `${basicInfo.symbol} - ${basicInfo.shortName}` : <br />}</Typography>
+                                    <Typography variant="subtitle1">{basicInfo ? `${basicInfo.symbol} - ${basicInfo.companyName}` : <br />}</Typography>
                                 </Grid>
                             </Grid>
                             <Divider />

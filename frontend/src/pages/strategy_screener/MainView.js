@@ -10,7 +10,7 @@ import NewTickerSummary from "../../components/NewTickerSummary";
 import TuneIcon from "@material-ui/icons/Tune";
 import ArrowUpwardIcon from '@material-ui/icons/ArrowUpward';
 import ArrowDownwardIcon from '@material-ui/icons/ArrowDownward';
-import { PriceFormatter, GetGaEventTrackingFunc } from '../../utils';
+import { PriceFormatter, GetGaEventTrackingFunc, TimestampDateFormatter } from '../../utils';
 
 const GaEvent = GetGaEventTrackingFunc('strategy screener');
 
@@ -147,8 +147,8 @@ export default function MainView(props) {
                             <>
                                 <Grid container>
                                     <Grid item xs>
-                                        <Typography variant="subtitle1">{basicInfo ? `${basicInfo.symbol} - ${basicInfo.shortName}` : <br />}</Typography>
-                                        <Typography variant="body2">EXP DATE: {selectedExpirationTimestamp ? selectedExpirationTimestamp.label : <br />}</Typography>
+                                        <Typography variant="subtitle1">{basicInfo ? `${basicInfo.symbol} - ${basicInfo.companyName}` : <br />}</Typography>
+                                        <Typography variant="body2">EXP DATE: {selectedExpirationTimestamp ? TimestampDateFormatter(selectedExpirationTimestamp / 1000) : <br />}</Typography>
                                         <Typography variant="body2">PRICE TARGET: {PriceFormatter(filters.targetPriceLower)}
                                             {filters.targetPriceLower !== filters.targetPriceUpper &&
                                                 <> - {PriceFormatter(filters.targetPriceUpper)}</>}
