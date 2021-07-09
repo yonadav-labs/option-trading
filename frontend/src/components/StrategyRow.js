@@ -7,7 +7,7 @@ import TrendingFlatIcon from '@material-ui/icons/TrendingFlat';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import ExpandLessIcon from '@material-ui/icons/ExpandLess';
 
-export default function StrategyRow({ strategy, onStrategySelectionChange }) {
+export default function StrategyRow({ strategy, onStrategySelectionChange, disabled }) {
     const theme = useTheme();
     const useStyles = makeStyles({
         chip: {
@@ -62,10 +62,10 @@ export default function StrategyRow({ strategy, onStrategySelectionChange }) {
                         <Grid item xs={0} style={{ height: 50 }}></Grid>
                         <Grid item xs={6.5}>
                             <Grid container justifyContent="space-between">
-                                <Grid item xs={4}>
+                                <Grid item xs={4} pt={1}>
                                     <Typography variant="h5">{strategy.name}</Typography>
                                 </Grid>
-                                <Grid item xs={8}>
+                                <Grid item xs={8} pt={1}>
                                     {strategy.sentiment.map(sentiment => chipMaker(sentiment))}
                                     {chipMaker(strategy.level)}
                                     {strategy.unlimitedLoss && chipMaker("loss")}
@@ -97,8 +97,8 @@ export default function StrategyRow({ strategy, onStrategySelectionChange }) {
                                 />
                             }
                         </Grid>
-                        <Grid item xs={2}>
-                            <Button variant="outlined" onClick={() => onStrategySelectionChange(strategy)}><Typography variant="button">Start Building</Typography></Button>
+                        <Grid item xs={2} pt={1}>
+                            <Button variant="outlined" disabled={disabled} onClick={() => onStrategySelectionChange(strategy)}><Typography variant="button">Start Building</Typography></Button>
                             <span>&nbsp;&nbsp;</span>
                             {!expanded ? <ExpandMoreIcon color="primary" /> : <ExpandLessIcon color="primary" />}
                         </Grid>

@@ -40,7 +40,6 @@ export default function CustomizableBuildLeg(props) {
                     }
                     return option;
                 });
-
                 strikes.push({ value: props.atmPrice, label: <>{PriceFormatter(props.atmPrice)}&nbsp;(Current Price)</>, disabled: true });
                 setStrikes(strikes.sort((a, b) => a.value - b.value));
                 updateLeg("contract", selectedStrikeIsValid ? filteredContracts.filter((val) => val.strike === leg.strike)[0] : {}, index);
@@ -70,7 +69,7 @@ export default function CustomizableBuildLeg(props) {
                         <FormControl fullWidth>
                             <InputLabel shrink={true}><Typography variant="h6">Action</Typography></InputLabel>
                             <Select
-                                fullWidth
+                                label="Action.."
                                 value={leg.action}
                                 onChange={(e) => updateLeg("action", e.target.value, index)}
                                 disabled={selectedStrategy.legs[index].action}
@@ -85,17 +84,16 @@ export default function CustomizableBuildLeg(props) {
                     <Grid item xs={2.75} px={1}>
                         <FormControl fullWidth>
                             <InputLabel shrink={true}><Typography variant="h6">Call/Put</Typography></InputLabel>
-                            <InputLabel shrink={false}>{leg.optionType ? "" :
-                                <Typography variant="body1" style={{ color: "#cbcbcb", marginTop: "-7px" }}>Select an option type</Typography>}
-                            </InputLabel>
                             <Select
+                                label="Call/Put.."
                                 fullWidth
                                 style={{ height: 45 }}
                                 onChange={(e) => updateLeg("optionType", e.target.value, index)}
-                                value={leg.optionType}
+                                value={leg.optionType || 0}
                                 disabled={selectedStrategy.legs[index].optionType}
                                 MenuProps={{ style: { maxHeight: "400px" }, anchorOrigin: { vertical: "bottom", horizontal: "center" }, getContentAnchorEl: () => null, }}
                             >
+                                <MenuItem disabled value={0}><span style={{ color: "#b3b3b3" }}>Select an option type</span></MenuItem>
                                 <MenuItem value="call">Call</MenuItem>
                                 <MenuItem value="put">Put</MenuItem>
                             </Select>
@@ -104,17 +102,15 @@ export default function CustomizableBuildLeg(props) {
                     <Grid item xs={2.75} px={1}>
                         <FormControl fullWidth>
                             <InputLabel shrink={true}><Typography variant="h6">Expiration Date</Typography></InputLabel>
-                            <InputLabel shrink={false}>{leg.expiration !== 0 ? "" :
-                                <Typography variant="body1" style={{ color: "#cbcbcb", marginTop: "-7px" }}>Select an expiration date</Typography>}
-                            </InputLabel>
                             <Select
+                                label="Expiration Date...."
                                 onChange={(e) => { onExpirationChange(e); }}
-                                fullWidth
                                 style={{ height: 45 }}
                                 value={leg.expiration || 0}
-                                disabled={selectedStrategy.legs[index].expiration}
+                                disabled={selectedStrategy.legs[index].expiration || !leg.optionType}
                                 MenuProps={{ style: { maxHeight: "400px" }, anchorOrigin: { vertical: "bottom", horizontal: "center" }, getContentAnchorEl: () => null, }}
                             >
+                                <MenuItem disabled value={0}><span style={{ color: "#b3b3b3" }}>Select an expiration date</span></MenuItem>
                                 {expirationTimestampsOptions.map(date => <MenuItem value={date.value}>{date.label}</MenuItem>)}
                             </Select>
                         </FormControl>
@@ -122,23 +118,20 @@ export default function CustomizableBuildLeg(props) {
                     <Grid item xs={2.75} px={1}>
                         <FormControl fullWidth>
                             <InputLabel shrink={true}><Typography variant="h6">Strike Price</Typography></InputLabel>
-                            <InputLabel shrink={false}>{selectedStrike ? "" :
-                                <Typography variant="body1" style={{ color: "#cbcbcb", marginTop: "-7px" }}>Select a strike price</Typography>}
-                            </InputLabel>
                             <Select
+                                label="Strike Price...."
                                 disabled={strikes.length === 0}
-                                value={selectedStrike}
+                                value={selectedStrike || 0}
                                 onChange={(e) => onStrikeSelectChange(e.target.value)}
                                 style={{ height: 45 }}
                                 MenuProps={{ style: { maxHeight: "400px" }, anchorOrigin: { vertical: "bottom", horizontal: "center" }, getContentAnchorEl: () => null, }}
                             >
-                                {strikes.length > 0 ?
-                                    strikes.map((strike, index) => <MenuItem disabled={strike.disabled} value={strike} key={index}> {strike.label} </MenuItem>) : null
-                                }
+                                <MenuItem disabled value={0}><span style={{ color: "#b3b3b3" }}>Select a strike price</span></MenuItem>
+                                {strikes.map((strike, index) => <MenuItem disabled={strike.disabled} value={strike} key={index}> {strike.label} </MenuItem>)}
                             </Select>
                         </FormControl>
                     </Grid>
-                </Grid>
+                </Grid >
             )
 
         case "stock":
@@ -151,7 +144,7 @@ export default function CustomizableBuildLeg(props) {
                         <FormControl fullWidth>
                             <InputLabel shrink={true}><Typography variant="h6">Action</Typography></InputLabel>
                             <Select
-                                fullWidth
+                                label="Action.."
                                 value={leg.action}
                                 disabled={true}
                                 style={{ height: 45 }}
@@ -166,7 +159,7 @@ export default function CustomizableBuildLeg(props) {
                         <FormControl fullWidth>
                             <InputLabel shrink={true}><Typography variant="h6">Shares</Typography></InputLabel>
                             <Select
-                                fullWidth
+                                label="Shares.."
                                 value={leg.shares}
                                 disabled={true}
                                 style={{ height: 45 }}
@@ -189,7 +182,7 @@ export default function CustomizableBuildLeg(props) {
                         <FormControl fullWidth>
                             <InputLabel shrink={true}><Typography variant="h6">Action</Typography></InputLabel>
                             <Select
-                                fullWidth
+                                label="Action.."
                                 value={"long"}
                                 disabled={true}
                                 style={{ height: 45 }}
@@ -203,7 +196,7 @@ export default function CustomizableBuildLeg(props) {
                         <FormControl fullWidth>
                             <InputLabel shrink={true}><Typography variant="h6">Cash</Typography></InputLabel>
                             <Select
-                                fullWidth
+                                label="Cash.."
                                 value={0}
                                 disabled={true}
                                 style={{ height: 45 }}

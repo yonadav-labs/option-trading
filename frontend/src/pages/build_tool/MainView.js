@@ -1,10 +1,9 @@
-import React, { useState } from "react";
+import React from "react";
 import { makeStyles } from '@material-ui/styles';
 import { Grid, Typography, Paper, Divider, useMediaQuery, FormControl, Select, MenuItem, Box, Card, Alert, Button } from "@material-ui/core";
 import TickerAutocomplete from "../../components/TickerAutocomplete";
 import NewTickerSummary from "../../components/NewTickerSummary";
 import BuildDetailsCard from "../../components/cards/BuildDetailsCard";
-import { strategies } from "../../blobs/Strategies";
 import { GetGaEventTrackingFunc } from '../../utils';
 import CustomizableBuildLeg from "../../components/CustomizableBuildLeg";
 import BuildLegCard from "../../components/cards/BuildLegCard";
@@ -34,7 +33,9 @@ export default function MainView(props) {
         getStrategyDetails,
         strategyDetails,
         ruleMessages,
-        broker
+        broker,
+        availableStrategies,
+        user
     } = props
 
     // mobile responsiveness
@@ -85,13 +86,24 @@ export default function MainView(props) {
                                             getContentAnchorEl: () => null,
                                         }}
                                     >
-                                        {strategies.map(strat => <MenuItem value={strat}>{strat.name}</MenuItem>)}
+                                        {availableStrategies.map(strat => <MenuItem value={strat}>{strat.name}</MenuItem>)}
                                     </Select>
                                 </FormControl>
                             </Grid>
                         </Grid>
                     }
                     <NewTickerSummary basicInfo={basicInfo} isMobile={isMobile} />
+                </Grid>
+                <Grid container pt={3} justifyContent="center">
+                    <Grid item >
+                        {user === null || user.subscription === null || user.subscription.status !== "ACTIVE" ?
+                            <Alert severity="warning">
+                                Unlock all strategies by going pro!
+                            </Alert>
+                            :
+                            null
+                        }
+                    </Grid>
                 </Grid>
                 <Grid pt={4} px={4}>
                     {legs.map((leg, index) => {
@@ -171,6 +183,6 @@ export default function MainView(props) {
                     }
                 </Grid>
             </Grid>
-        </Grid>
+        </Grid >
     );
 }

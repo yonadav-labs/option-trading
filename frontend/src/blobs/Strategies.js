@@ -553,7 +553,7 @@ export const strategies = [
                             Receive a premium to sell a call and a put; With the call strike being higher than the put strike. \
                             You profit when the stock price stays within this range: strike - premium > stock price > strike + premium \
                             There is no limit to how much you can lose with this strategy.",
-            sentiment: ["neutral", "volatile"],
+            sentiment: ["neutral"],
             linkedProperties: ["expiration"],
             rules: [new Rule(0, "strike", ">", 1, "strike")],
             relationships: [],
@@ -587,7 +587,7 @@ export const strategies = [
                             Receive a premium to sell a call and a put at the same strike. \
                             You profit when the stock price stays within this range: strike - premium > stock price > strike + premium \
                             There is no limit to how much you can lose with this strategy.",
-            sentiment: ["neutral", "volatile"],
+            sentiment: ["neutral"],
             linkedProperties: ["expiration", "strike"],
             rules: [],
             relationships: [],

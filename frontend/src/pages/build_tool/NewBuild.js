@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useRef } from "react";
+import React, { useState, useEffect, useCallback, useRef, useContext, } from "react";
 import { Helmet } from "react-helmet";
 import Axios from 'axios';
 import LoadingModal from '../../components/LoadingModal';
@@ -6,9 +6,15 @@ import LandingView from "./LandingView";
 import MainView from "./MainView";
 
 // utils
-import getApiUrl, { newLoadTickers, newLoadExpirationDates, GetGaEventTrackingFunc } from "../../utils";
+import getApiUrl, {
+    newLoadTickers, newLoadExpirationDates, GetGaEventTrackingFunc, getDefaultDisAllowedTradeTypes,
+    TimestampDateFormatter
+} from "../../utils";
 import { useOktaAuth } from '@okta/okta-react';
 import { cloneDeep, get, set, debounce } from 'lodash';
+import { strategies as allStrategies } from '../../blobs/Strategies';
+import UserContext from '../../UserContext';
+
 
 // url querying
 import { useHistory, useLocation } from "react-router-dom";
@@ -24,6 +30,7 @@ const GaEvent = GetGaEventTrackingFunc('build');
 
 export default function NewBuild() {
     const API_URL = getApiUrl();
+    const { user } = useContext(UserContext);
     const history = useHistory()
     const location = useLocation()
     const querySymbol = useSearch(location, 'symbol')
@@ -54,6 +61,8 @@ export default function NewBuild() {
     const [strategyDetails, setStrategyDetails] = useState(null);
     const [ruleMessages, setRuleMessages] = useState([]);
     const [legs, setLegs] = useState([]);
+    const [availableStrategies, setAvailableStrategies] = useState(allStrategies);
+    const [disAllowedStrategies, setDisAllowedStrategies] = useState([]);
 
     // component management states
     const [modalActive, setModalActive] = useState(false);
@@ -80,6 +89,17 @@ export default function NewBuild() {
         }
     }, [oktaAuth, authState]);
 
+    useEffect(() => {
+        if (user) {
+            setAvailableStrategies(allStrategies.filter(x => (user.disabled_strategies.indexOf(x.type) === -1)
+                && user.disallowed_strategies.indexOf(x.type) === -1));
+            setDisAllowedStrategies(allStrategies.filter(x => (user.disallowed_strategies.indexOf(x.type) != -1)));
+        } else {
+            setAvailableStrategies(allStrategies.filter(x => (getDefaultDisAllowedTradeTypes().indexOf(x.type) === -1)));
+            setDisAllowedStrategies(allStrategies.filter(x => (getDefaultDisAllowedTradeTypes().indexOf(x.type) != -1)));
+        }
+    }, [user]);
+
     // load all tickers
     useEffect(() => {
         newLoadTickers(headers, setAllTickers, setSelectedTicker, querySymbol, onTickerSelectionChange)
@@ -89,12 +109,9 @@ export default function NewBuild() {
         if (val.length > 0) {
             let arr = []
             val.map((timestamp, index) => {
-                // Yahoo's timestamp * 1000 = TD's timestamp.
-                const date = new Date(timestamp < 9999999999 ? timestamp * 1000 : timestamp)
-                    .toLocaleDateString('en-US');
-                arr.push({ value: timestamp, label: date });
+                arr.push({ value: timestamp, label: TimestampDateFormatter(timestamp / 1000) });
             })
-            setExpirationTimestampsOptions(arr)
+            setExpirationTimestampsOptions(arr);
         }
     }
 
@@ -107,8 +124,8 @@ export default function NewBuild() {
         resetStates();
         if (selected) {
             newLoadExpirationDates(headers, selected, setModalActive, setExpirationTimestamps, onBasicInfoChange, setSelectedTicker);
-            addQuery(location, history, 'symbol', selected.symbol)
-            setStrategyDisabled(false)
+            addQuery(location, history, 'symbol', selected.symbol);
+            setStrategyDisabled(false);
         }
         if (selectedStrategy) {
             setLegs(cloneDeep(selectedStrategy.legs));
@@ -149,7 +166,9 @@ export default function NewBuild() {
         }
         selectedStrategy.relationships.map(relation => {
             const operation = operators[relation.operator];
-            newState[relation.legAIndex][relation.legAProperty] = operation(newState[relation.legBIndex], relation.legBProperty, relation.legBPropertyDefaultVal, newState[relation.legCIndex], relation.legCProperty, relation.legCPropertyDefaultVal);
+            newState[relation.legAIndex][relation.legAProperty] =
+                operation(newState[relation.legBIndex], relation.legBProperty, relation.legBPropertyDefaultVal,
+                    newState[relation.legCIndex], relation.legCProperty, relation.legCPropertyDefaultVal);
         });
         return newState;
     }
@@ -202,7 +221,6 @@ export default function NewBuild() {
                 }
                 legSnapshot.contract_snapshot = contract;
             } else if (leg.type === "stock") {
-                // console.log(leg)
                 legSnapshot.stock_snapshot = {
                     ticker_id: selectedTicker.id,
                     external_cache_id: selectedTicker.external_cache_id,
@@ -254,6 +272,9 @@ export default function NewBuild() {
                         strategyDisabled={strategyDisabled}
                         selectedStrategy={selectedStrategy}
                         onStrategySelectionChange={onStrategySelectionChange}
+                        availableStrategies={availableStrategies}
+                        disAllowedStrategies={disAllowedStrategies}
+                        user={user}
                     />
                     :
                     <MainView
@@ -270,6 +291,8 @@ export default function NewBuild() {
                         strategyDetails={strategyDetails}
                         ruleMessages={ruleMessages}
                         broker={broker}
+                        availableStrategies={availableStrategies}
+                        user={user}
                     />
             }
         </>
