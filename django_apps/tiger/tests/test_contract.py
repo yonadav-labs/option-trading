@@ -82,13 +82,13 @@ class ContractTestCase(TestCase):
         # Test contract attributes.
         self.assertEqual(call_contract.is_call, True)
         self.assertEqual(call_contract.contract_symbol, 'ZEPP210820C00015000')
-        self.assertEqual(call_contract.expiration, 1629432000)  # 2021-08-20 00:00:00 EST.
+        self.assertEqual(call_contract.expiration, 1629442800)  # 2021-08-20 03:00:00 EST.
         self.assertEqual(call_contract.strike, 15.0)
         self.assertEqual(call_contract.contract_size, 100)
 
         self.assertEqual(call_contract.last_price, 0.15)
         self.assertEqual(call_contract.last_size, 10)
-        self.assertEqual(int(datetime.timestamp(call_contract.last_trade_date)), 1625587392)
+        self.assertEqual(call_contract.last_trade_date, 1625587392)
         self.assertEqual(call_contract.ask, 0.2)
         self.assertEqual(call_contract.ask_size, 41)
         self.assertEqual(call_contract.bid, 0.15)
