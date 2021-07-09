@@ -140,7 +140,7 @@ export default function LandingView(props) {
                 <Grid item >
                     {user === null || user.subscription === null || user.subscription.status !== "ACTIVE" ?
                         <Alert severity="warning">
-                            Unlock all strategies by going pro!
+                            Unlock all strategies by going <a href="/pricing">PRO</a>!
                         </Alert>
                         :
                         null

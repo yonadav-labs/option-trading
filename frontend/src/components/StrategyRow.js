@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import { useHistory } from "react-router-dom";
 import { Button, Chip, Grid, Typography, useTheme, Card, CardActionArea, Collapse, CardContent } from '@material-ui/core'
 import { makeStyles } from '@material-ui/styles';
 import TrendingUpIcon from '@material-ui/icons/TrendingUp';
@@ -8,6 +9,7 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import ExpandLessIcon from '@material-ui/icons/ExpandLess';
 
 export default function StrategyRow({ strategy, onStrategySelectionChange, disabled }) {
+    let history = useHistory()
     const theme = useTheme();
     const useStyles = makeStyles({
         chip: {
@@ -56,7 +58,7 @@ export default function StrategyRow({ strategy, onStrategySelectionChange, disab
 
     return (
         <>
-            <Card onClick={expandRow} >
+            <Card onClick={expandRow} style={disabled ? { backgroundColor: "#f3f3f3" } : null}>
                 <CardActionArea>
                     <Grid container p={2} justifyContent="space-between">
                         <Grid item xs={0} style={{ height: 50 }}></Grid>
@@ -81,7 +83,7 @@ export default function StrategyRow({ strategy, onStrategySelectionChange, disab
                             </Collapse>
                         </Grid>
                         <Grid item xs={3.2}>
-                            {imgExpanded ?
+                            {/* {imgExpanded ?
                                 <img
                                     src={`/${strategy.expandedGraph}`}
                                     alt="expanded graph"
@@ -95,11 +97,21 @@ export default function StrategyRow({ strategy, onStrategySelectionChange, disab
                                     height="auto"
                                     width="100%"
                                 />
+                            } */}
+                        </Grid>
+                        <Grid item xs={1.7} pt={1}>
+                            {
+                                disabled ?
+                                    <>
+                                        <Button variant="outlined" color="warning" onClick={() => history.push("/pricing")}><Typography variant="button" color="warning.main"> Go Pro! </Typography></Button>
+                                    </>
+                                    :
+                                    <>
+                                        <Button variant="outlined" onClick={() => onStrategySelectionChange(strategy)}><Typography variant="button">Start Building</Typography></Button>
+                                    </>
                             }
                         </Grid>
-                        <Grid item xs={2} pt={1}>
-                            <Button variant="outlined" disabled={disabled} onClick={() => onStrategySelectionChange(strategy)}><Typography variant="button">Start Building</Typography></Button>
-                            <span>&nbsp;&nbsp;</span>
+                        <Grid item xs={0.3} pt={1}>
                             {!expanded ? <ExpandMoreIcon color="primary" /> : <ExpandLessIcon color="primary" />}
                         </Grid>
                     </Grid>
