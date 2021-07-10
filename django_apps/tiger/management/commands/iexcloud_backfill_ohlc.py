@@ -24,8 +24,14 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         # Get all existing ticker stats from db
+        unfinished_count = TickerStats.objects.filter(price_open__isnull=True) \
+            .filter(ticker__status='unspecified') \
+            .exclude(data_time__week_day__in=[1, 7]).count()
+        print('Unfinished stats count:', unfinished_count)
+
         ticker_stats_ids = list(TickerStats.objects.filter(price_open__isnull=True)
                                 .filter(ticker__status='unspecified')
+                                .exclude(data_time__week_day__in=[1, 7])  # exclude weekends.
                                 .order_by('id').values_list('id', flat=True))[:50000]
 
         # Parallelization and mapping
