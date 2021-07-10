@@ -16,6 +16,7 @@ import SingleTrade from './pages/SingleTrade';
 import Pricing from './pages/Pricing';
 import StrategyBuilder from './pages/StrategyBuilder';
 import EmailVerified from './pages/EmailVerified';
+import SignupSuccess from './pages/SignupSuccess';
 import { Container, Toolbar } from '@material-ui/core';
 import NewOptionScreener from './pages/option_screener/NewOptionScreener';
 import NewBuild from './pages/build_tool/NewBuild';
@@ -60,6 +61,7 @@ export default withRouter(class AppWithRouterAccess extends Component {
                         <Route path='/signin' component={Login} />
                         <Route path='/signin/register' component={Login} />
                         <Route path='/verify-email' component={EmailVerified} />
+                        <Route path='/signup-success' component={SignupSuccess} />
                         <Route path='/callback' component={LoginCallback} />
                         <Route path='/pricing' component={Pricing} />
                     </Switch>

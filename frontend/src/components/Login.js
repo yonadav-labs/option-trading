@@ -43,7 +43,7 @@ const Login = () => {
                 postSubmit: function (response, onSuccess, onFailure) {
                     // handle postsubmit callback
                     onSuccess(response);
-                    window.location.assign('/signin');
+                    window.location.assign('/signup-success');
                     GaEvent('sign up');
                 }
             },
@@ -64,7 +64,7 @@ const Login = () => {
                 // Return to the original URL (if auth was initiated from a secure route), falls back to the origin
                 const fromUri = oktaAuth.getOriginalUri();
 
-                if (fromUri !== window.location.origin || document.referrer === "" || document.referrer.includes("signin") || document.referrer.includes("verify-email")) {
+                if (fromUri !== window.location.origin || document.referrer === "" || document.referrer.includes("signin") || document.referrer.includes("verify-email") || document.referrer.includes("signup-success")) {
                     window.location.assign(fromUri);
                 } else {
                     window.location.assign(document.referrer);
