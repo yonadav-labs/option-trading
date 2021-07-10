@@ -41,7 +41,7 @@ export default function NewLegCard(props) {
         <Grid container spacing={1}>
             {leg.contract ?
                 <>
-                    <Grid item xs={6} sm>
+                    <Grid item xs={6} sm={3}>
                         <Typography variant="button"><MetricLabel label="contract" /></Typography>
                         <Typography variant="body1">
                             {TimestampDateFormatter(leg.contract.expiration)} {PriceFormatter(leg.contract.strike)} {leg.contract.is_call ? 'Call' : 'Put'}

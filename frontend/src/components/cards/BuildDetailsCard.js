@@ -65,7 +65,6 @@ export default function NewTradeCard({ trade }) {
                 {trade.legs.map((leg, index) => (
                     <>
                         <Grid container direction="row" justifyContent="space-around" alignItems="baseline">
-                            {/* <Grid item xs={12} sm={1}><Typography variant="h6">Leg {idx + 1}</Typography></Grid> */}
                             <Grid item sm><BuildLegCard leg={leg} hideTitle={true} index={index} key={index} /></Grid>
                         </Grid>
                         <Divider />
@@ -76,10 +75,6 @@ export default function NewTradeCard({ trade }) {
                         <Typography variant="h6">Key Data</Typography>
                     </Grid>
                     <Grid item xs={6} sm={2}>
-                        <Typography variant="button"><MetricLabel label="potential return" /></Typography>
-                        <Typography variant="body1" color="#4F4F4F">{ProfitFormatter(trade.target_price_profit_ratio)} ({PriceFormatter(trade.target_price_profit)})</Typography>
-                    </Grid>
-                    <Grid item xs={6} sm={2}>
                         <Typography variant="button"><MetricLabel label="probability of profit" /></Typography>
                         <Typography variant="body1" color="#4F4F4F">{PercentageFormatter(trade.profit_prob)}</Typography>
                     </Grid>
@@ -88,90 +83,99 @@ export default function NewTradeCard({ trade }) {
                         {trade.break_even_prices_and_ratios.map(break_even => <Typography variant="body1" color="#4F4F4F">{ProfitFormatter(break_even.ratio)} (at {PriceFormatter(break_even.price)})</Typography>)}
                     </Grid>
                     <Grid item xs={6} sm={2}>
-                        <Typography variant="button"><MetricLabel label="max return" /></Typography>
+                        <Typography variant="button"><MetricLabel label="max profit" /></Typography>
                         <Typography variant="body1" color="#4F4F4F">{trade.best_return && trade.best_return != 'infinite' ?
                             <>{ProfitFormatter(trade.best_return / trade.cost)} ({PriceFormatter(trade.best_return)})</>
                             :
                             'UNLIMITED'}
                         </Typography>
                     </Grid>
-                    <>
-                        <Grid item xs={6} sm={2}>
-                            <Typography variant="button"><MetricLabel label="total cost" /></Typography>
-                            <Typography variant="body1" color="#4F4F4F">${trade.cost}</Typography>
-                        </Grid>
-                        <Grid item xs={6} sm={2}>
-                            <Typography variant="button"><MetricLabel label="notional value" /></Typography>
-                            <Typography variant="body1" color="#4F4F4F">{PriceFormatter(trade.notional_value)}</Typography>
-                        </Grid>
-                        <Grid item xs={6} sm={2}>
-                            <Typography variant="button"><MetricLabel label="leverage" /></Typography>
-                            <Typography variant="body1" color="#4F4F4F">{PercentageFormatter(trade.leverage)}</Typography>
-                        </Grid>
-                        <Grid item xs={6} sm={2}>
-                            <Typography variant="button"><MetricLabel label="total commission" /></Typography>
-                            <Typography variant="body1" color="#4F4F4F">{PriceFormatter(trade.commission_cost)}</Typography>
-                        </Grid>
-                        <Grid item xs={6} sm={2}>
-                            <Typography variant="button"><MetricLabel label="10% probability loss" /></Typography>
-                            {
-                                trade.ten_percent_worst_return_ratio != null ?
-                                    <>
-                                        <Typography variant="body1" color="#4F4F4F">{ProfitFormatter(trade.ten_percent_worst_return_ratio)} ({PriceFormatter(trade.ten_percent_worst_return)})</Typography>
-                                        <Typography variant="body2" color="#828282">
-                                            {trade.ten_percent_worst_return_price > trade.stock.stock_price ? 'Above ' : 'Below '}
-                                            {PriceFormatter(trade.ten_percent_worst_return_price)}
-                                        </Typography>
-                                    </>
-                                    : "N/A"
-                            }
-                        </Grid>
-                        <Grid item xs={6} sm={2}>
-                            <Typography variant="button"><MetricLabel label="10% probability profit" /></Typography>
-                            {
-                                trade.ten_percent_best_return_ratio != null ?
-                                    <>
-                                        <Typography variant="body1" color="#4F4F4F">{ProfitFormatter(trade.ten_percent_best_return_ratio)} ({PriceFormatter(trade.ten_percent_best_return)})</Typography>
-                                        <Typography variant="body2" color="#828282">
-                                            {trade.ten_percent_best_return_price > trade.stock.stock_price ? 'Above ' : 'Below '}
-                                            {PriceFormatter(trade.ten_percent_best_return_price)}
-                                        </Typography>
-                                    </>
-                                    : "N/A"
-                            }
-                        </Grid>
-                        <Grid item xs={6} sm={2}></Grid>
-                        <Grid item xs={6} sm={2}></Grid>
-                        <Grid item xs={6} sm={2}>
-                            <Typography variant="button"><MetricLabel label="delta" /></Typography>
-                            <br />
-                            <Typography variant="body1">{NumberRoundFormatter(trade.delta)}</Typography>
-                        </Grid>
-                        <Grid item xs={6} sm={2}>
-                            <Typography variant="button"><MetricLabel label="gamma" /></Typography>
-                            <br />
-                            <Typography variant="body1">{NumberRoundFormatter(trade.gamma)}</Typography>
-                        </Grid>
-                        <Grid item xs={6} sm={2}>
-                            <Typography variant="button"><MetricLabel label="theta" /></Typography>
-                            <br />
-                            <Typography variant="body1">{NumberRoundFormatter(trade.theta)}</Typography>
-                        </Grid>
-                        <Grid item xs={6} sm={2}>
-                            <Typography variant="button"><MetricLabel label="vega" /></Typography>
-                            <br />
-                            <Typography variant="body1">{NumberRoundFormatter(trade.vega)}</Typography>
-                        </Grid>
-                        <Grid item xs={6} sm={2}>
-                            <Typography variant="button"><MetricLabel label="rho" /></Typography>
-                            <br />
-                            <Typography variant="body1">{NumberRoundFormatter(trade.rho)}</Typography>
-                        </Grid>
-                        <Grid item xs={6} sm={2}>
-                            <Typography variant="button"><MetricLabel label="quoted at" /></Typography>
-                            <Typography variant="body1" color="#4F4F4F">{TimestampTimeFormatter(trade.quote_time)}</Typography>
-                        </Grid>
-                    </>
+                    <Grid item xs={6} sm={2}>
+                        <Typography variant="button"><MetricLabel label="max loss" /></Typography>
+                        <Typography variant="body1" color="#4F4F4F">{trade.worst_return && trade.worst_return != 'infinite'
+                            ? <>{ProfitFormatter(trade.worst_return / trade.cost)} ({PriceFormatter(trade.worst_return)})</>
+                            : 'UNLIMITED'}
+                        </Typography>
+                    </Grid>
+                    <Grid item xs={6} sm={2}>
+                        <Typography variant="button"><MetricLabel label="total cost" /></Typography>
+                        <Typography variant="body1" color="#4F4F4F">${trade.cost}</Typography>
+                    </Grid>
+                    <Grid item xs={6} sm={2}>
+                        <Typography variant="button"><MetricLabel label="notional value" /></Typography>
+                        <Typography variant="body1" color="#4F4F4F">{PriceFormatter(trade.notional_value)}</Typography>
+                    </Grid>
+                    <Grid item xs={6} sm={2}>
+                        <Typography variant="button"><MetricLabel label="leverage" /></Typography>
+                        <Typography variant="body1" color="#4F4F4F">{PercentageFormatter(trade.leverage)}</Typography>
+                    </Grid>
+                    <Grid item xs={6} sm={2}>
+                        <Typography variant="button"><MetricLabel label="total commission" /></Typography>
+                        <Typography variant="body1" color="#4F4F4F">{PriceFormatter(trade.commission_cost)}</Typography>
+                    </Grid>
+                    <Grid item xs={6} sm={2}>
+                        <Typography variant="button"><MetricLabel label="10% probability loss" /></Typography>
+                        {
+                            trade.ten_percent_worst_return_ratio != null ?
+                                <>
+                                    <Typography variant="body1" color="#4F4F4F">
+                                        {ProfitFormatter(trade.ten_percent_worst_return_ratio)} ({PriceFormatter(trade.ten_percent_worst_return)})
+                                    </Typography>
+                                </>
+                                :
+                                <>
+                                    <br />
+                                    <Typography variant="body1" color="#4F4F4F"> N/A </Typography>
+                                </>
+                        }
+                    </Grid>
+                    <Grid item xs={6} sm={2}>
+                        <Typography variant="button"><MetricLabel label="10% probability profit" /></Typography>
+                        {
+                            trade.ten_percent_best_return_ratio != null ?
+                                <>
+                                    <Typography variant="body1" color="#4F4F4F">
+                                        {ProfitFormatter(trade.ten_percent_best_return_ratio)} ({PriceFormatter(trade.ten_percent_best_return)})
+                                    </Typography>
+                                </>
+                                :
+                                <>
+                                    <br />
+                                    <Typography variant="body1" color="#4F4F4F"> N/A </Typography>
+                                </>
+                        }
+                    </Grid>
+                    <Grid item xs={6} sm={2}></Grid>
+                    <Grid item xs={6} sm={2}></Grid>
+                    <Grid item xs={6} sm={2}>
+                        <Typography variant="button"><MetricLabel label="delta" /></Typography>
+                        <br />
+                        <Typography variant="body1">{NumberRoundFormatter(trade.delta)}</Typography>
+                    </Grid>
+                    <Grid item xs={6} sm={2}>
+                        <Typography variant="button"><MetricLabel label="gamma" /></Typography>
+                        <br />
+                        <Typography variant="body1">{NumberRoundFormatter(trade.gamma)}</Typography>
+                    </Grid>
+                    <Grid item xs={6} sm={2}>
+                        <Typography variant="button"><MetricLabel label="theta" /></Typography>
+                        <br />
+                        <Typography variant="body1">{NumberRoundFormatter(trade.theta)}</Typography>
+                    </Grid>
+                    <Grid item xs={6} sm={2}>
+                        <Typography variant="button"><MetricLabel label="vega" /></Typography>
+                        <br />
+                        <Typography variant="body1">{NumberRoundFormatter(trade.vega)}</Typography>
+                    </Grid>
+                    <Grid item xs={6} sm={2}>
+                        <Typography variant="button"><MetricLabel label="rho" /></Typography>
+                        <br />
+                        <Typography variant="body1">{NumberRoundFormatter(trade.rho)}</Typography>
+                    </Grid>
+                    <Grid item xs={6} sm={2}>
+                        <Typography variant="button"><MetricLabel label="quoted at" /></Typography>
+                        <Typography variant="body1" color="#4F4F4F">{TimestampTimeFormatter(trade.quote_time)}</Typography>
+                    </Grid>
                 </Grid>
             </CardContent>
             <>

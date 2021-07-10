@@ -35,7 +35,8 @@ export default function MainView(props) {
         ruleMessages,
         broker,
         availableStrategies,
-        user
+        user,
+        disableBuildButton
     } = props
 
     // mobile responsiveness
@@ -147,7 +148,7 @@ export default function MainView(props) {
                     null
                 }
                 <Grid container justifyContent="center">
-                    <Button variant="containedPrimary" onClick={getStrategyDetails} size="large">
+                    <Button variant="containedPrimary" disabled={disableBuildButton} onClick={getStrategyDetails} size="large">
                         Build Strategy
                     </Button>
                 </Grid>

@@ -11,10 +11,6 @@ export default function NewContractCard(props) {
             <Card sx={props.sx}>
                 <CardContent>
                     <Grid container spacing={1}>
-                        {/* <Grid item xs={6} sm={2}>
-                            <Typography variant="button"><MetricLabel label="last" /></Typography>
-                            <Typography variant="body1">{PriceFormatter(contract.last_price)}</Typography>
-                        </Grid> */}
                         <Grid item xs={6} sm={2}>
                             <Typography variant="button"><MetricLabel label="mid/mark" /></Typography>
                             <Typography variant="body1">{PriceFormatter(contract.mark)}</Typography>

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useRef, useContext, } from "react";
+import React, { useState, useEffect, useContext, } from "react";
 import { Helmet } from "react-helmet";
 import Axios from 'axios';
 import LoadingModal from '../../components/LoadingModal';
@@ -11,20 +11,13 @@ import getApiUrl, {
     TimestampDateFormatter
 } from "../../utils";
 import { useOktaAuth } from '@okta/okta-react';
-import { cloneDeep, get, set, debounce } from 'lodash';
+import { cloneDeep, get, set, isEmpty } from 'lodash';
 import { strategies as allStrategies } from '../../blobs/Strategies';
 import UserContext from '../../UserContext';
-
 
 // url querying
 import { useHistory, useLocation } from "react-router-dom";
 import { addQuery, useSearch } from "../../components/querying";
-
-const useDebouncedCallback = (callback, delay) => {
-    const callbackRef = useRef();
-    callbackRef.current = callback;
-    return useCallback(debounce((...args) => callbackRef.current(...args), delay), []);
-}
 
 const GaEvent = GetGaEventTrackingFunc('build');
 
@@ -68,6 +61,7 @@ export default function NewBuild() {
     const [modalActive, setModalActive] = useState(false);
     const [strategyDisabled, setStrategyDisabled] = useState(true)
     const [pageState, setPageState] = useState(true);
+    const [disableBuildButton, setDisableBuildButton] = useState(true);
 
     // okta states
     const [headers, setHeaders] = useState({});
@@ -128,6 +122,7 @@ export default function NewBuild() {
             setStrategyDisabled(false);
         }
         if (selectedStrategy) {
+            setRuleMessages([0]);
             setLegs(cloneDeep(selectedStrategy.legs));
         }
     };
@@ -136,7 +131,7 @@ export default function NewBuild() {
         GaEvent('select strategy');
         setSelectedStrategy(strategy)
         setStrategyDetails(null);
-        setRuleMessages([]);
+        setRuleMessages([0]);
         setPageState(false)
         if (strategy) {
             setLegs(cloneDeep(strategy.legs));
@@ -256,6 +251,16 @@ export default function NewBuild() {
         setModalActive(false);
     }
 
+    useEffect(() => {
+        if (legs) {
+            setDisableBuildButton(
+                (!selectedTicker
+                    || !legs.reduce((prevVal, currVal) => (currVal.type !== "option" || prevVal && !isEmpty(currVal.contract)), true))
+                || ruleMessages.length > 0
+                || !legs[0].strike > 0);
+        }
+    }, [ruleMessages]);
+
     return (
         <>
             <Helmet>
@@ -293,6 +298,7 @@ export default function NewBuild() {
                         broker={broker}
                         availableStrategies={availableStrategies}
                         user={user}
+                        disableBuildButton={disableBuildButton}
                     />
             }
         </>
