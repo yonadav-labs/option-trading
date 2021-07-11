@@ -32,7 +32,7 @@ class Command(BaseCommand):
         ticker_stats_ids = list(TickerStats.objects.filter(price_open__isnull=True)
                                 .filter(ticker__status='unspecified')
                                 .exclude(data_time__week_day__in=[1, 7])  # exclude weekends.
-                                .order_by('id').values_list('id', flat=True))[:50000]
+                                .order_by('?').values_list('id', flat=True))[:50000]
 
         # Parallelization and mapping
         pool_size = min(mp.cpu_count() * 2, 16)
