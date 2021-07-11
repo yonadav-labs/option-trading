@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+
+cat << EOF
+===== Build Data =====
+GIT_COMMIT_HASH: $(git show --no-patch --pretty='format:%H')
+ABBREVIATED_GIT_COMMIT_HASH: $(git rev-parse --short HEAD)
+GIT_COMMIT_SUBJECT: $(git show --no-patch --pretty='format:%s')
+EOF

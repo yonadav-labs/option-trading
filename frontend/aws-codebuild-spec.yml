@@ -11,6 +11,7 @@ phases:
     commands:
       - "echo ===== Build Started on `date` ====="
       - git checkout "$BUILD_BRANCH"
+      - bin/log-build-data
       - "echo '!!!!! WARNING: TESTS ARE CURRENTLY SKIPPED !!!!!'"
       - "echo '!!!!!' docker-compose -f frontend/docker/docker-compose-test.yml build --force-rm --no-cache --progress plain --pull frontend"
       - "echo '!!!!!' docker-compose -f frontend/docker/docker-compose-test.yml run frontend npm test"

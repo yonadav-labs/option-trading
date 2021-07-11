@@ -11,6 +11,7 @@ phases:
     commands:
       - "echo ===== Build Started on `date` ====="
       - git checkout "$BUILD_BRANCH"
+      - bin/log-build-data
   build:
     on-failure: ABORT
     commands:
