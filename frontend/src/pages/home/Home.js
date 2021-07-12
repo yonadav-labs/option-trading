@@ -5,31 +5,37 @@ import { Button, Typography, Grid, Card, CardContent, useMediaQuery, CardMedia, 
 import { makeStyles } from '@material-ui/styles';
 import { getTopMovers, newLoadExpirationDates, newLoadTickers } from "../../utils";
 import TickerSelectionCard from "./TickerSelectionCard";
-import StarRateIcon from '@material-ui/icons/StarRate';
 import colors from "../../colors";
+import TestimonialCard from "../../components/cards/TestimonialCard";
+
+
+const testimonials = [
+    {
+        rating: 5,
+        msg: "The Discover feature helps me to find the most proper strike prices.I don't need to do any guessing anymore!",
+        author: "Bo J, Tigerstance User"
+    },
+    {
+        rating: 5,
+        msg: "Tigerstance helped me make decisions with ease and confidence when the market was volatile.",
+        author: "Jay S, Portfolio Manager, Eystra Capital, LLC"
+    },
+    {
+        rating: 5,
+        msg: "As someone who is new to options trading, Tigerstance's Build feature helps me find a strategy that I feel comfortable with.",
+        author: "Colin P, Tigerstance User"
+    }
+]
+
 
 const Feedback = () => {
-    return [1].map((item, index) => (<Grid item key={index} lg={3}>
-        <Card sx={{ p: 3, borderRadius: 4, boxShadow: 4 }}>
-            <CardContent sx={{ minHeight: 239 }}>
-                <Grid container justifyContent="center" alignItems="center">
-                    <StarRateIcon style={{ color: colors.orange }} />
-                    <StarRateIcon style={{ color: colors.orange }} />
-                    <StarRateIcon style={{ color: colors.orange }} />
-                    <StarRateIcon style={{ color: colors.orange }} />
-                    <StarRateIcon style={{ color: colors.orange }} />
-                    <br />
-                    <Typography variant="body2" textAlign="center" py={2}>
-                        “Tigerstance helped me make decisions with ease and confidence when the market was volatile.”
-                    </Typography>
-                    <br />
-                    <Typography variant="subtitle2" textAlign="center" py={2}>Jay S, Portfolio Manager, Eystra Capital, LLC</Typography>
-                </Grid>
-            </CardContent>
-        </Card>
+    return (<Grid container justifyContent="space-evenly" spacing={4}>
+        {testimonials.map((testimonial, index) => (<Grid item key={index} >
+            <TestimonialCard testimonialRating={testimonial.rating} testimonialMsg={testimonial.msg} testimonialAuthor={testimonial.author} />
+        </Grid>))}
     </Grid>)
-    )
 }
+
 const ToolCard = ({ children, imageName, isMobile }) => (
     <Card sx={{ p: 4, position: "relative", borderRadius: 4, boxShadow: 4, minHeight: `${isMobile ? "0" : "350px"}` }}>
         <CardMedia
