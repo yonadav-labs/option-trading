@@ -72,6 +72,7 @@ export default function NewBuild() {
         setExpirationTimestampsOptions([])
         setBasicInfo({});
         setModalActive(false);
+        setStrategyDetails(null);
     }
 
     useEffect(() => {
@@ -129,6 +130,7 @@ export default function NewBuild() {
 
     const onStrategySelectionChange = (strategy) => {
         GaEvent('select strategy');
+        window.scrollTo(0, 0);
         setSelectedStrategy(strategy)
         setStrategyDetails(null);
         setRuleMessages([0]);
