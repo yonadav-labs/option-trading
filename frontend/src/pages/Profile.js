@@ -337,8 +337,8 @@ const Profile = () => {
                                             tradeHistory.length > 0 ?
                                                 <List>
                                                     {tradeHistory.map(trade => (
-                                                        <ListItem key={trade.id}>
-                                                            <Link style={{ display: "inline-block" }} to={"/t/" + trade.id} target="_blank">
+                                                        <ListItem key={trade.meta.snapshot_id}>
+                                                            <Link style={{ display: "inline-block" }} to={"/t/" + trade.meta.snapshot_id} target="_blank">
                                                                 {trade.stock.ticker.symbol} {startCase(trade.type)} -
                                                                 {trade.legs.map(leg => {
                                                                     if (leg.contract) {
