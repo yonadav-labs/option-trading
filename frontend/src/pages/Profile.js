@@ -10,6 +10,7 @@ import LinkIcon from '@material-ui/icons/Link';
 import { IconButton, Tooltip, CardContent, Grid, Typography, Divider, List, ListItem, Switch, OutlinedInput, Button, Select, MenuItem, Box, Modal, TextField } from '@material-ui/core';
 import { FormControl, FormLabel, FormGroup, FormControlLabel } from '@material-ui/core';
 import CloseIcon from '@material-ui/icons/Close';
+import { TimestampDateFormatter } from '../utils';
 
 const GaEvent = GetGaEventTrackingFunc('preference');
 
@@ -342,7 +343,7 @@ const Profile = () => {
                                                                 {trade.stock.ticker.symbol} {startCase(trade.type)} -
                                                                 {trade.legs.map(leg => {
                                                                     if (leg.contract) {
-                                                                        return `${leg.is_long ? ' Long ' : ' Short '} ${new Date(leg.contract.expiration * 1000).toLocaleDateString('en-US', { year: "2-digit", month: "numeric", day: "2-digit" })} $${leg.contract.strike} ${leg.contract.is_call ? 'Call' : 'Put'}, `;
+                                                                        return (<span> {leg.is_long ? ' Long ' : ' Short '} {TimestampDateFormatter(leg.contract.expiration)} {leg.contract.strike} {leg.contract.is_call ? 'Call' : 'Put'}, </span>);
                                                                     }
                                                                 })}
                                                                 {trade.net_debit_per_unit >= 0 ? `$${Math.abs(trade.net_debit_per_unit)} Credit` : `$${Math.abs(trade.net_debit_per_unit)} Debit`}
