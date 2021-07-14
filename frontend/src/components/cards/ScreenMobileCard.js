@@ -141,6 +141,16 @@ export default function ScreenMobileCard({ trade }) {
                             <br />
                             <Typography variant="body1">{TimestampTimeFormatter(trade.quote_time)}</Typography>
                         </Grid>
+                        <Grid item xs="6">
+                            <Typography variant="button"><MetricLabel label="intrinsic value" /></Typography>
+                            <br />
+                            <Typography variant="body1">{PriceFormatter(trade.intrinsic_value)}</Typography>
+                        </Grid>
+                        <Grid item xs="6">
+                            <Typography variant="button"><MetricLabel label="extrinsic value" /></Typography>
+                            <br />
+                            <Typography variant="body1">{PriceFormatter(trade.extrinsic_value)}</Typography>
+                        </Grid>
                     </Grid>
                 </Box>
                 :
