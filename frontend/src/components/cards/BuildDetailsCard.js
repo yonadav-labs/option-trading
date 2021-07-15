@@ -85,7 +85,7 @@ export default function NewTradeCard({ trade }) {
                     <Grid item xs={6} sm={2}>
                         <Typography variant="button"><MetricLabel label="max profit" /></Typography>
                         <Typography variant="body1" color="#4F4F4F">{trade.best_return && trade.best_return != 'infinite' ?
-                            <>{ProfitFormatter(trade.best_return / trade.cost)} ({PriceFormatter(trade.best_return)})</>
+                            <>{ProfitFormatter(trade.best_return / Math.abs(trade.cost))} ({PriceFormatter(trade.best_return)})</>
                             :
                             'UNLIMITED'}
                         </Typography>
@@ -93,7 +93,7 @@ export default function NewTradeCard({ trade }) {
                     <Grid item xs={6} sm={2}>
                         <Typography variant="button"><MetricLabel label="max loss" /></Typography>
                         <Typography variant="body1" color="#4F4F4F">{trade.worst_return && trade.worst_return != 'infinite'
-                            ? <>{ProfitFormatter(trade.worst_return / trade.cost)} ({PriceFormatter(trade.worst_return)})</>
+                            ? <>{ProfitFormatter(trade.worst_return / Math.abs(trade.cost))} ({PriceFormatter(trade.worst_return)})</>
                             : 'UNLIMITED'}
                         </Typography>
                     </Grid>

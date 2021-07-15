@@ -4,7 +4,7 @@ from unittest import mock
 from django.test import TestCase
 from django.utils.timezone import make_aware, get_default_timezone
 from tiger.core import Cash, Stock, OptionContract, OptionLeg, CashLeg, StockLeg
-from tiger.core.trade import LongCall, LongPut, CoveredCall, CashSecuredPut, BullPutSpread, BullCallSpread, \
+from tiger.core.trade import LongCall, ShortCall, LongPut, ShortPut, CoveredCall, CashSecuredPut, BullPutSpread, BullCallSpread, \
     BearCallSpread, BearPutSpread, Trade, LongStraddle, LongStrangle, IronCondor, IronButterfly, ShortStrangle, \
     ShortStraddle, LongButterflySpread, ShortButterflySpread, LongCondorSpread, ShortCondorSpread, StrapStraddle, \
     StrapStrangle, ProtectivePut
@@ -333,6 +333,20 @@ class CallTradesTestCase(TestCase):
                                          self.broker_settings).total_cost, -16170 * 2 + 1.3)
         self.assertAlmostEqual(OptionLeg(False, 2, call_contract, 'market',
                                          self.broker_settings).total_cost, -16025 * 2 + 1.3)
+
+    def test_short_call(self):
+        call_contract = OptionContract(self.ticker, True, self.td_input, self.stock_price)
+        short_call = ShortCall.build(self.stock, call_contract, 'mid', self.broker_settings,
+                                             target_price_lower=258.3,
+                                             target_price_upper=258.3)
+        self.assertAlmostEqual(short_call.cost, -16168.699999999999)
+        self.assertEqual(short_call.best_return, -1*short_call.cost)
+        self.assertAlmostEqual(short_call.target_price_profit, -1*short_call.cost)
+        self.assertAlmostEqual(short_call.worst_return, 'infinite')
+        self.assertEqual(len(short_call.break_evens), 1)
+        # includes commission cost
+        self.assertAlmostEqual(short_call.break_evens[0], 449.68699999999995)
+        self.assertEqual(short_call.reward_to_risk_ratio, None)
 
 
 class PutTradesTestCase(TestCase):
@@ -793,6 +807,21 @@ class PutTradesTestCase(TestCase):
         # includes commission cost
         self.assertAlmostEqual(protective_put.break_evens[0], 74.263)
         self.assertEqual(protective_put.reward_to_risk_ratio, None)
+
+    def test_short_put(self):
+        put_contract = OptionContract(self.ticker, False, self.td_input, self.stock_price)
+        short_put = ShortPut.build(self.stock, put_contract, 'mid', self.broker_settings,
+                                             target_price_lower=258.3,
+                                             target_price_upper=258.3)
+        self.assertAlmostEqual(short_put.cost, -68.7)
+        self.assertEqual(short_put.best_return, 68.7)
+        self.assertAlmostEqual(short_put.target_price_profit, 68.7)
+        self.assertAlmostEqual(short_put.worst_return, -6731.3)
+        self.assertEqual(len(short_put.break_evens), 1)
+        # includes commission cost
+        self.assertAlmostEqual(short_put.break_evens[0], 67.313)
+        self.assertEqual(short_put.reward_to_risk_ratio, 0.010206052322731122)
+
 
 
 class TdTestCase(TestCase):

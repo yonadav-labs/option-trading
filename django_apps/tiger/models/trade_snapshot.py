@@ -49,9 +49,11 @@ class TradeSnapshot(BaseModel):
     TRADE_TYPE_CHOICES = (
         ('unspecified', 'Unspecified'),
         ('long_call', 'Long call'),
+        ('short_call', 'Short call'),
         ('covered_call', 'Covered call'),
         ('protective_put', 'Protective put'),
         ('long_put', 'Long put'),
+        ('short_put', 'Short put'),
         ('cash_secured_put', 'Cash secured put'),
         ('bull_call_spread', 'Bull call spread'),
         ('bear_call_spread', 'Bear call spread'),

@@ -8,6 +8,8 @@ from .covered_call import CoveredCall
 from .protective_put import ProtectivePut
 from .long_call import LongCall
 from .long_put import LongPut
+from .short_call import ShortCall
+from .short_put import ShortPut
 from .long_straddle import LongStraddle
 from .short_straddle import ShortStraddle
 from .short_strangle import ShortStrangle
