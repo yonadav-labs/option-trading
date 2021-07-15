@@ -1,14 +1,36 @@
 import React, { useEffect, useState } from 'react';
-import { Grid, Typography, FormControl, Select, MenuItem, InputLabel } from "@material-ui/core";
+import { Grid, Typography, FormControl, Select, MenuItem, InputLabel, Alert } from "@material-ui/core";
 import getApiUrl, { PercentageFormatter, PriceFormatter, GetGaEventTrackingFunc } from '../utils';
 import Axios from 'axios';
 
 export default function CustomizableBuildLeg(props) {
-    const { leg, index, selectedStrategy, expirationTimestampsOptions, selectedTicker, updateLeg } = props
+    const { leg, index, selectedStrategy, expirationTimestampsOptions, selectedTicker, updateLeg, allLegs, ruleMessages } = props
 
     const [strikes, setStrikes] = useState([]);
     const [selectedStrike, setSelectedStrike] = useState(null);
+    const [legMessage, setLegMessage] = useState([])
+    const [errorParts, setErrorParts] = useState([])
     const API_URL = getApiUrl();
+
+    function getSecondPart(str) {
+        return str.split('.')[1];
+    }
+
+    // check for rule messages
+    useEffect(() => {
+        if (ruleMessages) {
+            let message = []
+            let errors = []
+            ruleMessages.map(rule => {
+                if (rule.leg === index) {
+                    message.push(rule)
+                    errors.push(getSecondPart(rule.property))
+                }
+            })
+            setErrorParts(errors)
+            setLegMessage(message)
+        } else { setLegMessage([]) }
+    }, [ruleMessages, leg.expiration, leg.action, leg.optionType, leg.strike,])
 
     useEffect(async () => {
         setStrikes([]);
@@ -38,6 +60,7 @@ export default function CustomizableBuildLeg(props) {
                         selectedStrikeIsValid = true;
                         setSelectedStrike(option);
                     }
+
                     return option;
                 });
                 strikes.push({ value: props.atmPrice, label: <>{PriceFormatter(props.atmPrice)}&nbsp;(Current Price)</>, disabled: true });
@@ -61,77 +84,92 @@ export default function CustomizableBuildLeg(props) {
     switch (leg.type) {
         case "option":
             return (
-                <Grid container alignItems="center" pb={3}>
-                    <Grid item xs={1}>
-                        <Typography variant="h5">Leg {index + 1}</Typography>
-                    </Grid>
-                    <Grid item xs={2.75} px={1}>
-                        <FormControl fullWidth>
-                            <InputLabel shrink={true}><Typography variant="h6">Action</Typography></InputLabel>
-                            <Select
-                                label="Action.."
-                                value={leg.action}
-                                onChange={(e) => updateLeg("action", e.target.value, index)}
-                                disabled={selectedStrategy.legs[index].action}
-                                style={{ height: 45 }}
-                                MenuProps={{ style: { maxHeight: "400px", }, anchorOrigin: { vertical: "bottom", horizontal: "center" }, getContentAnchorEl: () => null, }}
-                            >
-                                <MenuItem value="long">Long</MenuItem>
-                                <MenuItem value="short">Short</MenuItem>
-                            </Select>
-                        </FormControl>
-                    </Grid>
-                    <Grid item xs={2.75} px={1}>
-                        <FormControl fullWidth>
-                            <InputLabel shrink={true}><Typography variant="h6">Call/Put</Typography></InputLabel>
-                            <Select
-                                label="Call/Put.."
-                                fullWidth
-                                style={{ height: 45 }}
-                                onChange={(e) => updateLeg("optionType", e.target.value, index)}
-                                value={leg.optionType || 0}
-                                disabled={selectedStrategy.legs[index].optionType}
-                                MenuProps={{ style: { maxHeight: "400px" }, anchorOrigin: { vertical: "bottom", horizontal: "center" }, getContentAnchorEl: () => null, }}
-                            >
-                                <MenuItem disabled value={0}><span style={{ color: "#b3b3b3" }}>Select an option type</span></MenuItem>
-                                <MenuItem value="call">Call</MenuItem>
-                                <MenuItem value="put">Put</MenuItem>
-                            </Select>
-                        </FormControl>
-                    </Grid>
-                    <Grid item xs={2.75} px={1}>
-                        <FormControl fullWidth>
-                            <InputLabel shrink={true}><Typography variant="h6">Expiration Date</Typography></InputLabel>
-                            <Select
-                                label="Expiration Date...."
-                                onChange={(e) => { onExpirationChange(e); }}
-                                style={{ height: 45 }}
-                                value={leg.expiration || 0}
-                                disabled={selectedStrategy.legs[index].expiration || !leg.optionType}
-                                MenuProps={{ style: { maxHeight: "400px" }, anchorOrigin: { vertical: "bottom", horizontal: "center" }, getContentAnchorEl: () => null, }}
-                            >
-                                <MenuItem disabled value={0}><span style={{ color: "#b3b3b3" }}>Select an expiration date</span></MenuItem>
-                                {expirationTimestampsOptions.map(date => <MenuItem value={date.value}>{date.label}</MenuItem>)}
-                            </Select>
-                        </FormControl>
-                    </Grid>
-                    <Grid item xs={2.75} px={1}>
-                        <FormControl fullWidth>
-                            <InputLabel shrink={true}><Typography variant="h6">Strike Price</Typography></InputLabel>
-                            <Select
-                                label="Strike Price...."
-                                disabled={strikes.length === 0}
-                                value={selectedStrike || 0}
-                                onChange={(e) => onStrikeSelectChange(e.target.value)}
-                                style={{ height: 45 }}
-                                MenuProps={{ style: { maxHeight: "400px" }, anchorOrigin: { vertical: "bottom", horizontal: "center" }, getContentAnchorEl: () => null, }}
-                            >
-                                <MenuItem disabled value={0}><span style={{ color: "#b3b3b3" }}>Select a strike price</span></MenuItem>
-                                {strikes.map((strike, index) => <MenuItem disabled={strike.disabled} value={strike} key={index}> {strike.label} </MenuItem>)}
-                            </Select>
-                        </FormControl>
-                    </Grid>
-                </Grid >
+                <>
+                    {legMessage.length > 0 ?
+                        <>
+                            {legMessage.map(val => {
+                                return (
+                                    <Grid px={4} pb={3}>
+                                        <Alert hidden={!val} severity="error">{val.message}</Alert>
+                                    </Grid>
+                                );
+                            })}
+                        </>
+                        :
+                        null
+                    }
+                    <Grid container alignItems="center" pb={3}>
+                        <Grid item xs={1}>
+                            <Typography variant="h5">Leg {index + 1}</Typography>
+                        </Grid>
+                        <Grid item xs={2.75} px={1}>
+                            <FormControl fullWidth>
+                                <InputLabel shrink={true}><Typography variant="h6">Action</Typography></InputLabel>
+                                <Select
+                                    label="Action.."
+                                    value={leg.action}
+                                    onChange={(e) => updateLeg("action", e.target.value, index)}
+                                    disabled={selectedStrategy.legs[index].action}
+                                    style={{ height: 45 }}
+                                    MenuProps={{ style: { maxHeight: "400px", }, anchorOrigin: { vertical: "bottom", horizontal: "center" }, getContentAnchorEl: () => null, }}
+                                >
+                                    <MenuItem value="long">Long</MenuItem>
+                                    <MenuItem value="short">Short</MenuItem>
+                                </Select>
+                            </FormControl>
+                        </Grid>
+                        <Grid item xs={2.75} px={1}>
+                            <FormControl fullWidth error={!leg.optionType}>
+                                <InputLabel shrink={true}><Typography variant="h6">Call/Put</Typography></InputLabel>
+                                <Select
+                                    label="Call/Put.."
+                                    fullWidth
+                                    style={{ height: 45 }}
+                                    onChange={(e) => updateLeg("optionType", e.target.value, index)}
+                                    value={leg.optionType || 0}
+                                    disabled={selectedStrategy.legs[index].optionType}
+                                    MenuProps={{ style: { maxHeight: "400px" }, anchorOrigin: { vertical: "bottom", horizontal: "center" }, getContentAnchorEl: () => null, }}
+                                >
+                                    <MenuItem disabled value={0}><span style={{ color: "#b3b3b3" }}>Select an option type</span></MenuItem>
+                                    <MenuItem value="call">Call</MenuItem>
+                                    <MenuItem value="put">Put</MenuItem>
+                                </Select>
+                            </FormControl>
+                        </Grid>
+                        <Grid item xs={2.75} px={1}>
+                            <FormControl fullWidth error={leg.expiration === 0}>
+                                <InputLabel shrink={true}><Typography variant="h6">Expiration Date</Typography></InputLabel>
+                                <Select
+                                    label="Expiration Date...."
+                                    onChange={(e) => { onExpirationChange(e); }}
+                                    style={{ height: 45 }}
+                                    value={leg.expiration || 0}
+                                    disabled={selectedStrategy.legs[index].expiration || !leg.optionType}
+                                    MenuProps={{ style: { maxHeight: "400px" }, anchorOrigin: { vertical: "bottom", horizontal: "center" }, getContentAnchorEl: () => null, }}
+                                >
+                                    <MenuItem disabled value={0}><span style={{ color: "#b3b3b3" }}>Select an expiration date</span></MenuItem>
+                                    {expirationTimestampsOptions.map(date => <MenuItem value={date.value}>{date.label}</MenuItem>)}
+                                </Select>
+                            </FormControl>
+                        </Grid>
+                        <Grid item xs={2.75} px={1}>
+                            <FormControl fullWidth error={errorParts.includes("strike") || !selectedStrike}>
+                                <InputLabel shrink={true}><Typography variant="h6">Strike Price</Typography></InputLabel>
+                                <Select
+                                    label="Strike Price...."
+                                    disabled={strikes.length === 0}
+                                    value={selectedStrike || 0}
+                                    onChange={(e) => onStrikeSelectChange(e.target.value)}
+                                    style={{ height: 45 }}
+                                    MenuProps={{ style: { maxHeight: "400px" }, anchorOrigin: { vertical: "bottom", horizontal: "center" }, getContentAnchorEl: () => null, }}
+                                >
+                                    <MenuItem disabled value={0}><span style={{ color: "#b3b3b3" }}>Select a strike price</span></MenuItem>
+                                    {strikes.map((strike, index) => <MenuItem disabled={strike.disabled} value={strike} key={index}> {strike.label} </MenuItem>)}
+                                </Select>
+                            </FormControl>
+                        </Grid>
+                    </Grid >
+                </>
             )
 
         case "stock":

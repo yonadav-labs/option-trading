@@ -114,6 +114,7 @@ export default function MainView(props) {
                                     <CustomizableBuildLeg leg={leg} index={index} key={index} selectedTicker={selectedTicker}
                                         atmPrice={basicInfo.latestPrice} updateLeg={updateLeg}
                                         selectedStrategy={selectedStrategy} expirationTimestampsOptions={expirationTimestampsOptions}
+                                        allLegs={legs} ruleMessages={ruleMessages}
                                     />
                                 );
                             case "stock":
@@ -133,20 +134,6 @@ export default function MainView(props) {
                         }
                     })}
                 </Grid>
-                {ruleMessages.length > 0 ?
-                    <>
-                        {ruleMessages.map(val => {
-                            return (
-                                <Grid px={4} py={1}>
-                                    <Alert hidden={!val} severity="error">{val}</Alert>
-                                </Grid>
-                            );
-                        })}
-                    </>
-
-                    :
-                    null
-                }
                 <Grid container justifyContent="center">
                     <Button variant="containedPrimary" disabled={disableBuildButton} onClick={getStrategyDetails} size="large">
                         Build Strategy

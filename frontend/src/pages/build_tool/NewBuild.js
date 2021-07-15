@@ -180,8 +180,13 @@ export default function NewBuild() {
             const operator = curr.operator;
             const ruleResult = operators[operator](legs[legAIndex], legAProperty, legs[legBIndex], legBProperty);
             if (!ruleResult) {
-                messages.push(`Leg ${legAIndex + 1}'s ${legAProperty.replace(".", " ").replace("_", " ")} 
-                needs to be ${operator} Leg ${legBIndex + 1}'s ${legBProperty.replace(".", " ").replace("_", " ")}.`);
+                messages.push(
+                    {
+                        leg: legAIndex,
+                        property: legAProperty,
+                        message: `Leg ${legAIndex + 1}'s ${legAProperty.replace(".", " ").replace("_", " ")} needs to be ${operator} Leg ${legBIndex + 1}'s ${legBProperty.replace(".", " ").replace("_", " ")}.`,
+                    }
+                );
             }
             return (prev && ruleResult);
         }, true);
