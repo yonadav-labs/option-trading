@@ -20,6 +20,7 @@ import SignupSuccess from './pages/SignupSuccess';
 import { Container, Toolbar } from '@material-ui/core';
 import NewOptionScreener from './pages/option_screener/NewOptionScreener';
 import NewBuild from './pages/build_tool/NewBuild';
+import ScrollToTop from './components/ScrollToTop';
 
 const oktaAuth = new OktaAuth(getOktaConfig().oidc);
 
@@ -42,29 +43,31 @@ export default withRouter(class AppWithRouterAccess extends Component {
                 >
                     <Header></Header>
                     <Toolbar />
-                    <Switch>
-                        <Route path='/' exact={true} component={Home} />
-                        <Route path='/option-screener' exact={true} component={NewOptionScreener} />
-                        <Route path='/browse' exact={true} component={NewOptionScreener} />
-                        <Route path='/screen' exact={true} component={NewOptionScreener} />
-                        <Route path='/surface' exact={true} component={Surface} />
-                        <Route path='/panorama' exact={true} component={Surface} />
-                        <Route path='/discover' exact={true} component={NewStrategyScreener} />
-                        <Route path='/strategy-screener' exact={true} component={NewStrategyScreener} />
-                        <Route path='/t/:tradeId' exact={true} component={SingleTrade} />
-                        <Route path='/strategy-builder' exact={true} component={NewBuild} />
-                        <Route path='/old-build' exact={true} component={StrategyBuilder} />
-                        <Route path='/build' exact={true} component={NewBuild} />
-                        <SecureRoute path='/profile' component={Profile} />
-                        <Route path="/disclaimer" component={Disclaimer}></Route>
-                        <Route path="/privacy" component={Privacy}></Route>
-                        <Route path='/signin' component={Login} />
-                        <Route path='/signin/register' component={Login} />
-                        <Route path='/verify-email' component={EmailVerified} />
-                        <Route path='/signup-success' component={SignupSuccess} />
-                        <Route path='/callback' component={LoginCallback} />
-                        <Route path='/pricing' component={Pricing} />
-                    </Switch>
+                    <ScrollToTop>
+                        <Switch>
+                            <Route path='/' exact={true} component={Home} />
+                            <Route path='/option-screener' exact={true} component={NewOptionScreener} />
+                            <Route path='/browse' exact={true} component={NewOptionScreener} />
+                            <Route path='/screen' exact={true} component={NewOptionScreener} />
+                            <Route path='/surface' exact={true} component={Surface} />
+                            <Route path='/panorama' exact={true} component={Surface} />
+                            <Route path='/discover' exact={true} component={NewStrategyScreener} />
+                            <Route path='/strategy-screener' exact={true} component={NewStrategyScreener} />
+                            <Route path='/t/:tradeId' exact={true} component={SingleTrade} />
+                            <Route path='/strategy-builder' exact={true} component={NewBuild} />
+                            <Route path='/old-build' exact={true} component={StrategyBuilder} />
+                            <Route path='/build' exact={true} component={NewBuild} />
+                            <SecureRoute path='/profile' component={Profile} />
+                            <Route path="/disclaimer" component={Disclaimer}></Route>
+                            <Route path="/privacy" component={Privacy}></Route>
+                            <Route path='/signin' component={Login} />
+                            <Route path='/signin/register' component={Login} />
+                            <Route path='/verify-email' component={EmailVerified} />
+                            <Route path='/signup-success' component={SignupSuccess} />
+                            <Route path='/callback' component={LoginCallback} />
+                            <Route path='/pricing' component={Pricing} />
+                        </Switch>
+                    </ScrollToTop>
                     <Footer className="mt-auto"></Footer>
                 </Security>
             </Container>
