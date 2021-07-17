@@ -1,9 +1,11 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { Helmet } from "react-helmet";
 import Axios from 'axios';
 import CircularProgress from '@material-ui/core/CircularProgress';
+import AskSignupModal from '../../components/AskSignupModal';
 import LandingView from "./LandingView";
 import MainView from "./MainView";
+import UserContext from '../../UserContext';
 
 // utils
 import getApiUrl, { newLoadTickers, newLoadExpirationDates, GetGaEventTrackingFunc, ExpDateFormatter } from "../../utils";
@@ -21,6 +23,7 @@ export default function NewOptionScreener() {
     const history = useHistory()
     const location = useLocation()
     const querySymbol = useSearch(location, 'symbol')
+    const { user } = useContext(UserContext);
 
     // stock/ticker states
     const [allTickers, setAllTickers] = useState([]);
@@ -34,6 +37,7 @@ export default function NewOptionScreener() {
 
     // component management states
     const [modalActive, setModalActive] = useState(false);
+    const [isOpenAskSignupModal, setIsOpenAskSignupModal] = useState(false);
     const [expirationDisabled, setExpirationDisabled] = useState(true);
     const [pageState, setPageState] = useState(true);
 
@@ -105,6 +109,9 @@ export default function NewOptionScreener() {
                 let contracts = response.data.contracts;
                 setContracts(contracts);
                 setModalActive(false);
+                if (!user) {
+                    setIsOpenAskSignupModal(true);
+                }
                 setPageState(false)
             }
             else { setContracts([]) }
@@ -128,6 +135,7 @@ export default function NewOptionScreener() {
             >
                 <CircularProgress color="inherit" />
             </Backdrop>
+            <AskSignupModal open={isOpenAskSignupModal}></AskSignupModal>
             {
                 pageState ?
                     <LandingView

@@ -1,10 +1,12 @@
-import React, { useState } from 'react';
-import { Box, Collapse, IconButton, TableCell, TableRow } from "@material-ui/core";
+import React, { useState, useContext } from 'react';
+import { Box, Collapse, IconButton, TableCell, TableRow, Link } from "@material-ui/core";
 import { makeStyles } from '@material-ui/styles';
 import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
+import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import { NumberRoundFormatter, PercentageFormatter, PriceFormatter, TimestampDateFormatter } from '../utils';
 import ScreenExpandedRow from './ScreenExpandedRow';
+import UserContext from '../UserContext';
 
 const useRowStyles = makeStyles({
     root: {
@@ -20,6 +22,7 @@ export default function ScreenRow(props) {
     const { row } = props;
     const [open, setOpen] = useState(false);
     const classes = useRowStyles();
+    const { user } = useContext(UserContext);
 
     return (
         <React.Fragment>
@@ -48,7 +51,7 @@ export default function ScreenRow(props) {
                 <TableCell align="center" padding="none">{row.percent_change >= 0 ? '+' : '-'}{NumberRoundFormatter(Math.abs(row.percent_change))}%</TableCell>
                 <TableCell align="center" padding="none">{row.volume}</TableCell>
                 <TableCell align="center" padding="none">{row.open_interest}</TableCell>
-                <TableCell align="center" padding="none">{NumberRoundFormatter(row.vol_oi)}</TableCell>
+                <TableCell align="center" padding="none">{ user && user.subscription ? NumberRoundFormatter(row.vol_oi) : <Link href="/pricing" className="d-block"><LockOutlinedIcon /></Link> }</TableCell>
                 <TableCell align="center" padding="none">{PercentageFormatter(row.implied_volatility)}</TableCell>
                 <TableCell align="center" padding="none">{NumberRoundFormatter(row.delta)}</TableCell>
                 <TableCell align="center" padding="none">{NumberRoundFormatter(row.gamma)}</TableCell>

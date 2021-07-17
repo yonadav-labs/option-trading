@@ -1,10 +1,14 @@
-import React from 'react';
-import { Grid, Typography } from '@material-ui/core';
+import React, { useContext } from 'react';
+import { Grid, Typography, Link } from '@material-ui/core';
+import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import { PriceFormatter, PercentageFormatter, TimestampTimeFormatter, NumberRoundFormatter } from '../utils';
 import MetricLabel from './MetricLabel.js';
+import UserContext from '../UserContext';
 
 export default function ScreenExpandedRow(props) {
     const { contract } = props;
+    const { user } = useContext(UserContext);
+
     return (
         (
             contract ?
@@ -34,7 +38,12 @@ export default function ScreenExpandedRow(props) {
                         <Grid item sm="2" xs="6">
                             <Typography variant="button"><MetricLabel label="itm probability" /></Typography>
                             <br />
-                            <Typography variant="body2">{PercentageFormatter(contract.itm_probability)}</Typography>
+                            {
+                                user && user.subscription ?
+                                    <Typography variant="body2">{PercentageFormatter(contract.itm_probability)}</Typography>
+                                    :
+                                    <Link href="/pricing" className="d-block"><LockOutlinedIcon /></Link>
+                            }
                         </Grid>
                         <Grid item sm="2" xs="6">
                             <Typography variant="button"><MetricLabel label="notional value" /></Typography>

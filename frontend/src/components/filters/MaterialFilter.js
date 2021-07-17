@@ -12,7 +12,7 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-export default function MaterialFilter({ options, value, defaultValue, onFilterChange }) {
+export default function MaterialFilter({ options, value, defaultValue, onFilterChange, disabled }) {
     const classes = useStyles();
 
     return (
@@ -22,6 +22,7 @@ export default function MaterialFilter({ options, value, defaultValue, onFilterC
                 className={classes.customSelect}
                 onChange={onFilterChange}
                 value={value}
+                disabled={disabled}
             >
                 {
                     options.map((option, index) => <MenuItem value={option.value} key={index}> {option.label} </MenuItem>)

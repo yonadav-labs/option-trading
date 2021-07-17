@@ -2,6 +2,7 @@ import React, { useState, useEffect, useContext, } from "react";
 import { Helmet } from "react-helmet";
 import Axios from 'axios';
 import LoadingModal from '../../components/LoadingModal';
+import AskSignupModal from '../../components/AskSignupModal';
 import LandingView from "./LandingView";
 import MainView from "./MainView";
 
@@ -59,6 +60,7 @@ export default function NewBuild() {
 
     // component management states
     const [modalActive, setModalActive] = useState(false);
+    const [isOpenAskSignupModal, setIsOpenAskSignupModal] = useState(false);
     const [strategyDisabled, setStrategyDisabled] = useState(true)
     const [pageState, setPageState] = useState(true);
     const [disableBuildButton, setDisableBuildButton] = useState(true);
@@ -256,6 +258,9 @@ export default function NewBuild() {
             console.error(error);
         }
         setModalActive(false);
+        if (!user) {
+            setIsOpenAskSignupModal(true);
+        }
     }
 
     useEffect(() => {
@@ -275,6 +280,7 @@ export default function NewBuild() {
                 <meta name="description" content="Build strategies with Tigerstance." />
             </Helmet>
             <LoadingModal active={modalActive}></LoadingModal>
+            <AskSignupModal open={isOpenAskSignupModal}></AskSignupModal>
             {
                 pageState ?
                     <LandingView

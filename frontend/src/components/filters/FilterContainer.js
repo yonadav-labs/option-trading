@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext } from "react";
 import { Grid, Box, IconButton, Typography, FormControl, Select, MenuItem } from "@material-ui/core";
 import TuneIcon from '@material-ui/icons/Tune';
 import CloseIcon from '@material-ui/icons/Close';
@@ -9,6 +9,7 @@ import TargetBox from "./TargetBox";
 import TickerAutocomplete from "../TickerAutocomplete";
 import { GetGaEventTrackingFunc } from '../../utils';
 import { makeStyles } from '@material-ui/styles';
+import UserContext from '../../UserContext';
 
 const GaEvent = GetGaEventTrackingFunc('strategy screener');
 
@@ -35,6 +36,7 @@ const useStyles = makeStyles(theme => ({
 
 export default function FilterContainer(props) {
     const classes = useStyles();
+    const { user } = useContext(UserContext);
     const {
         onFilterChange,
         onTextFilterChange,
@@ -207,7 +209,7 @@ export default function FilterContainer(props) {
                     <Typography variant="button"><MetricLabel label="probability of profit" /></Typography>
                 </Grid>
                 <Grid item paddingBottom='0.4rem'>
-                    <MaterialFilter onFilterChange={(event) => filterChangeHandler(event, 'minProfitProb')}
+                    <MaterialFilter disabled={!user || !user.subscription} onFilterChange={(event) => filterChangeHandler(event, 'minProfitProb')}
                         options={minProfitProbOptions} value={filters.minProfitProb} defaultValue={0} />
                 </Grid>
             </Box>

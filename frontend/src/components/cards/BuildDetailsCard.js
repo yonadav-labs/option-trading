@@ -1,10 +1,11 @@
-import React from "react";
+import React, { useContext } from "react";
 import {
     Grid, Typography, Divider, Chip, Card, CardHeader,
-    CardContent, CardActions, IconButton
+    CardContent, CardActions, IconButton, Link
 } from "@material-ui/core";
 import { makeStyles } from '@material-ui/styles';
 import ZoomOutMapIcon from '@material-ui/icons/ZoomOutMap';
+import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import { startCase } from 'lodash';
 
 import TradeProfitLossGraph from "../TradeProfitLossGraph";
@@ -17,6 +18,7 @@ import {
 import ShareTradeBtn from "../ShareTradeBtn";
 import BuildLegCard from "./BuildLegCard";
 import OptionValueMatrix from "../OptionValueMatrix";
+import UserContext from '../../UserContext';
 
 const GaEvent = GetGaEventTrackingFunc('trade details');
 
@@ -31,6 +33,7 @@ const useStyles = makeStyles(theme => ({
 
 export default function NewTradeCard({ trade }) {
     const classes = useStyles();
+    const { user } = useContext(UserContext);
 
     return (
         <Card>
@@ -76,7 +79,12 @@ export default function NewTradeCard({ trade }) {
                     </Grid>
                     <Grid item xs={6} sm={2}>
                         <Typography variant="button"><MetricLabel label="probability of profit" /></Typography>
-                        <Typography variant="body1" color="#4F4F4F">{PercentageFormatter(trade.profit_prob)}</Typography>
+                        {
+                            user && user.subscription ?
+                                <Typography variant="body1" color="#4F4F4F">{PercentageFormatter(trade.profit_prob)}</Typography>
+                                :
+                                <Link href="/pricing" className="d-block"><LockOutlinedIcon /></Link>
+                        }
                     </Grid>
                     <Grid item xs={6} sm={2}>
                         <Typography variant="button"><MetricLabel label="break-evens at" /></Typography>
@@ -116,33 +124,39 @@ export default function NewTradeCard({ trade }) {
                     <Grid item xs={6} sm={2}>
                         <Typography variant="button"><MetricLabel label="10% probability loss" /></Typography>
                         {
-                            trade.ten_percent_worst_return_ratio != null ?
-                                <>
-                                    <Typography variant="body1" color="#4F4F4F">
-                                        {ProfitFormatter(trade.ten_percent_worst_return_ratio)} ({PriceFormatter(trade.ten_percent_worst_return)})
-                                    </Typography>
-                                </>
+                            user && user.subscription ?
+                                trade.ten_percent_worst_return_ratio != null ?
+                                    <>
+                                        <Typography variant="body1" color="#4F4F4F">
+                                            {ProfitFormatter(trade.ten_percent_worst_return_ratio)} ({PriceFormatter(trade.ten_percent_worst_return)})
+                                        </Typography>
+                                    </>
+                                    :
+                                    <>
+                                        <br />
+                                        <Typography variant="body1" color="#4F4F4F"> N/A </Typography>
+                                    </>
                                 :
-                                <>
-                                    <br />
-                                    <Typography variant="body1" color="#4F4F4F"> N/A </Typography>
-                                </>
+                                <Link href="/pricing" className="d-block"><LockOutlinedIcon /></Link>
                         }
                     </Grid>
                     <Grid item xs={6} sm={2}>
                         <Typography variant="button"><MetricLabel label="10% probability profit" /></Typography>
                         {
-                            trade.ten_percent_best_return_ratio != null ?
-                                <>
-                                    <Typography variant="body1" color="#4F4F4F">
-                                        {ProfitFormatter(trade.ten_percent_best_return_ratio)} ({PriceFormatter(trade.ten_percent_best_return)})
-                                    </Typography>
-                                </>
+                            user && user.subscription ?
+                                trade.ten_percent_best_return_ratio != null ?
+                                    <>
+                                        <Typography variant="body1" color="#4F4F4F">
+                                            {ProfitFormatter(trade.ten_percent_best_return_ratio)} ({PriceFormatter(trade.ten_percent_best_return)})
+                                        </Typography>
+                                    </>
+                                    :
+                                    <>
+                                        <br />
+                                        <Typography variant="body1" color="#4F4F4F"> N/A </Typography>
+                                    </>
                                 :
-                                <>
-                                    <br />
-                                    <Typography variant="body1" color="#4F4F4F"> N/A </Typography>
-                                </>
+                                <Link href="/pricing" className="d-block"><LockOutlinedIcon /></Link>
                         }
                     </Grid>
                     <Grid item xs={6} sm={2}></Grid>
@@ -150,27 +164,52 @@ export default function NewTradeCard({ trade }) {
                     <Grid item xs={6} sm={2}>
                         <Typography variant="button"><MetricLabel label="delta" /></Typography>
                         <br />
-                        <Typography variant="body1">{NumberRoundFormatter(trade.delta)}</Typography>
+                        {
+                            user && user.subscription ?
+                                <Typography variant="body1">{NumberRoundFormatter(trade.delta)}</Typography>
+                                :
+                                <Link href="/pricing" className="d-block"><LockOutlinedIcon /></Link>
+                        }
                     </Grid>
                     <Grid item xs={6} sm={2}>
                         <Typography variant="button"><MetricLabel label="gamma" /></Typography>
                         <br />
-                        <Typography variant="body1">{NumberRoundFormatter(trade.gamma)}</Typography>
+                        {
+                            user && user.subscription ?
+                                <Typography variant="body1">{NumberRoundFormatter(trade.gamma)}</Typography>
+                                :
+                                <Link href="/pricing" className="d-block"><LockOutlinedIcon /></Link>
+                        }
                     </Grid>
                     <Grid item xs={6} sm={2}>
                         <Typography variant="button"><MetricLabel label="theta" /></Typography>
                         <br />
-                        <Typography variant="body1">{NumberRoundFormatter(trade.theta)}</Typography>
+                        {
+                            user && user.subscription ?
+                                <Typography variant="body1">{NumberRoundFormatter(trade.theta)}</Typography>
+                                :
+                                <Link href="/pricing" className="d-block"><LockOutlinedIcon /></Link>
+                        }
                     </Grid>
                     <Grid item xs={6} sm={2}>
                         <Typography variant="button"><MetricLabel label="vega" /></Typography>
                         <br />
-                        <Typography variant="body1">{NumberRoundFormatter(trade.vega)}</Typography>
+                        {
+                            user && user.subscription ?
+                                <Typography variant="body1">{NumberRoundFormatter(trade.vega)}</Typography>
+                                :
+                                <Link href="/pricing" className="d-block"><LockOutlinedIcon /></Link>
+                        }
                     </Grid>
                     <Grid item xs={6} sm={2}>
                         <Typography variant="button"><MetricLabel label="rho" /></Typography>
                         <br />
-                        <Typography variant="body1">{NumberRoundFormatter(trade.rho)}</Typography>
+                        {
+                            user && user.subscription ?
+                                <Typography variant="body1">{NumberRoundFormatter(trade.rho)}</Typography>
+                                :
+                                <Link href="/pricing" className="d-block"><LockOutlinedIcon /></Link>
+                        }
                     </Grid>
                     <Grid item xs={6} sm={2}>
                         <Typography variant="button"><MetricLabel label="quoted at" /></Typography>

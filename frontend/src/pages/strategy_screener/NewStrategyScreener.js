@@ -1,9 +1,11 @@
-import React, { useState, useEffect, useCallback, useRef } from "react";
+import React, { useState, useEffect, useCallback, useRef, useContext } from "react";
 import { Helmet } from "react-helmet";
 import Axios from 'axios';
 import ModalSpinner from '../../components/ModalSpinner';
+import AskSignupModal from '../../components/AskSignupModal';
 import LandingView from "./LandingView";
 import MainView from "./MainView";
+import UserContext from '../../UserContext';
 
 // utils
 import getApiUrl, {
@@ -30,12 +32,14 @@ export default function NewStrategyScreener() {
     const history = useHistory()
     const location = useLocation()
     const querySymbol = useSearch(location, 'symbol')
+    const { user } = useContext(UserContext);
 
     // stock/ticker states
     const [allTickers, setAllTickers] = useState([]);
     const [selectedTicker, setSelectedTicker] = useState(null);
     const [basicInfo, setBasicInfo] = useState({});
     const [bestTrades, setBestTrades] = useState(null);
+    const [isOpenAskSignupModal, setIsOpenAskSignupModal] = useState(false);
 
     // expiration date states
     const [expirationTimestampsOptions, setExpirationTimestampsOptions] = useState([])
@@ -161,6 +165,9 @@ export default function NewStrategyScreener() {
                 setBestTrades(trades);
                 setPageState(false);
                 setModalActive(false);
+                if (!user) {
+                    setIsOpenAskSignupModal(true);
+                }
             }
         } catch (error) {
             console.error(error);
@@ -220,6 +227,7 @@ export default function NewStrategyScreener() {
                 <meta name="description" content="Discover option strategies with the best potential return with Tigerstance." />
             </Helmet>
             <ModalSpinner active={modalActive}></ModalSpinner>
+            <AskSignupModal open={isOpenAskSignupModal}></AskSignupModal>
             {
                 pageState ?
                     <LandingView

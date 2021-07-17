@@ -1,11 +1,13 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { makeStyles } from '@material-ui/styles';
-import { Grid, Box, Typography } from "@material-ui/core";
+import { Grid, Box, Typography, Link } from "@material-ui/core";
+import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import MetricLabel from '../MetricLabel.js';
 import {
     PriceFormatter, NumberRoundFormatter, PercentageFormatter,
     TimestampDateFormatter, TimestampTimeFormatter, GetGaEventTrackingFunc
 } from '../../utils';
+import UserContext from '../../UserContext';
 
 const GaEvent = GetGaEventTrackingFunc('trade details');
 
@@ -19,6 +21,7 @@ const useStyles = makeStyles({
 export default function ScreenMobileCard({ trade }) {
     const classes = useStyles();
     const [moreInfo, setMoreInfo] = useState(false)
+    const { user } = useContext(UserContext);
 
     const showMoreInfo = () => {
         GaEvent('expand trade card');
@@ -95,7 +98,12 @@ export default function ScreenMobileCard({ trade }) {
                         <Grid item xs="6">
                             <Typography variant="button"><MetricLabel label="itm probability" /></Typography>
                             <br />
-                            <Typography variant="body1">{PercentageFormatter(trade.itm_probability)}</Typography>
+                            {
+                                user && user.subscription ?
+                                    <Typography variant="body1">{PercentageFormatter(trade.itm_probability)}</Typography>
+                                    :
+                                    <Link href="/pricing" className="d-block"><LockOutlinedIcon /></Link>
+                            }
                         </Grid>
                         {/* row 5 */}
                         <Grid item xs="6">
