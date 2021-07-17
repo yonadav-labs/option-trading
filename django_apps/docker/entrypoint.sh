@@ -51,4 +51,4 @@ fi
 
 # Run the Django server command.
 _log "Entrypoint command:" "${DOCKER_COMMAND[@]}"
-eval "${DOCKER_COMMAND[@]}"
+exec "${DOCKER_COMMAND[@]}"
