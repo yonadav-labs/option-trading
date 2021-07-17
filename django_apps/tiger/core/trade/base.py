@@ -7,7 +7,7 @@ import more_itertools
 import numpy as np
 from scipy.stats import norm
 from tiger.core import Leg
-from tiger.core.black_scholes import get_target_price_probability
+from tiger.core.probability import probability_of_price_ranges, get_normal_dist
 from tiger.utils import get_dates_till_expiration, get_decimal_25x, get_now_date
 
 INFINITE = 'infinite'
@@ -219,10 +219,7 @@ class Trade(ABC):
         return daily_volatility * math.sqrt(trading_days_till_exp)
 
     def is_disabled_for_prob(self):
-        # TODO: temporily disable for some strategies till we fix the probability calculation.
-        return self.sigma is None or self.type not in ['long_call', 'covered_call', 'long_put', 'cash_secured_put',
-                                                       'protective_put', 'bull_call_spread', 'bear_call_spread',
-                                                       'bear_put_spread', 'bull_put_spread']
+        return self.sigma is None
 
     def get_ten_percent_prices_and_returns(self, is_profit):
         '''
@@ -400,21 +397,20 @@ class Trade(ABC):
     @property
     def profit_prob(self):
         '''Probability of profit， implied from options pricing.'''
-        # not sure what is best way to calculate probability for multiple break evens and multiple legs
-        # edge case: if user builds a strategy with no break evens
-        probs = []
-        if self.is_disabled_for_prob() or len(self.break_even_prices_and_ratios) == 0:
+        if self.is_disabled_for_prob() or len(self.break_evens) == 0:
             return None
-        for leg in self.legs:
-            if leg.contract:
-                prob = get_target_price_probability(
-                    stock_price=self.stock.stock_price,
-                    target_price=self.break_even_prices_and_ratios[0]['price'] +
-                                 (0.01 if self.is_bullish else -0.01),
-                    exp_years=leg.contract.days_till_expiration / 365.0,
-                    sigma=leg.contract.implied_volatility, aims_above=self.is_bullish)
-                probs.append(prob)
-        return sum(probs) / len(probs)
+
+        all_points = [None] + self.break_evens + [None]
+        current_range_is_profitable = self.get_total_return(self.break_evens[0] - 0.1, self.break_evens[0] - 0.1) > 0
+        profitable_ranges = []
+        for i in range(len(all_points) - 1):
+            if current_range_is_profitable:
+                profitable_ranges.append((all_points[i], all_points[i + 1]))
+            current_range_is_profitable = not current_range_is_profitable
+
+        normal_dist = get_normal_dist(self.stock.stock_price, self.sigma)
+        res = probability_of_price_ranges(normal_dist, profitable_ranges)
+        return sum(res.values())
 
     def get_value_matrix(self, calculation_dates, underlying_prices):
         final_matrix = None

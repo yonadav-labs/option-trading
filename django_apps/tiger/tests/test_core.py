@@ -4,10 +4,10 @@ from unittest import mock
 from django.test import TestCase
 from django.utils.timezone import make_aware, get_default_timezone
 from tiger.core import Cash, Stock, OptionContract, OptionLeg, CashLeg, StockLeg
-from tiger.core.trade import LongCall, ShortCall, LongPut, ShortPut, CoveredCall, CashSecuredPut, BullPutSpread, BullCallSpread, \
-    BearCallSpread, BearPutSpread, Trade, LongStraddle, LongStrangle, IronCondor, IronButterfly, ShortStrangle, \
+from tiger.core.trade import LongCall, ShortCall, LongPut, ShortPut, CoveredCall, CashSecuredPut, BullPutSpread, \
+    BullCallSpread, BearCallSpread, BearPutSpread, Trade, LongStraddle, LongStrangle, IronCondor, IronButterfly, \
     ShortStraddle, LongButterflySpread, ShortButterflySpread, LongCondorSpread, ShortCondorSpread, StrapStraddle, \
-    StrapStrangle, ProtectivePut
+    StrapStrangle, ProtectivePut, ShortStrangle
 from tiger.models import Ticker, TickerStats
 
 MOCK_NOW_TIMESTAMP = 1609664400  # 01/03/2021
@@ -111,6 +111,7 @@ class CallTradesTestCase(TestCase):
         self.assertAlmostEqual(long_call.ten_percent_worst_return_price, 100.19703006349465)
         self.assertAlmostEqual(long_call.ten_percent_worst_return, -16171.3)
         self.assertAlmostEqual(long_call.ten_percent_worst_return_ratio, -1.0)
+        self.assertAlmostEqual(long_call.profit_prob, 0.47452395064860775)
 
         self.assertAlmostEqual(
             LongCall.build(self.stock, call_contract, 'mid', self.broker_settings, 580, 620).target_price_profit,
@@ -334,14 +335,16 @@ class CallTradesTestCase(TestCase):
         self.assertAlmostEqual(OptionLeg(False, 2, call_contract, 'market',
                                          self.broker_settings).total_cost, -16025 * 2 + 1.3)
 
-    def test_short_call(self):
+    @mock.patch('django.utils.timezone.now')
+    def test_short_call(self, mock_now):
+        mock_now.return_value = make_aware(datetime.fromtimestamp(MOCK_NOW_TIMESTAMP), get_default_timezone())
         call_contract = OptionContract(self.ticker, True, self.td_input, self.stock_price)
         short_call = ShortCall.build(self.stock, call_contract, 'mid', self.broker_settings,
-                                             target_price_lower=258.3,
-                                             target_price_upper=258.3)
+                                     target_price_lower=258.3,
+                                     target_price_upper=258.3)
         self.assertAlmostEqual(short_call.cost, -16168.699999999999)
-        self.assertEqual(short_call.best_return, -1*short_call.cost)
-        self.assertAlmostEqual(short_call.target_price_profit, -1*short_call.cost)
+        self.assertEqual(short_call.best_return, -1 * short_call.cost)
+        self.assertAlmostEqual(short_call.target_price_profit, -1 * short_call.cost)
         self.assertAlmostEqual(short_call.worst_return, 'infinite')
         self.assertEqual(len(short_call.break_evens), 1)
         # includes commission cost
@@ -618,7 +621,9 @@ class PutTradesTestCase(TestCase):
         self.assertAlmostEqual(long_straddle.break_evens[1], 71.426)
         self.assertEqual(long_straddle.reward_to_risk_ratio, None)
 
-    def test_long_butterfly_spread(self):
+    @mock.patch('django.utils.timezone.now')
+    def test_long_butterfly_spread(self, mock_now):
+        mock_now.return_value = make_aware(datetime.fromtimestamp(MOCK_NOW_TIMESTAMP), get_default_timezone())
         call_contract = OptionContract(self.ticker, True, self.td_input, self.stock_price, 'mid')
         call_contract2 = OptionContract(self.ticker, True, self.td_input6, self.stock_price, 'mid')
         call_contract3 = OptionContract(self.ticker, True, self.td_input7, self.stock_price, 'mid')
@@ -633,8 +638,11 @@ class PutTradesTestCase(TestCase):
         self.assertAlmostEqual(long_butterfly_spread.break_evens[0], 68.589)
         self.assertAlmostEqual(long_butterfly_spread.break_evens[1], 71.411)
         self.assertAlmostEqual(long_butterfly_spread.reward_to_risk_ratio, 0.2524601896582573)
+        self.assertAlmostEqual(long_butterfly_spread.profit_prob, 0.06702796482468433)
 
-    def test_short_butterfly_spread(self):
+    @mock.patch('django.utils.timezone.now')
+    def test_short_butterfly_spread(self, mock_now):
+        mock_now.return_value = make_aware(datetime.fromtimestamp(MOCK_NOW_TIMESTAMP), get_default_timezone())
         call_contract = OptionContract(self.ticker, True, self.td_input, self.stock_price, 'mid')
         call_contract2 = OptionContract(self.ticker, True, self.td_input6, self.stock_price, 'mid')
         call_contract3 = OptionContract(self.ticker, True, self.td_input7, self.stock_price, 'mid')
@@ -649,8 +657,11 @@ class PutTradesTestCase(TestCase):
         self.assertAlmostEqual(short_butterfly_spread.break_evens[0], 68.511)
         self.assertAlmostEqual(short_butterfly_spread.break_evens[1], 71.489)
         self.assertAlmostEqual(short_butterfly_spread.reward_to_risk_ratio, 3.701141705842848)
+        self.assertAlmostEqual(short_butterfly_spread.profit_prob, 0.9292761869283035)
 
-    def test_short_straddle(self):
+    @mock.patch('django.utils.timezone.now')
+    def test_short_straddle(self, mock_now):
+        mock_now.return_value = make_aware(datetime.fromtimestamp(MOCK_NOW_TIMESTAMP), get_default_timezone())
         call_contract = OptionContract(self.ticker, True, self.td_input3, self.stock_price, 'mid')
         put_contract = OptionContract(self.ticker, False, self.td_input, self.stock_price, 'mid')
         short_straddle = ShortStraddle.build(self.stock, call_contract, put_contract,
@@ -664,8 +675,11 @@ class PutTradesTestCase(TestCase):
         self.assertAlmostEqual(short_straddle.break_evens[0], 64.626)
         self.assertAlmostEqual(short_straddle.break_evens[1], 71.374)
         self.assertEqual(short_straddle.reward_to_risk_ratio, None)
+        self.assertAlmostEqual(short_straddle.profit_prob, 0.1541555116943109)
 
-    def test_short_strangle(self):
+    @mock.patch('django.utils.timezone.now')
+    def test_short_strangle(self, mock_now):
+        mock_now.return_value = make_aware(datetime.fromtimestamp(MOCK_NOW_TIMESTAMP), get_default_timezone())
         call_contract = OptionContract(self.ticker, True, self.td_input2, self.stock_price, 'mid')
         put_contract = OptionContract(self.ticker, False, self.td_input, self.stock_price, 'mid')
         short_strangle = ShortStrangle.build(self.stock, call_contract, put_contract,
@@ -679,6 +693,7 @@ class PutTradesTestCase(TestCase):
         self.assertAlmostEqual(short_strangle.break_evens[0], 64.626)
         self.assertAlmostEqual(short_strangle.break_evens[1], 77.374)
         self.assertEqual(short_strangle.reward_to_risk_ratio, None)
+        self.assertAlmostEqual(short_strangle.profit_prob, 0.29922915734221095)
 
     def test_iron_butterfly(self):
         call_contract = OptionContract(self.ticker, True, self.td_input4, self.stock_price, 'mid')
@@ -714,7 +729,9 @@ class PutTradesTestCase(TestCase):
         self.assertAlmostEqual(iron_condor.break_evens[1], 76.348)
         self.assertEqual(iron_condor.reward_to_risk_ratio, 0.8853695324283536)
 
-    def test_long_strangle(self):
+    @mock.patch('django.utils.timezone.now')
+    def test_long_strangle(self, mock_now):
+        mock_now.return_value = make_aware(datetime.fromtimestamp(MOCK_NOW_TIMESTAMP), get_default_timezone())
         call_contract = OptionContract(self.ticker, True, self.td_input2, self.stock_price, 'mid')
         put_contract = OptionContract(self.ticker, False, self.td_input, self.stock_price, 'mid')
         long_strangle = LongStrangle.build(self.stock, call_contract, put_contract, 'mid', self.broker_settings, 85, 85)
@@ -727,6 +744,7 @@ class PutTradesTestCase(TestCase):
         self.assertAlmostEqual(long_strangle.break_evens[0], 64.574)
         self.assertAlmostEqual(long_strangle.break_evens[1], 77.426)
         self.assertEqual(long_strangle.reward_to_risk_ratio, None)
+        self.assertAlmostEqual(long_strangle.profit_prob, 0.6984488696143877)
 
     def test_long_condor_spread(self):
         left_put_contract = OptionContract(self.ticker, False, self.td_input7, self.stock_price, 'mid')
@@ -808,11 +826,13 @@ class PutTradesTestCase(TestCase):
         self.assertAlmostEqual(protective_put.break_evens[0], 74.263)
         self.assertEqual(protective_put.reward_to_risk_ratio, None)
 
-    def test_short_put(self):
+    @mock.patch('django.utils.timezone.now')
+    def test_short_put(self, mock_now):
+        mock_now.return_value = make_aware(datetime.fromtimestamp(MOCK_NOW_TIMESTAMP), get_default_timezone())
         put_contract = OptionContract(self.ticker, False, self.td_input, self.stock_price)
         short_put = ShortPut.build(self.stock, put_contract, 'mid', self.broker_settings,
-                                             target_price_lower=258.3,
-                                             target_price_upper=258.3)
+                                   target_price_lower=258.3,
+                                   target_price_upper=258.3)
         self.assertAlmostEqual(short_put.cost, -68.7)
         self.assertEqual(short_put.best_return, 68.7)
         self.assertAlmostEqual(short_put.target_price_profit, 68.7)
@@ -821,7 +841,7 @@ class PutTradesTestCase(TestCase):
         # includes commission cost
         self.assertAlmostEqual(short_put.break_evens[0], 67.313)
         self.assertEqual(short_put.reward_to_risk_ratio, 0.010206052322731122)
-
+        self.assertAlmostEqual(short_put.profit_prob, 0.648250953789326)
 
 
 class TdTestCase(TestCase):
