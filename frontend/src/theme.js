@@ -139,9 +139,11 @@ export default responsiveFontSizes(createTheme({
                 },
                 containedSecondary: {
                     background: grey[900],
+                    color: colors.white,
                     '&:hover': {
                         background: grey[700],
                         boxShadow: 'none',
+                        color: colors.white,
                     }
                 },
                 outlined: {

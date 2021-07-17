@@ -1,35 +1,49 @@
 import React, { useEffect, useState } from "react";
 import { makeStyles } from '@material-ui/styles';
 import {
-    Alert, Grid, Typography, Paper, Divider, IconButton, useMediaQuery, FormControl, Select,
-    MenuItem, Table, TableHead, TableRow, TableCell, TableBody, Box, TableContainer, Chip,
-    TablePagination, TableSortLabel, Stack
+    Alert, Grid, Typography, Paper, Divider, IconButton, useMediaQuery,
+    Table, TableHead, TableRow, TableCell, TableBody, Box, TableContainer, Chip,
+    TablePagination, TableSortLabel, Stack, styled, Fab, Collapse, useTheme, Slide, Toolbar, ListSubheader, List
 } from "@material-ui/core";
 import { visuallyHidden } from '@material-ui/utils';
 import CancelIcon from '@material-ui/icons/Cancel';
 import TickerAutocomplete from "../../components/TickerAutocomplete";
-import FilterMenu from "./FilterMenu";
+import FilterItems from "./FilterItems";
 import NewTickerSummary from "../../components/NewTickerSummary";
 import TuneIcon from "@material-ui/icons/Tune";
 import { GetGaEventTrackingFunc } from '../../utils';
 import ScreenRow from "../../components/ScreenRow";
 import MetricLabel from '../../components/MetricLabel.js';
 import ScreenMobileCard from "../../components/cards/ScreenMobileCard";
+import FilterDrawer from "../../components/FilterDrawer";
+import FilterDialog from "../../components/FilterDialog";
+import ListItemGrid from "../../components/ListItemGrid";
+import ExpirationMultiSelect from "./ExpirationMultiSelect";
+import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
+import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 
 const GaEvent = GetGaEventTrackingFunc('option screener');
 const useStyles = makeStyles({
-    root: {
-        overflowX: "auto",
+    autocomplete: {
+        "& label": {
+            color: 'white',
+        },
+        "&.MuiAutocomplete-root .MuiAutocomplete-inputRoot": {
+            color: 'white',
+            background: 'rgba(255, 255, 255, 0.15)',
+        },
+        "&.MuiAutocomplete-root .Mui-focused .MuiAutocomplete-clearIndicator": {
+            color: 'white',
+        },
     },
-    backdropStyle: {
-        position: 'fixed',
-        width: '100%',
-        minHeight: '100%',
-        top: 0,
-        left: 0,
-        zIndex: '99',
-        background: 'rgba(0, 0, 0, 0.5)',
-    }
+    chip: {
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+        marginRight: 2,
+        color: 'white',
+        "&.MuiChip-root .MuiChip-deleteIcon": {
+            color: 'inherit'
+        }
+    },
 });
 
 export default function MainView(props) {
@@ -44,8 +58,8 @@ export default function MainView(props) {
         contracts,
         getContracts
     } = props
+    const theme = useTheme();
     const classes = useStyles();
-
     const [selectedTimestamps, setSelectedTimestamps] = useState(selectedExpirationTimestamps);
     // filter states
     const [filters, setFilters] = useState({});
@@ -159,25 +173,7 @@ export default function MainView(props) {
 
     return (
         <Grid container>
-            {!isMobile &&
-                <>
-                    <Grid container item sm={2.5} direction="column" alignItems="center"
-                        bgcolor='#333741' color="white" style={{ display: filterOpen ? "block" : "none" }}>
-                        <FilterMenu
-                            filters={filters}
-                            setFilters={setFilters}
-                            basicInfo={basicInfo}
-                            handleFilterCollapse={handleFilterCollapse}
-                            deleteExpirationChip={deleteExpirationChip}
-                            getContracts={getContracts}
-                        />
-                    </Grid>
-                    <Grid item py={2} bgcolor='#333741' color="white" style={{ display: filterOpen ? "none" : "block" }} >
-                        <IconButton color="inherit" onClick={handleFilterCollapse}><TuneIcon fontSize="large" /></IconButton>
-                    </Grid>
-                </>
-            }
-            <Grid item sm className={classes.root}>
+            <Grid item sm>
                 <Grid component={Paper} container item sm={12} elevation={4} square padding={2} style={isMobile ? { width: "100vw" } : null}>
                     {isMobile ?
                         <>
@@ -190,6 +186,7 @@ export default function MainView(props) {
                                                 return (<Chip
                                                     key={ts.value}
                                                     label={ts.label}
+                                                    className={classes.chip}
                                                     size="small"
                                                     clickable
                                                     deleteIcon={
@@ -202,31 +199,6 @@ export default function MainView(props) {
                                             : <br />}
                                     </Typography>
                                 </Grid>
-                                <Grid item>
-                                    <IconButton color="inherit" onClick={handleMobileFilterCollapse}>
-                                        <TuneIcon fontSize="large" />
-                                    </IconButton>
-                                </Grid>
-                                <div style={{ position: "absolute", right: 0, top: "4rem", width: "98vw", zIndex: 100, display: showMobileFilter ? "block" : "none" }}>
-                                    <Grid container direction="column" justifyContent="center" alignItems="center" bgcolor='#333741' color="white" height="100%">
-                                        <FilterMenu
-                                            filters={filters}
-                                            setFilters={setFilters}
-                                            basicInfo={basicInfo}
-                                            isMobile={isMobile}
-                                            handleMobileFilterCollapse={handleMobileFilterCollapse}
-                                            allTickers={allTickers}
-                                            onTickerSelectionChange={onTickerSelectionChange}
-                                            selectedTicker={selectedTicker}
-                                            expirationTimestampsOptions={expirationTimestampsOptions}
-                                            selectedTimestamps={selectedTimestamps}
-                                            onExpirationSelectionChange={onExpirationSelectionChange}
-                                            deleteExpirationChip={deleteExpirationChip}
-                                            setSelectedTimestamps={setSelectedTimestamps}
-                                        />
-                                    </Grid>
-                                </div>
-                                {showMobileFilter && <div className={classes.backdropStyle} onClick={() => { setShowMobileFilter(false) }}> </div>}
                             </Grid>
                             <Divider />
                         </>
@@ -247,106 +219,128 @@ export default function MainView(props) {
                                 <Typography variant="subtitle1">Expiration Date</Typography>
                             </Grid>
                             <Grid item sm={4.8}>
-                                <FormControl fullWidth>
-                                    <Select
-                                        id="expiration-dates"
-                                        value={selectedTimestamps}
-                                        multiple
-                                        placeholder="Select an expiration date"
-                                        onChange={(e) => setSelectedTimestamps(e.target.value)}
-                                        onClose={(e) => onExpirationSelectionChange(selectedTimestamps)}
-                                        variant="standard"
-                                        MenuProps={{
-                                            style: {
-                                                maxHeight: "400px",
-                                            },
-                                            anchorOrigin: {
-                                                vertical: "bottom",
-                                                horizontal: "center"
-                                            },
-                                            getContentAnchorEl: () => null,
-                                        }}
-                                        renderValue={
-                                            (selectedTimestamps) => {
-                                                let sorted = selectedTimestamps.sort((a, b) => (a.value > b.value) ? 1 : -1)
-                                                return (
-                                                    <Box sx={{ display: 'flex', flexWrap: 'wrap' }}>
-                                                        {sorted.map((date) => (
-                                                            <Chip
-                                                                key={date.value}
-                                                                label={date.label}
-                                                                size="small"
-                                                                clickable
-                                                                deleteIcon={
-                                                                    <CancelIcon
-                                                                        onMouseDown={(event) => event.stopPropagation()}
-                                                                    />}
-                                                                onDelete={(e) => deleteExpirationChip(e, date.value)}
-                                                            />
-                                                        ))}
-                                                    </Box>)
-                                            }}
-                                    >
-                                        {expirationTimestampsOptions.map((date, index) => <MenuItem value={date} key={index}> {date.label} </MenuItem>)}
-                                    </Select>
-                                </FormControl>
+                                <ExpirationMultiSelect
+                                    selectedTimestamps={selectedTimestamps}
+                                    setSelectedTimestamps={setSelectedTimestamps}
+                                    onExpirationSelectionChange={onExpirationSelectionChange}
+                                    deleteExpirationChip={deleteExpirationChip}
+                                    expirationTimestampsOptions={expirationTimestampsOptions}
+                                    variant="standard"
+                                />
                             </Grid>
                         </Grid>
                     }
                     <NewTickerSummary basicInfo={basicInfo} isMobile={isMobile} />
                 </Grid>
-                <Grid container item justifyContent="center">
-                    <Box style={{ display: "inline-flex" }} p={2}>
-                        {contracts.length > 0 ?
-                            null
-                            :
-                            selectedTicker ?
-                                <Alert severity="error">
-                                    There are no contracts that fit the specified settings.
-                                </Alert>
-                                :
-                                <Alert severity="error">
-                                    Select a ticker and expiration date.
-                                </Alert>
-                        }
-                    </Box>
-                </Grid>
-                {contracts.length > 0 ?
-                    isCard ?
-                        <>
-                            <Grid container justifyContent="space-between" alignItems="space-between" pb={1} px={2}>
-                                <Grid xs={6}>
-                                    <Box p={1} border={1} borderColor="rgba(228, 228, 228, 1)" borderRadius={1} style={{ backgroundColor: "rgb(242, 246, 255)" }}>
-                                        Blue cards are in the money.
-                                    </Box>
+                <Grid container item sx={{ minHeight: "80vh" }}>
+                    <FilterDialog
+                        open={isMobile && filterOpen}
+                        setOpen={handleFilterCollapse}
+                    >
+                        <ListItemGrid>
+                            <Typography variant="button" gutterBottom><MetricLabel label="ticker symbol" /></Typography>
+                            <TickerAutocomplete
+                                tickers={allTickers}
+                                onChange={onTickerSelectionChange}
+                                size={'medium'}
+                                value={selectedTicker}
+                                variant="outlined"
+                                className={classes.autocomplete}
+                            />
+                        </ListItemGrid>
+                        <ListItemGrid>
+                            <Typography variant="button" gutterBottom><MetricLabel label="expiration date" /></Typography>
+                            <ExpirationMultiSelect
+                                selectedTimestamps={selectedTimestamps}
+                                setSelectedTimestamps={setSelectedTimestamps}
+                                onExpirationSelectionChange={onExpirationSelectionChange}
+                                deleteExpirationChip={deleteExpirationChip}
+                                expirationTimestampsOptions={expirationTimestampsOptions}
+                                variant="outlined"
+                            />
+                        </ListItemGrid>
+                        <FilterItems
+                            filters={filters}
+                            setFilters={setFilters}
+                            basicInfo={basicInfo}
+                        />
+                    </FilterDialog>
+                    <Grid container xs>
+                        <FilterDrawer open={!isMobile && filterOpen}>
+                            <FilterItems
+                                filters={filters}
+                                setFilters={setFilters}
+                                basicInfo={basicInfo}
+                                subHeader={
+                                    <Toolbar sx={{ justifyContent: 'space-between' }}>
+                                        <Typography variant="h5" color="white">Filters</Typography>
+                                        <IconButton onClick={handleFilterCollapse} sx={{ color: 'white' }}>
+                                            {theme.direction === 'ltr' ? <ChevronLeftIcon /> : <ChevronRightIcon />}
+                                        </IconButton>
+                                    </Toolbar>
+                                }
+                            />
+                        </FilterDrawer>
+                    </Grid>
+                    <Grid item xs={!isMobile && filterOpen ? 9 : 12}>
+                        <Grid container item justifyContent={isMobile ? "center" : "space-between"} p={1} spacing={1}>
+                            <Grid container item xs={isMobile ? 12 : 4} alignItems="center" justifyContent={isMobile ? "center" : "flex-start"}>
+                                {!filterOpen &&
+                                    (!isMobile ?
+                                        <Grid item>
+                                            <IconButton color="inherit" onClick={handleFilterCollapse}><TuneIcon fontSize="large" /></IconButton>
+                                        </Grid>
+                                        :
+                                        <Fab onClick={handleFilterCollapse} variant="extended" size="small" color="primary" aria-label="filters" sx={{ position: 'fixed', top: 'auto', left: '50%', right: 'auto', bottom: 8, transform: 'translateX(-50%)' }}>
+                                            Filters
+                                        </Fab>
+                                    )
+                                }
+                                <Grid item>
+                                    <Alert severity="info">Blue contracts are in the money.</Alert>
                                 </Grid>
-                                <TablePagination
-                                    rowsPerPageOptions={[10, 20, 50, 100]}
-                                    component="div"
-                                    count={contracts.length}
-                                    rowsPerPage={rowsPerPage}
-                                    page={page}
-                                    onPageChange={handleChangePage}
-                                    onRowsPerPageChange={handleChangeRowsPerPage}
-                                    labelRowsPerPage=""
-                                    labelDisplayedRows={({ from, to, count }) => null}
-                                />
                             </Grid>
-                            <Stack px={2} py={1}>
-                                {stableSort(contracts, getComparator(order, orderBy))
-                                    .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                                    .map((row, index) => {
-                                        return (
-                                            <ScreenMobileCard trade={row} key={index} />
-                                        );
-                                    })}
-                            </Stack>
-                        </>
-                        :
-                        <>
-                            <Grid container>
-                                <Grid item xs={12} px={3} className={classes.root}>
-                                    <TableContainer component={Box} border={1} borderColor="rgba(228, 228, 228, 1)" borderRadius={1}>
+                            {contracts.length > 0 ?
+                                null
+                                :
+                                selectedTicker ?
+                                    <Grid item>
+                                        <Alert severity="error">There are no contracts that fit the specified settings.</Alert>
+                                    </Grid>
+                                    :
+                                    <Grid item>
+                                        <Alert severity="error">Select a ticker and expiration date.</Alert>
+                                    </Grid>
+                            }
+                        </Grid>
+                        {contracts.length > 0 ?
+                            isCard ?
+                                <>
+                                    <TablePagination
+                                        rowsPerPageOptions={[10, 20, 50, 100]}
+                                        component="div"
+                                        count={contracts.length}
+                                        rowsPerPage={rowsPerPage}
+                                        page={page}
+                                        onPageChange={handleChangePage}
+                                        onRowsPerPageChange={handleChangeRowsPerPage}
+                                        labelRowsPerPage=""
+                                        labelDisplayedRows={({ from, to, count }) => null}
+                                        sx={{ width: '100%' }}
+                                    />
+                                    <Stack px={2} py={1} sx={{ width: '100%' }}>
+                                        {stableSort(contracts, getComparator(order, orderBy))
+                                            .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                                            .map((row, index) => {
+                                                return (
+                                                    <ScreenMobileCard trade={row} key={index} />
+                                                );
+                                            })}
+                                    </Stack>
+                                </>
+                                :
+                                <>
+                                    <TableContainer>
                                         <Table size="small">
                                             <TableHead >
                                                 <TableRow style={{ borderBottom: "2px solid rgba(228, 228, 228, 1)", }}>
@@ -379,26 +373,23 @@ export default function MainView(props) {
                                             </TableBody>
                                         </Table>
                                     </TableContainer>
-                                </Grid>
-                            </Grid>
-                            <Grid container justifyContent="space-between" alignItems="space-between" paddingY={2} px={3}>
-                                <Box p={1} border={1} borderColor="rgba(228, 228, 228, 1)" borderRadius={1} style={{ backgroundColor: "rgb(242, 246, 255)" }}>
-                                    Blue cards are in the money.
-                                </Box>
-                                <TablePagination
-                                    rowsPerPageOptions={[10, 20, 50, 100]}
-                                    component="div"
-                                    count={contracts.length}
-                                    rowsPerPage={rowsPerPage}
-                                    page={page}
-                                    onPageChange={handleChangePage}
-                                    onRowsPerPageChange={handleChangeRowsPerPage}
-                                />
-                            </Grid>
-                        </>
-                    :
-                    null
-                }
+                                    <Grid container justifyContent="flex-end" alignItems="center" paddingY={2} px={1}>
+                                        <TablePagination
+                                            rowsPerPageOptions={[10, 20, 50, 100]}
+                                            component="div"
+                                            count={contracts.length}
+                                            rowsPerPage={rowsPerPage}
+                                            page={page}
+                                            onPageChange={handleChangePage}
+                                            onRowsPerPageChange={handleChangeRowsPerPage}
+                                        />
+                                    </Grid>
+                                </>
+                            :
+                            null
+                        }
+                    </Grid>
+                </Grid>
             </Grid>
         </Grid>
     );

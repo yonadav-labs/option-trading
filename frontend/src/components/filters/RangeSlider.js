@@ -23,7 +23,23 @@ const useStyles = makeStyles(theme => ({
 
 export default function RangeSlider(props) {
     const classes = useStyles();
-    const { range, setRange, min, max, step, id, label, valueText, endAdornment, startAdornment, minOptions, maxOptions, minRenderOption, maxRenderOption, marks } = props;
+    const {
+        range,
+        setRange,
+        min,
+        max,
+        step,
+        id,
+        label,
+        valueText,
+        endAdornment,
+        startAdornment,
+        minOptions,
+        maxOptions,
+        minRenderOption,
+        maxRenderOption,
+        marks
+    } = props;
 
     const handleMaxInputChange = (val) => {
         let newVal = val === '' ? '' : Number(val);
@@ -49,6 +65,7 @@ export default function RangeSlider(props) {
 
     const handleMaxInputBlur = (e) => {
         let newVal = range[1];
+
         if (e.target.value === '') {
             newVal = max;
         }
@@ -74,7 +91,7 @@ export default function RangeSlider(props) {
     return (
         <>
             <Typography id={`${id}-range-slider`} variant="button" gutterBottom><MetricLabel label={label} /></Typography>
-            <Grid container alignItems="center" columnSpacing={1}>
+            <Grid container alignItems="center" columnSpacing={1} zeroMinWidth>
                 <Grid container item xs={12} alignItems="center">
                     <Slider
                         id={`${id}-slider`}
@@ -88,6 +105,7 @@ export default function RangeSlider(props) {
                         valueLabelDisplay="auto"
                         valueLabelFormat={valueText}
                         getAriaValueText={valueText}
+                        sx={{ marginLeft: 1, marginRight: 1 }}
                     />
                 </Grid>
                 <Grid item xs={5.75}>
@@ -122,6 +140,10 @@ export default function RangeSlider(props) {
                                         className: classes.spinnerless,
                                         min: min,
                                         max: max,
+                                        sx: {
+                                            background: 'rgba(255, 255, 255, 0.15)',
+                                            height: 40,
+                                        }
                                     }}
                                 />
                             );
@@ -161,6 +183,10 @@ export default function RangeSlider(props) {
                                         className: classes.spinnerless,
                                         min: min,
                                         max: max,
+                                        sx: {
+                                            background: 'rgba(255, 255, 255, 0.15)',
+                                            height: 40,
+                                        }
                                     }}
                                 />
                             );
