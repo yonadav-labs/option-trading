@@ -9,7 +9,8 @@ import MainView from "./MainView";
 // utils
 import getApiUrl, {
     newLoadTickers, newLoadExpirationDates, GetGaEventTrackingFunc, getDefaultDisAllowedTradeTypes,
-    TimestampDateFormatter
+    TimestampDateFormatter,
+    PriceFormatter
 } from "../../utils";
 import { useOktaAuth } from '@okta/okta-react';
 import { cloneDeep, get, set, isEmpty } from 'lodash';
@@ -181,7 +182,7 @@ export default function NewBuild() {
             const legBProperty = curr.legBProperty;
             const operator = curr.operator;
             const ruleResult = operators[operator](legs[legAIndex], legAProperty, legs[legBIndex], legBProperty);
-            if (!ruleResult) {
+            if (!ruleResult && legBProperty !== "contract.stock_price") {
                 messages.push(
                     {
                         leg: legAIndex,
@@ -189,7 +190,16 @@ export default function NewBuild() {
                         message: `Leg ${legAIndex + 1}'s ${legAProperty.replace(".", " ").replace("_", " ")} needs to be ${operator} Leg ${legBIndex + 1}'s ${legBProperty.replace(".", " ").replace("_", " ")}.`,
                     }
                 );
+            } else if (!ruleResult) {
+                messages.push(
+                    {
+                        leg: legAIndex,
+                        property: legAProperty,
+                        message: `Leg ${legAIndex + 1}'s ${legAProperty.replace(".", " ").replace("_", " ")} needs to be ${operator} the stock price ($${basicInfo.latestPrice.toFixed(2)})`,
+                    }
+                );
             }
+
             return (prev && ruleResult);
         }, true);
         setRuleMessages(messages);
