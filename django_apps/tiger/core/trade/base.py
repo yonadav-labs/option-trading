@@ -5,10 +5,11 @@ from collections import defaultdict
 
 import more_itertools
 import numpy as np
+from django.utils import dateformat
 from scipy.stats import norm
 from tiger.core import Leg
 from tiger.core.probability import probability_of_price_ranges, get_normal_dist
-from tiger.utils import get_dates_till_expiration, get_decimal_25x, get_now_date
+from tiger.utils import get_dates_till_expiration, get_decimal_25x
 
 INFINITE = 'infinite'
 
@@ -181,15 +182,23 @@ class Trade(ABC):
 
     @property
     def graph_points(self):
-        x = self.build_stock_price_range()
-        y = [self.get_total_return(val, val) for val in x]
+        stock_prices = self.build_stock_price_range(points=50)
+        returns_at_expiry = [self.get_total_return(price, price) for price in stock_prices]
 
-        calculation_dates = [get_now_date()]
-        final_matrix = self.get_value_matrix(calculation_dates, x)
+        min_expiration = self._get_aggr_contract_attribute('expiration', use_min=True)
+        # We don't need the last date (expiry date).
+        # Because this calculation is very slow, we cannot afford to calculate for many dates.
+        # TODO: make this a separate API so we don't slow down the main search that much.
+        calculation_dates = get_dates_till_expiration(min_expiration, 3)[:-1]
+        return_matrix = self.get_value_matrix(calculation_dates, stock_prices)
 
-        y2 = [row[0] for row in final_matrix]
-
-        return {'x': x, 'y': y, 'y2': y2}
+        returns_by_date = []
+        for idx in range(len(calculation_dates)):
+            returns_by_date.append({
+                'date': dateformat.format(calculation_dates[idx], 'M jS, Y') + (' (today)' if idx == 0 else ''),
+                'data': [row[idx] for row in return_matrix]
+            })
+        return {'x': stock_prices, 'y': returns_at_expiry, 'y2': returns_by_date}
 
     # TODO: deprecated.
     def get_sigma_prices(self, sigma_num):

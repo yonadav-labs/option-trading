@@ -1,11 +1,14 @@
-import React, { useRef } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import Highcharts from "highcharts";
 import HighchartsReact from "highcharts-react-official";
 import { Row, Col, Button } from "react-bootstrap";
+import { Select, MenuItem, FormControl, InputLabel } from "@material-ui/core";
 
 export default function TradeProfitLossGraph(props) {
     const { trade } = props;
     const chartComponent = useRef(null);
+    const [renderDate, setRenderDate] = useState(null);
+    const [options, setOptions] = useState({});
 
     let priceMarks = trade.graph_points['x'];
     let xMin = Math.min(...priceMarks);
@@ -13,7 +16,7 @@ export default function TradeProfitLossGraph(props) {
     let plotline_annotations = [];
     let data = [];
     let lastPrice = trade.stock.stock_price;
-    let profitLossData = [];
+    let dates = trade.graph_points.y2.map(x => x.date);
 
     trade.graph_points['x'].forEach((x, i) => {
         let point = {};
@@ -22,13 +25,6 @@ export default function TradeProfitLossGraph(props) {
         point.y = trade.graph_points['y'][i]; // Return in $.
         point.y2 = (point.y >= 0 ? '+' : '') + ((point.y / trade.cost) * 100).toFixed(2); // Return ratio in %.
         data.push(point);
-
-        let point1 = {};
-        point1.x = x;
-        point1.x2 = (x >= lastPrice ? '+' : '') + (((x - lastPrice) / lastPrice) * 100).toFixed(2); // Stock price change in %.
-        point1.y = trade.graph_points['y2'][i]; // Return in $.
-        point1.y2 = (point1.y >= 0 ? '+' : '') + ((point1.y / trade.cost) * 100).toFixed(2); // Return ratio in %.
-        profitLossData.push(point1);
     });
 
     trade.break_even_prices_and_ratios.forEach(breakeven => {
@@ -184,164 +180,209 @@ export default function TradeProfitLossGraph(props) {
     };
     // END OF FUNCTIONS FOR BUTTONS
 
+    const onRenderDateChange = (date) => {
+        setRenderDate(date);
+    }
 
-    // chart options
-    const options = {
-        credits: {
-            enabled: false,
-        },
-        chart: {
-            type: "area",
-            zoomType: "x",
-            panning: true,
-            panKey: "shift",
-            resetZoomButton: {
-                theme: {
-                    display: 'none'
-                }
-            }
-        },
-        title: {
-            text: "Return at expiration",
-        },
-        subtitle: {
-            text: "Click and drag to zoom in. Hold down shift key to pan.",
-        },
-        legend: {
-            enabled: true,
-        },
-        xAxis: {
-            type: "numeric",
-            min: xMin,
-            max: xMax,
-            labels: {
-                formatter: function () {
-                    var percentage = `${((this.value - trade.stock.stock_price) / trade.stock.stock_price * 100).toFixed(2)}%`
-                    var value = `$${this.value}`
-                    return value + '<br/>' + percentage
+    useEffect(() => {
+        let idx = 0;
+        if (renderDate) {
+            idx = dates.indexOf(renderDate);
+        }
+
+        let profitLossData = [];
+        trade.graph_points['x'].forEach((x, i) => {
+            let point1 = {};
+            point1.x = x;
+            point1.x2 = (x >= lastPrice ? '+' : '') + (((x - lastPrice) / lastPrice) * 100).toFixed(2); // Stock price change in %.
+            point1.y = trade.graph_points['y2'][idx]['data'][i]; // Return in $.
+            point1.y2 = (point1.y >= 0 ? '+' : '') + ((point1.y / trade.cost) * 100).toFixed(2); // Return ratio in %.
+            profitLossData.push(point1);
+        });
+
+        // chart options
+        const options_ = {
+            credits: {
+                enabled: false,
+            },
+            chart: {
+                type: "area",
+                zoomType: "x",
+                panning: true,
+                panKey: "shift",
+                resetZoomButton: {
+                    theme: {
+                        display: 'none'
+                    }
                 }
             },
             title: {
-                text: "Stock Price",
+                text: "Strategy Return",
             },
-            plotLines: plotline_annotations,
-        },
-        yAxis: [
-            {
-                title: {
-                    text: "Return in $ value"
-                },
-                labels: {
-                    format: "${value}",
-                },
-                opposite: true,
-                plotLines: [
-                    // annotation for 0
-                    {
-                        color: "black",
-                        width: 2,
-                        value: 0,
-                        zIndex: 100,
-                    },
-                ]
+            subtitle: {
+                text: "Click and drag to zoom in. Hold down shift key to pan.",
             },
-            {
-                title: {
-                    text: "Return at expiration",
-                },
+            legend: {
+                enabled: true,
+            },
+            xAxis: {
+                type: "numeric",
+                min: xMin,
+                max: xMax,
                 labels: {
                     formatter: function () {
-                        return ((this.value / trade.cost) * 100).toFixed(2) + '%';
+                        var percentage = `${((this.value - trade.stock.stock_price) / trade.stock.stock_price * 100).toFixed(2)}%`
+                        var value = `$${this.value}`
+                        return value + '<br/>' + percentage
                     }
                 },
-                linkedTo: 0,
-            },
-        ],
-        tooltip: {
-            headerFormat: "",
-            pointFormat: "Stock Price: {point.x2}% (${point.x:,.2f})<br/>Return: {point.y2:,.2f}% (${point.y:,.2f})",
-        },
-        series: [
-            {
-                name: "Return at expiration",
-                data: data,
-                marker: {
-                    enabled: false,
+                title: {
+                    text: "Stock Price",
                 },
-                color: {
-                    // change x gradient based on +/- slope
-                    linearGradient: {
-                        x1: 0,
-                        x2: 0,
-                        y1: 0,
-                        y2: 1,
+                plotLines: plotline_annotations,
+            },
+            yAxis: [
+                {
+                    title: {
+                        text: "Return in $ value"
                     },
-                    stops: [
-                        [
-                            0,
-                            Highcharts.color("#008000")
-                                .setOpacity(0.5)
-                                .get("rgba"),
-                        ],
-                        [
-                            1,
-                            Highcharts.color("#008000")
-                                .setOpacity(0.01)
-                                .get("rgba"),
-                        ],
-                    ],
-                },
-                negativeColor: {
-                    linearGradient: {
-                        x1: 0,
-                        x2: 0,
-                        y1: 1,
-                        y2: 0,
+                    labels: {
+                        format: "${value}",
                     },
-                    stops: [
-                        [
-                            0,
-                            Highcharts.color("#FF0000")
-                                .setOpacity(0.5)
-                                .get("rgba"),
+                    opposite: true,
+                    plotLines: [
+                        // annotation for 0
+                        {
+                            color: "black",
+                            width: 2,
+                            value: 0,
+                            zIndex: 100,
+                        },
+                    ]
+                },
+                {
+                    title: {
+                        text: "Return on selected date",
+                    },
+                    labels: {
+                        formatter: function () {
+                            return ((this.value / trade.cost) * 100).toFixed(2) + '%';
+                        }
+                    },
+                    linkedTo: 0,
+                },
+            ],
+            series: [
+                {
+                    name: "Return at expiration",
+                    data: data,
+                    marker: {
+                        enabled: false,
+                    },
+                    color: {
+                        // change x gradient based on +/- slope
+                        linearGradient: {
+                            x1: 0,
+                            x2: 0,
+                            y1: 0,
+                            y2: 1,
+                        },
+                        stops: [
+                            [
+                                0,
+                                Highcharts.color("#008000")
+                                    .setOpacity(0.5)
+                                    .get("rgba"),
+                            ],
+                            [
+                                1,
+                                Highcharts.color("#008000")
+                                    .setOpacity(0.01)
+                                    .get("rgba"),
+                            ],
                         ],
-                        [
-                            1,
-                            Highcharts.color("#FF0000")
-                                .setOpacity(0.01)
-                                .get("rgba"),
+                    },
+                    negativeColor: {
+                        linearGradient: {
+                            x1: 0,
+                            x2: 0,
+                            y1: 1,
+                            y2: 0,
+                        },
+                        stops: [
+                            [
+                                0,
+                                Highcharts.color("#FF0000")
+                                    .setOpacity(0.5)
+                                    .get("rgba"),
+                            ],
+                            [
+                                1,
+                                Highcharts.color("#FF0000")
+                                    .setOpacity(0.01)
+                                    .get("rgba"),
+                            ],
                         ],
-                    ],
+                    },
+                    tooltip: {
+                        headerFormat: "",
+                        pointFormat: "Stock Price: {point.x2}% (${point.x:,.2f})<br/>Return: {point.y2:,.2f}% (${point.y:,.2f})",
+                    },
                 },
-            },
-            {
-                name: "Return today",
-                type: "line",
-                data: profitLossData,
-                marker: {
-                    enabled: false,
+                {
+                    name: "Return today",
+                    type: "line",
+                    data: profitLossData,
+                    marker: {
+                        enabled: false,
+                    },
+                    color: "cyan",
+                    description: "Profit Loss",
+                    tooltip: {
+                        headerFormat: "",
+                        pointFormat: "Stock Price: {point.x2}% (${point.x:,.2f})<br/>Return: {point.y2:,.2f}% (${point.y:,.2f})",
+                    },
                 },
-                color: "cyan",
-                description: "Profit Loss",
-            },
-            // line for shares
-            {
-                name: "Return of equal value of shares",
-                type: "line",
-                data: shareData,
-                marker: {
-                    enabled: false,
+                // line for shares
+                {
+                    name: "Return of equal value of shares",
+                    type: "line",
+                    data: shareData,
+                    marker: {
+                        enabled: false,
+                    },
+                    color: "#d3d3d3",
+                    description: "Shares",
+                    tooltip: {
+                        headerFormat: "",
+                        pointFormat: "Stock Price: {point.x2}% (${point.x:,.2f})<br/>Return: {point.y2:,.2f}% (${point.y:,.2f})",
+                    },
                 },
-                color: "#d3d3d3",
-                description: "Shares",
-            },
+            ],
+        };
 
-        ],
-    };
+        setOptions(options_);
+    }, [trade, renderDate]);
 
     return (
         <Row className="row justify-content-center">
             <Col className="mixed-chart">
+                <FormControl>
+                    <InputLabel id="date-label" style={{ top: 48, left: 68, zIndex: 100 }}>Trade date</InputLabel>
+                    <Select
+                        label="Trading date"
+                        defaultValue={dates[0]}
+                        style={{ top: 48, left: 68, zIndex: 100, height: 40 }}
+                        onChange={(e) => onRenderDateChange(e.target.value)}
+                    >
+                        {
+                            dates.map((date, idx) => (
+                                <MenuItem key={idx} value={date}>{date}</MenuItem>
+                            ))
+                        }
+                    </Select>
+                </FormControl>
+
                 <Button style={{ position: 'relative', top: 50, left: 100, zIndex: 100 }} onClick={zoomOut}>-</Button>
                 <Button style={{ position: 'relative', top: 50, left: 102, zIndex: 100 }} onClick={zoomIn}>+</Button>
                 <Button style={{ position: 'relative', top: 50, zIndex: 100 }}
