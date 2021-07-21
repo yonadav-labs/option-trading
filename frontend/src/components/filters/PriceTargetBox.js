@@ -1,5 +1,5 @@
 import React, { useState, useContext } from "react";
-import { Box, Grid, ToggleButtonGroup, ToggleButton, Typography, useTheme } from "@material-ui/core";
+import { Box, Grid, ToggleButtonGroup, ToggleButton, Typography, styled } from "@material-ui/core";
 import { Link } from 'react-router-dom';
 import { withStyles } from "@material-ui/styles";
 
@@ -10,6 +10,18 @@ import { GetGaEventTrackingFunc } from '../../utils';
 
 const GaEvent = GetGaEventTrackingFunc('strategy screener');
 
+const StyledToggleButtonGroup = styled(ToggleButtonGroup)(({ theme }) => ({
+    width: "100%",
+    padding: theme.spacing(1),
+    // "& .MuiToggleButtonGroup-groupedHorizontal": {
+    //     "&:not(:last-child)": {
+    //         borderRadius: 30
+    //     },
+    //     "&:not(:first-child)": {
+    //         borderRadius: 30
+    //     }
+    // }
+}));
 const StyledToggleButton = withStyles({
     root: {
         color: "white",
@@ -33,22 +45,13 @@ const StyledToggleButton = withStyles({
 })(ToggleButton);
 
 
-export default function PriceTargetBox({ onFilterChange, initialPrice, filters }) {
-    const theme = useTheme();
-    const StyledToggleButtonGroup = withStyles({
-        root: {
-            width: "100%",
-            padding: theme.spacing(1)
-        },
-        groupedHorizontal: {
-            "&:not(:last-child)": {
-                borderRadius: 30
-            },
-            "&:not(:first-child)": {
-                borderRadius: 30
-            }
-        }
-    }, theme)(ToggleButtonGroup);
+export default function PriceTargetBox(props) {
+    const {
+        value,
+        setValue,
+        initialPrice
+    } = props;
+
     const [targetType, setTargetType] = useState('price');
 
     const { user } = useContext(UserContext);
@@ -57,32 +60,25 @@ export default function PriceTargetBox({ onFilterChange, initialPrice, filters }
         if (newTargetType !== null) {
             GaEvent('adjust target price toggle ' + newTargetType);
             setTargetType(newTargetType);
-            updateRangeByPrice(filters.targetPriceLower);
         }
-    }
-
-    const updateRangeByPrice = (priceTarget) => {
-        onFilterChange(priceTarget, "targetPriceLower");
-        onFilterChange(priceTarget, "targetPriceUpper");
     }
 
     const priceTargetChangeHandler = (e) => {
         GaEvent('adjust price target');
         const val = parseFloat(e);
-        onFilterChange(val, "priceTarget");
-        updateRangeByPrice(val);
+        setValue([val, val]);
     }
 
     const lowerRangeChangeHandler = (e) => {
         GaEvent('adjust lower price target');
         const val = parseFloat(e);
-        onFilterChange(val, "targetPriceLower");
+        setValue([val, value[1]]);
     }
 
     const upperRangeChangeHandler = (e) => {
         GaEvent('adjust uppper price target');
         const val = parseFloat(e);
-        onFilterChange(val, "targetPriceUpper");
+        setValue([value[0], val]);
     }
 
     return (
@@ -114,7 +110,7 @@ export default function PriceTargetBox({ onFilterChange, initialPrice, filters }
                     <Grid item paddingBottom='0.4rem'>
                         <PriceTargetField
                             initialPrice={initialPrice}
-                            value={filters.targetPriceLower}
+                            value={value[0]}
                             onValueChange={priceTargetChangeHandler}
                         />
                     </Grid>
@@ -130,7 +126,7 @@ export default function PriceTargetBox({ onFilterChange, initialPrice, filters }
                                 <PriceTargetField
                                     onValueChange={lowerRangeChangeHandler}
                                     initialPrice={initialPrice}
-                                    value={filters.targetPriceLower}
+                                    value={value[0]}
                                 />
                             </Grid>
                             <Grid item paddingBottom='0.1rem'>
@@ -140,14 +136,14 @@ export default function PriceTargetBox({ onFilterChange, initialPrice, filters }
                                 <PriceTargetField
                                     onValueChange={upperRangeChangeHandler}
                                     initialPrice={initialPrice}
-                                    value={filters.targetPriceUpper}
+                                    value={value[1]}
                                 />
                             </Grid>
                         </> :
                         <>
                             <Link to="/pricing"> Join our Pro membership</Link> to find trades
-                            with the best potential returns if stock price hit within a price target range.
-                            For example, if stock price raise by 5% to 10%.
+                            with the best potential returns if the stock price enters a price target range.
+                            For example, if the stock price rises by 5% to 10%.
                         </>
                 )
             }

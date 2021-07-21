@@ -13,7 +13,8 @@ export default function FilterDrawer(props) {
                 square
                 sx={{
                     backgroundColor: '#333741',
-                    color: 'white'
+                    color: 'white',
+                    width: '100%',
                 }}
             >
                 {children}

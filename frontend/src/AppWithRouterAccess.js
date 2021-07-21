@@ -11,7 +11,7 @@ import Footer from './components/footer'
 import Surface from './pages/surface/Surface'
 import Disclaimer from './components/disclaimer';
 import Privacy from './components/privacy';
-import NewStrategyScreener from './pages/strategy_screener/NewStrategyScreener';
+import NewStrategyScreener from './pages/discover_tool/NewStrategyScreener';
 import SingleTrade from './pages/SingleTrade';
 import Pricing from './pages/Pricing';
 import StrategyBuilder from './pages/StrategyBuilder';

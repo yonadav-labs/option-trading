@@ -185,7 +185,7 @@ export default function FilterItems(props) {
         setMinVol(filters["min.volume"] || 0);
         setMinOI(filters["min.open_interest"] || 0);
         setITMRange([filters["min.itm_probability"] || 0, filters["max.itm_probability"] || 100]);
-        setMinLastTraded(filters["min.last_trade_date"] || 0);
+        setMinLastTraded(filters["min.last_trade_date"] ? Math.round((Date.now() - filters["min.last_trade_date"] * 1000) / -(24 * 60 * 60 * 1000)) : 0);
         setBARange([filters["min.bid_ask_spread"] || 0, filters["max.bid_ask_spread"] || 100]);
         setDeltaRange([filters["min.delta"] || -1, filters["max.delta"] || 1]);
         setGammaRange([filters["min.gamma"] || 0, filters["max.gamma"] || 1]);
@@ -271,7 +271,7 @@ export default function FilterItems(props) {
                     />
                 </ListItemGrid>
                 <GroupDivider />
-                <ListItemGroup groupName="Liquidity" defaultOpen={true} badgeContent={countFiltersFromGroup(['min.volume', 'min.open_interest', 'min.last_trade_date'])}>
+                <ListItemGroup groupName="Liquidity" defaultOpen={true} badgeContent={countFiltersFromGroup(['min.volume', 'min.open_interest', 'min.last_trade_date', 'bid_ask_spread'])}>
                     <ListItemGrid>
                         <Typography variant="button" gutterBottom><MetricLabel label="min volume" /></Typography>
                         <MaterialFilter
