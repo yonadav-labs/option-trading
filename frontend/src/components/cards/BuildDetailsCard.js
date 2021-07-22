@@ -40,12 +40,12 @@ export default function NewTradeCard({ trade }) {
             <CardHeader
                 title=
                 {
-                    <Grid container direction="row" spacing={1}>
+                    <Grid container direction="row" alignItems="center" spacing={1}>
                         <Grid item>
                             <Typography variant="h5" className={classes.capitalize}
                                 display="inline" paddingRight={2}>{startCase(trade.type)}</Typography>
                         </Grid>
-                        <Grid item sm className={classes.tradeMeta}>
+                        <Grid item className={classes.tradeMeta}>
                             <Chip label={
                                 <>
                                     <Typography variant="subtitle1" display="inline">
@@ -55,9 +55,10 @@ export default function NewTradeCard({ trade }) {
                                 </>
                             } />
                         </Grid>
-                        <Grid container item sm justifyContent="flex-end" spacing={1}>
-                            <Grid item><ShareTradeBtn trade={trade} /></Grid>
-                            <Grid item><IconButton><ZoomOutMapIcon /></IconButton></Grid>
+                        <Grid item>
+                            <Grid container>
+                                <ShareTradeBtn trade={trade} /> <IconButton><ZoomOutMapIcon /></IconButton>
+                            </Grid>
                         </Grid>
                     </Grid>
                 }
@@ -67,7 +68,7 @@ export default function NewTradeCard({ trade }) {
             <CardContent style={{ paddingTop: "0px" }}>
                 {trade.legs.map((leg, index) => (
                     <>
-                        <Grid container direction="row" justifyContent="space-around" alignItems="baseline">
+                        <Grid container direction="row" justifyContent="space-even" alignItems="baseline">
                             <Grid item sm><BuildLegCard leg={leg} hideTitle={true} index={index} key={index} /></Grid>
                         </Grid>
                         <Divider />

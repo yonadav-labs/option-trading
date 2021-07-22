@@ -127,7 +127,7 @@ export default function NewTickerSummary({ basicInfo, isMobile }) {
                             anchorEl={anchorEl}
                             style={{ zIndex: 100 }}
                         >
-                            <Box boxShadow={3} bgcolor="white" p={2} width='600px' height='400px'>
+                            <Box boxShadow={3} bgcolor="white" p={2} width='600px' height='400px' style={{ zIndex: 1000 }}>
                                 <TradingViewWidget symbol={basicInfo.symbol || ''} autosize />
                             </Box>
                         </Popper>
@@ -150,7 +150,7 @@ export default function NewTickerSummary({ basicInfo, isMobile }) {
                         open={open}
                         anchorEl={anchorEl}
                     >
-                        <Box boxShadow={3} bgcolor="white" p={2} width='600px' height='400px'>
+                        <Box boxShadow={3} bgcolor="white" p={2} width='600px' height='400px' style={{ zIndex: 1000 }}>
                             <TradingViewWidget symbol={basicInfo.symbol || ''} autosize />
                         </Box>
                     </Popper>

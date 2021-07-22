@@ -50,9 +50,27 @@ export default function MainView(props) {
                 <Grid component={Paper} container elevation={4} p={3} style={isMobile ? { width: "100vw" } : null}>
                     {isMobile ?
                         <>
-                            <Grid container>
-                                <Grid item xs>
+                            <Grid container justifyContent="space-between" alignItems="center">
+                                <Grid item>
                                     <Typography variant="subtitle1">{basicInfo ? `${basicInfo.symbol} - ${basicInfo.companyName}` : <br />}</Typography>
+                                </Grid>
+                                <Grid item>
+                                    <FormControl fullWidth>
+                                        <Select
+                                            id="expiration-dates"
+                                            value={selectedStrategy}
+                                            fullWidth
+                                            onChange={(e) => onStrategySelectionChange(e.target.value)}
+                                            variant="standard"
+                                            MenuProps={{
+                                                style: { maxHeight: "400px" },
+                                                anchorOrigin: { vertical: "bottom", horizontal: "center" },
+                                                getContentAnchorEl: () => null,
+                                            }}
+                                        >
+                                            {availableStrategies.map(strat => <MenuItem value={strat}>{strat.name}</MenuItem>)}
+                                        </Select>
+                                    </FormControl>
                                 </Grid>
                             </Grid>
                             <Divider />

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import {
     Paper, Stack, Container, Divider, Typography, FormControl, Select, MenuItem, InputLabel,
-    Card, Grid, Chip, useTheme, Alert
+    Card, Grid, Chip, useTheme, Alert, Box
 } from "@material-ui/core";
 import TickerAutocomplete from "../../components/TickerAutocomplete";
 import { makeStyles } from '@material-ui/styles';
@@ -148,82 +148,83 @@ export default function LandingView(props) {
                 </Grid>
             </Grid>
             <br />
-            <Card p={2}>
-                <Grid container px={2} py={3} justifyContent="space-between">
-                    <Grid item xs={5.8}>
-                        <Grid container justifyContent="space-evenly" alignItems="center">
-                            <Typography variant="body2">How are you feeling? <span>&nbsp;</span></Typography>
-                            <Grid>
-                                <Chip
-                                    variant={chipState.bullish ? null : "outlined"}
-                                    label={<div><TrendingUpIcon /> <Typography variant="chip">bullish</Typography> </div>}
-                                    clickable onClick={() => toggleChip("bullish")}
-                                    className={classes.chip}
-                                    style={{ width: 110 }}
-                                />
-                                <Chip
-                                    variant={chipState.bearish ? null : "outlined"}
-                                    label={<div><TrendingDownIcon /> <Typography variant="chip">bearish</Typography> </div>}
-                                    clickable onClick={() => toggleChip("bearish")}
-                                    className={classes.chip}
-                                    style={{ width: 110 }}
-                                />
-                                <Chip
-                                    variant={chipState.neutral ? null : "outlined"}
-                                    label={<div><TrendingFlatIcon /> <Typography variant="chip">neutral</Typography></div>}
-                                    clickable onClick={() => toggleChip("neutral")}
-                                    className={classes.chip}
-                                    style={{ width: 110 }}
-                                />
-                                <Chip
-                                    variant={chipState.volatile ? null : "outlined"}
-                                    label={<div><TrendingUpIcon /> <Typography variant="chip">volatile</Typography> </div>}
-                                    clickable onClick={() => toggleChip("volatile")}
-                                    className={classes.chip}
-                                    style={{ width: 110 }}
-                                />
+            <Box px={2}>
+                <Card>
+                    <Grid container py={3} justifyContent="space-between">
+                        <Grid item md={5.8}>
+                            <Grid container px={1} alignItems="center">
+                                <Typography variant="subtitle1">How are you feeling? <span>&nbsp;</span></Typography>
+                                <Grid>
+                                    <Chip
+                                        variant={chipState.bullish ? null : "outlined"}
+                                        label={<div><TrendingUpIcon /> <Typography variant="chip">bullish</Typography> </div>}
+                                        clickable onClick={() => toggleChip("bullish")}
+                                        className={classes.chip}
+                                        style={{ width: 100 }}
+                                    />
+                                    <Chip
+                                        variant={chipState.bearish ? null : "outlined"}
+                                        label={<div><TrendingDownIcon /> <Typography variant="chip">bearish</Typography> </div>}
+                                        clickable onClick={() => toggleChip("bearish")}
+                                        className={classes.chip}
+                                        style={{ width: 100 }}
+                                    />
+                                    <Chip
+                                        variant={chipState.neutral ? null : "outlined"}
+                                        label={<div><TrendingFlatIcon /> <Typography variant="chip">neutral</Typography></div>}
+                                        clickable onClick={() => toggleChip("neutral")}
+                                        className={classes.chip}
+                                        style={{ width: 100 }}
+                                    />
+                                    <Chip
+                                        variant={chipState.volatile ? null : "outlined"}
+                                        label={<div><TrendingUpIcon /> <Typography variant="chip">volatile</Typography> </div>}
+                                        clickable onClick={() => toggleChip("volatile")}
+                                        className={classes.chip}
+                                        style={{ width: 100 }}
+                                    />
+                                </Grid>
+                            </Grid>
+                        </Grid>
+                        <Grid item md={5.6}>
+                            <Grid container px={1} alignItems="center">
+                                <Typography variant="subtitle1">What is your experience level? <span>&nbsp;</span></Typography>
+                                <Grid>
+                                    <Chip
+                                        variant={chipState.basic ? null : "outlined"}
+                                        clickable onClick={() => toggleChip("basic")}
+                                        label={<Typography variant="chip">basic</Typography>}
+                                        className={classes.chip}
+                                        style={chipState.basic ? { width: 100, backgroundColor: "#DDFFFA", color: "#006868" } : { width: 100, color: "#006868", borderColor: "#006868" }}
+                                    />
+                                    <Chip
+                                        variant={chipState.spreads ? null : "outlined"}
+                                        clickable onClick={() => toggleChip("spreads")}
+                                        label={<Typography variant="chip">spreads</Typography>}
+                                        className={classes.chip}
+                                        style={chipState.spreads ? { width: 100, backgroundColor: "#FFF3B7", color: "#755400" } : { width: 100, color: "#755400", borderColor: "#755400" }}
+                                    />
+                                    <Chip
+                                        variant={chipState.advanced ? null : "outlined"}
+                                        clickable onClick={() => toggleChip("advanced")}
+                                        label={<Typography variant="chip">advanced</Typography>}
+                                        className={classes.chip}
+                                        style={chipState.advanced ? { width: 100, backgroundColor: "#FFF2F3", color: "#65252B" } : { width: 100, color: "#65252B", borderColor: "#65252B" }}
+                                    />
+                                </Grid>
                             </Grid>
                         </Grid>
                     </Grid>
-                    <Grid item xs={5.6}>
-                        <Grid container justifyContent="space-evenly" alignItems="center">
-                            <Typography variant="body2">What is your experience level? </Typography>
-                            <Grid>
-                                <Chip
-                                    variant={chipState.basic ? null : "outlined"}
-                                    clickable onClick={() => toggleChip("basic")}
-                                    label={<Typography variant="chip">basic</Typography>}
-                                    className={classes.chip}
-                                    style={chipState.basic ? { width: 110, backgroundColor: "#DDFFFA", color: "#006868" } : { width: 110, color: "#006868", borderColor: "#006868" }}
-                                />
-                                <Chip
-                                    variant={chipState.spreads ? null : "outlined"}
-                                    clickable onClick={() => toggleChip("spreads")}
-                                    label={<Typography variant="chip">spreads</Typography>}
-                                    className={classes.chip}
-                                    style={chipState.spreads ? { width: 110, backgroundColor: "#FFF3B7", color: "#755400" } : { width: 110, color: "#755400", borderColor: "#755400" }}
-                                />
-                                <Chip
-                                    variant={chipState.advanced ? null : "outlined"}
-                                    clickable onClick={() => toggleChip("advanced")}
-                                    label={<Typography variant="chip">advanced</Typography>}
-                                    className={classes.chip}
-                                    style={chipState.advanced ? { width: 110, backgroundColor: "#FFF2F3", color: "#65252B" } : { width: 110, color: "#65252B", borderColor: "#65252B" }}
-                                />
-                            </Grid>
-                        </Grid>
-                    </Grid>
-                </Grid>
-                <Divider orientation="horizontal" flexItem />
-                <Stack divider={<Divider orientation="horizontal" flexItem />}>
-                    {renderedAvailableStrategies.length > 0 && renderedAvailableStrategies.map((strat, index) => {
-                        return <StrategyRow strategy={strat} key={index} onStrategySelectionChange={onStrategySelectionChange} />
-                    })}
-                    {renderedDisAllowedStrategies.length > 0 && renderedDisAllowedStrategies.map((strat, index) => {
-                        return <StrategyRow strategy={strat} key={index} onStrategySelectionChange={onStrategySelectionChange} disabled={true} />
-                    })}
-                </Stack>
-            </Card>
+                </Card>
+            </Box>
+            <Stack px={2} divider={<Divider orientation="horizontal" flexItem />}>
+                {renderedAvailableStrategies.length > 0 && renderedAvailableStrategies.map((strat, index) => {
+                    return <StrategyRow strategy={strat} key={index} onStrategySelectionChange={onStrategySelectionChange} />
+                })}
+                {renderedDisAllowedStrategies.length > 0 && renderedDisAllowedStrategies.map((strat, index) => {
+                    return <StrategyRow strategy={strat} key={index} onStrategySelectionChange={onStrategySelectionChange} disabled={true} />
+                })}
+            </Stack>
             <br />
         </Container>
     );

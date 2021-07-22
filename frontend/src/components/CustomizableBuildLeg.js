@@ -98,13 +98,13 @@ export default function CustomizableBuildLeg(props) {
                         :
                         null
                     }
-                    <Grid container alignItems="center" pb={3}>
-                        <Grid item xs={1}>
+                    <Grid container spacing={2} alignItems="center" pb={3}>
+                        <Grid item xs={12} sm={1}>
                             <Typography variant="h5">Leg {index + 1}</Typography>
                         </Grid>
-                        <Grid item xs={2.75} px={1}>
+                        <Grid item xs={6} sm={2.75} px={1}>
                             <FormControl fullWidth>
-                                <InputLabel shrink={true}><Typography variant="h6">Action</Typography></InputLabel>
+                                <InputLabel style={{ zIndex: -100 }} shrink={true}><Typography variant="h6">Action</Typography></InputLabel>
                                 <Select
                                     label="Action.."
                                     value={leg.action}
@@ -118,9 +118,9 @@ export default function CustomizableBuildLeg(props) {
                                 </Select>
                             </FormControl>
                         </Grid>
-                        <Grid item xs={2.75} px={1}>
+                        <Grid item xs={6} sm={2.75} px={1}>
                             <FormControl fullWidth error={!leg.optionType}>
-                                <InputLabel shrink={true}><Typography variant="h6">Call/Put</Typography></InputLabel>
+                                <InputLabel style={{ zIndex: -100 }} shrink={true}><Typography variant="h6">Call/Put</Typography></InputLabel>
                                 <Select
                                     label="Call/Put.."
                                     fullWidth
@@ -136,9 +136,9 @@ export default function CustomizableBuildLeg(props) {
                                 </Select>
                             </FormControl>
                         </Grid>
-                        <Grid item xs={2.75} px={1}>
+                        <Grid item xs={12} sm={2.75} px={1}>
                             <FormControl fullWidth error={leg.expiration === 0}>
-                                <InputLabel shrink={true}><Typography variant="h6">Expiration Date</Typography></InputLabel>
+                                <InputLabel style={{ zIndex: -100 }} shrink={true}><Typography variant="h6">Expiration Date</Typography></InputLabel>
                                 <Select
                                     label="Expiration Date...."
                                     onChange={(e) => { onExpirationChange(e); }}
@@ -152,9 +152,9 @@ export default function CustomizableBuildLeg(props) {
                                 </Select>
                             </FormControl>
                         </Grid>
-                        <Grid item xs={2.75} px={1}>
+                        <Grid item xs={12} sm={2.75} px={1}>
                             <FormControl fullWidth error={errorParts.includes("strike") || !selectedStrike}>
-                                <InputLabel shrink={true}><Typography variant="h6">Strike Price</Typography></InputLabel>
+                                <InputLabel style={{ zIndex: -100 }} shrink={true}><Typography variant="h6">Strike Price</Typography></InputLabel>
                                 <Select
                                     label="Strike Price...."
                                     disabled={strikes.length === 0}
@@ -174,13 +174,13 @@ export default function CustomizableBuildLeg(props) {
 
         case "stock":
             return (
-                <Grid container alignItems="center" pb={3}>
-                    <Grid item xs={1}>
+                <Grid container spacing={2} alignItems="center" pb={3}>
+                    <Grid item xs={12} sm={1}>
                         <Typography variant="h5">Leg {index + 1}</Typography>
                     </Grid>
-                    <Grid item xs={2.75} px={1}>
+                    <Grid item xs={6} sm={2.75} px={1}>
                         <FormControl fullWidth>
-                            <InputLabel shrink={true}><Typography variant="h6">Action</Typography></InputLabel>
+                            <InputLabel style={{ zIndex: -100 }} shrink={true}><Typography variant="h6">Action</Typography></InputLabel>
                             <Select
                                 label="Action.."
                                 value={leg.action}
@@ -193,9 +193,9 @@ export default function CustomizableBuildLeg(props) {
                             </Select>
                         </FormControl>
                     </Grid>
-                    <Grid item xs={2.75} px={1}>
+                    <Grid item xs={6} sm={2.75} px={1}>
                         <FormControl fullWidth>
-                            <InputLabel shrink={true}><Typography variant="h6">Shares</Typography></InputLabel>
+                            <InputLabel style={{ zIndex: -100 }} style={{ zIndex: -100 }} shrink={true}><Typography variant="h6">Shares</Typography></InputLabel>
                             <Select
                                 label="Shares.."
                                 value={leg.shares}
@@ -212,13 +212,13 @@ export default function CustomizableBuildLeg(props) {
 
         case "cash":
             return (
-                <Grid container alignItems="center" pb={3}>
-                    <Grid item xs={1}>
+                <Grid container spacing={2} alignItems="center" pb={3}>
+                    <Grid item xs={12} sm={1}>
                         <Typography variant="h5">Leg {index + 1}</Typography>
                     </Grid>
-                    <Grid item xs={2.75} px={1}>
+                    <Grid item xs={6} sm={2.75} px={1}>
                         <FormControl fullWidth>
-                            <InputLabel shrink={true}><Typography variant="h6">Action</Typography></InputLabel>
+                            <InputLabel style={{ zIndex: -100 }} shrink={true}><Typography variant="h6">Action</Typography></InputLabel>
                             <Select
                                 label="Action.."
                                 value={"long"}
@@ -230,9 +230,9 @@ export default function CustomizableBuildLeg(props) {
                             </Select>
                         </FormControl>
                     </Grid>
-                    <Grid item xs={2.75} px={1}>
+                    <Grid item xs={6} sm={2.75} px={1}>
                         <FormControl fullWidth>
-                            <InputLabel shrink={true}><Typography variant="h6">Cash</Typography></InputLabel>
+                            <InputLabel style={{ zIndex: -100 }} shrink={true}><Typography variant="h6">Cash</Typography></InputLabel>
                             <Select
                                 label="Cash.."
                                 value={0}

@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { useHistory } from "react-router-dom";
-import { Button, Chip, Grid, Typography, useTheme, Card, CardActionArea, Collapse, CardContent } from '@material-ui/core'
+import { Button, Chip, Grid, Typography, useTheme, Card, CardActionArea, Collapse, CardContent, useMediaQuery, Box } from '@material-ui/core'
 import { makeStyles } from '@material-ui/styles';
 import TrendingUpIcon from '@material-ui/icons/TrendingUp';
 import TrendingDownIcon from '@material-ui/icons/TrendingDown';
@@ -19,6 +19,10 @@ export default function StrategyRow({ strategy, onStrategySelectionChange, disab
         }
     }, theme);
     const classes = useStyles();
+    // mobile responsiveness
+    const isMobile = useMediaQuery(theme => theme.breakpoints.down('md'));
+    // mobile responsiveness
+    const isCard = useMediaQuery(theme => theme.breakpoints.down('sm'));
 
     const [expanded, setExpanded] = useState(false)
     const [imgExpanded, setImgExpanded] = useState(false)
@@ -60,14 +64,74 @@ export default function StrategyRow({ strategy, onStrategySelectionChange, disab
         <>
             <Card onClick={expandRow} style={disabled ? { backgroundColor: "#f3f3f3" } : null}>
                 <CardActionArea>
-                    <Grid container p={2} justifyContent="space-between">
-                        <Grid item xs={0} style={{ height: 50 }}></Grid>
-                        <Grid item xs={6.5}>
-                            <Grid container justifyContent="space-between">
-                                <Grid item xs={4} pt={1}>
+                    {!isCard ?
+                        <Grid container p={2} justifyContent="space-between">
+                            <Grid item xs={0} style={{ height: 50 }}></Grid>
+                            <Grid item xs={6.5}>
+                                <Grid container justifyContent="space-between">
+                                    <Grid item xs={4} pt={1}>
+                                        <Typography variant="h5">{strategy.name}</Typography>
+                                    </Grid>
+                                    <Grid item xs={8} pt={1}>
+                                        {strategy.sentiment.map(sentiment => chipMaker(sentiment))}
+                                        {chipMaker(strategy.level)}
+                                        {strategy.unlimitedLoss && chipMaker("loss")}
+                                    </Grid>
+                                </Grid>
+                                <Collapse in={expanded} timeout={200} unmountOnExit>
+                                    <br />
+                                    <CardContent style={{ padding: 0, height: 180 }}>
+                                        <Typography variant="body2">
+                                            {strategy.description}
+                                        </Typography>
+                                    </CardContent>
+                                </Collapse>
+                            </Grid>
+                            <Grid item xs={3.2}>
+                                {/* {imgExpanded ?
+                                        <img
+                                            src={`/${strategy.expandedGraph}`}
+                                            alt="expanded graph"
+                                            height="auto"
+                                            width="100%"
+                                        />
+                                        :
+                                        <img
+                                            src={`/${strategy.basicGraph}`}
+                                            alt="simple graph"
+                                            height="auto"
+                                            width="100%"
+                                        />
+                                    } */}
+                            </Grid>
+                            <Grid item xs={1.7} pt={1}>
+                                {
+                                    disabled ?
+                                        <>
+                                            <Button variant="outlined" color="warning" onClick={() => history.push("/pricing")}><Typography variant="button" color="warning.main"> Go Pro! </Typography></Button>
+                                        </>
+                                        :
+                                        <>
+                                            <Button variant="outlined" onClick={() => onStrategySelectionChange(strategy)}><Typography variant="button">Start Building</Typography></Button>
+                                        </>
+                                }
+                            </Grid>
+                            <Grid item xs={0.3} pt={1}>
+                                {!expanded ? <ExpandMoreIcon color="primary" /> : <ExpandLessIcon color="primary" />}
+                            </Grid>
+                        </Grid>
+                        :
+                        <>
+                            <Grid container px={2} pt={1} justifyContent="space-between">
+                                <Grid item>
                                     <Typography variant="h5">{strategy.name}</Typography>
                                 </Grid>
-                                <Grid item xs={8} pt={1}>
+                                <Grid item>
+                                    {!expanded ? <ExpandMoreIcon color="primary" /> : <ExpandLessIcon color="primary" />}
+                                </Grid>
+                            </Grid>
+                            <Grid container px={2} pt={1} spacing={1} justifyContent="space-between">
+                                <Grid item>
                                     {strategy.sentiment.map(sentiment => chipMaker(sentiment))}
                                     {chipMaker(strategy.level)}
                                     {strategy.unlimitedLoss && chipMaker("loss")}
@@ -75,46 +139,28 @@ export default function StrategyRow({ strategy, onStrategySelectionChange, disab
                             </Grid>
                             <Collapse in={expanded} timeout={200} unmountOnExit>
                                 <br />
-                                <CardContent style={{ padding: 0, height: 180 }}>
+                                <Box px={2}>
                                     <Typography variant="body2">
                                         {strategy.description}
                                     </Typography>
-                                </CardContent>
+                                </Box>
                             </Collapse>
-                        </Grid>
-                        <Grid item xs={3.2}>
-                            {/* {imgExpanded ?
-                                <img
-                                    src={`/${strategy.expandedGraph}`}
-                                    alt="expanded graph"
-                                    height="auto"
-                                    width="100%"
-                                />
-                                :
-                                <img
-                                    src={`/${strategy.basicGraph}`}
-                                    alt="simple graph"
-                                    height="auto"
-                                    width="100%"
-                                />
-                            } */}
-                        </Grid>
-                        <Grid item xs={1.7} pt={1}>
-                            {
-                                disabled ?
-                                    <>
-                                        <Button variant="outlined" color="warning" onClick={() => history.push("/pricing")}><Typography variant="button" color="warning.main"> Go Pro! </Typography></Button>
-                                    </>
-                                    :
-                                    <>
-                                        <Button variant="outlined" onClick={() => onStrategySelectionChange(strategy)}><Typography variant="button">Start Building</Typography></Button>
-                                    </>
-                            }
-                        </Grid>
-                        <Grid item xs={0.3} pt={1}>
-                            {!expanded ? <ExpandMoreIcon color="primary" /> : <ExpandLessIcon color="primary" />}
-                        </Grid>
-                    </Grid>
+                            <Grid container px={2} py={2} justifyContent="center">
+                                <Grid item xs={12}>
+                                    {
+                                        disabled ?
+                                            <>
+                                                <Button style={{ width: "100%" }} variant="outlined" color="warning" onClick={() => history.push("/pricing")}><Typography variant="button" color="warning.main"> Go Pro! </Typography></Button>
+                                            </>
+                                            :
+                                            <>
+                                                <Button style={{ width: "100%" }} variant="outlined" onClick={() => onStrategySelectionChange(strategy)}><Typography variant="button">Start Building</Typography></Button>
+                                            </>
+                                    }
+                                </Grid>
+                            </Grid>
+                        </>
+                    }
                 </CardActionArea>
             </Card>
         </>
