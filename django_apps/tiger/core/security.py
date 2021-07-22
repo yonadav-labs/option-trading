@@ -145,7 +145,10 @@ class OptionContract(Security):
             self.strike = data_dict.get('strikePrice')
             self.change = data_dict.get('netChange')
             self.contract_size = data_dict.get('multiplier')
-            self.implied_volatility = data_dict.get('volatility', 0) / 100.0 if 'volatility' in data_dict else None
+            if data_dict.get('volatility') is None:
+                self.implied_volatility = None
+            else:
+                self.implied_volatility = data_dict.get('volatility') / 100.0
             self.in_the_money = data_dict.get('inTheMoney')
             self.last_price = data_dict.get('last')
             self.last_trade_date = int(data_dict.get('tradeTimeInLong', 0) / 1000)
