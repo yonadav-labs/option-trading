@@ -4,12 +4,9 @@ import { Grid, Typography, Paper, Divider, useMediaQuery, FormControl, Select, M
 import TickerAutocomplete from "../../components/TickerAutocomplete";
 import NewTickerSummary from "../../components/NewTickerSummary";
 import BuildDetailsCard from "../../components/cards/BuildDetailsCard";
-import { GetGaEventTrackingFunc } from '../../utils';
 import CustomizableBuildLeg from "../../components/CustomizableBuildLeg";
 import BuildLegCard from "../../components/cards/BuildLegCard";
 import { isEmpty } from 'lodash';
-
-const GaEvent = GetGaEventTrackingFunc('build');
 
 const useStyles = makeStyles({
     root: {

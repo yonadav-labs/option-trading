@@ -3,6 +3,8 @@ import { Grid, Typography, FormControl, Select, MenuItem, InputLabel, Alert } fr
 import getApiUrl, { PercentageFormatter, PriceFormatter, GetGaEventTrackingFunc } from '../utils';
 import Axios from 'axios';
 
+const GaEvent = GetGaEventTrackingFunc('options builder');
+
 export default function CustomizableBuildLeg(props) {
     const { leg, index, selectedStrategy, expirationTimestampsOptions, selectedTicker, updateLeg, allLegs, ruleMessages } = props
 
@@ -108,7 +110,7 @@ export default function CustomizableBuildLeg(props) {
                                 <Select
                                     label="Action.."
                                     value={leg.action}
-                                    onChange={(e) => updateLeg("action", e.target.value, index)}
+                                    onChange={(e) => { updateLeg("action", e.target.value, index); GaEvent('adjust leg action'); }}
                                     disabled={selectedStrategy.legs[index].action}
                                     style={{ height: 45 }}
                                     MenuProps={{ style: { maxHeight: "400px", }, anchorOrigin: { vertical: "bottom", horizontal: "center" }, getContentAnchorEl: () => null, }}
@@ -125,7 +127,7 @@ export default function CustomizableBuildLeg(props) {
                                     label="Call/Put.."
                                     fullWidth
                                     style={{ height: 45 }}
-                                    onChange={(e) => updateLeg("optionType", e.target.value, index)}
+                                    onChange={(e) => { updateLeg("optionType", e.target.value, index); GaEvent('adjust leg option'); }}
                                     value={leg.optionType || 0}
                                     disabled={selectedStrategy.legs[index].optionType}
                                     MenuProps={{ style: { maxHeight: "400px" }, anchorOrigin: { vertical: "bottom", horizontal: "center" }, getContentAnchorEl: () => null, }}
@@ -141,7 +143,7 @@ export default function CustomizableBuildLeg(props) {
                                 <InputLabel style={{ zIndex: -100 }} shrink={true}><Typography variant="h6">Expiration Date</Typography></InputLabel>
                                 <Select
                                     label="Expiration Date...."
-                                    onChange={(e) => { onExpirationChange(e); }}
+                                    onChange={(e) => { onExpirationChange(e); GaEvent('adjust leg expiration'); }}
                                     style={{ height: 45 }}
                                     value={leg.expiration || 0}
                                     disabled={selectedStrategy.legs[index].expiration || !leg.optionType}
@@ -159,7 +161,7 @@ export default function CustomizableBuildLeg(props) {
                                     label="Strike Price...."
                                     disabled={strikes.length === 0}
                                     value={selectedStrike || 0}
-                                    onChange={(e) => onStrikeSelectChange(e.target.value)}
+                                    onChange={(e) => { onStrikeSelectChange(e.target.value); GaEvent('adjust leg strike'); }}
                                     style={{ height: 45 }}
                                     MenuProps={{ style: { maxHeight: "400px" }, anchorOrigin: { vertical: "bottom", horizontal: "center" }, getContentAnchorEl: () => null, }}
                                 >
