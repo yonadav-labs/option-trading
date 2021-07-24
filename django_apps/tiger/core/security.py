@@ -131,7 +131,6 @@ class OptionContract(Security):
             '''
             # Metrics that are not used.
             # exercise_style, last_timestamp, ask_timestamp, bid_timestamp
-
         else:
             # TD.
             for key in data_dict:
@@ -189,9 +188,8 @@ class OptionContract(Security):
         self.mark
 
     @classmethod
-    def from_snapshot(cls, contract_snapshot):
+    def from_snapshot(cls, contract_snapshot, stock_price):
         cache = contract_snapshot.external_cache
-        stock_price = cache.json_response.get('underlying').get('last')  # TODO: fix this.
         contract_data = blob_reader.get_contract(cache.json_response, contract_snapshot.is_call,
                                                  contract_snapshot.strike, contract_snapshot.expiration_timestamp)
         # TODO: set customizable premium

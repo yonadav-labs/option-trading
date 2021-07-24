@@ -17,14 +17,14 @@ class Leg(ABC):
         self.contract = contract
 
     @classmethod
-    def from_snapshot(cls, leg_snapshot, premium_type, broker_settings):
+    def from_snapshot(cls, leg_snapshot, stock_price, premium_type, broker_settings):
         if leg_snapshot.cash_snapshot:
             return CashLeg(leg_snapshot.units)
         elif leg_snapshot.stock_snapshot:
             stock = Stock.from_snapshot(leg_snapshot.stock_snapshot)
             return StockLeg(leg_snapshot.units, stock)
         elif leg_snapshot.contract_snapshot:
-            contract = OptionContract.from_snapshot(leg_snapshot.contract_snapshot)
+            contract = OptionContract.from_snapshot(leg_snapshot.contract_snapshot, stock_price)
             return OptionLeg(leg_snapshot.is_long, leg_snapshot.units, contract, premium_type, broker_settings)
 
     @property

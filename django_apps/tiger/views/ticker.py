@@ -8,7 +8,7 @@ from tiger.core import Stock
 from tiger.models import Ticker
 from tiger.serializers import TickerSerializer, TickerStatsSerializer
 from tiger.utils import timestamp_to_datetime_with_default_tz
-from tiger.views.utils import dict_fetch_all, get_valid_contracts
+from tiger.views.utils import dict_fetch_all, get_filtered_contracts
 
 
 def get_annualized_value(val, days_till_expiration):
@@ -187,15 +187,14 @@ class TickerViewSet(LoggingMixin, viewsets.ModelViewSet):
         stock_price = quote.get('latestPrice')
         stock = Stock(ticker, stock_price, external_cache_id, ticker.get_latest_stats())
 
-        filters = request.data.get('filters')
-
-        expiration_timestamps = ticker.get_expiration_timestamps()
         expirations = [ts // 1000 for ts in request.data.get('expiration_timestamps')]
-
         expiration_dates = [timestamp_to_datetime_with_default_tz(ts).strftime("%b %d, %Y")
                             for ts in expirations]
 
-        call_contract_lists, put_contract_list = get_valid_contracts(ticker, request, expiration_timestamps, filters)
+        filters = request.data.get('filters')
+        call_contract_lists, put_contract_list = get_filtered_contracts(ticker,
+                                                                        request.data.get('expiration_timestamps'),
+                                                                        filters)
         contract_lists = call_contract_lists if filters.get('eq.is_call') else put_contract_list
         contract_lists = sum(contract_lists, [])
 

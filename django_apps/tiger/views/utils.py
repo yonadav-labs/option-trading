@@ -42,30 +42,6 @@ def filter_object_on_attribute(object, filter_key, filter_value):
     return True
 
 
-def get_valid_contracts(ticker, request, all_expiration_timestamps, filters={}):
-    input_expiration_timestamps = set([int(ts) for ts in request.data.get('expiration_timestamps') if
-                                       int(ts) in all_expiration_timestamps])
-    call_lists = []
-    put_lists = []
-
-    for ts in input_expiration_timestamps:
-        calls, puts = ticker.get_call_puts(ts)
-        calls = sorted(calls, key=lambda x: x.strike)
-        puts = sorted(puts, key=lambda x: x.strike)
-
-        # apply all filters
-        if filters is not None:
-            for key, value in filters.items():
-                calls = list(filter(lambda call: filter_object_on_attribute(call, key, value), calls))
-                puts = list(filter(lambda put: filter_object_on_attribute(put, key, value), puts))
-
-        # filter out inactive contracts.
-        call_lists.append(list(filter(lambda call: call.last_trade_date, calls)))
-        put_lists.append(list(filter(lambda put: put.last_trade_date, puts)))
-
-    return call_lists, put_lists
-
-
 def get_filtered_contracts(ticker, expiration_timestamps, filters={}):
     call_lists = []
     put_lists = []
@@ -75,6 +51,8 @@ def get_filtered_contracts(ticker, expiration_timestamps, filters={}):
 
     for ts in expiration_timestamps:
         calls, puts = ticker.get_call_puts(ts)
+        calls = sorted(calls, key=lambda x: x.strike)
+        puts = sorted(puts, key=lambda x: x.strike)
 
         # apply all filters
         if filters is not None:

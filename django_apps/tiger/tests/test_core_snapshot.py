@@ -39,7 +39,7 @@ class LoadFromSnapshotTestCase(TestCase):
         contract_snapshot_td = OptionContractSnapshot.objects.create(ticker=self.ticker, is_call=False, strike=66.0,
                                                                      expiration_timestamp=1610744400,
                                                                      external_cache=self.external_cache_td)
-        contract_td = OptionContract.from_snapshot(contract_snapshot_td)
+        contract_td = OptionContract.from_snapshot(contract_snapshot_td, 74.13)
         self.assertEqual(contract_td.ticker, self.ticker)
         self.assertEqual(contract_td.external_cache_id, self.external_cache_td.id)
         self.assertEqual(contract_td.stock_price, 74.13)
@@ -52,7 +52,7 @@ class LoadFromSnapshotTestCase(TestCase):
     def testLoadStockLegFromSnapshot(self):
         stock_snapshot = StockSnapshot.objects.create(ticker=self.ticker, external_cache=self.external_cache_iex_quote)
         stock_leg_snapshot = LegSnapshot.objects.create(is_long=True, units=1, stock_snapshot=stock_snapshot)
-        stock_leg = Leg.from_snapshot(stock_leg_snapshot, 'mid', self.broker_settings)
+        stock_leg = Leg.from_snapshot(stock_leg_snapshot, 74.13, 'mid', self.broker_settings)
         self.assertEqual(stock_leg.name, 'long_stock_leg')
         self.assertEqual(stock_leg.is_long, True)
         self.assertEqual(stock_leg.units, 1)
@@ -65,7 +65,7 @@ class LoadFromSnapshotTestCase(TestCase):
                                                                      external_cache=self.external_cache_td)
         contract_leg_snapshot = LegSnapshot.objects.create(is_long=True, units=2,
                                                            contract_snapshot=contract_snapshot_td)
-        contract_leg = Leg.from_snapshot(contract_leg_snapshot, 'mid', self.broker_settings)
+        contract_leg = Leg.from_snapshot(contract_leg_snapshot, 74.13, 'mid', self.broker_settings)
         self.assertEqual(contract_leg.name, 'long_put_leg')
         self.assertEqual(contract_leg.is_long, True)
         self.assertEqual(contract_leg.units, 2)
@@ -79,9 +79,9 @@ class LoadFromSnapshotTestCase(TestCase):
                                                                       external_cache=self.external_cache_td)
         contract_leg_snapshot2 = LegSnapshot.objects.create(is_long=True, units=2,
                                                             contract_snapshot=contract_snapshot_td2)
-        self.assertAlmostEqual(Leg.from_snapshot(contract_leg_snapshot2, 'mid',
+        self.assertAlmostEqual(Leg.from_snapshot(contract_leg_snapshot2, 74.13, 'mid',
                                                  self.broker_settings).total_cost, 42.5 * 2 + 1.3)
-        self.assertAlmostEqual(Leg.from_snapshot(contract_leg_snapshot2,
+        self.assertAlmostEqual(Leg.from_snapshot(contract_leg_snapshot2, 74.13,
                                                  'market', self.broker_settings).total_cost, 75 * 2 + 1.3)
 
     def testLoadTradeFromSnapshot(self):

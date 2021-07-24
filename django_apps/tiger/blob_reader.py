@@ -10,7 +10,7 @@ def get_quote(response, is_yahoo):
 
 
 def get_call_puts_td(ticker, response, expiration_timestamp=None, external_cache_id=None):
-    stock_price = response.get('underlying').get('last')  # TODO: fix this.
+    stock_price, _ = ticker.get_last_price()
     call_contracts = []
     for date_str, blob in response.get('callExpDateMap').items():
         for strike_str, contracts in blob.items():
@@ -39,7 +39,7 @@ def get_call_puts_td(ticker, response, expiration_timestamp=None, external_cache
 
 
 def get_call_puts_intrinio(ticker, response, external_cache_id=None):
-    stock_price, quote_external_cache_id = ticker.get_last_price()  # TODO: fix this. Does not handle past price.
+    stock_price, _ = ticker.get_last_price()
     all_raw_options = response.get('chain')
     call_contracts = []
     put_contracts = []

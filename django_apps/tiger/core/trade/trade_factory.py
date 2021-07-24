@@ -11,15 +11,15 @@ from .iron_butterfly import IronButterfly
 from .iron_condor import IronCondor
 from .long_butterfly_spread import LongButterflySpread
 from .long_call import LongCall
-from .short_call import ShortCall
 from .long_condor_spread import LongCondorSpread
 from .long_put import LongPut
-from .short_put import ShortPut
 from .long_straddle import LongStraddle
 from .long_strangle import LongStrangle
 from .protective_put import ProtectivePut
 from .short_butterfly_spread import ShortButterflySpread
+from .short_call import ShortCall
 from .short_condor_spread import ShortCondorSpread
+from .short_put import ShortPut
 from .short_straddle import ShortStraddle
 from .short_strangle import ShortStrangle
 from .strap_straddle import StrapStraddle
@@ -31,7 +31,8 @@ class TradeFactory:
     def initiate_trade(trade_type, stock_snapshot, leg_snapshots, premium_type, broker_settings, target_price_lower,
                        target_price_upper):
         stock = Stock.from_snapshot(stock_snapshot)
-        legs = [Leg.from_snapshot(leg_snapshot, premium_type, broker_settings) for leg_snapshot in leg_snapshots]
+        legs = [Leg.from_snapshot(leg_snapshot, stock.stock_price, premium_type, broker_settings) for leg_snapshot in
+                leg_snapshots]
 
         if trade_type == 'long_call':
             trade_class = LongCall
