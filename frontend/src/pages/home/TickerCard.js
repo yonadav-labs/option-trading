@@ -31,7 +31,10 @@ const TickerCard = ({ ticker, onClick }) => {
         <>
             <Card>
                 <CardActionArea sx={{ height: "100%", width: "100%" }} onClick={onClick ? onClick : handlePopoverOpen}>
-                    <CardContent sx={{ height: `${isMobile ? "55px" : "80px"}`, width: `${isMobile ? "55px" : "80px"}`, display: "flex", justifyContent: "center", alignItems: "center" }}>
+                    <CardContent sx={{
+                        height: `${isMobile ? "55px" : "80px"}`, width: `${isMobile ? "55px" : "80px"}`,
+                        display: "flex", justifyContent: "center", alignItems: "center"
+                    }}>
                         <Typography variant="h6" color={colors.orange}>
                             {ticker ? ticker.symbol : null}
                         </Typography>
@@ -66,16 +69,20 @@ const TickerCard = ({ ticker, onClick }) => {
                     </Grid>
                     <Grid container direction="row" justifyContent="center" item spacing={1}>
                         <Grid item>
-                            <Button variant="outlined" size="large" href={`/discover?symbol=${ticker.symbol}`} to={`/discover?symbol=${ticker.symbol}`} role="button">Discover</Button>
+                            <Button variant="outlined" size="large" href={`/generator?symbol=${ticker.symbol}`}
+                                to={`/generator?symbol=${ticker.symbol}`} role="button">Generator</Button>
                         </Grid>
                         <Grid item>
-                            <Button variant="outlined" size="large" href={`/build?symbol=${ticker.symbol}`} to={`/build?symbol=${ticker.symbol}`} role="button">Build</Button>
+                            <Button variant="outlined" size="large" href={`/builder?symbol=${ticker.symbol}`}
+                                to={`/builder?symbol=${ticker.symbol}`} role="button">Builder</Button>
                         </Grid>
                         <Grid item>
-                            <Button variant="outlined" size="large" href={`/screen?symbol=${ticker.symbol}`} to={`/screen?symbol=${ticker.symbol}`} role="button">Screen</Button>
+                            <Button variant="outlined" size="large" href={`/screener?symbol=${ticker.symbol}`}
+                                to={`/screener?symbol=${ticker.symbol}`} role="button">Screener</Button>
                         </Grid>
                         <Grid item>
-                            <Button variant="outlined" size="large" href={`/panorama?symbol=${ticker.symbol}`} to={`/panorama?symbol=${ticker.symbol}`} role="button">Panorama</Button>
+                            <Button variant="outlined" size="large" href={`/heatmap?symbol=${ticker.symbol}`}
+                                to={`/heatmap?symbol=${ticker.symbol}`} role="button">Heatmap</Button>
                         </Grid>
                     </Grid>
                 </Grid>

@@ -12,7 +12,7 @@ import TestimonialCard from "../../components/cards/TestimonialCard";
 const testimonials = [
     {
         rating: 5,
-        msg: "The Discover feature helps me to find the most proper strike prices.I don't need to do any guessing anymore!",
+        msg: "The Generator feature helps me to find the most proper strike prices.I don't need to do any guessing anymore!",
         author: "Bo J, Tigerstance User"
     },
     {
@@ -196,39 +196,39 @@ export default function Home() {
                     </Grid>
                     <Grid item xs={12} lg={4}>
                         <ToolCard imageName="Homepage-Discover.png" isMobile={isMobile}>
-                            <Typography variant="h6" sx={{ marginTop: 0 }} gutterBottom>Discover</Typography>
+                            <Typography variant="h6" sx={{ marginTop: 0 }} gutterBottom>Generator</Typography>
                             <Typography variant="body1">
                                 Enter what price you think the stock will be and by when.
                                 See the trades you can make and filter by return, chance or cost.
                             </Typography>
                             <br />
-                            <Button variant="outlined" size="large" href="/discover" to="/discover">
-                                Discover Now
+                            <Button variant="outlined" size="large" href="/generator" to="/generator">
+                                Generate now
                             </Button>
                         </ToolCard>
                     </Grid>
                     <Grid item xs={12} lg={4}>
                         <ToolCard imageName="Homepage-Build.png" isMobile={isMobile}>
-                            <Typography variant="h6" sx={{ marginTop: 0 }} gutterBottom>Build</Typography>
+                            <Typography variant="h6" sx={{ marginTop: 0 }} gutterBottom>Builder</Typography>
                             <Typography variant="body1">
                                 Build an options strategy and get real-time analysis on the trade.
                                 We calculate key data for you, including probability of profit and breakeven price.
                                 Visualize potential returns with our interactive graph and chart.
                             </Typography>
                             <br />
-                            <Button variant="outlined" size="large" href="/build" to="/build">
+                            <Button variant="outlined" size="large" href="/builder" to="/builder">
                                 Build Now
                             </Button>
                         </ToolCard>
                     </Grid>
                     <Grid item xs={12} lg={4}>
                         <ToolCard imageName="Homepage-Browse.png" isMobile={isMobile}>
-                            <Typography variant="h6" sx={{ marginTop: 0 }} gutterBottom>Screen</Typography>
+                            <Typography variant="h6" sx={{ marginTop: 0 }} gutterBottom>Screener</Typography>
                             <Typography variant="body1">
                                 Find options that match your trading goals. View the options chains for the stock you selected and use filters to screen for options that match your strategy.
                             </Typography>
                             <br />
-                            <Button variant="outlined" size="large" href="/screen" to="/screen">
+                            <Button variant="outlined" size="large" href="/screener" to="/screener">
                                 Screen Now
                             </Button>
                         </ToolCard>

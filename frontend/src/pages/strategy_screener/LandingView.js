@@ -94,7 +94,9 @@ export default function LandingView(props) {
             </Container>
             <br />
             <Container>
-                <Typography variant="h4" align="center">Discover option strategies with the best potential return.</Typography>
+                <Typography variant="h4" align="center">
+                    Generate option strategies with the best potential return based on price targets.
+                </Typography>
                 <br />
                 <Typography variant="body1" align="center">
                     Enter <b>what price</b> you think the stock will be and <b>by when</b>.
@@ -132,7 +134,7 @@ export default function LandingView(props) {
                     <Grid container direction="column" alignItems="center">
                         <img style={{ height: 200, width: 270, marginBottom: 8 }} src="discover_step_4.png" alt="step 4" />
                         <Typography variant="button">Step 4</Typography>
-                        <Typography variant="subtitle1">Discover the best strategies</Typography>
+                        <Typography variant="subtitle1">Generate the best strategies</Typography>
                         <Typography variant="body2">We calculate and show you the best one</Typography>
                     </Grid>
                 </Box>

@@ -105,7 +105,7 @@ export default function ShareTradeBtn(props) {
                             <IconButton size="small" onClick={(e) => e.stopPropagation()}>
                                 <FacebookShareButton
                                     url={`www.tigerstance.com${shareLink}`}
-                                    quote={'Check out this trade I discovered on #tigerstance!'}
+                                    quote={'Check out this trade I found on #tigerstance!'}
                                 >
                                     <FacebookIcon size="45" round={true} />
                                 </FacebookShareButton>
@@ -113,7 +113,7 @@ export default function ShareTradeBtn(props) {
                             <IconButton size="small" onClick={(e) => e.stopPropagation()}>
                                 <TwitterShareButton
                                     url={`www.tigerstance.com${shareLink}`}
-                                    title={'Check out this trade I discovered on #tigerstance!'}
+                                    title={'Check out this trade I found on #tigerstance!'}
                                     via={'TheTigerStance'}
                                 >
                                     <TwitterIcon size="45" round={true} />

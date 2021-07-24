@@ -49,14 +49,18 @@ export default withRouter(class AppWithRouterAccess extends Component {
                             <Route path='/option-screener' exact={true} component={NewOptionScreener} />
                             <Route path='/browse' exact={true} component={NewOptionScreener} />
                             <Route path='/screen' exact={true} component={NewOptionScreener} />
+                            <Route path='/screener' exact={true} component={NewOptionScreener} />
                             <Route path='/surface' exact={true} component={Surface} />
                             <Route path='/panorama' exact={true} component={Surface} />
+                            <Route path='/heatmap' exact={true} component={Surface} />
                             <Route path='/discover' exact={true} component={NewStrategyScreener} />
+                            <Route path='/generator' exact={true} component={NewStrategyScreener} />
                             <Route path='/strategy-screener' exact={true} component={NewStrategyScreener} />
                             <Route path='/t/:tradeId' exact={true} component={SingleTrade} />
                             <Route path='/strategy-builder' exact={true} component={NewBuild} />
                             <Route path='/old-build' exact={true} component={StrategyBuilder} />
                             <Route path='/build' exact={true} component={NewBuild} />
+                            <Route path='/builder' exact={true} component={NewBuild} />
                             <SecureRoute path='/profile' component={Profile} />
                             <Route path="/disclaimer" component={Disclaimer}></Route>
                             <Route path="/privacy" component={Privacy}></Route>

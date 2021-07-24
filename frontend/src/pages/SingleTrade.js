@@ -53,7 +53,7 @@ export default function SingleTrade() {
             {trade ? (
                 <div>
                     {GenerateTradeTitle(trade)}
-                    <h5><Link to="/discover" role="button">Discover</Link> your own options trading ideas now!</h5>
+                    <h5><Link to="/generator" role="button">Create</Link> your own options trading ideas now!</h5>
                     <TradeDetailsCard trade={trade} latestTrade={latestTrade} hideShareButton={true} hideTitle={true} broker={broker} />
                 </div>
             ) : 'Loading...'}

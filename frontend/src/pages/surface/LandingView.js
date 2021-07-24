@@ -41,7 +41,7 @@ export default function LandingView(props) {
                         />
 
                         <FormControl disabled={!selectedTicker} fullWidth>
-                            <InputLabel style={{marginTop: 8, marginBottom: 0}}><Typography variant="h6">Type</Typography></InputLabel>
+                            <InputLabel style={{ marginTop: 8, marginBottom: 0 }}><Typography variant="h6">Type</Typography></InputLabel>
                             <Select
                                 id="contract-type"
                                 fullWidth
@@ -55,7 +55,7 @@ export default function LandingView(props) {
                         </FormControl>
 
                         <FormControl disabled={!selectedTicker} fullWidth>
-                            <InputLabel style={{marginTop: 8, marginBottom: 0}}><Typography variant="h6">Metric</Typography></InputLabel>
+                            <InputLabel style={{ marginTop: 8, marginBottom: 0 }}><Typography variant="h6">Metric</Typography></InputLabel>
                             <Select
                                 id="metric"
                                 defaultValue={filters.metric}
@@ -77,7 +77,7 @@ export default function LandingView(props) {
             </Container>
             <br />
             <Container>
-                <Typography variant="h4" align="center">Scan the Options Chain with Panorama View.</Typography>
+                <Typography variant="h4" align="center">Scan all Options Chains with Heatmap.</Typography>
                 <br />
                 <Typography variant="body1" align="center">
                     Spot most active trades using Open Interest, Volume, and Implied Volatility Surface.<br />

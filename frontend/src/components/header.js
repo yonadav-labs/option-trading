@@ -132,16 +132,16 @@ function Header() {
             justifyContent={isMobile ? "flex-start" : "space-between"}
         >
             <Grid item>
-                <NavButton href="/discover" to="/discover">Discover</NavButton>
+                <NavButton href="/generator" to="/generator">Generator</NavButton>
             </Grid>
             <Grid item>
-                <NavButton href="/build" to="/build">Build</NavButton>
+                <NavButton href="/builder" to="/builder">Builder</NavButton>
             </Grid>
             <Grid item>
-                <NavButton href="/screen" to="/screen">Screen</NavButton>
+                <NavButton href="/screener" to="/screener">Screener</NavButton>
             </Grid>
             <Grid item>
-                <NavButton href="/panorama" to="/panorama">Panorama</NavButton>
+                <NavButton href="/heatmap" to="/heatmap">Heatmap</NavButton>
             </Grid>
             <Grid item>
                 <NavButton href="/pricing" to="/pricing">Pricing</NavButton>

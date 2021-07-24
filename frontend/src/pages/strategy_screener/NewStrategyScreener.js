@@ -223,8 +223,8 @@ export default function NewStrategyScreener() {
     return (
         <>
             <Helmet>
-                <title>Tigerstance | Discover option strategies with the best potential return.</title>
-                <meta name="description" content="Discover option strategies with the best potential return with Tigerstance." />
+                <title>Tigerstance | Generate option strategies with the best potential return based on price targets.</title>
+                <meta name="description" content="Generate option strategies with the best potential return based on price targets." />
             </Helmet>
             <ModalSpinner active={modalActive}></ModalSpinner>
             <AskSignupModal open={isOpenAskSignupModal}></AskSignupModal>
