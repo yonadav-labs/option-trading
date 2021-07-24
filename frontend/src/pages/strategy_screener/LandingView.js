@@ -1,24 +1,11 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { Grid, Paper, Stack, Container, Divider, Typography, FormControl, Select, MenuItem, InputLabel, Box, useTheme } from "@material-ui/core";
 import { makeStyles } from '@material-ui/styles';
 import TickerAutocomplete from "../../components/TickerAutocomplete";
 import MetricLabel from '../../components/MetricLabel.js';
-import { fixedFloat, GetGaEventTrackingFunc } from "../../utils";
-
-const GaEvent = GetGaEventTrackingFunc('strategy screener');
+import { TimestampDateFormatter } from '../../utils';
 
 export default function LandingView(props) {
-    const {
-        allTickers,
-        selectedTicker,
-        selectedExpirationTimestamp,
-        onTickerSelectionChange,
-        expirationTimestampsOptions,
-        expirationDisabled,
-        onExpirationSelectionChange,
-        basicInfo,
-        getBestTrades,
-    } = props;
     const theme = useTheme();
     const useStyles = makeStyles({
         customPaper: {
@@ -32,21 +19,18 @@ export default function LandingView(props) {
         }
     }, theme);
     const classes = useStyles();
-    const [sentiment, setSentiment] = useState(0);
-
-    const handleSentimentChange = (sentiment) => {
-        GaEvent('adjust sentiment');
-        setSentiment(sentiment);
-    };
-
-    useEffect(() => {
-        if (sentiment && selectedExpirationTimestamp) {
-            getBestTrades({
-                "target_price_lower": fixedFloat(basicInfo.latestPrice * sentiment),
-                "target_price_upper": fixedFloat(basicInfo.latestPrice * sentiment),
-            })
-        }
-    }, [sentiment, selectedExpirationTimestamp])
+    const {
+        allTickers,
+        selectedTicker,
+        selectedExpirationTimestamp,
+        onTickerSelectionChange,
+        expirationTimestampsOptions,
+        expirationDisabled,
+        sentiment,
+        onSentimentChange,
+        onExpirationSelectionChange,
+        basicInfo,
+    } = props
 
     return (
         <Container style={{ minHeight: "inherit", padding: 0 }}>
@@ -83,7 +67,7 @@ export default function LandingView(props) {
                                 id="sentiment"
                                 value={sentiment}
                                 fullWidth
-                                onChange={(e) => handleSentimentChange(e.target.value)}
+                                onChange={(e) => onSentimentChange(e.target.value)}
                                 style={{ paddingBottom: "5px" }}
                                 variant="standard"
                             >
