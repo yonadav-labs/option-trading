@@ -122,28 +122,6 @@ export const strategies = [
     ),
     new Strategy(
         {
-            name: "Short Call",
-            type: "short_call",
-            description: "Sell the option to buy shares of the stock at the strike price until the expiration and collect the premium. \
-                            You profit when the stock price moves below the: strike price + the premium.",
-            sentiment: ["bearish"],
-            legs: [
-                new OptionLeg(
-                    {
-                        action: "short",
-                        expiration: 0,
-                        optionType: "call"
-                    }
-                )
-            ],
-            level: "basic",
-            basicGraph: "short_call_simple.png",
-            expandedGraph: "short_call_expanded.png",
-            unlimitedLoss: true
-        }
-    ),
-    new Strategy(
-        {
             name: "Covered Call",
             type: "covered_call",
             description: "Receive a premium to allow your shares of the stock to be sold at the strike price until the expiration. \
@@ -219,28 +197,6 @@ export const strategies = [
             level: "basic",
             basicGraph: "long_call_simple.png",
             expandedGraph: "long_call_expanded.png",
-            unlimitedLoss: false
-        }
-    ),
-    new Strategy(
-        {
-            name: "Short Put",
-            type: "short_put",
-            description: "Receive a premium to allow your cash to be exchanged for shares of the stock at the strike price until the expiration. \
-                            You profit when the stock price does not move below: the strike price - the premium.",
-            sentiment: ["bullish", "volatile"],
-            legs: [
-                new OptionLeg(
-                    {
-                        action: "short",
-                        expiration: 0,
-                        optionType: "put"
-                    }
-                )
-            ],
-            level: "basic",
-            basicGraph: "short_put_simple.png",
-            expandedGraph: "short_put_expanded.png",
             unlimitedLoss: false
         }
     ),
@@ -919,6 +875,50 @@ export const strategies = [
             basicGraph: "long_call_simple.png",
             expandedGraph: "long_call_expanded.png",
             unlimitedLoss: false
+        }
+    ),
+    new Strategy(
+        {
+            name: "Short Call",
+            type: "short_call",
+            description: "Sell the option to buy shares of the stock at the strike price until the expiration and collect the premium. \
+                            You profit when the stock price moves below the: strike price + the premium.",
+            sentiment: ["bearish"],
+            legs: [
+                new OptionLeg(
+                    {
+                        action: "short",
+                        expiration: 0,
+                        optionType: "call"
+                    }
+                )
+            ],
+            level: "advanced",
+            basicGraph: "short_call_simple.png",
+            expandedGraph: "short_call_expanded.png",
+            unlimitedLoss: true
+        }
+    ),
+    new Strategy(
+        {
+            name: "Short Put",
+            type: "short_put",
+            description: "Receive a premium to allow your cash to be exchanged for shares of the stock at the strike price until the expiration. \
+                            You profit when the stock price does not move below: the strike price - the premium.",
+            sentiment: ["bullish"],
+            legs: [
+                new OptionLeg(
+                    {
+                        action: "short",
+                        expiration: 0,
+                        optionType: "put"
+                    }
+                )
+            ],
+            level: "advanced",
+            basicGraph: "short_put_simple.png",
+            expandedGraph: "short_put_expanded.png",
+            unlimitedLoss: true
         }
     ),
 ];
