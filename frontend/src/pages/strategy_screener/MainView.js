@@ -217,54 +217,58 @@ export default function MainView(props) {
                         }
                         <NewTickerSummary basicInfo={basicInfo} isMobile={isMobile} />
                     </Grid>
-                    <Grid container direction="row-reverse" justifyContent="center" alignItems="center">
+                    <Grid container direction="row-reverse">
                         {renderedTrades.length > 0 ?
-                            <Box pt={2} px={2} style={{ float: "right" }} >
-                                <Select
-                                    variant="standard"
-                                    value={sortState}
-                                    onChange={(e) => {
-                                        GaEvent('sort by ' + e.target.value + ' ' + orderState);
-                                        sortHandler(e.target.value);
-                                    }}
-                                >
-                                    <MenuItem value={"hr"}>Potential Return</MenuItem>
-                                    <MenuItem value={"pop"}>Probability of Profit</MenuItem>
-                                    <MenuItem value={"cost"}>Total Cost</MenuItem>
-                                </Select>
-                                <IconButton disableRipple edge="start" size="small"
-                                    onClick={() => { GaEvent('sort by ' + sortState + ' asc'); orderHandler("asc"); }}>
-                                    <ArrowUpwardIcon color={orderState === "asc" ? "primary" : "disabled"} />
-                                </IconButton>
-                                <IconButton disableRipple edge="start" size="small"
-                                    onClick={() => { GaEvent('sort by ' + sortState + ' desc'); orderHandler("desc") }}>
-                                    <ArrowDownwardIcon color={orderState === "desc" ? "primary" : "disabled"} />
-                                </IconButton>
-                            </Box>
+                            <Grid item lg>
+                                <Box pt={2} px={2} style={{ float: "right" }} >
+                                    <Select
+                                        variant="standard"
+                                        value={sortState}
+                                        onChange={(e) => {
+                                            GaEvent('sort by ' + e.target.value + ' ' + orderState);
+                                            sortHandler(e.target.value);
+                                        }}
+                                    >
+                                        <MenuItem value={"hr"}>Potential Return</MenuItem>
+                                        <MenuItem value={"pop"}>Probability of Profit</MenuItem>
+                                        <MenuItem value={"cost"}>Total Cost</MenuItem>
+                                    </Select>
+                                    <IconButton disableRipple edge="start" size="small"
+                                        onClick={() => { GaEvent('sort by ' + sortState + ' asc'); orderHandler("asc"); }}>
+                                        <ArrowUpwardIcon color={orderState === "asc" ? "primary" : "disabled"} />
+                                    </IconButton>
+                                    <IconButton disableRipple edge="start" size="small"
+                                        onClick={() => { GaEvent('sort by ' + sortState + ' desc'); orderHandler("desc") }}>
+                                        <ArrowDownwardIcon color={orderState === "desc" ? "primary" : "disabled"} />
+                                    </IconButton>
+                                </Box>
+                            </Grid>
                             :
                             null
                         }
-                        <Box style={{ display: "inline-flex" }} p={2}>
-                            {renderedTrades.length > 0 ?
-                                <Alert severity="info">
-                                    Below are results with best potential return for each strategy based on price target.
+                        <Grid item>
+                            <Box style={{ display: "inline-flex" }} pt={2} pl={3} pr={3}>
+                                {renderedTrades.length > 0 ?
+                                    <Alert severity="info">
+                                        Below are results with best potential return for each strategy based on price target.
                                 </Alert>
-                                :
-                                selectedTicker ?
-                                    selectedExpirationTimestamp ?
-                                        <Alert severity="error">
-                                            There are no trades that fit the specified settings.
+                                    :
+                                    selectedTicker ?
+                                        selectedExpirationTimestamp ?
+                                            <Alert severity="error">
+                                                There are no trades that fit the specified settings.
+                                        </Alert>
+                                            :
+                                            <Alert severity="error">
+                                                Select an expiration date.
                                         </Alert>
                                         :
                                         <Alert severity="error">
-                                            Select an expiration date.
-                                        </Alert>
-                                    :
-                                    <Alert severity="error">
-                                        Select a ticker and expiration date.
+                                            Select a ticker and expiration date.
                                     </Alert>
-                            }
-                        </Box>
+                                }
+                            </Box>
+                        </Grid>
                     </Grid>
                     <Grid container alignItems="center" justifyContent="center" pb={2} px={2}>
                         {!authState.isAuthenticated &&
@@ -290,7 +294,6 @@ export default function MainView(props) {
                         :
                         null
                     }
-                    <Typography>*Options data is delayed by 15 minutes.</Typography>
                 </Grid>
             </Grid>
         </>
