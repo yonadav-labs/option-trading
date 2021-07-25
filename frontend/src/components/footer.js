@@ -37,7 +37,10 @@ export default function Footer(props) {
                 <Grid direction="row" pb={2}>
                     <Grid direction="column">
                         <Typography variant="body2" color="primary.muted">
-                            Data and information on tigerstance.com is provided 'as-is' and solely for informational purposes, not for trading purposes or advice, and is delayed.
+                            Data and information on tigerstance.com is provided 'as-is' and solely for informational purposes,
+                            not for trading purposes or advice, and is delayed by 15 minutes. <br />
+                            Market data is provided by <Link href="https://iexcloud.io/">IEX Cloud</Link> and <Link href="https://intrinio.com/">Intrinio</Link>.
+                            tigerstance.com is a licensed <Link href="https://www.opraplan.com/">OPRA</Link> vendor.
                         </Typography>
                     </Grid>
                 </Grid>
@@ -54,6 +57,6 @@ export default function Footer(props) {
                     </Grid>
                 </Grid>
             </Paper>
-        </footer>
+        </footer >
     );
 }

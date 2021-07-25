@@ -83,7 +83,7 @@ export default function MainView(props) {
     }
 
     // pagination
-    const [rowsPerPage, setRowsPerPage] = useState(20);
+    const [rowsPerPage, setRowsPerPage] = useState(30);
     const [page, setPage] = useState(0);
 
     const handleChangePage = (event, newPage) => {
@@ -387,6 +387,7 @@ export default function MainView(props) {
                             :
                             null
                         }
+                        <Typography>*Options data is delayed by 15 minutes.</Typography>
                     </Grid>
                 </Grid>
             </Grid>

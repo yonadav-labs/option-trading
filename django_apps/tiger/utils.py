@@ -83,6 +83,17 @@ def is_market_open(input_date):
     return is_open
 
 
+def is_market_open_now():
+    # Get the market calendar for one week before and after (two weeks total)
+    nyse = mcal.get_calendar('NYSE')
+    now_time = get_now()
+    pre_week = now_time - timedelta(days=7)
+    post_week = now_time + timedelta(days=7)
+    calendar = nyse.schedule(start_date=pre_week.isoformat(),
+                             end_date=post_week.isoformat())
+    return nyse.open_at_time(calendar, now_time)
+
+
 def get_dates_till_expiration(expiration, num_days):
     days_till_expiration = days_from_timestamp(expiration)
     today = get_now().date()

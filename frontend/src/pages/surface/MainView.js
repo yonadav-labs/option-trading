@@ -177,7 +177,7 @@ export default function MainView(props) {
                         />
                     </Grid>
                 </Grid>
-
+                <Typography>*Options data is delayed by 15 minutes.</Typography>
             </Grid>
         </Grid>
     );
