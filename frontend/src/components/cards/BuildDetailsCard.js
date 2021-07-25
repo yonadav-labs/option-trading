@@ -202,20 +202,8 @@ export default function NewTradeCard({ trade }) {
                                 <Link href="/pricing" className="d-block"><LockOutlinedIcon /></Link>
                         }
                     </Grid>
-                    <Grid item xs={6} sm={2}>
-                        <Typography variant="button"><MetricLabel label="rho" /></Typography>
-                        <br />
-                        {
-                            user && user.subscription ?
-                                <Typography variant="body1">{NumberRoundFormatter(trade.rho)}</Typography>
-                                :
-                                <Link href="/pricing" className="d-block"><LockOutlinedIcon /></Link>
-                        }
-                    </Grid>
-                    <Grid item xs={6} sm={2}>
-                        <Typography variant="button"><MetricLabel label="quoted at" /></Typography>
-                        <Typography variant="body1" color="#4F4F4F">{TimestampTimeFormatter(trade.quote_time)}</Typography>
-                    </Grid>
+                    <Grid item xs={6} sm={2}></Grid>
+                    <Grid item xs={6} sm={2}></Grid>
                 </Grid>
             </CardContent>
             <>

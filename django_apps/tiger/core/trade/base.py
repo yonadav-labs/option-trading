@@ -391,14 +391,6 @@ class Trade(ABC):
         return vega
 
     @property
-    def rho(self):
-        rho = 0.0
-        for leg in self.option_legs:
-            sign = 1 if leg.is_long else -1
-            rho += leg.contract.rho * sign * leg.units
-        return rho
-
-    @property
     @abstractmethod
     def is_bullish(self):
         pass

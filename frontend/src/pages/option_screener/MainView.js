@@ -146,7 +146,6 @@ export default function MainView(props) {
         { id: 'strike', label: "strike" },
         { id: 'mark', label: "mark" },
         { id: 'last_price', label: "last" },
-        { id: 'percent_change', label: "change" },
         { id: 'volume', label: "VOL", },
         { id: 'open_interest', label: "OI", },
         { id: 'vol_oi', label: "VOL/OI", },

@@ -36,7 +36,6 @@ export default function FilterItems(props) {
     const [gammaRange, setGammaRange] = useState([0, 1]);
     const [thetaRange, setThetaRange] = useState([-1, 0]);
     const [vegaRange, setVegaRange] = useState([0, 1]);
-    const [rhoRange, setRhoRange] = useState([-1, 1]);
     const [ivRange, setIVRange] = useState([0, 999]);
     // const [intrinsicValRange, setIntrinsicValRange] = useState([0, 100]);
     // const [extrinsicValRange, setExtrinsicValRange] = useState([0, 100]);
@@ -162,9 +161,6 @@ export default function FilterItems(props) {
             // vega
             addOrRemoveFilter(copy, "min.vega", vegaRange[0]);
             addOrRemoveFilter(copy, "max.vega", vegaRange[1], 1);
-            // rho
-            addOrRemoveFilter(copy, "min.rho", rhoRange[0], -1);
-            addOrRemoveFilter(copy, "max.rho", rhoRange[1], 1);
             // iv
             addOrRemoveFilter(copy, "min.implied_volatility", ivRange[0], 0);
             addOrRemoveFilter(copy, "max.implied_volatility", ivRange[1], 999);
@@ -191,7 +187,6 @@ export default function FilterItems(props) {
         setGammaRange([filters["min.gamma"] || 0, filters["max.gamma"] || 1]);
         setThetaRange([filters["min.theta"] || -1, filters["max.theta"] || 0]);
         setVegaRange([filters["min.vega"] || 0, filters["max.vega"] || 1]);
-        setRhoRange([filters["min.rho"] || -1, filters["max.rho"] || 1]);
         setIVRange([filters["min.implied_volatility"] || 0, filters["max.implied_volatility"] || 999]);
         setOptionTypes(filters.hasOwnProperty("eq.is_call") ? filters["eq.is_call"] ? ['call'] : ['put'] : ['call', 'put']);
     }
@@ -335,7 +330,7 @@ export default function FilterItems(props) {
                     />
                 </ListItemGrid>
                 <GroupDivider />
-                <ListItemGroup groupName="Greeks" defaultOpen={true} badgeContent={countFiltersFromGroup(['delta', 'gamma', 'theta', 'vega', 'rho'])}>
+                <ListItemGroup groupName="Greeks" defaultOpen={true} badgeContent={countFiltersFromGroup(['delta', 'gamma', 'theta', 'vega'])}>
                     <ListItemGrid>
                         <RangeSlider
                             range={deltaRange}
@@ -378,18 +373,6 @@ export default function FilterItems(props) {
                             id="vega"
                             label="Vega"
                             valueText={(value) => value}
-                            max={1}
-                            step={0.01}
-                        />
-                    </ListItemGrid>
-                    <ListItemGrid>
-                        <RangeSlider
-                            range={rhoRange}
-                            setRange={val => { updateFilterValue(val, setRhoRange) }}
-                            id="rho"
-                            label="Rho"
-                            valueText={(value) => value}
-                            min={-1}
                             max={1}
                             step={0.01}
                         />

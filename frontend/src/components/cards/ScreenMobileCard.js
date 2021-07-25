@@ -78,17 +78,6 @@ export default function ScreenMobileCard({ trade }) {
                             <br />
                             <Typography variant="body1">{trade.days_till_expiration} days</Typography>
                         </Grid>
-                        {/* row 3 */}
-                        <Grid item xs="6">
-                            <Typography variant="button"><MetricLabel label="day's change" /></Typography>
-                            <br />
-                            <Typography variant="body1">{PriceFormatter(trade.change)} ({NumberRoundFormatter(trade.percent_change)}%)</Typography>
-                        </Grid>
-                        <Grid item xs="6">
-                            <Typography variant="button"><MetricLabel label="day range" /></Typography>
-                            <br />
-                            <Typography variant="body1">{PriceFormatter(trade.low_price)} - {PriceFormatter(trade.high_price)}</Typography>
-                        </Grid>
                         {/* row 4 */}
                         <Grid item xs="6">
                             <Typography variant="button"><MetricLabel label="implied volatility" /></Typography>
@@ -129,11 +118,6 @@ export default function ScreenMobileCard({ trade }) {
                         </Grid>
                         {/* row 7 */}
                         <Grid item xs="6">
-                            <Typography variant="button"><MetricLabel label="rho" /></Typography>
-                            <br />
-                            <Typography variant="body1">{NumberRoundFormatter(trade.rho)}</Typography>
-                        </Grid>
-                        <Grid item xs="6">
                             <Typography variant="button"><MetricLabel label="notional value" /></Typography>
                             <br />
                             <Typography variant="body1">{PriceFormatter(trade.notional_value)}</Typography>
@@ -143,11 +127,6 @@ export default function ScreenMobileCard({ trade }) {
                             <Typography variant="button"><MetricLabel label="last traded" /></Typography>
                             <br />
                             <Typography variant="body1">{TimestampTimeFormatter(trade.last_trade_date)}</Typography>
-                        </Grid>
-                        <Grid item xs="6">
-                            <Typography variant="button"><MetricLabel label="quoted at" /></Typography>
-                            <br />
-                            <Typography variant="body1">{TimestampTimeFormatter(trade.quote_time)}</Typography>
                         </Grid>
                         <Grid item xs="6">
                             <Typography variant="button"><MetricLabel label="intrinsic value" /></Typography>

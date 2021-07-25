@@ -48,10 +48,6 @@ export default function TradeDetailsCard(props) {
                             <b><MetricLabel label={trade.net_debit_per_unit > 0 ? "order net debit" : "order net credit"} /></b><br />
                             {PriceFormatter(Math.abs(trade.net_debit_per_unit))}
                         </Col>
-                        <Col sm="3" xs="6">
-                            <b><MetricLabel label="quoted at" /></b><br />
-                            {TimestampTimeFormatter(trade.quote_time)}
-                        </Col>
                     </Row>
                     {
                         trade.legs.map((leg, index) => {

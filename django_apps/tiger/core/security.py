@@ -115,6 +115,7 @@ class OptionContract(Security):
 
             # Metrics that are not avaliable.
             '''
+            TODO: recover those fields using other methods.
             self.high_price = data_dict.get('highPrice')
             self.low_price = data_dict.get('lowPrice')
             self.open_price = data_dict.get('openPrice')

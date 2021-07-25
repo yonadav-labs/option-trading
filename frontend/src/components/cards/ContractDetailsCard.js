@@ -46,15 +46,6 @@ export default function ContractDetailsCard(props) {
                             </Row>
                             {readMore ? <>
                                 <Row>
-                                    <Col sm="2" xs="6">
-                                        <MetricLabel label="day's change" /><br />
-                                        {PriceFormatter(contract.change)} ({NumberRoundFormatter(contract.percent_change)}%)
-                                    </Col>
-                                    <Col sm="2" xs="6">
-                                        <MetricLabel label="day range" /><br />
-                                        {PriceFormatter(contract.low_price)} - {PriceFormatter(contract.high_price)}
-                                    </Col>
-
                                     <Col sm="2" xs="12">
                                         <MetricLabel label="last traded" /><br />
                                         {TimestampTimeFormatter(contract.last_trade_date)}
@@ -81,10 +72,6 @@ export default function ContractDetailsCard(props) {
                                         <MetricLabel label="vega" /><br />
                                         {NumberRoundFormatter(contract.vega)}
                                     </Col>
-                                    <Col sm="2" xs="6">
-                                        <MetricLabel label="rho" /><br />
-                                        {NumberRoundFormatter(contract.rho)}
-                                    </Col>
                                 </Row>
                                 <Row>
                                     <Col sm="2" xs="6">
@@ -102,10 +89,6 @@ export default function ContractDetailsCard(props) {
                                     <Col sm="2" xs="6">
                                         <MetricLabel label="break-even at" /><br />
                                         {PriceFormatter(contract.break_even_price)}
-                                    </Col>
-                                    <Col sm="2" xs="6">
-                                        <MetricLabel label="quoted at" /><br />
-                                        {TimestampTimeFormatter(contract.quote_time)}
                                     </Col>
                                 </Row>
                                 <a className="read-more-link" style={{ cursor: 'pointer' }} onClick={() => { setReadMore(!readMore) }}>{linkName}</a>
