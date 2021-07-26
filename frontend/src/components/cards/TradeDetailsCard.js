@@ -1,77 +1,85 @@
-import React from 'react';
-import { Card, Row, Col } from 'react-bootstrap';
+import React, { useState } from 'react';
 import ShareTradeBtn from '../ShareTradeBtn.js';
-import { PriceFormatter, ProfitFormatter, PercentageFormatter, TimestampTimeFormatter, GenerateTradeTitle } from '../../utils';
-import LegDetailsCard from './LegDetailsCard.js';
+import { PriceFormatter, ProfitFormatter, PercentageFormatter, TimestampTimeFormatter, GenerateTradeTitle, TimestampDateFormatter } from '../../utils';
 import TradeProfitLossGraph from '../TradeProfitLossGraph.js';
 import MetricLabel from '../MetricLabel.js';
 import { startCase } from 'lodash';
-import OptionValueMatrix from "../OptionValueMatrix";
+import BuildLegCard from './BuildLegCard.js';
+import { Card, CardHeader, CardContent, Grid, Typography } from '@material-ui/core';
 
 export default function TradeDetailsCard(props) {
-    const { trade, latestTrade, hideShareButton, hideDisclaimer, hideTitle, broker } = props;
+    const {
+        pastTrade,
+        trade,
+        latestTrade,
+        hideShareButton,
+        hideDisclaimer,
+        hideTitle,
+        broker
+    } = props;
     const displayCommissionCost = broker && broker.options_open_commission + broker.options_close_commission > 0.0;
 
     let profitLoss;
     if (latestTrade) {
-        let profit = latestTrade.cost - trade.cost;
-        let profit_rate = profit / trade.cost;
-        let stock_profit_rate = latestTrade.stock.stock_price / trade.stock.stock_price - 1;
+        let profit = latestTrade.cost - pastTrade.cost;
+        let profit_rate = profit / pastTrade.cost;
+        let stock_profit_rate = latestTrade.stock.stock_price / pastTrade.stock.stock_price - 1;
         profitLoss = { profit, profit_rate, stock_profit_rate };
     }
 
     return (
-        <Card>
+        <Card sx={{ borderRadius: "10px" }}>
             {hideTitle ?
                 null
                 :
-                <Card.Header>
-                    {GenerateTradeTitle(trade)}
-                </Card.Header>
+                <CardHeader title={GenerateTradeTitle(trade)} />
             }
-            <Card.Body>
-                <Row>
-                    <Col><h5>Overview</h5></Col>
-                    {hideShareButton ? null : <div className="col-md-6"><span style={{ float: 'right' }}><ShareTradeBtn trade={trade} /></span></div>}
-                </Row>
-                <Card.Text>
-                    <Row className="mb-3">
-                        <Col sm="3" xs="6">
+            <CardContent>
+                <Grid container direction="row">
+                    <Grid item><Typography variant="h5" mb={4}>Overview</Typography></Grid>
+                    {hideShareButton ? null : <div md={6}><span style={{ float: 'right' }}><ShareTradeBtn trade={trade} /></span></div>}
+                </Grid>
+                <Grid container>
+                    <Grid container direction="row" sx={{ mb: 3 }}>
+                        <Grid item sm={3} xs={6}>
                             <b><MetricLabel label="ticker" /></b><br />
                             {trade.stock.ticker.symbol}
-                        </Col>
-                        <Col sm="3" xs="6">
+                        </Grid>
+                        <Grid item sm={3} xs={6}>
                             <b><MetricLabel label="strategy" /></b><br />
                             {startCase(trade.type)}
-                        </Col>
-                        <Col sm="3" xs="6">
+                        </Grid>
+                        <Grid item sm={3} xs={6}>
                             <b><MetricLabel label={trade.net_debit_per_unit > 0 ? "order net debit" : "order net credit"} /></b><br />
                             {PriceFormatter(Math.abs(trade.net_debit_per_unit))}
-                        </Col>
-                    </Row>
+                        </Grid>
+                        <Grid item sm={3} xs={6}>
+                            <b><MetricLabel label="quoted at" /></b><br />
+                            {TimestampTimeFormatter(trade.quote_time)}
+                        </Grid>
+                    </Grid>
                     {
                         trade.legs.map((leg, index) => {
                             return (
-                                <div key={"leg_" + index + "_details"}>
-                                    <LegDetailsCard key={index} leg={leg} leg_num={index + 1}></LegDetailsCard>
-                                    {index < trade.legs.length - 1 ? <br /> : null}
-                                </div>
+                                <Grid container sx={{ borderTop: "1px solid #E4E4E4", borderBottom: "1px solid #E4E4E4" }} key={"leg_" + index + "_details"}>
+                                    <BuildLegCard leg={leg} hideTitle={true} index={index} key={index} />
+                                </Grid>
                             );
                         })
                     }
-                    <Row className="mt-3">
-                        <Col><h5>Key Data</h5></Col>
-                    </Row>
-                    <Row>
-                        <Col sm="3" xs="6">
+                    <Grid container direction="row" sx={{ mt: 3 }} >
+                        <Grid item mb={4}><Typography variant="h5">Key Data</Typography></Grid>
+                    </Grid>
+                    <Grid container direction="row">
+                        <Grid item sm={3} xs={6}>
                             <b><MetricLabel label="probability of profit" /></b><br />
                             {PercentageFormatter(trade.profit_prob)}
-                        </Col>
-                        <Col sm="3" xs="6">
+                        </Grid>
+                        <Grid item sm={3} xs={6}>
                             <b><MetricLabel label="break-even at" /></b><br />
-                            {trade.break_even_prices_and_ratios.map(break_even => <span>{ProfitFormatter(break_even.ratio)} (at {PriceFormatter(break_even.price)})<br /></span>)}
-                        </Col>
-                        <Col sm="3" xs="6">
+                            {trade.break_even_prices_and_ratios.map((break_even, idx) => <span key={idx + break_even.price}>{ProfitFormatter(break_even.ratio)} (at {PriceFormatter(break_even.price)})<br /></span>)}
+                        </Grid>
+                        <Grid item sm={3} xs={6}>
                             <b> <MetricLabel label="max return" /></b><br />
                             {trade.best_return != null && trade.best_return != 'infinite' ?
                                 (
@@ -80,30 +88,8 @@ export default function TradeDetailsCard(props) {
                                     </span >
                                 )
                                 : (<span>Unlimited</span>)}
-                        </Col>
-                        <Col sm="3" xs="6">
-                            <b><MetricLabel label="total cost" /></b><br />
-                            {PriceFormatter(trade.cost)}
-                        </Col>
-                    </Row>
-                    <Row>
-                        <Col sm="3" xs="6">
-                            <b><MetricLabel label="notional value" /></b><br />
-                            {PriceFormatter(trade.notional_value)}
-                        </Col>
-                        <Col sm="3" xs="6">
-                            <b><MetricLabel label="leverage" /></b><br />
-                            {PercentageFormatter(trade.leverage)}
-                        </Col>
-
-                        {displayCommissionCost &&
-                            <Col sm="3" xs="6">
-                                <b> <MetricLabel label="total commission" /></b><br />
-                                {PriceFormatter(trade.commission_cost)}
-                            </Col>
-                        }
-
-                        <Col sm="3" xs="6">
+                        </Grid>
+                        <Grid item sm={3} xs={6}>
                             <b><MetricLabel label="10% probability loss" /></b><br />
                             {
                                 trade.ten_percent_worst_return_ratio != null ?
@@ -116,8 +102,8 @@ export default function TradeDetailsCard(props) {
                                     </>
                                     : "N/A"
                             }
-                        </Col>
-                        <Col sm="3" xs="6">
+                        </Grid>
+                        <Grid item sm={3} xs={6}>
                             <b><MetricLabel label="10% probability profit" /></b><br />
                             {
                                 trade.ten_percent_best_return_ratio != null ?
@@ -130,58 +116,39 @@ export default function TradeDetailsCard(props) {
                                     </>
                                     : "N/A"
                             }
-                        </Col>
-                    </Row>
-                    <TradeProfitLossGraph trade={trade} />
-                    <OptionValueMatrix matrixInfo={trade.return_matrix} stockPrice={trade.stock.stock_price} cost={trade.cost} />
-                    {trade.target_price_lower &&
-                        <>
-                            <Row>
-                                <Col><h5>Market Assumption</h5></Col>
-                            </Row>
-                            <Row>
-                                <Col sm="3" xs="6">
-                                    <b><MetricLabel label="price target range" /></b><br />
-                                    {PriceFormatter(trade.target_price_lower)} ({ProfitFormatter(trade.to_target_price_lower_ratio)})
-                                    - {PriceFormatter(trade.target_price_upper)} ({ProfitFormatter(trade.to_target_price_upper_ratio)})
-                                </Col>
-                                <Col sm="3" xs="6">
-                                    <b><MetricLabel label="potential return" /></b><br />
-                                    {ProfitFormatter(trade.target_price_profit_ratio)} ({PriceFormatter(trade.target_price_profit)})
-                                </Col>
-                            </Row>
-                        </>
-                    }
-                    {
-                        profitLoss &&
-                        <>
-                            <Row className="mt-3">
-                                <Col><h5>Latest Return</h5></Col>
-                            </Row>
-                            <Row>
-                                <Col sm="3" xs="6">
-                                    <b><MetricLabel label="latest return" /></b><br />
-                                    <div> {PriceFormatter(profitLoss.profit)} ({ProfitFormatter(profitLoss.profit_rate)})</div>
-                                </Col>
-                                <Col sm="3" xs="6">
-                                    <b><MetricLabel label="initial value" /></b><br />
-                                    <div> {PriceFormatter(trade.cost)} </div>
-                                </Col>
-                                <Col sm="3" xs="6">
-                                    <b><MetricLabel label="latest value" /></b><br />
-                                    <div> {PriceFormatter(latestTrade.cost)} </div>
-                                </Col>
-                                <Col sm="3" xs="6">
-                                    <b><MetricLabel label="latest stock return" /></b><br />
-                                    <div> {ProfitFormatter(profitLoss.stock_profit_rate)}</div>
-                                </Col>
-                            </Row>
-                        </>
-                    }
-                </Card.Text>
-                {hideDisclaimer ?
-                    null : (<span>*All data are based on estimated options value on expiration date.</span>)}
-            </Card.Body>
+                        </Grid>
+                    </Grid>
+                    <Grid container >
+                        <Grid item sm={3} xs={6}>
+                            <b><MetricLabel label="total cost" /></b><br />
+                            {PriceFormatter(trade.cost)}
+                        </Grid>
+                        <Grid item sm={3} xs={6}>
+                            <b><MetricLabel label="notional value" /></b><br />
+                            {PriceFormatter(trade.notional_value)}
+                        </Grid>
+                        <Grid item sm={3} xs={6}>
+                            <b><MetricLabel label="leverage" /></b><br />
+                            {PercentageFormatter(trade.leverage)}
+                        </Grid>
+                        {displayCommissionCost &&
+                            <Grid item sm={3} xs={6}>
+                                <b> <MetricLabel label="total commission" /></b><br />
+                                {PriceFormatter(trade.commission_cost)}
+                            </Grid>
+                        }
+                        {trade &&
+                            <Grid item sm={3} xs={6}>
+                                <b><MetricLabel label="quoted at" /></b><br />
+                                {TimestampTimeFormatter(trade.quote_time)}
+                            </Grid>
+                        }
+                    </Grid>
+                    <Grid container>
+                        <TradeProfitLossGraph trade={trade} />
+                    </Grid>
+                </Grid>
+            </CardContent>
         </Card >
     );
 }

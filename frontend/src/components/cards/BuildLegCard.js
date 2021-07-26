@@ -90,7 +90,7 @@ export default function BuildLegCard(props) {
     );
 
     return (
-        <Card sx={{ boxShadow: "none" }} onClick={handleExpandClick}>
+        <Card sx={{ boxShadow: "none", width: '100%' }} onClick={handleExpandClick}>
             <CardHeader
                 onMouseEnter={mouseEnter} onMouseLeave={mouseExit}
                 style={hovered ? { backgroundColor: "#d3d3d3" } : null}

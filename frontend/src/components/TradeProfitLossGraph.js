@@ -365,7 +365,7 @@ export default function TradeProfitLossGraph(props) {
     }, [trade, renderDate]);
 
     return (
-        <Row className="row justify-content-center">
+        <Row className="row justify-content-center" style={{ width: '100%' }}>
             <Col className="mixed-chart">
                 <FormControl>
                     <InputLabel id="date-label" style={{ top: 48, left: 68, zIndex: 100 }}>Trade date</InputLabel>
