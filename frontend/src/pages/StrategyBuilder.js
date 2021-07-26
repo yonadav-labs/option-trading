@@ -8,7 +8,7 @@ import './StrategyBuilder.css';
 import { strategies as allStrategies } from '../blobs/Strategies';
 import { cloneDeep, get, isEmpty, set, throttle } from 'lodash';
 import TickerTypeahead from '../components/TickerTypeahead';
-import ModalSpinner from '../components/ModalSpinner';
+import ModalSpinner from '../components/LoadingModal';
 import TickerSummary from '../components/TickerSummary';
 import Select from "react-select";
 import getApiUrl, {

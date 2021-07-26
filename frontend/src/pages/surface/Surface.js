@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import { Helmet } from "react-helmet";
 import Axios from 'axios';
-import ModalSpinner from '../../components/ModalSpinner';
+import ModalSpinner from '../../components/LoadingModal';
 import LandingView from "./LandingView";
 import MainView from "./MainView";
 
