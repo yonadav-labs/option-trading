@@ -11,7 +11,7 @@ import Footer from './components/footer'
 import Surface from './pages/surface/Surface'
 import Disclaimer from './components/disclaimer';
 import Privacy from './components/privacy';
-import NewStrategyScreener from './pages/strategy_screener/NewStrategyScreener';
+import Generator from './pages/generator_tool/Generator';
 import SingleTrade from './pages/SingleTrade';
 import Pricing from './pages/Pricing';
 import StrategyBuilder from './pages/StrategyBuilder';
@@ -53,9 +53,9 @@ export default withRouter(class AppWithRouterAccess extends Component {
                             <Route path='/surface' exact={true} component={Surface} />
                             <Route path='/panorama' exact={true} component={Surface} />
                             <Route path='/heatmap' exact={true} component={Surface} />
-                            <Route path='/discover' exact={true} component={NewStrategyScreener} />
-                            <Route path='/generator' exact={true} component={NewStrategyScreener} />
-                            <Route path='/strategy-screener' exact={true} component={NewStrategyScreener} />
+                            <Route path='/discover' exact={true} component={Generator} />
+                            <Route path='/generator' exact={true} component={Generator} />
+                            <Route path='/strategy-screener' exact={true} component={Generator} />
                             <Route path='/t/:tradeId' exact={true} component={SingleTrade} />
                             <Route path='/strategy-builder' exact={true} component={NewBuild} />
                             <Route path='/old-build' exact={true} component={StrategyBuilder} />

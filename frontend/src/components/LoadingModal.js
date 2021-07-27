@@ -1,7 +1,7 @@
 import React from 'react'
 import { Backdrop, CircularProgress } from "@material-ui/core";
 
-function ModalSpinner({ active }) {
+function LoadingModal({ active }) {
     return (
         <Backdrop
             sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
@@ -12,4 +12,4 @@ function ModalSpinner({ active }) {
     )
 }
 
-export default ModalSpinner
+export default LoadingModal
