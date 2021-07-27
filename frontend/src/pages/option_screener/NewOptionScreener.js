@@ -14,7 +14,8 @@ import { useOktaAuth } from '@okta/okta-react';
 // url querying
 import { useHistory, useLocation } from "react-router-dom";
 import { addQuery, useSearch } from "../../components/querying";
-import { Backdrop } from "@material-ui/core";
+
+import LoadingModal from "../../components/LoadingModal";
 
 const GaEvent = GetGaEventTrackingFunc('option screener');
 
@@ -36,7 +37,7 @@ export default function NewOptionScreener() {
     const [selectedExpirationTimestamps, setSelectedExpirationTimestamps] = useState([]);
 
     // component management states
-    const [modalActive, setModalActive] = useState(false);
+    const [loading, setLoading] = useState(false);
     const [isOpenAskSignupModal, setIsOpenAskSignupModal] = useState(false);
     const [expirationDisabled, setExpirationDisabled] = useState(true);
     const [pageState, setPageState] = useState(true);
@@ -50,7 +51,7 @@ export default function NewOptionScreener() {
         setExpirationTimestampsOptions([])
         setSelectedExpirationTimestamps([]);
         setBasicInfo({});
-        setModalActive(false);
+        setLoading(false);
         setContracts([]);
     }
 
@@ -70,7 +71,7 @@ export default function NewOptionScreener() {
         GaEvent('adjust ticker');
         resetStates();
         if (selected) {
-            newLoadExpirationDates(headers, selected, setModalActive, setExpirationTimestamps, setBasicInfo, setSelectedTicker);
+            newLoadExpirationDates(headers, selected, setLoading, setExpirationTimestamps, setBasicInfo, setSelectedTicker);
             addQuery(location, history, 'symbol', selected.symbol)
         } else {
             setExpirationDisabled(true);
@@ -104,20 +105,20 @@ export default function NewOptionScreener() {
                     expiration_timestamps: selectedExpirationTimestamps.map(date => date.value),
                     filters: filters
                 };
-                setModalActive(true);
+                setLoading(true);
                 const response = await Axios.post(url, body);
                 let contracts = response.data.contracts;
                 setContracts(contracts);
-                setModalActive(false);
                 if (!user) {
                     setIsOpenAskSignupModal(true);
                 }
-                setPageState(false)
+                setPageState(false);
+                setLoading(false);
             }
             else { setContracts([]) }
         } catch (error) {
             console.error(error);
-            setModalActive(false);
+            setLoading(false);
         }
         GaEvent('fetch contracts');
     };
@@ -128,13 +129,7 @@ export default function NewOptionScreener() {
                 <title>Tigerstance | Screen and filter for option contracts from the options chain.</title>
                 <meta name="description" content="Screen and filter for option contracts from the options chain with Tigerstance." />
             </Helmet>
-            {/* TODO: make this a reusable component */}
-            <Backdrop
-                sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
-                open={modalActive}
-            >
-                <CircularProgress color="inherit" />
-            </Backdrop>
+            <LoadingModal active={loading} />
             <AskSignupModal open={isOpenAskSignupModal}></AskSignupModal>
             {
                 pageState ?
@@ -160,6 +155,7 @@ export default function NewOptionScreener() {
                         getContracts={getContracts}
                         basicInfo={basicInfo}
                         contracts={contracts}
+                        loading={loading}
                     />
             }
         </>

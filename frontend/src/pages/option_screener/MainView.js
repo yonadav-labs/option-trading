@@ -56,7 +56,8 @@ export default function MainView(props) {
         onExpirationSelectionChange,
         basicInfo,
         contracts,
-        getContracts
+        getContracts,
+        loading,
     } = props
     const theme = useTheme();
     const classes = useStyles();
@@ -164,7 +165,7 @@ export default function MainView(props) {
     }, [selectedTicker]);
 
     useEffect(() => {
-        if (selectedTicker && selectedExpirationTimestamps) {
+        if (!loading && selectedTicker && selectedExpirationTimestamps) {
             getContracts(filters);
         }
         setSelectedTimestamps(selectedExpirationTimestamps);
@@ -217,7 +218,7 @@ export default function MainView(props) {
                             <Grid item>
                                 <Typography variant="subtitle1">Expiration Date</Typography>
                             </Grid>
-                            <Grid item sm={4.8}>
+                            <Grid item sm={5}>
                                 <ExpirationMultiSelect
                                     selectedTimestamps={selectedTimestamps}
                                     setSelectedTimestamps={setSelectedTimestamps}
@@ -264,7 +265,7 @@ export default function MainView(props) {
                             basicInfo={basicInfo}
                         />
                     </FilterDialog>
-                    <Grid container xs>
+                    <Grid container item xs>
                         <FilterDrawer open={!isMobile && filterOpen}>
                             <FilterItems
                                 filters={filters}
@@ -344,7 +345,7 @@ export default function MainView(props) {
                                             <TableHead >
                                                 <TableRow style={{ borderBottom: "2px solid rgba(228, 228, 228, 1)", }}>
                                                     {headCells.map((headCell) => (
-                                                        <TableCell align="center" style={orderBy === headCell.id ? { backgroundColor: "orange" } : null}>
+                                                        <TableCell key={headCell.id} align="center" style={orderBy === headCell.id ? { backgroundColor: "orange" } : null}>
                                                             <TableSortLabel
                                                                 active={orderBy === headCell.id}
                                                                 direction={orderBy === headCell.id ? order : 'asc'}
