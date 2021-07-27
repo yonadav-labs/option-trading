@@ -14,7 +14,7 @@ export default function Footer(props) {
                             Never get lost in the options chain again.
                         </Typography>
                         <Typography variant="body1" color="primary.contrastText" pb={2}>
-                            Contact us at contact@tigerstance.com or through this <Link href="https://forms.gle/qEqcKb1mtG8PJUWq6" target="_blank" rel="noopener">google form</Link>.
+                            Contact us at <Link rel="noopener noreferrer" href="mailto:contact@tigerstance.com">contact@tigerstance.com</Link> or through this <Link href="https://forms.gle/qEqcKb1mtG8PJUWq6" target="_blank" rel="noopener">google form</Link>.
                         </Typography>
                         <Typography variant="h5" pb={1}>
                             <Link href="https://www.facebook.com/TigerStanceOfficial" target="_blank" rel="noopener"><FaFacebookSquare /></Link>&nbsp;
