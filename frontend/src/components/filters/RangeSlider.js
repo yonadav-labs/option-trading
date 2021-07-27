@@ -91,7 +91,7 @@ export default function RangeSlider(props) {
     return (
         <>
             <Typography id={`${id}-range-slider`} variant="button" gutterBottom><MetricLabel label={label} /></Typography>
-            <Grid container alignItems="center" columnSpacing={1} zeroMinWidth>
+            <Grid container item alignItems="center" columnSpacing={1} zeroMinWidth>
                 <Grid container item xs={12} alignItems="center">
                     <Slider
                         id={`${id}-slider`}
@@ -108,7 +108,7 @@ export default function RangeSlider(props) {
                         sx={{ marginLeft: 1, marginRight: 1 }}
                     />
                 </Grid>
-                <Grid item xs={5.75}>
+                <Grid item xs>
                     <Autocomplete
                         id={`${id}-min-input`}
                         value={range[0].toString()}
@@ -150,8 +150,8 @@ export default function RangeSlider(props) {
                         }}
                     />
                 </Grid>
-                <Grid container item xs={0.5} alignItems="center" justifyContent="center"> - </Grid>
-                <Grid item xs={5.75}>
+                <Grid container item xs={1} alignItems="center" justifyContent="center"> - </Grid>
+                <Grid item xs>
                     <Autocomplete
                         id={`${id}-max-input`}
                         value={range[1].toString()}

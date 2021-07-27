@@ -6,7 +6,7 @@ import {
 export default function ListItemGrid(props) {
     return (
         <ListItem>
-            <Grid container zeroMinWidth>
+            <Grid container item zeroMinWidth>
                 {props.children}
             </Grid>
         </ListItem>

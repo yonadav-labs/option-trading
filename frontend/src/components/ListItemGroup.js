@@ -33,5 +33,5 @@ ListItemGroup.defaultProps = {
 ListItemGroup.propTypes = {
     groupName: PropTypes.string.isRequired,
     defaultOpen: PropTypes.bool,
-    badgeContent: PropTypes.string,
+    badgeContent: PropTypes.any,
 };
