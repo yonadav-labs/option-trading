@@ -180,7 +180,7 @@ export default function FilterItems(props) {
         setStrikeRange([filters["min.strike"] || 0, filters["max.strike"] || (isEmpty(basicInfo) ? 0 : maxStrikeValue)]);
         setMinVol(filters["min.volume"] || 0);
         setMinOI(filters["min.open_interest"] || 0);
-        setITMRange([filters["min.itm_probability"] || 0, filters["max.itm_probability"] || 100]);
+        setITMRange([filters["min.itm_probability"] * 100 || 0, filters["max.itm_probability"] * 100 || 100]);
         setMinLastTraded(filters["min.last_trade_date"] ? Math.round((Date.now() - filters["min.last_trade_date"] * 1000) / -(24 * 60 * 60 * 1000)) : 0);
         setBARange([filters["min.bid_ask_spread"] || 0, filters["max.bid_ask_spread"] || 100]);
         setDeltaRange([filters["min.delta"] || -1, filters["max.delta"] || 1]);
@@ -323,8 +323,8 @@ export default function FilterItems(props) {
                     <RangeSlider
                         range={itmRange}
                         setRange={val => { updateFilterValue(val, setITMRange) }}
-                        id="minITM"
-                        label="Min In The Money(ITM) Probability"
+                        id="itm"
+                        label="In The Money(ITM) Probability"
                         valueText={(value) => value}
                         endAdornment="%"
                     />
