@@ -1,8 +1,7 @@
 import React, { useRef, useState, useEffect } from "react";
 import Highcharts from "highcharts";
 import HighchartsReact from "highcharts-react-official";
-import { Row, Col, Button } from "react-bootstrap";
-import { Select, MenuItem, FormControl, InputLabel } from "@material-ui/core";
+import { Select, MenuItem, FormControl, InputLabel, Grid, Button } from "@material-ui/core";
 
 export default function TradeProfitLossGraph(props) {
     const { trade } = props;
@@ -365,8 +364,8 @@ export default function TradeProfitLossGraph(props) {
     }, [trade, renderDate]);
 
     return (
-        <Row className="row justify-content-center" style={{ width: '100%' }}>
-            <Col className="mixed-chart">
+        <Grid container direction="row" justifyContent="center" style={{ width: '100%' }}>
+            <Grid item className="mixed-chart" xs={12}>
                 <FormControl>
                     <InputLabel id="date-label" style={{ top: 48, left: 68, zIndex: 100 }}>Trade date</InputLabel>
                     <Select
@@ -383,16 +382,15 @@ export default function TradeProfitLossGraph(props) {
                     </Select>
                 </FormControl>
 
-                <Button style={{ position: 'relative', top: 50, left: 100, zIndex: 100 }} onClick={zoomOut}>-</Button>
-                <Button style={{ position: 'relative', top: 50, left: 102, zIndex: 100 }} onClick={zoomIn}>+</Button>
-                <Button style={{ position: 'relative', top: 50, zIndex: 100 }}
-                    className="float-right" onClick={resetZoom}>Reset Zoom</Button>
+                <Button variant="contained" style={{ position: 'relative', top: 50, left: 100, zIndex: 100 }} onClick={zoomOut}>-</Button>
+                <Button variant="contained" style={{ position: 'relative', top: 50, left: 102, zIndex: 100 }} onClick={zoomIn}>+</Button>
+                <Button variant="contained" style={{ position: 'relative', top: 50, zIndex: 100, float: "right" }} onClick={resetZoom}>Reset Zoom</Button>
                 <HighchartsReact
                     ref={chartComponent}
                     highcharts={Highcharts}
                     options={options}
                 />
-            </Col>
-        </Row>
+            </Grid>
+        </Grid>
     );
 }
