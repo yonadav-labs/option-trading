@@ -1,6 +1,6 @@
 import React, { useContext, useState } from 'react';
 import { Helmet } from "react-helmet";
-import { Modal } from 'react-bootstrap';
+import CloseIcon from '@material-ui/icons/Close';
 import { useOktaAuth } from '@okta/okta-react';
 import UserContext from '../UserContext';
 import Subscribe from '../components/Subscribe';
@@ -9,8 +9,10 @@ import {
     getPaypalPastMonthlyPlanIds, getPaypalPastYearlyPlanIds
 } from '../utils';
 import LinkIcon from '@material-ui/icons/Link';
-import { IconButton, Tooltip } from '@material-ui/core';
-import { Grid, Card, CardContent, CardActions, Button, Container, Typography, Link, List, ListItem, Box } from "@material-ui/core";
+import {
+    Grid, Card, CardContent, CardActions, Button, Container, Typography,
+    Link, List, ListItem, Box, IconButton, Tooltip, Modal
+} from "@material-ui/core";
 import { makeStyles, withStyles } from "@material-ui/styles";
 
 
@@ -280,8 +282,8 @@ export default function Pricing() {
             {
                 user &&
                 <Modal
-                    show={showSubscribeModal}
-                    onHide={() => {
+                    open={showSubscribeModal}
+                    onClose={() => {
                         GaEvent('close subscribe modal');
                         setShowSubscribeModal(false);
                     }}
@@ -289,12 +291,35 @@ export default function Pricing() {
                     keyboard={false}
                     centered
                 >
-                    <Modal.Header closeButton>
-                        <Modal.Title>Subscribe</Modal.Title>
-                    </Modal.Header>
-                    <Modal.Body>
-                        <Subscribe username={user.username} plan_id={paypalPlanID}></Subscribe>
-                    </Modal.Body>
+                    <Box sx={{
+                        position: 'absolute',
+                        top: '50%',
+                        left: '50%',
+                        transform: 'translate(-50%, -50%)',
+                        width: { xs: 400, sm: 500 },
+                        bgcolor: 'background.paper',
+                        boxShadow: 24
+                    }}>
+                        <Grid container justifyContent="center" xs={12}>
+                            <Grid item xs={12} sx={{ pt: 2, pb: 3, px: 2, borderBottom: "1px solid #E4E4E4" }}>
+                                <Grid container direction="row">
+                                    <Grid item xs={11} align="left">
+                                        <Typography variant="h5">Subscribe</Typography>
+                                    </Grid>
+                                    <Grid item xs={1} align="right">
+                                        <Button onClick={() => setShowSubscribeModal(false)} sx={{ p: 0 }}><CloseIcon sx={{ color: "#333" }} /></Button>
+                                    </Grid>
+                                </Grid>
+                            </Grid>
+                            <Grid item xs={12} px={2}>
+                                <Grid container justifyContent="center" mt="1rem">
+                                    <Grid item xs={12}>
+                                        <Subscribe username={user.username} plan_id={paypalPlanID}></Subscribe>
+                                    </Grid>
+                                </Grid>
+                            </Grid>
+                        </Grid>
+                    </Box>
                 </Modal>
             }
         </>
