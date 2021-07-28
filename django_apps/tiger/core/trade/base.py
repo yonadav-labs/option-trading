@@ -193,10 +193,7 @@ class Trade(ABC):
         returns_at_expiry = [self.get_total_return(price, price) for price in stock_prices]
 
         min_expiration = self._get_aggr_contract_attribute('expiration', use_min=True)
-        # We don't need the last date (expiry date).
-        # Because this calculation is very slow, we cannot afford to calculate for many dates.
-        # TODO: make this a separate API so we don't slow down the main search that much.
-        calculation_dates = get_dates_till_expiration(min_expiration, 3)[:-1]
+        calculation_dates = get_dates_till_expiration(min_expiration, 7)
         return_matrix = self.get_value_matrix(calculation_dates, stock_prices)
 
         returns_by_date = []
