@@ -100,6 +100,10 @@ export default function HeatMapTable({ className, zLabel, data, contractType, st
                                     if (val) {
                                         valDisplay = (val * 100.0).toFixed(2) + '%';
                                     }
+                                } else if (zLabel == 'bid' || zLabel == 'ask' || zLabel == 'mark') {
+                                    if (val) {
+                                        valDisplay = '$' + val.toFixed(2);
+                                    }
                                 }
 
                                 return (

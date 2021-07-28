@@ -104,6 +104,9 @@ class TickerViewSet(LoggingMixin, viewsets.ModelViewSet):
             lst_p_otm = []
             lst_apr = []
             lst_vol_per_oi = []
+            lst_bid = []
+            lst_ask = []
+            lst_mark = []
 
             for contract in contracts:
                 apr = get_annualized_value(contract.bid / stock.stock_price, contract.days_till_expiration) \
@@ -145,6 +148,12 @@ class TickerViewSet(LoggingMixin, viewsets.ModelViewSet):
                     lst_apr.append(apr)
                 if vol_per_oi is not None:
                     lst_vol_per_oi.append(vol_per_oi)
+                if contract.bid is not None:
+                    lst_bid.append(contract.bid)
+                if contract.ask is not None:
+                    lst_ask.append(contract.ask)
+                if contract.mark is not None:
+                    lst_mark.append(contract.mark)
 
             min_max = {
                 'Implied Volatility': {
@@ -170,6 +179,18 @@ class TickerViewSet(LoggingMixin, viewsets.ModelViewSet):
                 'vol_per_oi': {
                     'min': min(lst_vol_per_oi),
                     'max': max(lst_vol_per_oi)
+                },
+                'bid': {
+                    'min': min(lst_bid),
+                    'max': max(lst_bid)
+                },
+                'ask': {
+                    'min': min(lst_ask),
+                    'max': max(lst_ask)
+                },
+                'mark': {
+                    'min': min(lst_mark),
+                    'max': max(lst_mark)
                 },
             }
 

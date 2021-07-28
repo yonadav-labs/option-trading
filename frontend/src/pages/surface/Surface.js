@@ -70,7 +70,10 @@ export default function Surface() {
         { value: 'Implied Volatility', label: 'Implied Volatility' },
         { value: 'Open Interest', label: 'Open Interest' },
         { value: 'Volume', label: 'Volume' },
-        { value: 'vol_per_oi', label: 'VOL/OI' }
+        { value: 'vol_per_oi', label: 'VOL/OI' },
+        { value: 'bid', label: 'Bid' },
+        { value: 'ask', label: 'Ask' },
+        { value: 'mark', label: 'Mark' },
     ]
 
     const resetStates = () => {
@@ -79,7 +82,7 @@ export default function Surface() {
         setBasicInfo({ latestPrice: 0 });
         setModalActive(false);
         setBaseHeatmapData(null);
-        setFilters(initialFilters);
+        setFilters({ ...initialFilters, contractType: filters.contractType, metric: filters.metric });
     }
 
     const setExpirationTimestamps = (val) => {
