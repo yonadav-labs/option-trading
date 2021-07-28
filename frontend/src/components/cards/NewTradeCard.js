@@ -1,4 +1,6 @@
 import React, { useState, useContext } from "react";
+import Axios from 'axios';
+import { useOktaAuth } from '@okta/okta-react';
 import {
     Grid, Typography, Divider, Chip, Card, CardHeader,
     CardContent, CardActionArea, CardActions, IconButton,
@@ -11,10 +13,10 @@ import { startCase } from 'lodash';
 
 import TradeProfitLossGraph from "../TradeProfitLossGraph";
 import MetricLabel from '../MetricLabel.js';
-import {
+import getApiUrl, {
     PriceFormatter, ProfitFormatter, PercentageFormatter,
-    TimestampTimeFormatter, GetGaEventTrackingFunc,
-    NumberRoundFormatter
+    GetGaEventTrackingFunc, NumberRoundFormatter,
+    ConvertToTradeSnapshot
 } from '../../utils';
 import ShareTradeBtn from "../ShareTradeBtn";
 import NewLegCard from "./NewLegCard";
@@ -35,13 +37,40 @@ const useStyles = makeStyles(theme => ({
 
 export default function NewTradeCard({ trade }) {
     const classes = useStyles();
+    const { authState } = useOktaAuth();
+    const [detailedTrade, setDetailedTrade] = useState(null)
     const [moreInfo, setMoreInfo] = useState(false)
     const [isRaised, setIsRaised] = useState(false)
     const { user } = useContext(UserContext);
+    const API_URL = getApiUrl();
 
-    const showMoreInfo = () => {
+    trade.graph_points = trade.graph_points_simple;
+
+    const showMoreInfo = async () => {
         GaEvent('expand trade card');
-        setMoreInfo(!moreInfo);
+
+        if (detailedTrade) {
+            setMoreInfo(!moreInfo);
+        } else {
+            const tradeSnapshot = ConvertToTradeSnapshot(trade);
+            try {
+                let url = `${API_URL}/trade_snapshots_on_the_fly`;
+                let headers = {
+                    'Content-Type': 'application/json',
+                }
+                if (authState.isAuthenticated) {
+                    const { accessToken } = authState;
+                    headers['Authorization'] = `Bearer ${accessToken.accessToken}`
+                }
+                const response = await Axios.post(url, tradeSnapshot, {
+                    headers: headers
+                });
+                setDetailedTrade(response.data.trade_snapshot);
+                setMoreInfo(!moreInfo);
+            } catch (error) {
+                console.error(error);
+            }
+        }
     };
 
     const mouseEnter = () => {
@@ -243,14 +272,14 @@ export default function NewTradeCard({ trade }) {
                 }
             </CardActionArea>
             {/* show more info */}
-            {moreInfo ?
+            {moreInfo && detailedTrade ?
                 <>
                     <Divider />
                     <CardActions>
                         {/* trade profit graph */}
                         <Grid container>
                             <Grid item xs>
-                                <TradeProfitLossGraph trade={trade} />
+                                <TradeProfitLossGraph trade={detailedTrade} />
                             </Grid>
                         </Grid>
                     </CardActions>
@@ -258,7 +287,7 @@ export default function NewTradeCard({ trade }) {
                     <CardActions>
                         <Grid container>
                             <Grid item xs>
-                                <OptionValueMatrix matrixInfo={trade.return_matrix} stockPrice={trade.stock.stock_price} cost={trade.cost} />
+                                <OptionValueMatrix matrixInfo={detailedTrade.return_matrix} stockPrice={detailedTrade.stock.stock_price} cost={detailedTrade.cost} />
                             </Grid>
                         </Grid>
                     </CardActions>

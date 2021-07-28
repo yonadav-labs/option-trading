@@ -354,3 +354,41 @@ export function GenerateTradeTitle(trade) {
         </h4>
     );
 }
+
+export function ConvertToTradeSnapshot(trade) {
+    let tradeSnapshot = {
+        type: trade.type,
+        stock_snapshot: {
+            ticker_id: trade.stock.ticker.id,
+            external_cache_id: trade.stock.external_cache_id,
+            ticker_stats_id: trade.stock.ticker_stats_id
+        },
+        leg_snapshots: [],
+        is_public: true,
+        premium_type: trade.premium_type,
+        target_price_lower: trade.target_price_lower,
+        target_price_upper: trade.target_price_upper,
+    };
+    trade.legs.map((leg) => {
+        let legSnapshot = { is_long: leg.is_long, units: leg.units }
+        if (leg.contract) {
+            let contract = {
+                ticker_id: leg.contract.ticker.id,
+                external_cache_id: leg.contract.external_cache_id,
+                is_call: leg.contract.is_call,
+                strike: leg.contract.strike,
+                expiration_timestamp: leg.contract.expiration,
+            }
+            legSnapshot.contract_snapshot = contract;
+        } else if (leg.stock) {
+            legSnapshot.stock_snapshot = {
+                ticker_id: leg.stock.ticker.id,
+                external_cache_id: leg.stock.external_cache_id,
+            };
+        } else {
+            legSnapshot.cash_snapshot = true;
+        }
+        tradeSnapshot.leg_snapshots.push(legSnapshot);
+    })
+    return tradeSnapshot;
+}

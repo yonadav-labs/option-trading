@@ -181,6 +181,13 @@ class Trade(ABC):
         return x
 
     @property
+    def graph_points_simple(self):
+        stock_prices = self.build_stock_price_range(points=50)
+        returns_at_expiry = [self.get_total_return(price, price) for price in stock_prices]
+
+        return {'x': stock_prices, 'y': returns_at_expiry}
+
+    @property
     def graph_points(self):
         stock_prices = self.build_stock_price_range(points=50)
         returns_at_expiry = [self.get_total_return(price, price) for price in stock_prices]

@@ -8,7 +8,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from tiger.core.trade.trade_factory import TradeFactory
 from tiger.models import TradeSnapshot
-from tiger.serializers import TradeSerializer, TradeSnapshotSerializer, BrokerSerializer
+from tiger.serializers import TradeSerializer, TradeSnapshotSerializer, BrokerSerializer, TradeSimpleSerializer
 from tiger.views.decorators import tracking_api
 from tiger.views.utils import get_current_trade, get_broker
 
@@ -82,7 +82,9 @@ def trade_snapshots_on_the_fly(request):
     if request.method == 'POST':
         trade_snapshot_serializer = TradeSnapshotSerializer(data=request.data)
         if trade_snapshot_serializer.is_valid():
-            trade = TradeFactory.from_snapshot_dict(trade_snapshot_serializer.validated_data)
+            broker = get_broker(request.user)
+            broker_settings = broker.get_broker_settings()
+            trade = TradeFactory.from_snapshot_dict(trade_snapshot_serializer.validated_data, broker_settings)
             trade_serializer = TradeSerializer(trade)
             return Response({'trade_snapshot': trade_serializer.data},
                             status=status.HTTP_201_CREATED)
@@ -105,7 +107,7 @@ def trade_snapshots_history(request):
     for trade_snapshot in trade_snapshots:
         trade = TradeFactory.from_snapshot(trade_snapshot, broker_settings)
         trade.meta = {'snapshot_id': trade_snapshot.id}
-        trade_serializer = TradeSerializer(trade)
+        trade_serializer = TradeSimpleSerializer(trade)
         resp.append(trade_serializer.data)
 
     return Response(resp)

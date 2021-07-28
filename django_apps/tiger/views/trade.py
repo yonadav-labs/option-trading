@@ -9,7 +9,7 @@ from tiger.core import Stock
 from tiger.core.trade import LongCall, LongPut, CoveredCall, CashSecuredPut, BullPutSpread, BullCallSpread, \
     BearCallSpread, BearPutSpread, ProtectivePut
 from tiger.models import Ticker
-from tiger.serializers import TradeSerializer, BrokerSerializer
+from tiger.serializers import TradeSimpleSerializer, BrokerSerializer
 from tiger.views.decorators import tracking_api
 from tiger.views.utils import get_filtered_contracts, get_broker, get_disabled_or_disallowed_strategies, \
     filter_object_on_attribute
@@ -148,7 +148,7 @@ def get_top_trades(request, ticker_symbol):
     all_trades = build_trades(stock, call_contract_lists, put_contract_lists, strategy_settings, trade_filters,
                               broker_settings, request.user)
     response = {
-        'trades': TradeSerializer(all_trades, many=True).data,
+        'trades': TradeSimpleSerializer(all_trades, many=True).data,
         'broker': BrokerSerializer(broker).data
     }
 

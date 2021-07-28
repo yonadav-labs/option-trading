@@ -113,3 +113,43 @@ class TradeSerializer(serializers.Serializer):
     gamma = ReadOnlyRatioDecimalField()
     theta = ReadOnlyRatioDecimalField()
     vega = ReadOnlyRatioDecimalField()
+
+
+
+class TradeSimpleSerializer(serializers.Serializer):
+    id = serializers.IntegerField(required=False)
+    type = serializers.CharField(max_length=50)
+    stock = StockSerializer()  # The underlying.
+    legs = LegSerializer(required=True, many=True)
+    premium_type = serializers.ReadOnlyField()
+    target_price_lower = ReadOnlyDollarDecimalField()
+    target_price_upper = ReadOnlyDollarDecimalField()
+    meta = serializers.JSONField(required=False)
+
+    break_evens = serializers.ListField(child=ReadOnlyDollarDecimalField())
+    break_even_prices_and_ratios = serializers.JSONField(read_only=True)
+    cost = ReadOnlyDollarDecimalField()
+    to_target_price_lower_ratio = ReadOnlyRatioDecimalField()
+    to_target_price_upper_ratio = ReadOnlyRatioDecimalField()
+    target_price_profit = ReadOnlyDollarDecimalField()
+    target_price_profit_ratio = ReadOnlyRatioDecimalField()
+    best_return = serializers.ReadOnlyField()
+    worst_return = serializers.ReadOnlyField()
+    reward_to_risk_ratio = ReadOnlyRatioDecimalField()
+    graph_points_simple = serializers.JSONField(read_only=True)
+    notional_value = ReadOnlyDollarDecimalField()
+    leverage = ReadOnlyRatioDecimalField()
+    ten_percent_best_return_price = ReadOnlyDollarDecimalField()
+    ten_percent_best_return = ReadOnlyDollarDecimalField()
+    ten_percent_best_return_ratio = ReadOnlyRatioDecimalField()
+    ten_percent_worst_return_price = ReadOnlyDollarDecimalField()
+    ten_percent_worst_return = ReadOnlyDollarDecimalField()
+    ten_percent_worst_return_ratio = ReadOnlyRatioDecimalField()
+    net_debit_per_unit = ReadOnlyDollarDecimalField()
+    commission_cost = ReadOnlyDollarDecimalField()
+    profit_prob = ReadOnlyRatioDecimalField()
+
+    delta = ReadOnlyRatioDecimalField()
+    gamma = ReadOnlyRatioDecimalField()
+    theta = ReadOnlyRatioDecimalField()
+    vega = ReadOnlyRatioDecimalField()
