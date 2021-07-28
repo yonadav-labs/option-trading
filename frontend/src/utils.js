@@ -183,66 +183,11 @@ export function getContractName(contract) {
     );
 };
 
-// fetch tickers
-export async function loadTickers(headers, setSelectedTicker, setAllTickers, querySymbol, onTickerSelectionChange) {
-    try {
-        let recentTickers = localStorage.getItem('tigerstance-recent-tickers') || '';
-        recentTickers = recentTickers.split(' ');
-
-        const response = await Axios.get(`${getApiUrl()}/tickers/`, { headers });
-        let visitedTickers = [];
-        let restTickers = [];
-
-        response.data.map((ticker) => {
-            if (ticker.full_name) {
-                ticker.display_label = ticker.symbol + ' - ' + ticker.full_name;
-            } else {
-                ticker.display_label = ticker.symbol;
-            }
-
-            if (querySymbol && ticker.symbol === querySymbol) {
-                setSelectedTicker([ticker], onTickerSelectionChange([ticker]));
-            }
-
-            if (recentTickers.indexOf(ticker.symbol) > -1) {
-                visitedTickers.push(ticker);
-            } else {
-                restTickers.push(ticker);
-            }
-
-            return ticker;
-        });
-
-        visitedTickers.sort((a, b) => (recentTickers.indexOf(a.symbol) - recentTickers.indexOf(b.symbol)));
-        setAllTickers(visitedTickers.concat(restTickers));
-    } catch (error) {
-        console.error(error);
-    }
-};
-
 const saveRecent = (symbol) => {
     let recentTickers = localStorage.getItem('tigerstance-recent-tickers') || '';
     recentTickers = recentTickers.replace(symbol, '');
     recentTickers = recentTickers.trim().replace(/\s+/g, ' ');
     localStorage.setItem('tigerstance-recent-tickers', `${symbol} ${recentTickers}`);
-};
-
-// fetch expiration dates
-export async function loadExpirationDates(headers, selected, setModalActive, setExpirationTimestamps, setbasicInfo, setSelectedTicker) {
-    try {
-        setModalActive(true);
-        saveRecent(selected[0].symbol);
-        const response = await Axios.get(`${getApiUrl()}/tickers/${selected[0].symbol}/expire_dates/`, { headers: headers });
-        setExpirationTimestamps(response.data.expiration_timestamps);
-        setbasicInfo(response.data.quote);
-        selected[0].external_cache_id = response.data.external_cache_id;
-        selected[0].ticker_stats_id = response.data.ticker_stats.id;
-        setSelectedTicker(selected);
-        setModalActive(false);
-    } catch (error) {
-        console.error(error);
-        setModalActive(false);
-    }
 };
 
 // fetch expiration dates for new strategy screen and material ui
@@ -355,6 +300,61 @@ export function GenerateTradeTitle(trade) {
     );
 }
 
+// fetch tickers for url query
+export async function LoadTickers(headers, setAllTickers, setSelectedTicker, querySymbol) {
+    try {
+        let recentTickers = localStorage.getItem('tigerstance-recent-tickers') || '';
+        recentTickers = recentTickers.split(' ');
+
+        const response = await Axios.get(`${getApiUrl()}/tickers/`, { headers });
+        let visitedTickers = [];
+        let restTickers = [];
+
+        response.data.map((ticker) => {
+            if (ticker.full_name) {
+                ticker.display_label = ticker.symbol + ' - ' + ticker.full_name;
+            } else {
+                ticker.display_label = ticker.symbol;
+            }
+
+            if (querySymbol && ticker.symbol === querySymbol) {
+                setSelectedTicker(ticker);
+            }
+
+            if (recentTickers.indexOf(ticker.symbol) > -1) {
+                visitedTickers.push(ticker);
+            } else {
+                restTickers.push(ticker);
+            }
+
+            return ticker;
+        });
+
+        visitedTickers.sort((a, b) => (recentTickers.indexOf(a.symbol) - recentTickers.indexOf(b.symbol)));
+        setAllTickers(visitedTickers.concat(restTickers));
+    } catch (error) {
+        console.error(error);
+    }
+};
+
+// fetch expiration dates with url query
+export async function LoadExpirationDates(headers, selected, setModalActive, setExpirationTimestamps, setBasicInfo) {
+    try {
+        setModalActive(true);
+        saveRecent(selected.symbol);
+        const response = await Axios.get(`${getApiUrl()}/tickers/${selected.symbol}/expire_dates/`, { headers: headers });
+        setExpirationTimestamps(response.data.expiration_timestamps);
+        let basicInfo = response.data.quote;
+        basicInfo.tickerStats = response.data.ticker_stats;
+        setBasicInfo(basicInfo);
+        selected.external_cache_id = response.data.external_cache_id;
+        selected.ticker_stats_id = response.data.ticker_stats.id;
+        setModalActive(false);
+    } catch (error) {
+        console.error(error);
+        setModalActive(false);
+    }
+};
 export function ConvertToTradeSnapshot(trade) {
     let tradeSnapshot = {
         type: trade.type,

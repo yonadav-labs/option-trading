@@ -25,6 +25,7 @@ export default function FilterItems(props) {
         basicInfo,
         subHeader,
     } = props;
+
     const maxStrikeValue = Math.round(Number(basicInfo.latestPrice) * 3 * 1e2) / 1e2;
     const [strikeRange, setStrikeRange] = useState([0, isEmpty(basicInfo) ? 0 : maxStrikeValue]);
     const [minVol, setMinVol] = useState(0);

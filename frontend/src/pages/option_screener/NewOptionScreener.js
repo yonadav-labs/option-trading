@@ -1,21 +1,19 @@
 import React, { useState, useEffect, useContext } from "react";
 import { Helmet } from "react-helmet";
 import Axios from 'axios';
-import CircularProgress from '@material-ui/core/CircularProgress';
 import AskSignupModal from '../../components/AskSignupModal';
 import LandingView from "./LandingView";
 import MainView from "./MainView";
 import UserContext from '../../UserContext';
+import LoadingModal from "../../components/LoadingModal";
 
 // utils
-import getApiUrl, { newLoadTickers, newLoadExpirationDates, GetGaEventTrackingFunc, ExpDateFormatter } from "../../utils";
+import getApiUrl, { LoadTickers, LoadExpirationDates, GetGaEventTrackingFunc, ExpDateFormatter } from "../../utils";
 import { useOktaAuth } from '@okta/okta-react';
 
 // url querying
 import { useHistory, useLocation } from "react-router-dom";
-import { addQuery, useSearch } from "../../components/querying";
-
-import LoadingModal from "../../components/LoadingModal";
+import { useSearch } from "../../components/querying";
 
 const GaEvent = GetGaEventTrackingFunc('option screener');
 
@@ -24,6 +22,7 @@ export default function NewOptionScreener() {
     const history = useHistory()
     const location = useLocation()
     const querySymbol = useSearch(location, 'symbol')
+    const queryDates = useSearch(location, 'dates')
     const { user } = useContext(UserContext);
 
     // stock/ticker states
@@ -31,6 +30,7 @@ export default function NewOptionScreener() {
     const [selectedTicker, setSelectedTicker] = useState(null);
     const [basicInfo, setBasicInfo] = useState({});
     const [contracts, setContracts] = useState([]);
+    const [filters, setFilters] = useState({});
 
     // expiration date states
     const [expirationTimestampsOptions, setExpirationTimestampsOptions] = useState([])
@@ -41,6 +41,7 @@ export default function NewOptionScreener() {
     const [isOpenAskSignupModal, setIsOpenAskSignupModal] = useState(false);
     const [expirationDisabled, setExpirationDisabled] = useState(true);
     const [pageState, setPageState] = useState(true);
+    const [urlPage, setUrlPage] = useState(false)
 
     // okta states
     const [headers, setHeaders] = useState({});
@@ -53,6 +54,7 @@ export default function NewOptionScreener() {
         setBasicInfo({});
         setLoading(false);
         setContracts([]);
+        setFilters({})
     }
 
     const setExpirationTimestamps = (val) => {
@@ -70,9 +72,15 @@ export default function NewOptionScreener() {
     const onTickerSelectionChange = (e, selected) => {
         GaEvent('adjust ticker');
         resetStates();
+        // history.replace({
+        //     search: ""
+        // })
         if (selected) {
-            newLoadExpirationDates(headers, selected, setLoading, setExpirationTimestamps, setBasicInfo, setSelectedTicker);
-            addQuery(location, history, 'symbol', selected.symbol)
+            let query = { "symbol": selected.symbol }
+            history.push({
+                search: new URLSearchParams(query).toString()
+            })
+            setSelectedTicker(selected);
         } else {
             setExpirationDisabled(true);
             setSelectedTicker(selected);
@@ -94,11 +102,51 @@ export default function NewOptionScreener() {
     }, [oktaAuth, authState]);
 
     useEffect(() => {
-        newLoadTickers(headers, setAllTickers, setSelectedTicker, querySymbol, onTickerSelectionChange);
+        LoadTickers(headers, setAllTickers, setSelectedTicker, querySymbol, onTickerSelectionChange);
     }, []);
+
+    useEffect(() => {
+        if (selectedTicker) {
+            LoadExpirationDates(headers, selectedTicker, setLoading, setExpirationTimestamps, setBasicInfo);
+        }
+    }, [selectedTicker])
+
+    useEffect(() => {
+        if (queryDates && expirationTimestampsOptions.length > 0) {
+            let dates = queryDates.split(",")
+            let selectedDate = []
+            dates.forEach(ts => {
+                expirationTimestampsOptions.forEach(option => {
+                    if (option.value === parseInt(ts)) {
+                        selectedDate.push(option)
+                    }
+                })
+            })
+            setSelectedExpirationTimestamps(selectedDate)
+            setPageState(false)
+        }
+    }, [expirationTimestampsOptions])
 
     const getContracts = async (filters = {}) => {
         try {
+            // querying
+            let datesArray = []
+            selectedExpirationTimestamps.map(date => datesArray.push(date.value))
+            let query = { "symbol": selectedTicker.symbol }
+            if (datesArray.length > 0) {
+                query["dates"] = datesArray
+            }
+            for (const key in filters) {
+                if (Object.hasOwnProperty.call(filters, key)) {
+                    const element = filters[key];
+                    query[key] = element
+                }
+            }
+            history.replace({
+                search: new URLSearchParams(query).toString()
+            })
+            // end query
+
             if (selectedTicker && selectedExpirationTimestamps.length > 0) {
                 let url = `${API_URL}/tickers/${selectedTicker.symbol}/contracts/`;
                 let body = {
@@ -109,9 +157,6 @@ export default function NewOptionScreener() {
                 const response = await Axios.post(url, body);
                 let contracts = response.data.contracts;
                 setContracts(contracts);
-                if (!user) {
-                    setIsOpenAskSignupModal(true);
-                }
                 setPageState(false);
                 setLoading(false);
             }
@@ -122,6 +167,13 @@ export default function NewOptionScreener() {
         }
         GaEvent('fetch contracts');
     };
+
+    useEffect(() => {
+        if (location.search === "") {
+            resetStates()
+            setPageState(true)
+        }
+    }, [location])
 
     return (
         <>
@@ -141,7 +193,7 @@ export default function NewOptionScreener() {
                         expirationDisabled={expirationDisabled}
                         selectedExpirationTimestamps={selectedExpirationTimestamps}
                         onExpirationSelectionChange={onExpirationSelectionChange}
-                        getContracts={getContracts}
+                        setPageState={setPageState}
                     />
                     :
                     <MainView
@@ -155,7 +207,13 @@ export default function NewOptionScreener() {
                         getContracts={getContracts}
                         basicInfo={basicInfo}
                         contracts={contracts}
+                        urlPage={urlPage}
+                        setUrlPage={setUrlPage}
                         loading={loading}
+                        user={user}
+                        setIsOpenAskSignupModal={setIsOpenAskSignupModal}
+                        filters={filters}
+                        setFilters={setFilters}
                     />
             }
         </>

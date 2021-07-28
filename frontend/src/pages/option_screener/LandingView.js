@@ -25,7 +25,7 @@ export default function LandingView(props) {
         expirationTimestampsOptions,
         selectedExpirationTimestamps,
         onExpirationSelectionChange,
-        getContracts,
+        setPageState,
     } = props
 
     return (
@@ -51,7 +51,7 @@ export default function LandingView(props) {
                                 fullWidth
                                 placeholder="Select an expiration date"
                                 onChange={(e) => onExpirationSelectionChange(e.target.value)}
-                                onClose={(e) => getContracts()}
+                                onClose={(e) => setPageState(false)}
                                 variant="standard"
                                 MenuProps={{
                                     style: {

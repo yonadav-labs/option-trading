@@ -22,6 +22,10 @@ import ExpirationMultiSelect from "./ExpirationMultiSelect";
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 
+// url querying
+import { useLocation } from "react-router-dom";
+import { useQuery, useSearch } from "../../components/querying";
+
 const GaEvent = GetGaEventTrackingFunc('option screener');
 const useStyles = makeStyles({
     autocomplete: {
@@ -57,13 +61,22 @@ export default function MainView(props) {
         basicInfo,
         contracts,
         getContracts,
+        urlPage,
+        setUrlPage,
         loading,
+        user,
+        setIsOpenAskSignupModal,
+        filters,
+        setFilters
     } = props
     const theme = useTheme();
     const classes = useStyles();
+
+    const location = useLocation()
+    const query = useQuery(location)
+    const queryDates = useSearch(location, 'dates')
+
     const [selectedTimestamps, setSelectedTimestamps] = useState(selectedExpirationTimestamps);
-    // filter states
-    const [filters, setFilters] = useState({});
 
     // web filter slide out
     const [filterOpen, setFilterOpen] = useState(true)
@@ -84,7 +97,7 @@ export default function MainView(props) {
     }
 
     // pagination
-    const [rowsPerPage, setRowsPerPage] = useState(30);
+    const [rowsPerPage, setRowsPerPage] = useState(20);
     const [page, setPage] = useState(0);
 
     const handleChangePage = (event, newPage) => {
@@ -170,6 +183,37 @@ export default function MainView(props) {
         }
         setSelectedTimestamps(selectedExpirationTimestamps);
     }, [filters, selectedExpirationTimestamps]);
+
+    // querying and parsing filter properties urls
+    useEffect(() => {
+        let data = {};
+        for (var pair of query.entries()) {
+            if (pair[0] !== "symbol" && pair[0] !== "dates" && pair[0] !== "eq.is_call") {
+                data[pair[0]] = parseFloat(pair[1])
+            }
+            if (pair[0] === "eq.is_call") {
+                var isTrueSet = (pair[1] === "true");
+                data[pair[0]] = isTrueSet
+            }
+        }
+        if (Object.keys(data).length > 0 || queryDates) {
+            setFilters(data)
+            setUrlPage(true)
+        }
+    }, [])
+
+    useEffect(() => {
+        if (urlPage) {
+            getContracts(filters)
+        }
+    }, [urlPage])
+    // end of querying and parsing urls
+
+    useEffect(() => {
+        if (user) {
+            setIsOpenAskSignupModal(false);
+        } else { setIsOpenAskSignupModal(true); }
+    }, [user])
 
     return (
         <Grid container>
