@@ -171,7 +171,7 @@ export default function MainView(props) {
                                     </Grid>
                                     <Grid item xs={0.2}></Grid>
                                     <Alert severity="info">
-                                        Select the Expiration Date and Strike Price in order to view the strategy details
+                                        Select a Ticker, as well as an Expiration Date and Strike Price in order to view the strategy details
                                     </Alert>
                                 </Grid>
                                 {legs.map((leg, index) => {
