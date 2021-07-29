@@ -48,8 +48,8 @@ export default function OptionValueMatrix({ matrixInfo, stockPrice, cost }) {
     ];
 
     return (
-        <>
-            <h3 className="my-3 text-center">Return by time and stock price</h3>
+        <div style={{ overflowX: 'auto' }}>
+            <Typography variant="h5" align="center">Return over time by stock price</Typography>
             <FormGroup row className="justify-content-center">
                 <FormControlLabel
                     control={
@@ -65,17 +65,29 @@ export default function OptionValueMatrix({ matrixInfo, stockPrice, cost }) {
                     labelPlacement="start"
                 />
             </FormGroup>
-            <table className="option-matrix mx-auto mb-4" style={{ fontSize: 14.5 }}>
+            <table className="option-matrix" style={{ fontSize: 14.5, paddingTop: 10 }}>
                 <tr>
                     <td></td>
                     {matrixInfo.dates.map((date, idx) =>
-                        <td key={idx}><strong><Moment format="MMMD">{date}</Moment></strong></td>
+                        <td key={idx}>
+                            <Typography
+                                variant="subtitle2"
+                                align="center"
+                                style={{
+                                    WebkitTransform: 'translateX(10%) translateY(-35%) rotate(-45deg)',
+                                    transform: 'translateX(10%) translateY(-35%) rotate(-45deg)',
+                                }}
+                                noWrap
+                            >
+                                <Moment format="MMM D">{date}</Moment>
+                            </Typography>
+                        </td>
                     )}
-                    <td className="text-center"><strong>+/-%</strong></td>
+                    <td><Typography variant="subtitle2" align="center">+/-%</Typography></td>
                 </tr>
                 {matrixInfo.prices.map((price, idx) => (
                     <tr key={idx} className={Math.abs(price - stockPrice) < 0.125 ? 'stock-price' : ''}>
-                        <td><strong>${price.toFixed(2)}</strong>&nbsp;</td>
+                        <td><Typography variant="subtitle2" align="left">${price.toFixed(2)}</Typography></td>
                         {matrixInfo.values[idx].map((val, index) => {
                             let colorRange = val < midVal ? [0, 1] : [1, 2];
 
@@ -95,16 +107,16 @@ export default function OptionValueMatrix({ matrixInfo, stockPrice, cost }) {
                             let tooltip = `Date: ${matrixInfo.dates[index]}\nStock price: $${price.toFixed(1)}\nReturn: $${val.toFixed(1)} (${(val * 100 / cost).toFixed(1)}%)`;
 
                             return (
-                                <td className="text-center return-value" title={tooltip} style={{ backgroundColor: bgColor }}>
-                                    {showPercent ? PercentageFormatter(val / cost, 0) : val.toFixed(0)}
+                                <td className="return-value" title={tooltip} style={{ backgroundColor: bgColor }}>
+                                    <Typography variant="body2" align="center">{showPercent ? PercentageFormatter(val / cost, 0) : val.toFixed(0)}</Typography>
                                 </td>
                             )
                         })}
-                        <td className="text-right">&nbsp;<strong>{pricePercent(price)}</strong></td>
+                        <td><Typography variant="subtitle2" align="left">{pricePercent(price)}</Typography></td>
                     </tr>
                 ))}
             </table>
             <Typography>*Assumes same IV throughout the time period.</Typography>
-        </>
+        </div>
     )
 }

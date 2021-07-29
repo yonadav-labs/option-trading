@@ -167,9 +167,8 @@ export default function MainView(props) {
                     <NewTickerSummary basicInfo={basicInfo} isMobile={isMobile} />
                 </Grid>
                 <Grid container>
-                    <Grid item xs={12} px={3} className={classes.root}>
+                    <Grid item xs={12} px={3} py={5} className={classes.root}>
                         <HeatMapTable
-                            className="my-4"
                             zLabel={filters.metric}
                             data={baseHeatmapData}
                             contractType={filters.contractType}

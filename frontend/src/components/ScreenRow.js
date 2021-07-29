@@ -50,7 +50,7 @@ export default function ScreenRow(props) {
                 <TableCell align="center" padding="none">{PriceFormatter(row.last_price)}</TableCell>
                 <TableCell align="center" padding="none">{row.volume}</TableCell>
                 <TableCell align="center" padding="none">{row.open_interest}</TableCell>
-                <TableCell align="center" padding="none">{user && user.subscription ? NumberRoundFormatter(row.vol_oi) : <Link href="/pricing" className="d-block"><LockOutlinedIcon /></Link>}</TableCell>
+                <TableCell align="center" padding="none">{user && user.subscription ? NumberRoundFormatter(row.vol_oi) : <Link href="/pricing" style={{ display: 'block' }}><LockOutlinedIcon /></Link>}</TableCell>
                 <TableCell align="center" padding="none">{PercentageFormatter(row.implied_volatility)}</TableCell>
                 <TableCell align="center" padding="none">{NumberRoundFormatter(row.delta)}</TableCell>
                 <TableCell align="center" padding="none">{NumberRoundFormatter(row.gamma)}</TableCell>

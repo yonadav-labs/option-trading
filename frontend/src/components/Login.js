@@ -79,7 +79,7 @@ const Login = () => {
     }, [oktaAuth]);
 
     return (
-        <div className="min-vh-100">
+        <div style={{ minHeight: '100vh' }}>
             <div ref={widgetRef} />
         </div>
     );

@@ -1,3 +1,4 @@
+import { Typography } from "@material-ui/core";
 import React from "react";
 
 function pickHex(color1, color2, weight) {
@@ -40,18 +41,18 @@ export default function HeatMapTable({ className, zLabel, data, contractType, st
 
     return (
         <>
-            <h6 className="mt-5 mb-2 text-center">Expiration Date</h6>
-            <div className="w-100 pr-5 pl-4 mb-5">
-                <table className="heatmap-matrix w-100" style={{ fontSize: 14.5 }}>
+            <Typography variant="h6" align="center" gutterBottom>Expiration Date</Typography>
+            <div style={{ width: '100%' }}>
+                <table className="heatmap-matrix" style={{ fontSize: 14.5, width: '100%' }}>
                     <tr>
-                        <td className="text-right pr-3 border-bottom-0" style={{ width: 80 }}>Strike</td>
+                        <td><Typography variant="h6" align="center">Strike</Typography></td>
                         {data.expiration_dates.map((date, idx) =>
-                            <td key={idx} className="text-center">{date}</td>
+                            <td key={idx}><Typography variant="subtitle2" align="center">{date}</Typography></td>
                         )}
                     </tr>
                     {data.strike_prices.map((price, idx) => (
                         <tr key={idx} className={closestStrikeIdx == idx ? 'stock-price' : ''}>
-                            <td className="text-right pr-3 border-bottom-0">{price}</td>
+                            <td><Typography variant="subtitle2" align="center">{price}</Typography></td>
                             {data.values[idx].map((cell, index) => {
                                 if (!cell) { return <td></td> }
 
@@ -107,17 +108,17 @@ export default function HeatMapTable({ className, zLabel, data, contractType, st
                                 }
 
                                 return (
-                                    <td className="text-center value-cell" title={tooltip} style={{ backgroundColor: bgColor }}>
-                                        {valDisplay}
+                                    <td className="value-cell" title={tooltip} style={{ backgroundColor: bgColor }}>
+                                        <Typography variant="body2" align="center">{valDisplay}</Typography>
                                     </td>
                                 )
                             })}
                         </tr>
                     ))}
                     <tr>
-                        <td className="text-right pr-3 border-bottom-0"></td>
+                        <td></td>
                         {data.expiration_dates.map((date, idx) =>
-                            <td key={idx} className="text-center">{date}</td>
+                            <td key={idx}><Typography variant="subtitle2" align="center">{date}</Typography></td>
                         )}
                     </tr>
                 </table>

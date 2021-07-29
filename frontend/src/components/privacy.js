@@ -1,8 +1,9 @@
+import { Container } from '@material-ui/core'
 import React from 'react'
 
 function Privacy() {
     return (
-        <section className="container" style={{ "marginTop": "4rem" }}>
+        <Container>
             <div className="en section_container active" section-language="en">
                 <div id="md_en" data-target="out_en" className="agreement_md">
                     <h1 align="center">Privacy Policy</h1>
@@ -78,7 +79,7 @@ function Privacy() {
                     <p>Last updated on: June 14th, 2021</p>
                 </div>
             </div>
-        </section>
+        </Container>
     )
 }
 

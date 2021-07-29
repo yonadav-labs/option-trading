@@ -84,7 +84,7 @@ export default function NewTradeCard({ trade }) {
                             user && user.subscription ?
                                 <Typography variant="body1" color="#4F4F4F">{PercentageFormatter(trade.profit_prob)}</Typography>
                                 :
-                                <Link href="/pricing" className="d-block"><LockOutlinedIcon /></Link>
+                                <Link href="/pricing" style={{ display: 'block' }}><LockOutlinedIcon /></Link>
                         }
                     </Grid>
                     <Grid item xs={6} sm={2}>
@@ -138,7 +138,7 @@ export default function NewTradeCard({ trade }) {
                                         <Typography variant="body1" color="#4F4F4F"> N/A </Typography>
                                     </>
                                 :
-                                <Link href="/pricing" className="d-block"><LockOutlinedIcon /></Link>
+                                <Link href="/pricing" style={{ display: 'block' }}><LockOutlinedIcon /></Link>
                         }
                     </Grid>
                     <Grid item xs={6} sm={2}>
@@ -157,7 +157,7 @@ export default function NewTradeCard({ trade }) {
                                         <Typography variant="body1" color="#4F4F4F"> N/A </Typography>
                                     </>
                                 :
-                                <Link href="/pricing" className="d-block"><LockOutlinedIcon /></Link>
+                                <Link href="/pricing" style={{ display: 'block' }}><LockOutlinedIcon /></Link>
                         }
                     </Grid>
                     <Grid item xs={6} sm={2}></Grid>
@@ -169,7 +169,7 @@ export default function NewTradeCard({ trade }) {
                             user && user.subscription ?
                                 <Typography variant="body1">{NumberRoundFormatter(trade.delta)}</Typography>
                                 :
-                                <Link href="/pricing" className="d-block"><LockOutlinedIcon /></Link>
+                                <Link href="/pricing" style={{ display: 'block' }}><LockOutlinedIcon /></Link>
                         }
                     </Grid>
                     <Grid item xs={6} sm={2}>
@@ -179,7 +179,7 @@ export default function NewTradeCard({ trade }) {
                             user && user.subscription ?
                                 <Typography variant="body1">{NumberRoundFormatter(trade.gamma)}</Typography>
                                 :
-                                <Link href="/pricing" className="d-block"><LockOutlinedIcon /></Link>
+                                <Link href="/pricing" style={{ display: 'block' }}><LockOutlinedIcon /></Link>
                         }
                     </Grid>
                     <Grid item xs={6} sm={2}>
@@ -189,7 +189,7 @@ export default function NewTradeCard({ trade }) {
                             user && user.subscription ?
                                 <Typography variant="body1">{NumberRoundFormatter(trade.theta)}</Typography>
                                 :
-                                <Link href="/pricing" className="d-block"><LockOutlinedIcon /></Link>
+                                <Link href="/pricing" style={{ display: 'block' }}><LockOutlinedIcon /></Link>
                         }
                     </Grid>
                     <Grid item xs={6} sm={2}>
@@ -199,7 +199,7 @@ export default function NewTradeCard({ trade }) {
                             user && user.subscription ?
                                 <Typography variant="body1">{NumberRoundFormatter(trade.vega)}</Typography>
                                 :
-                                <Link href="/pricing" className="d-block"><LockOutlinedIcon /></Link>
+                                <Link href="/pricing" style={{ display: 'block' }}><LockOutlinedIcon /></Link>
                         }
                     </Grid>
                     <Grid item xs={6} sm={2}></Grid>

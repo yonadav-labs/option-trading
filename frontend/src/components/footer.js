@@ -6,7 +6,7 @@ import { Paper } from "@material-ui/core";
 
 export default function Footer(props) {
     return (
-        <footer className="featurette-divider-last">
+        <footer>
             <Paper square sx={{ background: '#2A2A2A', p: 5 }}>
                 <Grid container direction="row">
                     <Grid container direction="column" pr={2}>

@@ -91,7 +91,7 @@ export default function ScreenMobileCard({ trade }) {
                                 user && user.subscription ?
                                     <Typography variant="body1">{PercentageFormatter(trade.itm_probability)}</Typography>
                                     :
-                                    <Link href="/pricing" className="d-block"><LockOutlinedIcon /></Link>
+                                    <Link href="/pricing" style={{ display: 'block' }}><LockOutlinedIcon /></Link>
                             }
                         </Grid>
                         {/* row 5 */}

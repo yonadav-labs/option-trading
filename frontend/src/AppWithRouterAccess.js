@@ -14,7 +14,6 @@ import Privacy from './components/privacy';
 import Generator from './pages/generator_tool/Generator';
 import SingleTrade from './pages/SingleTrade';
 import Pricing from './pages/Pricing';
-import StrategyBuilder from './pages/StrategyBuilder';
 import EmailVerified from './pages/EmailVerified';
 import SignupSuccess from './pages/SignupSuccess';
 import { Container, Toolbar } from '@material-ui/core';
@@ -41,7 +40,7 @@ export default withRouter(class AppWithRouterAccess extends Component {
                     oktaAuth={oktaAuth}
                     onAuthRequired={this.onAuthRequired}
                 >
-                    <Header></Header>
+                    <Header />
                     <Toolbar />
                     <ScrollToTop>
                         <Switch>
@@ -58,7 +57,6 @@ export default withRouter(class AppWithRouterAccess extends Component {
                             <Route path='/strategy-screener' exact={true} component={Generator} />
                             <Route path='/t/:tradeId' exact={true} component={SingleTrade} />
                             <Route path='/strategy-builder' exact={true} component={NewBuild} />
-                            <Route path='/old-build' exact={true} component={StrategyBuilder} />
                             <Route path='/build' exact={true} component={NewBuild} />
                             <Route path='/builder' exact={true} component={NewBuild} />
                             <SecureRoute path='/profile' component={Profile} />
@@ -72,7 +70,7 @@ export default withRouter(class AppWithRouterAccess extends Component {
                             <Route path='/pricing' component={Pricing} />
                         </Switch>
                     </ScrollToTop>
-                    <Footer className="mt-auto"></Footer>
+                    <Footer />
                 </Security>
             </Container>
         );

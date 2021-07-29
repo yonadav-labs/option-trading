@@ -144,7 +144,7 @@ export default function NewTradeCard({ trade }) {
                                 user && user.subscription ?
                                     <Typography variant="body1" color="#4F4F4F">{PercentageFormatter(trade.profit_prob)}</Typography>
                                     :
-                                    <Link href="/pricing" className="d-block"><LockOutlinedIcon /></Link>
+                                    <Link href="/pricing" style={{ display: 'block' }}><LockOutlinedIcon /></Link>
                             }
                         </Grid>
                         <Grid item xs={6} sm={2}>
@@ -194,7 +194,7 @@ export default function NewTradeCard({ trade }) {
                                                 </Typography>
                                                 : "N/A"
                                             :
-                                            <Link href="/pricing" className="d-block"><LockOutlinedIcon /></Link>
+                                            <Link href="/pricing" style={{ display: 'block' }}><LockOutlinedIcon /></Link>
                                     }
                                 </Grid>
                                 <Grid item xs={6} sm={2}>
@@ -207,7 +207,7 @@ export default function NewTradeCard({ trade }) {
                                                 </Typography>
                                                 : "N/A"
                                             :
-                                            <Link href="/pricing" className="d-block"><LockOutlinedIcon /></Link>
+                                            <Link href="/pricing" style={{ display: 'block' }}><LockOutlinedIcon /></Link>
                                     }
                                 </Grid>
                                 <Grid item xs={6} sm={2}></Grid>

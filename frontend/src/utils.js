@@ -1,6 +1,5 @@
 import React from 'react';
 import NumberFormat from 'react-number-format';
-import { Col, Row } from 'react-bootstrap';
 import Axios from 'axios';
 import ReactGA from 'react-ga';
 import { startCase } from 'lodash';
@@ -172,16 +171,6 @@ export function getDefaultDisAllowedTradeTypes() {
         'strap_strangle'];
 };
 
-export function getContractName(contract) {
-    return (
-        <Row>
-            {/* <Col>{contract.ticker.symbol}</Col> */}
-            <Col>{contract.is_call ? 'Call' : 'Put'}</Col>
-            <Col>{TimestampDateFormatter(contract.expiration)}</Col>
-            <Col>{PriceFormatter(contract.strike)}</Col>
-        </Row>
-    );
-};
 
 const saveRecent = (symbol) => {
     let recentTickers = localStorage.getItem('tigerstance-recent-tickers') || '';
