@@ -43,7 +43,7 @@ export default function HeatMapTable({ className, zLabel, data, contractType, st
         <>
             <Typography variant="h6" align="center" gutterBottom>Expiration Date</Typography>
             <div style={{ width: '100%' }}>
-                <table className="heatmap-matrix" style={{ fontSize: 14.5, width: '100%' }}>
+                <table className="heatmap-matrix" style={{ width: '100%' }}>
                     <tr>
                         <td><Typography variant="h6" align="center">Strike</Typography></td>
                         {data.expiration_dates.map((date, idx) =>
