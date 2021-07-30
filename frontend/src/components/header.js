@@ -29,16 +29,14 @@ function getCookie(name) {
     return cookieValue;
 }
 
-
 const sessionid = getCookie('pinax-referral');
-const mobileBreakpointWidth = 1024;
 
 const CustomButton = styled(Button)(({ theme }) => ({
     width: "100%",
     justifyContent: "left",
     paddingLeft: 10,
     paddingRight: 10,
-    [theme.breakpoints.down(mobileBreakpointWidth)]: {
+    [theme.breakpoints.down("md")]: {
         paddingLeft: 8
     },
 }));
@@ -60,11 +58,14 @@ function Header() {
     const { user, setUser } = useContext(UserContext);
     const API_URL = getApiUrl();
     const history = useHistory();
-    const isMobile = useMediaQuery(theme => theme.breakpoints.down(mobileBreakpointWidth));
     const [drawerOpen, setDrawerOpen] = useState(false);
     const [accountMenuAnchorEl, setAccountMenuAnchorEl] = React.useState(null);
     const [showBackdrop, setShowBackdrop] = useState(false);
     const [referralOpen, setReferralOpen] = useState(false);
+
+    // mobile responsiveness
+    const isMobile = useMediaQuery(theme => theme.breakpoints.down("md"));
+    const isCard = useMediaQuery(theme => theme.breakpoints.down('sm'));
 
     const handleReferralClickOpen = () => {
         setReferralOpen(true);
@@ -126,7 +127,7 @@ function Header() {
     };
 
     const menuContent = (
-        <Grid pt={1} px={5}
+        <Grid pt={1}
             container
             direction={isMobile ? "column" : "row"}
             justifyContent={isMobile ? "flex-start" : "space-between"}
@@ -177,9 +178,13 @@ function Header() {
                         <Grid item>
                             {authState.isAuthenticated ?
                                 <>
-                                    <Button onClick={handleReferralClickOpen} style={{ textTransform: 'capitalize' }}>
-                                        Refer & Get 1 Month Free
-                                    </Button>
+                                    {!isCard ?
+                                        <Button onClick={handleReferralClickOpen} style={{ textTransform: 'capitalize' }}>
+                                            Refer & Get 1 Month Free
+                                        </Button>
+                                        :
+                                        null
+                                    }
                                     <IconButton
                                         aria-label="account of current user"
                                         aria-controls="menu-appbar"
