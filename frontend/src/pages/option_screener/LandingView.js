@@ -41,7 +41,7 @@ export default function LandingView(props) {
                             displayLabel
                         />
                         <FormControl disabled={expirationDisabled} fullWidth>
-                            <InputLabel shrink={true}><Typography variant="h6">Expiration Dates</Typography></InputLabel>
+                            <InputLabel shrink={true}><Typography variant="h6">Expiration Date(s)</Typography></InputLabel>
                             <InputLabel shrink={false}>{selectedExpirationTimestamps.length > 0 ? "" :
                                 <Typography variant="body1" style={{ color: "#cbcbcb" }}>Select one or more expiration dates...</Typography>}</InputLabel>
                             <Select

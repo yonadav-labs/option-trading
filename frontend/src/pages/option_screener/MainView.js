@@ -260,7 +260,7 @@ export default function MainView(props) {
                                 />
                             </Grid>
                             <Grid item>
-                                <Typography variant="subtitle1">Expiration Date</Typography>
+                                <Typography variant="subtitle1">Expiration Date(s)</Typography>
                             </Grid>
                             <Grid item sm={5}>
                                 <ExpirationMultiSelect
