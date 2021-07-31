@@ -348,16 +348,6 @@ export default function MainView(props) {
                             </Grid>
                         </Grid>
                     </Grid>
-                    <Grid container alignItems="center" justifyContent="center" pb={2} px={2}>
-                        {!authState.isAuthenticated &&
-                            (
-                                <Alert severity="warning">
-                                    <a href="/signin"><b>Log In</b></a> or <Link to="/signin/register">
-                                        <b>Sign Up</b></Link> to unlock 5 more strategies!
-                                </Alert>
-                            )
-                        }
-                    </Grid>
                     {loading ?
                         <Grid container justifyContent="center">
                             <Stack paddingX={3} spacing={2} width="inherit">
