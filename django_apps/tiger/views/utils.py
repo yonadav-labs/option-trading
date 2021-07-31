@@ -1,6 +1,7 @@
 from pinax.referrals.models import ReferralResponse
+
 from tiger.core.trade.trade_factory import TradeFactory
-from tiger.fetcher import get_td_option_url
+from tiger.fetcher import get_option_url
 from tiger.models import Broker
 from tiger.serializers import TradeSnapshotSerializer
 from tiger.utils import timedelta_from_timestamp
@@ -87,7 +88,7 @@ def get_current_trade(trade_snapshot, broker_settings):
             if timedelta_from_timestamp(expiration_timestamp).days < 0:
                 expired = True
                 break
-            url = get_td_option_url(ticker.symbol.upper())
+            url = get_option_url(ticker.symbol.upper(), expiration_timestamp)
             _, option_cache_id = ticker.get_request_cache(url)
             leg_snapshot['contract_snapshot']['external_cache_id'] = option_cache_id
 

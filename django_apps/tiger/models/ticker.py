@@ -2,12 +2,10 @@ import json
 import time
 from datetime import timedelta
 
-from django.conf import settings
 from django.db import models
 from django.utils import timezone
-from tiger.blob_reader import get_call_puts_td, get_call_puts_intrinio
-from tiger.fetcher import get_td_option_url, get_iex_quote_url, get_intrinio_option_url
-from tiger.utils import timestamp_to_datetime_with_default_tz, is_market_open_now
+from tiger.core.security import get_call_puts_from_response
+from tiger.fetcher import get_iex_quote_url, get_option_url
 
 from .base import BaseModel
 from .cache import ExternalRequestCache
@@ -46,16 +44,10 @@ class Ticker(BaseModel):
         return timestamps
 
     def get_call_puts(self, expiration_timestamp):
-        if settings.USE_INTRINIO and is_market_open_now():
-            expiration_timestamp /= 1000
-            exp_date_str = timestamp_to_datetime_with_default_tz(expiration_timestamp).strftime('%Y-%m-%d')
-            url = get_intrinio_option_url(self.symbol.upper(), exp_date_str)
-            intrinio_option_response, external_cache_id = self.get_request_cache(url)
-            return get_call_puts_intrinio(self, intrinio_option_response, external_cache_id)
-        else:
-            url = get_td_option_url(self.symbol.upper())
-            td_option_response, external_cache_id = self.get_request_cache(url)
-            return get_call_puts_td(self, td_option_response, expiration_timestamp, external_cache_id)
+        expiration_timestamp /= 1000
+        url = get_option_url(self.symbol.upper(), expiration_timestamp)
+        response, external_cache_id = self.get_request_cache(url)
+        return get_call_puts_from_response(self, response, expiration_timestamp, external_cache_id)
 
     def get_latest_stats(self):
         return self.stats.order_by('-created_time').first()

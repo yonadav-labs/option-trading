@@ -29,6 +29,7 @@ const HelpTextDict = {
     'day range': { text: 'The lowest and highest prices of the day.', hideIcon: true },
     'day\'s change': { text: 'Price change from the market open price.', hideIcon: true },
     'delta': { text: 'Estimate of how much an option\'s value may change given a $1 move up or down in the stock price.', hideIcon: true },
+    'DTE': { text: 'Days till expiration.', hideIcon: false },
     'dividend date': {
         text: 'The date on which a declared stock dividend is scheduled to be paid to eligible investors. '
             + 'Be cautious trading options around this date.', hideIcon: true
@@ -55,8 +56,8 @@ const HelpTextDict = {
     },
     'implied volatility': { text: 'Expected annualized volatility of a stock over the life of the option.', hideIcon: true },
     'IV': { text: 'Expected annualized volatility of a stock over the life of the option.', hideIcon: true },
-    'itm prob': { text: 'Probability of the contract to be in the money on expiration date.', hideIcon: false },
-    'itm probability': { text: 'Probability of the contract to be in the money on expiration date.', hideIcon: false },
+    'ITM prob': { text: 'Probability of the contract to be in the money on expiration date.', hideIcon: false },
+    'ITM probability': { text: 'Probability of the contract to be in the money on expiration date.', hideIcon: false },
     'latest stock return': { text: 'The latest return from the stock, for comparison of the options trade\'s return.', hideIcon: true },
     'latest return': { text: 'The latest return from the trade since the time it was saved or shared. Calculated as latest value ÷ initial value - 1.', hideIcon: true },
     'latest value': { text: 'The latest value of this trade.', hideIcon: true },

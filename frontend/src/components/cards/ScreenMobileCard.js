@@ -85,7 +85,7 @@ export default function ScreenMobileCard({ trade }) {
                             <Typography variant="body1">{PercentageFormatter(trade.implied_volatility)}</Typography>
                         </Grid>
                         <Grid item xs="6">
-                            <Typography variant="button"><MetricLabel label="itm probability" /></Typography>
+                            <Typography variant="button"><MetricLabel label="ITM probability" /></Typography>
                             <br />
                             {
                                 user && user.subscription ?

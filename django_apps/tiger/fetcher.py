@@ -1,6 +1,7 @@
 import requests
 
 from django.conf import settings
+from tiger.utils import timestamp_to_datetime_with_default_tz, is_market_open_now
 
 
 # Base
@@ -43,3 +44,12 @@ def get_intrinio_option_url(ticker_symbol, exp_date_str):
     '''Exp date string format: 2021-08-20'''
     return '{}/options/chain/{}/{}/realtime?source=delayed&api_key={}'.format(
         get_intrinio_base_url(), ticker_symbol, exp_date_str, settings.INTRINIO_API_KEY)
+
+
+def get_option_url(ticker_symbol, expiration_timestamp):
+    '''expiration_timestamp is in seconds'''
+    if settings.USE_INTRINIO and is_market_open_now():
+        exp_date_str = timestamp_to_datetime_with_default_tz(expiration_timestamp).strftime('%Y-%m-%d')
+        return get_intrinio_option_url(ticker_symbol, exp_date_str)
+    else:
+        return get_td_option_url(ticker_symbol)

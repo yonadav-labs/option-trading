@@ -97,7 +97,7 @@ export default function MainView(props) {
     }
 
     // pagination
-    const [rowsPerPage, setRowsPerPage] = useState(20);
+    const [rowsPerPage, setRowsPerPage] = useState(25);
     const [page, setPage] = useState(0);
 
     const handleChangePage = (event, newPage) => {
@@ -156,7 +156,8 @@ export default function MainView(props) {
 
     const headCells = [
         { id: 'is_call', label: "type" },
-        { id: 'days_till_expiration', label: "exp date" },
+        { id: 'expiration', label: "exp date" },
+        { id: 'days_till_expiration', label: "DTE" },
         { id: 'strike', label: "strike" },
         { id: 'mark', label: "mark" },
         { id: 'last_price', label: "last" },
@@ -167,7 +168,7 @@ export default function MainView(props) {
         { id: 'delta', label: "delta" },
         { id: 'gamma', label: "gamma" },
         { id: 'theta', label: "theta" },
-        { id: 'itm_probability', label: "itm prob" },
+        { id: 'itm_probability', label: "ITM prob" },
         { id: 'break_even_price', label: "breakeven" },
     ];
 
