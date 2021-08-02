@@ -6,8 +6,7 @@ from rest_framework.decorators import api_view
 from rest_framework.exceptions import APIException
 from rest_framework.response import Response
 from tiger.core import Stock
-from tiger.core.trade import LongCall, LongPut, CoveredCall, CashSecuredPut, BullPutSpread, BullCallSpread, \
-    BearCallSpread, BearPutSpread, ProtectivePut
+from tiger.core.trade import TradeFactory
 from tiger.models import Ticker
 from tiger.serializers import TradeSimpleSerializer, BrokerSerializer
 from tiger.views.decorators import tracking_api
@@ -17,7 +16,9 @@ from tiger.views.utils import get_filtered_contracts, get_broker, get_disabled_o
 logger = logging.getLogger('console_info')
 
 
-def save_best_trade_by_type(best_trade_dict, strategy_type, trade, trade_filters={}):
+def save_best_trade_by_type(best_trade_dict, trade, trade_filters={}):
+    strategy_type = trade.type
+
     if strategy_type not in best_trade_dict:
         best_trade_dict[strategy_type] = {
             'num_combinations': 0,
@@ -47,65 +48,42 @@ def build_trades(stock, call_contract_lists, put_contract_lists, strategy_settin
     best_trade_dict = {}
 
     blocked_strategies = get_disabled_or_disallowed_strategies(user)
-    user_is_bullish = (target_price_lower + target_price_upper) / 2 > stock.stock_price
 
     # TODO: refactor this, use trade class's type, and build out a unified interface for .build().
     for calls_per_exp in call_contract_lists:
-        call_pairs = itertools.combinations(calls_per_exp, 2)
-
         for call in calls_per_exp:
-            if user_is_bullish and 'long_call' not in blocked_strategies:
-                long_call = LongCall.build(stock, call, premium_type, broker_settings, target_price_lower,
-                                           target_price_upper, available_cash)
-                save_best_trade_by_type(best_trade_dict, 'long_call', long_call, trade_filters)
+            for trade_type in set(['long_call', 'covered_call']) - blocked_strategies:
+                new_trade = TradeFactory.build(trade_type, stock, [call], premium_type, broker_settings,
+                                               target_price_lower, target_price_upper, available_cash)
+                save_best_trade_by_type(best_trade_dict, new_trade, trade_filters)
 
-            if 'covered_call' not in blocked_strategies:
-                covered_call = CoveredCall.build(stock, call, premium_type, broker_settings, target_price_lower,
-                                                 target_price_upper, available_cash)
-                save_best_trade_by_type(best_trade_dict, 'covered_call', covered_call, trade_filters)
-
+        call_pairs = itertools.combinations(calls_per_exp, 2)
         for call1, call2 in call_pairs:
-            if call1.strike < call2.strike:
-                if user_is_bullish and 'bull_call_spread' not in blocked_strategies:
-                    bull_call_spread = BullCallSpread.build(stock, call1, call2, premium_type, broker_settings,
-                                                            target_price_lower, target_price_upper, available_cash)
-                    save_best_trade_by_type(best_trade_dict, 'bull_call_spread', bull_call_spread, trade_filters)
+            if call1.strike >= call2.strike:
+                continue
 
-                if not user_is_bullish and 'bear_call_spread' not in blocked_strategies:
-                    bear_call_spread = BearCallSpread.build(stock, call1, call2, premium_type, broker_settings,
-                                                            target_price_lower, target_price_upper, available_cash)
-                    save_best_trade_by_type(best_trade_dict, 'bear_call_spread', bear_call_spread, trade_filters)
+            for trade_type in set(['bull_call_spread', 'bear_call_spread']) - blocked_strategies:
+                new_trade = TradeFactory.build(trade_type, stock, [call1, call2], premium_type,
+                                               broker_settings, target_price_lower, target_price_upper,
+                                               available_cash)
+                save_best_trade_by_type(best_trade_dict, new_trade, trade_filters)
 
     for puts_per_exp in put_contract_lists:
-        put_pairs = itertools.combinations(puts_per_exp, 2)
-
         for put in puts_per_exp:
-            if not user_is_bullish and 'long_put' not in blocked_strategies:
-                long_put = LongPut.build(stock, put, premium_type, broker_settings, target_price_lower,
-                                         target_price_upper, available_cash)
-                save_best_trade_by_type(best_trade_dict, 'long_put', long_put, trade_filters)
+            for trade_type in set(['long_put', 'cash_secured_put', 'protective_put']) - blocked_strategies:
+                new_trade = TradeFactory.build(trade_type, stock, [put], premium_type, broker_settings,
+                                               target_price_lower, target_price_upper, available_cash)
+                save_best_trade_by_type(best_trade_dict, new_trade, trade_filters)
 
-            if user_is_bullish and 'cash_secured_put' not in blocked_strategies:
-                cash_secured_put = CashSecuredPut.build(stock, put, premium_type, broker_settings, target_price_lower,
-                                                        target_price_upper, available_cash)
-                save_best_trade_by_type(best_trade_dict, 'cash_secured_put', cash_secured_put, trade_filters)
-
-            if 'protective_put' not in blocked_strategies:
-                protective_put = ProtectivePut.build(stock, put, premium_type, broker_settings, target_price_lower,
-                                                     target_price_upper, available_cash)
-                save_best_trade_by_type(best_trade_dict, 'protective_put', protective_put, trade_filters)
-
+        put_pairs = itertools.combinations(puts_per_exp, 2)
         for put1, put2 in put_pairs:
-            if put1.strike < put2.strike:
-                if not user_is_bullish and 'bear_put_spread' not in blocked_strategies:
-                    bear_put_spread = BearPutSpread.build(stock, put1, put2, premium_type, broker_settings,
-                                                          target_price_lower, target_price_upper, available_cash)
-                    save_best_trade_by_type(best_trade_dict, 'bear_put_spread', bear_put_spread, trade_filters)
-
-                if user_is_bullish and 'bull_put_spread' not in blocked_strategies:
-                    bull_put_spread = BullPutSpread.build(stock, put1, put2, premium_type, broker_settings,
-                                                          target_price_lower, target_price_upper, available_cash)
-                    save_best_trade_by_type(best_trade_dict, 'bull_put_spread', bull_put_spread, trade_filters)
+            if put1.strike >= put2.strike:
+                continue
+            for trade_type in set(['bear_put_spread', 'bull_put_spread', 'protective_put']) - blocked_strategies:
+                new_trade = TradeFactory.build(trade_type, stock, [put1, put2], premium_type,
+                                               broker_settings, target_price_lower, target_price_upper,
+                                               available_cash)
+                save_best_trade_by_type(best_trade_dict, new_trade, trade_filters)
 
     resp = []
     for key, val in best_trade_dict.items():

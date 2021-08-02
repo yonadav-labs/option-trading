@@ -4,10 +4,7 @@ from unittest import mock
 from django.test import TestCase
 from django.utils.timezone import make_aware, get_default_timezone
 from tiger.core import Cash, Stock, OptionContract, OptionLeg, CashLeg, StockLeg
-from tiger.core.trade import LongCall, ShortCall, LongPut, ShortPut, CoveredCall, CashSecuredPut, BullPutSpread, \
-    BullCallSpread, BearCallSpread, BearPutSpread, Trade, LongStraddle, LongStrangle, IronCondor, IronButterfly, \
-    ShortStraddle, LongButterflySpread, ShortButterflySpread, LongCondorSpread, ShortCondorSpread, StrapStraddle, \
-    StrapStrangle, ProtectivePut, ShortStrangle
+from tiger.core.trade import Trade, TradeFactory
 from tiger.models import Ticker, TickerStats
 
 MOCK_NOW_TIMESTAMP = 1609664400  # 01/03/2021
@@ -80,7 +77,8 @@ class CallTradesTestCase(TestCase):
         mock_now.return_value = make_aware(datetime.fromtimestamp(MOCK_NOW_TIMESTAMP), get_default_timezone())
         target_price = 600.0
         call_contract = OptionContract(self.ticker, True, self.td_input, self.stock_price, 'mid')
-        long_call = LongCall.build(self.stock, call_contract, 'mid', self.broker_settings, target_price, target_price)
+        long_call = TradeFactory.build('long_call', self.stock, [call_contract], 'mid', self.broker_settings,
+                                       target_price, target_price)
         # Test contract attributes.
         self.assertEqual(call_contract.ask, 163.15)
         self.assertEqual(call_contract.bid, 160.25)
@@ -114,14 +112,14 @@ class CallTradesTestCase(TestCase):
         self.assertAlmostEqual(long_call.profit_prob, 0.47452395064860775)
 
         self.assertAlmostEqual(
-            LongCall.build(self.stock, call_contract, 'mid', self.broker_settings, 580, 620).target_price_profit,
-            15028.7)
+            TradeFactory.build('long_call', self.stock, [call_contract], 'mid', self.broker_settings, 580,
+                               620).target_price_profit, 15028.7)
         self.assertAlmostEqual(
-            LongCall.build(self.stock, call_contract, 'mid', self.broker_settings, 349.7, 549.7).target_price_profit,
-            -1.3)
+            TradeFactory.build('long_call', self.stock, [call_contract], 'mid', self.broker_settings, 349.7,
+                               549.7).target_price_profit, -1.3)
         self.assertAlmostEqual(
-            LongCall.build(self.stock, call_contract, 'mid', self.broker_settings, 260, 280).target_price_profit,
-            -16171.3)
+            TradeFactory.build('long_call', self.stock, [call_contract], 'mid', self.broker_settings, 260,
+                               280).target_price_profit, -16171.3)
         self.assertAlmostEqual(long_call.best_return, 'infinite')
         self.assertAlmostEqual(long_call.worst_return, -16171.3)
         self.assertEqual(len(long_call.break_evens), 1)
@@ -258,8 +256,8 @@ class CallTradesTestCase(TestCase):
         mock_now.return_value = make_aware(datetime.fromtimestamp(MOCK_NOW_TIMESTAMP), get_default_timezone())
 
         call_contract = OptionContract(self.ticker, True, self.td_input, self.stock_price)
-        sell_call = CoveredCall.build(self.stock, call_contract, 'mid', self.broker_settings, target_price_lower=258.3,
-                                      target_price_upper=258.3)
+        sell_call = TradeFactory.build('covered_call', self.stock, [call_contract], 'mid', self.broker_settings,
+                                       target_price_lower=258.3, target_price_upper=258.3)
         self.assertEqual(call_contract.to_strike, -132.0)
         self.assertAlmostEqual(call_contract.to_strike_ratio, -0.31428571428)
         self.assertAlmostEqual(sell_call.best_return, 2968.7)
@@ -272,17 +270,17 @@ class CallTradesTestCase(TestCase):
         self.assertAlmostEqual(sell_call.reward_to_risk_ratio, 0.11492646517)
 
         self.assertAlmostEqual(
-            CoveredCall.build(self.stock, call_contract, 'mid', self.broker_settings, 100, 120).target_price_profit,
-            -14831.3)
+            TradeFactory.build('covered_call', self.stock, [call_contract], 'mid', self.broker_settings, 100,
+                               120).target_price_profit, -14831.3)
         self.assertAlmostEqual(
-            CoveredCall.build(self.stock, call_contract, 'mid', self.broker_settings, 300, 310).target_price_profit,
-            2968.7)
+            TradeFactory.build('covered_call', self.stock, [call_contract], 'mid', self.broker_settings, 300,
+                               310).target_price_profit, 2968.7)
         self.assertAlmostEqual(
-            CoveredCall.build(self.stock, call_contract, 'mid', self.broker_settings, 278, 298).target_price_profit,
-            2718.7)
+            TradeFactory.build('covered_call', self.stock, [call_contract], 'mid', self.broker_settings, 278,
+                               298).target_price_profit, 2718.7)
 
         call_contract = OptionContract(self.ticker, True, self.td_input2, self.stock_price)
-        sell_call = CoveredCall.build(self.stock, call_contract, 'mid', self.broker_settings)
+        sell_call = TradeFactory.build('covered_call', self.stock, [call_contract], 'mid', self.broker_settings)
         self.assertEqual(call_contract.to_strike, 25.0)
         self.assertAlmostEqual(call_contract.to_strike_ratio, 0.05952380952)
         self.assertAlmostEqual(sell_call.best_return, 10133.7)
@@ -297,8 +295,8 @@ class CallTradesTestCase(TestCase):
         mock_now.return_value = make_aware(datetime.fromtimestamp(MOCK_NOW_TIMESTAMP), get_default_timezone())
         call_contract_1 = OptionContract(self.ticker, True, self.td_input, self.stock_price, 'mid')
         call_contract_2 = OptionContract(self.ticker, True, self.td_input2, self.stock_price, 'mid')
-        bull_call_spread = BullCallSpread.build(self.stock, call_contract_1, call_contract_2, 'mid',
-                                                self.broker_settings, 400, 400, available_cash=10000)
+        bull_call_spread = TradeFactory.build('bull_call_spread', self.stock, [call_contract_1, call_contract_2], 'mid',
+                                              self.broker_settings, 400, 400, available_cash=10000)
         self.assertAlmostEqual(bull_call_spread.cost, 8537.6)
         self.assertAlmostEqual(bull_call_spread.best_return, 7162.4)  # ((445 - 288) - 85.35) * 100
         self.assertAlmostEqual(bull_call_spread.target_price_profit, 2662.4)  # ((400 - 288) - 85.35) * 100
@@ -313,8 +311,8 @@ class CallTradesTestCase(TestCase):
         mock_now.return_value = make_aware(datetime.fromtimestamp(MOCK_NOW_TIMESTAMP), get_default_timezone())
         call_contract_1 = OptionContract(self.ticker, True, self.td_input, self.stock_price, 'mid')
         call_contract_2 = OptionContract(self.ticker, True, self.td_input2, self.stock_price, 'mid')
-        bear_call_spread = BearCallSpread.build(self.stock, call_contract_1, call_contract_2, 'mid',
-                                                self.broker_settings, 400, 400, available_cash=10000)
+        bear_call_spread = TradeFactory.build('bear_call_spread', self.stock, [call_contract_1, call_contract_2], 'mid',
+                                              self.broker_settings, 400, 400, available_cash=10000)
         self.assertAlmostEqual(bear_call_spread.cost, 7167.6)
         self.assertAlmostEqual(bear_call_spread.best_return, 8532.4)
         self.assertAlmostEqual(bear_call_spread.target_price_profit, -2667.6)
@@ -339,9 +337,8 @@ class CallTradesTestCase(TestCase):
     def test_short_call(self, mock_now):
         mock_now.return_value = make_aware(datetime.fromtimestamp(MOCK_NOW_TIMESTAMP), get_default_timezone())
         call_contract = OptionContract(self.ticker, True, self.td_input, self.stock_price)
-        short_call = ShortCall.build(self.stock, call_contract, 'mid', self.broker_settings,
-                                     target_price_lower=258.3,
-                                     target_price_upper=258.3)
+        short_call = TradeFactory.build('short_call', self.stock, [call_contract], 'mid', self.broker_settings,
+                                        target_price_lower=258.3, target_price_upper=258.3)
         self.assertAlmostEqual(short_call.cost, -16168.699999999999)
         self.assertEqual(short_call.best_return, -1 * short_call.cost)
         self.assertAlmostEqual(short_call.target_price_profit, -1 * short_call.cost)
@@ -511,8 +508,8 @@ class PutTradesTestCase(TestCase):
     def test_sell_put(self, mock_now):
         mock_now.return_value = make_aware(datetime.fromtimestamp(MOCK_NOW_TIMESTAMP), get_default_timezone())
         put_contract = OptionContract(self.ticker, False, self.td_input, self.stock_price)
-        sell_put = CashSecuredPut.build(self.stock, put_contract, 'mid', self.broker_settings, target_price_lower=67.3,
-                                        target_price_upper=67.3)
+        sell_put = TradeFactory.build('cash_secured_put', self.stock, [put_contract], 'mid', self.broker_settings,
+                                      target_price_lower=67.3, target_price_upper=67.3)
         # Test attributes.
         self.assertEqual(put_contract.ask, 1.0)
         self.assertEqual(put_contract.bid, 0.4)
@@ -538,8 +535,8 @@ class PutTradesTestCase(TestCase):
     def test_buy_put(self, mock_now):
         mock_now.return_value = make_aware(datetime.fromtimestamp(MOCK_NOW_TIMESTAMP), get_default_timezone())
         put_contract = OptionContract(self.ticker, False, self.td_input, self.stock_price)
-        long_put = LongPut.build(self.stock, put_contract, 'mid', self.broker_settings, target_price_lower=65.0,
-                                 target_price_upper=65.0)
+        long_put = TradeFactory.build('long_put', self.stock, [put_contract], 'mid', self.broker_settings,
+                                      target_price_lower=65.0, target_price_upper=65.0)
 
         # Test attributes.
         self.assertEqual(put_contract.ask, 1.0)
@@ -582,8 +579,8 @@ class PutTradesTestCase(TestCase):
     def test_bear_put_spread(self):
         put_contract_1 = OptionContract(self.ticker, False, self.td_input, self.stock_price, 'mid')
         put_contract_2 = OptionContract(self.ticker, False, self.td_input2, self.stock_price, 'mid')
-        bear_put_spread = BearPutSpread.build(self.stock, put_contract_1, put_contract_2, 'mid',
-                                              self.broker_settings, 70, 70)
+        bear_put_spread = TradeFactory.build('bear_put_spread', self.stock, [put_contract_1, put_contract_2], 'mid',
+                                             self.broker_settings, 70, 70)
         self.assertAlmostEqual(bear_put_spread.cost, 202.6)
         self.assertAlmostEqual(bear_put_spread.best_return, 397.4)
         self.assertAlmostEqual(bear_put_spread.target_price_profit, 197.4)
@@ -596,8 +593,8 @@ class PutTradesTestCase(TestCase):
     def test_bull_put_spread(self):
         put_contract_1 = OptionContract(self.ticker, False, self.td_input, self.stock_price, 'mid')
         put_contract_2 = OptionContract(self.ticker, False, self.td_input2, self.stock_price, 'mid')
-        bull_put_spread = BullPutSpread.build(self.stock, put_contract_1, put_contract_2, 'mid',
-                                              self.broker_settings, 70, 70)
+        bull_put_spread = TradeFactory.build('bull_put_spread', self.stock, [put_contract_1, put_contract_2], 'mid',
+                                             self.broker_settings, 70, 70)
         self.assertAlmostEqual(bull_put_spread.cost, 402.6)
         self.assertAlmostEqual(bull_put_spread.best_return, 197.4)
         self.assertAlmostEqual(bull_put_spread.target_price_profit, -202.6)
@@ -610,7 +607,8 @@ class PutTradesTestCase(TestCase):
     def test_long_straddle(self):
         call_contract = OptionContract(self.ticker, True, self.td_input3, self.stock_price, 'mid')
         put_contract = OptionContract(self.ticker, False, self.td_input, self.stock_price, 'mid')
-        long_straddle = LongStraddle.build(self.stock, call_contract, put_contract, 'mid', self.broker_settings, 75, 75)
+        long_straddle = TradeFactory.build('long_straddle', self.stock, [call_contract, put_contract], 'mid',
+                                           self.broker_settings, 75, 75)
         self.assertAlmostEqual(long_straddle.cost, 342.6)
         self.assertEqual(long_straddle.best_return, 'infinite')
         self.assertAlmostEqual(long_straddle.target_price_profit, 357.4)
@@ -627,8 +625,9 @@ class PutTradesTestCase(TestCase):
         call_contract = OptionContract(self.ticker, True, self.td_input, self.stock_price, 'mid')
         call_contract2 = OptionContract(self.ticker, True, self.td_input6, self.stock_price, 'mid')
         call_contract3 = OptionContract(self.ticker, True, self.td_input7, self.stock_price, 'mid')
-        long_butterfly_spread = LongButterflySpread.build(
-            self.stock, call_contract, call_contract2, call_contract3, 'mid', self.broker_settings, 73.55, 73.55)
+        long_butterfly_spread = TradeFactory.build('long_butterfly_spread',
+                                                   self.stock, [call_contract, call_contract2, call_contract3], 'mid',
+                                                   self.broker_settings, 73.55, 73.55)
         self.assertAlmostEqual(long_butterfly_spread.cost, 58.9)
         self.assertAlmostEqual(long_butterfly_spread.best_return, 141.1)
         self.assertAlmostEqual(long_butterfly_spread.target_price_profit, -213.9)
@@ -646,8 +645,9 @@ class PutTradesTestCase(TestCase):
         call_contract = OptionContract(self.ticker, True, self.td_input, self.stock_price, 'mid')
         call_contract2 = OptionContract(self.ticker, True, self.td_input6, self.stock_price, 'mid')
         call_contract3 = OptionContract(self.ticker, True, self.td_input7, self.stock_price, 'mid')
-        short_butterfly_spread = ShortButterflySpread.build(
-            self.stock, call_contract, call_contract2, call_contract3, 'mid', self.broker_settings, 73.55, 73.55)
+        short_butterfly_spread = TradeFactory.build('short_butterfly_spread',
+                                                    self.stock, [call_contract, call_contract2, call_contract3], 'mid',
+                                                    self.broker_settings, 73.55, 73.55)
         self.assertAlmostEqual(short_butterfly_spread.cost, -51.1)
         self.assertAlmostEqual(short_butterfly_spread.best_return, 551.1)
         self.assertAlmostEqual(short_butterfly_spread.target_price_profit, 206.1)
@@ -664,8 +664,8 @@ class PutTradesTestCase(TestCase):
         mock_now.return_value = make_aware(datetime.fromtimestamp(MOCK_NOW_TIMESTAMP), get_default_timezone())
         call_contract = OptionContract(self.ticker, True, self.td_input3, self.stock_price, 'mid')
         put_contract = OptionContract(self.ticker, False, self.td_input, self.stock_price, 'mid')
-        short_straddle = ShortStraddle.build(self.stock, call_contract, put_contract,
-                                             'mid', self.broker_settings, 68, 68)
+        short_straddle = TradeFactory.build('short_straddle', self.stock, [call_contract, put_contract],
+                                            'mid', self.broker_settings, 68, 68)
         self.assertAlmostEqual(short_straddle.cost, -337.4)
         self.assertAlmostEqual(short_straddle.best_return, -short_straddle.cost)
         self.assertAlmostEqual(short_straddle.target_price_profit, 337.4)
@@ -682,8 +682,8 @@ class PutTradesTestCase(TestCase):
         mock_now.return_value = make_aware(datetime.fromtimestamp(MOCK_NOW_TIMESTAMP), get_default_timezone())
         call_contract = OptionContract(self.ticker, True, self.td_input2, self.stock_price, 'mid')
         put_contract = OptionContract(self.ticker, False, self.td_input, self.stock_price, 'mid')
-        short_strangle = ShortStrangle.build(self.stock, call_contract, put_contract,
-                                             'mid', self.broker_settings, 69, 69)
+        short_strangle = TradeFactory.build('short_strangle', self.stock, [call_contract, put_contract],
+                                            'mid', self.broker_settings, 69, 69)
         self.assertAlmostEqual(short_strangle.cost, -337.4)
         self.assertEqual(short_strangle.best_return, -short_strangle.cost)
         self.assertAlmostEqual(short_strangle.target_price_profit, 337.4)
@@ -700,8 +700,9 @@ class PutTradesTestCase(TestCase):
         call_contract2 = OptionContract(self.ticker, True, self.td_input, self.stock_price, 'mid')
         put_contract = OptionContract(self.ticker, False, self.td_input5, self.stock_price, 'mid')
         put_contract2 = OptionContract(self.ticker, False, self.td_input3, self.stock_price, 'mid')
-        iron_butterfly = IronButterfly.build(self.stock, call_contract, call_contract2,
-                                             put_contract, put_contract2, 'mid', self.broker_settings, 70, 70)
+        iron_butterfly = TradeFactory.build('iron_butterfly', self.stock, [call_contract, call_contract2,
+                                                                           put_contract, put_contract2], 'mid',
+                                            self.broker_settings, 70, 70)
         self.assertAlmostEqual(iron_butterfly.cost, -234.8)
         self.assertAlmostEqual(iron_butterfly.best_return, -iron_butterfly.cost)
         self.assertAlmostEqual(iron_butterfly.target_price_profit, 34.8)
@@ -717,8 +718,9 @@ class PutTradesTestCase(TestCase):
         call_contract2 = OptionContract(self.ticker, True, self.td_input2, self.stock_price, 'mid')
         put_contract = OptionContract(self.ticker, False, self.td_input5, self.stock_price, 'mid')
         put_contract2 = OptionContract(self.ticker, False, self.td_input, self.stock_price, 'mid')
-        iron_condor = IronCondor.build(self.stock, call_contract, call_contract2,
-                                       put_contract, put_contract2, 'mid', self.broker_settings, 70, 70)
+        iron_condor = TradeFactory.build('iron_condor', self.stock, [call_contract, call_contract2,
+                                                                     put_contract, put_contract2], 'mid',
+                                         self.broker_settings, 70, 70)
         self.assertAlmostEqual(iron_condor.cost, -234.8)
         self.assertAlmostEqual(iron_condor.best_return, -iron_condor.cost)
         self.assertAlmostEqual(iron_condor.target_price_profit, 234.8)
@@ -734,7 +736,8 @@ class PutTradesTestCase(TestCase):
         mock_now.return_value = make_aware(datetime.fromtimestamp(MOCK_NOW_TIMESTAMP), get_default_timezone())
         call_contract = OptionContract(self.ticker, True, self.td_input2, self.stock_price, 'mid')
         put_contract = OptionContract(self.ticker, False, self.td_input, self.stock_price, 'mid')
-        long_strangle = LongStrangle.build(self.stock, call_contract, put_contract, 'mid', self.broker_settings, 85, 85)
+        long_strangle = TradeFactory.build('long_strangle', self.stock, [call_contract, put_contract], 'mid',
+                                           self.broker_settings, 85, 85)
         self.assertAlmostEqual(long_strangle.cost, 342.6)
         self.assertEqual(long_strangle.best_return, 'infinite')
         self.assertAlmostEqual(long_strangle.target_price_profit, 757.4)
@@ -751,9 +754,10 @@ class PutTradesTestCase(TestCase):
         left_put_contract2 = OptionContract(self.ticker, False, self.td_input9, self.stock_price, 'mid')
         right_put_contract = OptionContract(self.ticker, False, self.td_input6, self.stock_price, 'mid')
         right_put_contract2 = OptionContract(self.ticker, False, self.td_input8, self.stock_price, 'mid')
-        long_condor_spread = LongCondorSpread.build(self.stock, left_put_contract, left_put_contract2,
-                                                    right_put_contract, right_put_contract2, 'mid',
-                                                    self.broker_settings, 70, 70)
+        long_condor_spread = TradeFactory.build('long_condor_spread', self.stock,
+                                                [left_put_contract, left_put_contract2,
+                                                 right_put_contract, right_put_contract2], 'mid',
+                                                self.broker_settings, 70, 70)
         self.assertAlmostEqual(long_condor_spread.cost, 135.2)
         self.assertAlmostEqual(long_condor_spread.best_return, 164.8)
         self.assertAlmostEqual(long_condor_spread.target_price_profit, 164.8)
@@ -769,9 +773,11 @@ class PutTradesTestCase(TestCase):
         left_put_contract2 = OptionContract(self.ticker, False, self.td_input8, self.stock_price, 'mid')
         right_put_contract = OptionContract(self.ticker, False, self.td_input7, self.stock_price, 'mid')
         right_put_contract2 = OptionContract(self.ticker, False, self.td_input9, self.stock_price, 'mid')
-        short_condor_spread = ShortCondorSpread.build(self.stock, left_put_contract, left_put_contract2,
-                                                      right_put_contract, right_put_contract2, 'mid',
-                                                      self.broker_settings, 100, 100)
+        short_condor_spread = TradeFactory.build('short_condor_spread', self.stock, [left_put_contract,
+                                                                                     left_put_contract2,
+                                                                                     right_put_contract,
+                                                                                     right_put_contract2], 'mid',
+                                                 self.broker_settings, 100, 100)
         self.assertAlmostEqual(short_condor_spread.cost, -124.8)
         self.assertAlmostEqual(short_condor_spread.best_return, 324.8)
         self.assertAlmostEqual(short_condor_spread.target_price_profit, -short_condor_spread.cost)
@@ -785,8 +791,8 @@ class PutTradesTestCase(TestCase):
     def test_strap_straddle(self):
         call_contract = OptionContract(self.ticker, True, self.td_input3, self.stock_price, 'mid')
         put_contract = OptionContract(self.ticker, False, self.td_input, self.stock_price, 'mid')
-        strap_straddle = StrapStraddle.build(self.stock, call_contract, put_contract,
-                                             'mid', self.broker_settings, 75, 75)
+        strap_straddle = TradeFactory.build('strap_straddle', self.stock, [call_contract, put_contract],
+                                            'mid', self.broker_settings, 75, 75)
         self.assertAlmostEqual(strap_straddle.cost, 612.6)
         self.assertEqual(strap_straddle.best_return, 'infinite')
         self.assertAlmostEqual(strap_straddle.target_price_profit, 787.4)
@@ -800,8 +806,8 @@ class PutTradesTestCase(TestCase):
     def test_strap_strangle(self):
         call_contract = OptionContract(self.ticker, True, self.td_input2, self.stock_price, 'mid')
         put_contract = OptionContract(self.ticker, False, self.td_input, self.stock_price, 'mid')
-        strap_strangle = StrapStrangle.build(self.stock, call_contract, put_contract,
-                                             'mid', self.broker_settings, 85, 85)
+        strap_strangle = TradeFactory.build('strap_strangle', self.stock, [call_contract, put_contract],
+                                            'mid', self.broker_settings, 85, 85)
         self.assertAlmostEqual(strap_strangle.cost, 612.6)
         self.assertEqual(strap_strangle.best_return, 'infinite')
         self.assertAlmostEqual(strap_strangle.target_price_profit, 1587.4)
@@ -814,9 +820,9 @@ class PutTradesTestCase(TestCase):
 
     def test_protective_put(self):
         put_contract = OptionContract(self.ticker, False, self.td_input, self.stock_price)
-        protective_put = ProtectivePut.build(self.stock, put_contract, 'mid', self.broker_settings,
-                                             target_price_lower=258.3,
-                                             target_price_upper=258.3)
+        protective_put = TradeFactory.build('protective_put', self.stock, [put_contract], 'mid', self.broker_settings,
+                                            target_price_lower=258.3,
+                                            target_price_upper=258.3)
         self.assertAlmostEqual(protective_put.cost, 7426.3)
         self.assertEqual(protective_put.best_return, 'infinite')
         self.assertAlmostEqual(protective_put.target_price_profit, 18403.7)
@@ -830,9 +836,9 @@ class PutTradesTestCase(TestCase):
     def test_short_put(self, mock_now):
         mock_now.return_value = make_aware(datetime.fromtimestamp(MOCK_NOW_TIMESTAMP), get_default_timezone())
         put_contract = OptionContract(self.ticker, False, self.td_input, self.stock_price)
-        short_put = ShortPut.build(self.stock, put_contract, 'mid', self.broker_settings,
-                                   target_price_lower=258.3,
-                                   target_price_upper=258.3)
+        short_put = TradeFactory.build('short_put', self.stock, [put_contract], 'mid', self.broker_settings,
+                                       target_price_lower=258.3,
+                                       target_price_upper=258.3)
         self.assertAlmostEqual(short_put.cost, -68.7)
         self.assertEqual(short_put.best_return, 68.7)
         self.assertAlmostEqual(short_put.target_price_profit, 68.7)

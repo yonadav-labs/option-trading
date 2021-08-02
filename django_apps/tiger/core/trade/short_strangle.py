@@ -1,13 +1,9 @@
-from tiger.core.leg import OptionLeg
-
 from .base import Trade
 
 
 class ShortStrangle(Trade):
-    def __init__(self, stock, legs, premium_type, target_price_lower, target_price_upper):
-        super().__init__('short_strangle', stock, legs, premium_type, target_price_lower, target_price_upper)
-
     def validate(self):
+        assert self.type == 'short_strangle'
         assert len(self.legs) == 2
 
         short_call_leg = self.get_nth_option_leg('short', 'call', 0)
@@ -16,15 +12,6 @@ class ShortStrangle(Trade):
         assert short_call_leg.contract.expiration == short_put_leg.contract.expiration
         assert short_call_leg.contract.strike > short_put_leg.contract.strike
         assert self.stock.ticker.id == short_call_leg.contract.ticker.id == short_put_leg.contract.ticker.id
-
-    @staticmethod
-    def build(stock, call_contract, put_contract, premium_type, broker_settings, target_price_lower=None, target_price_upper=None, available_cash=None):
-        short_call_leg = OptionLeg(False, 1, call_contract, premium_type, broker_settings)
-        short_put_leg = OptionLeg(False, 1, put_contract, premium_type, broker_settings)
-        new_trade = ShortStrangle(stock, [short_call_leg, short_put_leg], premium_type,
-                                  target_price_lower, target_price_upper)
-        new_trade.validate()
-        return new_trade
 
     @property
     def is_bullish(self):
