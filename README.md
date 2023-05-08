@@ -1,4 +1,4 @@
-# Tigerstance.com
+# option-trading
 
 ## Local
 
@@ -25,6 +25,3 @@
 * `aws ecr get-login-password --region us-east-2 | docker login --username AWS --password-stdin 813539762970.dkr.ecr.us-east-2.amazonaws.com`
 * `docker-compose exec backend python manage.py test`
 
-#### Remote
-
-See [the tsops `deploy-service` command](https://github.com/botigerstance/devops/tree/main/tsops-cli#the-deploy-service-subcommand).
